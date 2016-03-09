@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>OTRSAppointmentCalendar</Name>
+<!-- nofilter(TidyAll::Plugin::OTRS::SOPM::DocumentationPresent) -->
+    <Version>0.0.0</Version>
+    <Framework>6.0.x</Framework>
+    <Vendor>OTRS AG</Vendor>
+    <URL>http://otrs.org/</URL>
+    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <Description Lang="en">The Appointment Calendar package.</Description>
+    <Filelist>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
+    </Filelist>
+    <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
+
+        <br/>
+        <strong>ATTENTION</strong>
+        <br/>
+        <br/>
+        If you uninstall this package, all database tables that were created during installation will be deleted.
+        All data from this table will be irrevocably lost.
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroUninstall>
+    <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="de"><![CDATA[
+
+        <br/>
+        <strong>ACHTUNG</strong>
+        <br/>
+        <br/>
+        Bei der Deinstallation werden die von diesem Paket angelegten Datenbank-Tabellen gelöscht.
+        Alle darin enthaltenen Daten gehen unwiderruflich verloren!
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroUninstall>
+    <IntroUninstall Type="pre" Title="Información de Desinstalación" Lang="es"><![CDATA[
+
+        <br/>
+        <strong>ATENCIÓN</strong>
+        <br/>
+        <br/>
+        Si usted desinstala este paquete, todas las tablas de la base de datos creadas durante la instalación serán borradas.
+        ¡Todos los datos de esas tablas serán irrevocablemente perdidos!.
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroUninstall>
+</otrs_package>

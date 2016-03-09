@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+
+<book lang='en'>
+
+<bookinfo>
+<title>$Name</title>
+<edition>$Description Version $Version</edition>
+
+<copyright>
+<year>$YearStamp</year>
+<holder>$Vendor, $URL</holder>
+</copyright>
+
+<date>$DateStamp</date>
+
+<legalnotice>
+    <para>$License</para>
+    <para>This work is copyrighted by $Vendor, Norsk-Data-Str. 1, 61352 Bad Homburg, Germany.</para>
+    <para>Build Date: $DateStamp</para>
+</legalnotice>
+
+</bookinfo>
+
+<preface id="preface" >
+    <title>Preface</title>
+    <para>
+        This package provides an appointment calendar control.
+    </para>
+    <para>
+        Please contact your commercial support if you have any queries regarding this document or
+        need further information.
+    </para>
+</preface>
+
+<chapter>
+    <title>Features</title>
+    <sect1>
+        <title>Appointment Calendar</title>
+        <para>
+            <!--TODO-->
+        </para>
+    </sect1>
+</chapter>
+
+<chapter>
+    <title>System requirements</title>
+    <sect1>
+        <title>Framework</title>
+        <para>The following OTRS framework is required:</para>
+        <para>
+            $Framework
+        </para>
+    </sect1>
+    <sect1>
+        <title>Packages</title>
+        <para>Following packages are required:</para>
+        <para>
+            $PackageRequired
+        </para>
+    </sect1>
+    <sect1>
+        <title>Operating system</title>
+        <para>Following operating systems are to be considered as dependency:</para>
+        <para>
+            $OS
+        </para>
+    </sect1>
+    <sect1>
+        <title>Third party software</title>
+        <para>Following software is required for package operation:</para>
+        <para>
+            <itemizedlist>
+                <listitem><para><!--TODO--></para></listitem>
+            </itemizedlist>
+        </para>
+    </sect1>
+</chapter>
+
+<chapter>
+    <title>Installation</title>
+    <para>
+        The following instructions show how to install the package. Generally, there are two
+        possibilities: You can either use the Admin Interface or the command line.
+    </para>
+    <sect1>
+        <title>Admin-Interface</title>
+        <para>
+            Using the following URL you can install, as well as update or uninstall (if necessary),
+            the package via the Admin Interface (please check whether the user is a member of the
+            Admin Group before starting.)
+        </para>
+        <para>
+            <ulink url="http://localhost/otrs/index.pl?Action=AdminPackageManager">
+                http://localhost/otrs/index.pl?Action=AdminPackageManager
+            </ulink>
+        </para>
+    </sect1>
+    <sect1>
+        <title>Command line</title>
+        <para>
+            Whenever you cannot use the Admin Interface for whatever reason, you may use the
+            following command line tool instead.
+        </para>
+        <para>
+            <screen>
+                shell&gt; bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
+            </screen>
+        </para>
+    </sect1>
+</chapter>
+
+<chapter>
+    <title>Configuration</title>
+    <para>
+        <!--TODO-->
+    </para>
+</chapter>
+
+<chapter>
+    <title>Contact</title>
+    <para>The following persons were involved on this package implementation:</para>
+    <sect1>
+        <title>OTRS AG</title>
+        <para>
+            Accounting: Rene Bakker, Phone +49 (0)6172 681988 0
+        </para>
+        <para>
+            Technical: Manuel Hecht, Phone +49 (0)6172 681988 0
+        </para>
+    </sect1>
+</chapter>
+
+<chapter>
+    <title>Manifest</title>
+    <para>This manifest names all files in this package which have rights.</para>
+    <sect1>
+        <title>File list</title>
+        <para>
+            $Filelist
+        </para>
+    </sect1>
+</chapter>
+
+<chapter>
+    <title>Change log</title>
+    <para>
+        $ChangeLog
+    </para>
+</chapter>
+
+</book>
