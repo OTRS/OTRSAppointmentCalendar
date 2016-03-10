@@ -9,10 +9,15 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Filelist>
+        <File Permission="640" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendar.pm"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendar.tt"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/Core.UI.AppointmentCalendar.js"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
 

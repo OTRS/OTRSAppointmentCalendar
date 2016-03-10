@@ -1,0 +1,84 @@
+/**
+ * @project     OTRS (http://www.otrs.org) - Agent Frontend
+ * @copyright   OTRS AG
+ * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
+ */
+
+/**
+ * @package     Skin "Default"
+ * @section     Appointment Calendar
+ */
+
+@media screen,projection,tv,handheld {
+
+    .fc button {
+        background: #eee;
+        border: 1px solid #ccc;
+        border-bottom: 1px solid #bbb;
+        display: inline-block;
+        transition: all ease-in 0.2s;
+    	margin: 0;
+        padding: 3px 7px 6px;
+        line-height: 14px;
+        vertical-align: middle;
+        color: #333;
+        font-size: 11px;
+        text-shadow: 0 1px 0 #FFF;
+        position: relative;
+    }
+
+    .fc-state-default.fc-corner-left {
+    	border-top-left-radius: 0;
+    	border-bottom-left-radius: 0;
+    }
+
+    .fc-state-default.fc-corner-right {
+    	border-top-right-radius: 0;
+    	border-bottom-right-radius: 0;
+    }
+
+    .fc-state-hover,
+    .fc-state-down,
+    .fc-state-active,
+    .fc-state-disabled {
+    	background-color: #e5e5e5;
+        border-color: #999;
+    }
+
+    .fc-state-down,
+    .fc-state-active {
+    	background-color: #e5e5e5;
+    }
+
+    .fc-toolbar h2 {
+        font-weight: bold;
+        margin-top: 6px;
+    }
+
+    .fc-view {
+        background-color: #FDFDFD;
+    }
+
+    .fc-view table thead.fc-head {
+        background: #eeeeee;
+    }
+
+    .fc-view table thead.fc-head th.fc-widget-header {
+        color: #4B4B4B;
+        font-size: 11px;
+        text-transform: uppercase;
+        vertical-align: baseline;
+    }
+
+    .fc-following {
+        text-transform: uppercase;
+        padding-top: 1px !important;
+    }
+
+    .fc-month-view th.fc-widget-header,
+    .fc-agenda-view th.fc-widget-header {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+} /* end @media */

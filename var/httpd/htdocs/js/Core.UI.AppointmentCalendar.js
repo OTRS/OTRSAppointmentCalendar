@@ -41,19 +41,50 @@ Core.UI.AppointmentCalendar = (function (TargetNS) {
     TargetNS.Init = function (Params) {
         $('#calendar').fullCalendar({
             header: {
-                left: 'month,agendaWeek,agendaDay',
+                left: 'month,agendaWeek,agendaDay timeline',
                 center: 'title',
-                right: 'prev,next today'
+                right: 'today prev,next'
             },
+            defaultView: 'timeline',
             allDayText: Params.AllDayText,
-            axisFormat: 'H(:mm)', // uppercase H for 24-hour clock
-            editable: false,
+            isRTL: Params.IsRTL,
+            columnFormat: 'ddd, D MMM',
+            timeFormat: 'H:mm',
+            slotLabelFormat: 'HH:mm',
+            titleFormat: 'D MMM YYYY #W',
+            aspectRatio: 2.5,
+            editable: true,
+            selectable: true,
+            selectHelper: true,
             firstDay: Params.FirstDay,
             monthNames: Params.MonthNames,
             monthNamesShort: Params.MonthNamesShort,
             dayNames: Params.DayNames,
             dayNamesShort: Params.DayNamesShort,
             buttonText: Params.ButtonText,
+            schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+            slotDuration: '00:30:00',
+            nowIndicator: true,
+            views: {
+                month: {
+                    titleFormat: 'MMMM YYYY',
+                    columnFormat: 'dddd'
+                },
+                agendaWeek: {
+                    weekends: false
+                },
+                agendaDay: {
+                    titleFormat: 'D MMM YYYY'
+                },
+                timeline: {
+                    slotDuration: '02:00:00',
+                    duration: { days: 5 },
+                    slotLabelFormat: [
+                        'ddd, D MMM',
+                        'HH'
+                    ]
+                }
+            },
             // eventMouseover: function(calEvent, jsEvent) {
                 // var Layer, PosX, PosY, DocumentVisible, ContainerHeight,
                 //     LastYPosition, VisibleScrollPosition, WindowHeight;

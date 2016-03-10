@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_config version="1.0" init="Config">
+    <ConfigItem Name="Frontend::Module###AgentAppointmentCalendar" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Framework</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description>Appointment Calendar</Description>
+                <Title></Title>
+                <NavBarName>Calendar</NavBarName>
+                <NavBar>
+                    <Description Translatable="1">Sandbox page</Description>
+                    <Name Translatable="1">Calendar</Name>
+                    <Link>Action=AgentAppointmentCalendar</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type>Menu</Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey>c</AccessKey>
+                    <Prio>75</Prio>
+                </NavBar>
+                <Loader>
+                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css</CSS>
+                    <CSS>Core.AppointmentCalendar.css</CSS>
+                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
+                    <JavaScript>Core.UI.AppointmentCalendar.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+</otrs_config>
