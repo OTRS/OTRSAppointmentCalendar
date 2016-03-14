@@ -61,4 +61,22 @@
         <br/>
 
     ]]></IntroUninstall>
+
+    <DatabaseInstall Type="post">
+        <TableCreate Name="calendar">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="user_id" Required="true" Type="INTEGER"/>
+            <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
+            <Column Name="create_time" Required="true" Type="DATE" />
+            <Column Name="create_by" Required="true" Type="INTEGER" />
+            <Column Name="change_time" Required="true" Type="DATE" />
+            <Column Name="change_by" Required="true" Type="INTEGER" />
+            <Unique Name="calendar_id">
+                <UniqueColumn Name="id"/>
+            </Unique>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="user_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
+    </DatabaseInstall>
 </otrs_package>
