@@ -176,6 +176,79 @@ sub CalendarGet {
     return %Calendar;
 }
 
+=item CalendarList()
+
+get calendar list.
+
+    my @Result = $CalendarObject->CalendarList(
+        UserID  => 4,                   # (optional) Filter by User
+    );
+
+returns:
+    @Result = [
+        {
+            CalendarID   = 2,
+            UserID       = 3,
+            CalendarName = 'Meetings',
+            CreateTime   = '2016-01-01 08:00:00',
+            CreateBy     = 3,
+            ChangeTime   = '2016-01-01 08:00:00',
+            ChangeBy     = 3,
+        },
+        {
+            CalendarID   = 3,
+            UserID       = 3,
+            CalendarName = 'Customer presentations',
+            CreateTime   = '2016-01-01 08:00:00',
+            CreateBy     = 3,
+            ChangeTime   = '2016-01-01 08:00:00',
+            ChangeBy     = 3,
+        },
+        ...
+    ];
+
+=cut
+
+sub CalendarList {
+    my ( $Self, %Param ) = @_;
+
+    # create needed objects
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    my $SQL = '
+        SELECT id, user_id, name, create_time, create_by, change_time, change_by
+        FROM calendar
+        WHERE 1=1
+    ';
+    my @Bind;
+
+    if ( $Param{UserID} ) {
+        $SQL .= 'AND UserID=? ';
+        push @Bind, \$Param{UserID};
+    }
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => @Bind,
+    );
+
+    my @Result;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        my %Calendar;
+        $Calendar{CalendarID}   = $Row[0];
+        $Calendar{UserID}       = $Row[1];
+        $Calendar{CalendarName} = $Row[2];
+        $Calendar{CreateTime}   = $Row[3];
+        $Calendar{CreateBy}     = $Row[4];
+        $Calendar{ChangeTime}   = $Row[5];
+        $Calendar{ChangeBy}     = $Row[6];
+        push @Result, \%Calendar;
+    }
+
+    return @Result;
+}
+
 1;
 
 =back
