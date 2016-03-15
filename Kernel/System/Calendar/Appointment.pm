@@ -11,9 +11,12 @@ package Kernel::System::Calendar::Appointment;
 use strict;
 use warnings;
 
+use Kernel::System::VariableCheck qw(:all);
+
 our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::Time',
 );
 
 =head1 NAME
@@ -108,24 +111,44 @@ sub AppointmentCreate {
         }
     }
 
-    # <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-    # <Column Name="calendar_id" Required="true" Type="BIGINT"/>
-    # <Column Name="title" Required="true" Size="255" Type="VARCHAR"/>
-    # <Column Name="description" Required="true" Size="3800" Type="VARCHAR"/>
-    # <Column Name="location" Required="false" Size="255" Type="VARCHAR"/>
-    # <Column Name="start_time" Required="true" Type="DATE"/>
-    # <Column Name="end_time" Type="DATE"/>
-    # <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
-    # <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
-    # <Column Name="recur_count" Type="INTEGER"/>
-    # <Column Name="recur_interval" Type="INTEGER"/>
-    # <Column Name="recur_until" Type="DATE"/>
-    # <Column Name="recur_bymonth" Type="SMALLINT"/>
-    # <Column Name="recur_byday" Type="SMALLINT"/>
-    # <Column Name="create_time" Type="DATE"/>
-    # <Column Name="create_by" Type="INTEGER"/>
-    # <Column Name="change_time" Type="DATE"/>
-    # <Column Name="change_by" Type="INTEGER"/>
+    # needed objects
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # check StartTime
+    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{StartTime},
+    );
+    return if !$StartTimeSystem;
+
+    # Check EndTime
+    if ( $Param{EndTime} ) {
+        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{EndTime},
+        );
+        return if !$EndTimeSystem;
+    }
+
+    # TODO: Check timezome
+
+    # check RecurrenceCount
+    return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
+
+    # check RecurrenceInterval
+    return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
+
+    # check RecurrenceUntil
+    if ( $Param{RecurrenceUntil} ) {
+        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{RecurrenceUntil},
+        );
+        return if !$RecurrenceUntilSystem;
+    }
+
+    # check RecurrenceByMonth
+    return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
+
+    # check RecurrenceByDay
+    return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
     my $SQL = '
         INSERT INTO calendar_appointment
