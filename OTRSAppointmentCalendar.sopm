@@ -16,6 +16,7 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
+        <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
