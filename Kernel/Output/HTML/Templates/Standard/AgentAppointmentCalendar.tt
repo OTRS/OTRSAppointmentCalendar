@@ -10,7 +10,20 @@
     <h1>[% Translate("Appointment Calendar") | html %]</h1>
 
     <div class="SidebarColumn">
-
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+                    <li>
+                        <button value="Add" type="button" class="CallForAction Fullsize Center" id="AddCalendar">
+                            <span><i class="fa fa-plus-square"></i>[% Translate("Add new calendar") | html %]</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("Description") | html %]</h2>
@@ -21,7 +34,6 @@
                 </p>
             </div>
         </div>
-
     </div>
 
     <div class="ContentColumn">
@@ -124,6 +136,28 @@ Core.UI.AppointmentCalendar.Init({
 //     ]
 });
 
+$("button#AddCalendar").bind("click", function () {
+    Core.UI.Dialog.ShowContentDialog($('#CalendarAddDialog'), [% Translate("Add new calendar") | JSON %], '20px', 'Center', true, [
+        {
+            Label: [% Translate("Add") | JSON %],
+            Function: function () {
+                var Data = Core.AJAX.SerializeForm($('#CalendarDialogForm'));
+                Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function () {
+                    location.reload();
+                }, 'text');
+            }
+        },
+        {
+            Label: [% Translate("Cancel") | JSON %],
+            Function: function () {
+                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                return false;
+            }
+        }
+    ]);
+    return false;
+});
+
 //]]></script>
 [% END %]
 
@@ -131,4 +165,18 @@ Core.UI.AppointmentCalendar.Init({
         </div>
     </div>
     <div class="Clear"></div>
+
+    <div id="CalendarAddDialog" class="Hidden">
+        <form action="[% Env("CGIHandle") %]" method="post" id="CalendarDialogForm" name="CalendarDialogForm">
+            <input type="hidden" value="AgentAppointmentCalendar" name="Action"/>
+            <input type="hidden" value="CalendarAdd" name="Subaction"/>
+            <fieldset class="TableLike">
+                <label for="CalendarName" class="Mandatory"><span class="Marker">*</span>[% Translate("Calendar name") | html %]:</label>
+                <div class="Field">
+                    <input type="text" name="CalendarName" id="CalendarName" class="W75pc" />
+                </div>
+                <div class="Clear"></div>
+            </fieldset>
+        </form>
+    </div>
 </div>

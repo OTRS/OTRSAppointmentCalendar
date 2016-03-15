@@ -80,5 +80,8 @@
         padding-top: 3px;
         padding-bottom: 3px;
     }
+    form#CalendarDialogForm {
+        width: 400px;
+    }
 
 } /* end @media */
