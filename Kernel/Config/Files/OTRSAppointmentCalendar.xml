@@ -2,12 +2,12 @@
 <otrs_config version="1.0" init="Config">
     <ConfigItem Name="Frontend::Module###AgentAppointmentCalendar" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>Framework</Group>
+        <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Appointment Calendar</Description>
-                <Title></Title>
+                <Description Translatable="1">Appointment Calendar sandbox page.</Description>
+                <Title Translatable="1">Calendar</Title>
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
                     <Description Translatable="1">Sandbox page</Description>
@@ -29,6 +29,18 @@
                     <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
                     <JavaScript>Core.UI.AppointmentCalendar.js</JavaScript>
                 </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentEdit" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Appointment edit screen.</Description>
+                <Title Translatable="1">Edit appointment</Title>
+                <NavBarName></NavBarName>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
