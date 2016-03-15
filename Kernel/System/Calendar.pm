@@ -50,6 +50,20 @@ sub new {
     return $Self;
 }
 
+=item CalendarCreate()
+
+creates a new calendar for given user.
+
+    my $CalendarID = $CalendarObject->CalendarCreate(
+        Name    => 'Meetings',          # (required) Personal calendar name
+        UserID  => 4,                   # (required) UserID
+    );
+
+returns CalendarID if successful:
+    $CalendarID = 5;
+
+=cut
+
 sub CalendarCreate {
     my ( $Self, %Param ) = @_;
 
