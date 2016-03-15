@@ -231,14 +231,14 @@ sub CalendarList {
     my @Bind;
 
     if ( $Param{UserID} ) {
-        $SQL .= 'AND UserID=? ';
+        $SQL .= 'AND user_id=? ';
         push @Bind, \$Param{UserID};
     }
 
     # db query
     return if !$DBObject->Prepare(
         SQL  => $SQL,
-        Bind => @Bind,
+        Bind => \@Bind,
     );
 
     my @Result;

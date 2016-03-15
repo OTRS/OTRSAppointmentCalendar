@@ -71,12 +71,34 @@ sub Run {
         );
     }
 
-    $LayoutObject->Block(
-        Name => 'CalendarDiv',
-        Data => {
-            CalendarWidth => 100,
-        },
+    my @Calendars = $CalendarObject->CalendarList(
+        UserID => $Self->{UserID},
     );
+
+    if (@Calendars) {
+
+        my %CalendarData = map { $_->{CalendarID} => $_->{CalendarName} } @Calendars;
+        $Param{CalendarStrg} = $LayoutObject->BuildSelection(
+            Data         => \%CalendarData,
+            Name         => 'Calendar',
+            Multiple     => 0,
+            Class        => 'Modernize',
+            PossibleNone => 0,
+        );
+
+        $LayoutObject->Block(
+            Name => 'CalendarDiv',
+            Data => {
+                %Param,
+                CalendarWidth => 100,
+            },
+        );
+    }
+    else {
+        $LayoutObject->Block(
+            Name => 'NoCalendar',
+        );
+    }
 
     my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
 
@@ -85,7 +107,9 @@ sub Run {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendar',
         Data         => {
-            FirstDay => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
+            EditAction    => 'AgentAppointmentEdit',
+            EditSubaction => 'AJAX',
+            FirstDay      => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
             IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
             %Param,
         },

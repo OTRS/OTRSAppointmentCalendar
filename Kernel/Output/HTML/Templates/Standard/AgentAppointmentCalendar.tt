@@ -41,9 +41,17 @@
             <div class="Header">
                 <h2>[% Translate("Calendar") | html %]</h2>
             </div>
-            <div class="Content">
+            <div class="Content ">
+
+[% RenderBlockStart("NoCalendar") %]
+                <p>[% Translate("Please add a calendar first using button on the right.") | html %]</p>
+[% RenderBlockEnd("NoCalendar") %]
 
 [% RenderBlockStart("CalendarDiv") %]
+                <h2>
+                    [% Data.CalendarStrg %]
+                </h2>
+
                 <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
 [% RenderBlockEnd("CalendarDiv") %]
 
