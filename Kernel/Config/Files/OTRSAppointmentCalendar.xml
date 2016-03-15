@@ -27,7 +27,7 @@
                     <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.min.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
-                    <JavaScript>Core.UI.AppointmentCalendar.js</JavaScript>
+                    <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>

@@ -1,0 +1,82 @@
+# --
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+[% RenderBlockStart("AJAX") %]
+<div class="InnerContent">
+    <form action="[% Env("CGIHandle") %]" method="post" id="EditAppointmentForm">
+        <input type="hidden" name="Action" value="[% Env("Action") %]" id="AgentAppointmentEdit"/>
+        <input type="hidden" name="Subaction" value="Store"/>
+        <input type="hidden" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
+        <fieldset class="TableLike">
+            <legend><span>[% Translate("Basic info") | html %]</span></legend>
+            <label>[% Translate("Title") | html %]:</label>
+            <div class="Field">
+                <input type="text" name="Title" value="[% Data.Title | html %]" class="W95pc" />
+            </div>
+            <div class="Clear"></div>
+            <label>[% Translate("Description") | html %]:</label>
+            <div class="Field">
+                <textarea name="Description" class="W95pc">[% Data.Description | html %]</textarea>
+            </div>
+            <div class="Clear"></div>
+            <label>[% Translate("Location") | html %]:</label>
+            <div class="Field">
+                <input type="text" name="Location" value="[% Data.Location | html %]" class="W95pc" />
+            </div>
+        </fieldset>
+        <fieldset class="TableLike">
+            <legend><span>[% Translate("Date/Time") | html %]</span></legend>
+            <label>[% Translate("Start date") | html %]:</label>
+            <div class="Field">
+                [% Data.StartDateString %]
+            </div>
+            <div class="Clear"></div>
+            <label>[% Translate("End date") | html %]:</label>
+            <div class="Field">
+                [% Data.EndDateString %]
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div class="ContentFooter Center">
+    <button id="EditFormSubmit" class="Primary CallForAction" value="Store"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
+    <button id="EditFormCancel" class="CallForAction"><span>[% Translate("Cancel") | html %]</span></button>
+</div>
+
+<script type="text/javascript">//<![CDATA[
+
+// bind button actions
+$('#EditFormSubmit').bind('click', function() {
+    $('#calendar').fullCalendar('renderEvent',
+        {
+            title: $('input[name="Title"]').val(),
+            start: $.fullCalendar.moment()
+                .year(parseInt($('#StartYear').val(), 10))
+                .month(parseInt($('#StartMonth').val(), 10) - 1)
+                .date(parseInt($('#StartDay').val(), 10))
+                .hour(parseInt($('#StartHour').val(), 10))
+                .minute(parseInt($('#StartMinute').val(), 10)),
+            end: $.fullCalendar.moment()
+                .year(parseInt($('#EndYear').val(), 10))
+                .month(parseInt($('#EndMonth').val(), 10) - 1)
+                .date(parseInt($('#EndDay').val(), 10))
+                .hour(parseInt($('#EndHour').val(), 10))
+                .minute(parseInt($('#EndMinute').val(), 10)),
+        },
+        true
+    );
+    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+});
+
+$('#EditFormCancel').bind('click', function() {
+    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+});
+
+//]]></script>
+[% RenderBlockEnd("AJAX") %]

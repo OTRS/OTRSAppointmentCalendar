@@ -80,8 +80,13 @@
         padding-top: 3px;
         padding-bottom: 3px;
     }
+
     form#CalendarDialogForm {
         width: 400px;
+    }
+
+    .fc-ltr .fc-time-grid .fc-event-container {
+        margin-right: 2px;
     }
 
 } /* end @media */
