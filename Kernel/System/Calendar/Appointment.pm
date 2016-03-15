@@ -57,7 +57,7 @@ sub new {
 
 creates a new appointment.
 
-    my %Appointment = $AppointmentCreate->AppointmentCreate(
+    my $Success = $AppointmentObject->AppointmentCreate(
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (required) Description
@@ -74,26 +74,8 @@ creates a new appointment.
         UserID              => 1,                                       # (required) UserID
     );
 
-returns Appointment if successful:
-    %Appointment = (
-        CalendarID          => 1,
-        Title               => 'Webinar',
-        Description         => 'How to use Process tickets...',
-        Location            => 'Straubing'
-        StartTime           => '2016-01-01 16:00:00',
-        EndTime             => '2016-01-01 16:00:00',
-        TimezoneID          => 'Timezone',
-        RecurrenceFrequency => '1',
-        RecurrenceCount     => '1',
-        RecurrenceInterval  => '',
-        RecurrenceUntil     => '',
-        RecurrenceByMonth   => '',
-        RecurrenceByDay     => '',
-        CreateTime          => '2016-01-01 12:00:00',
-        CreateBy            => 1,
-        ChangeTime          => '2016-01-01 12:00:00',
-        ChangeBy            => 1,
-    );
+returns 1 if successful:
+    $Success = 1;
 
 =cut
 
@@ -169,14 +151,86 @@ sub AppointmentCreate {
         ],
     );
 
-    my %Appointment;
+    return 1;
+}
 
-    # %Appointment = $Self->AppointmentGet(
-    #     Name   => $Param{Name},
-    #     UserID => $Param{UserID},
-    # );
+=item AppointmentList()
 
-    return %Appointment;
+get a list of Appointments.
+
+    my @Appointments = $AppointmentObject->AppointmentList(
+        CalendarID          => 1,                                       # (required) Valid CalendarID
+        StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
+        EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
+    );
+
+returns a list of AppointmentIDs:
+    @Appointments = [ 1, 2, 5, 7,...];
+
+=cut
+
+sub AppointmentList {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # needed objects
+    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    my $SQL = '
+        SELECT id
+        FROM calendar_appointment
+        WHERE CalendarID=?
+    ';
+
+    my @Bind;
+    push @Bind, \$Param{CalendarID};
+
+    # check start time
+    if ( $Param{StartTime} ) {
+        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{StartTime},
+        );
+        return if !$StartTimeSystem;
+
+        $SQL .= 'AND start_time > ? ';
+        push @Bind, \$Param{StartTime}
+    }
+
+    # check end time
+    if ( $Param{EndTime} ) {
+        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{EndTime},
+        );
+        return if !$EndTimeSystem;
+
+        $SQL .= 'AND end_time < ? ';
+        push @Bind, \$Param{EndTime}
+    }
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    my @Result;
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        push @Result, $Row[0];
+    }
+
+    return @Result;
 }
 
 1;
