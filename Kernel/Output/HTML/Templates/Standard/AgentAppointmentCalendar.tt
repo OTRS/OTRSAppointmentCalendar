@@ -48,15 +48,22 @@
 [% RenderBlockEnd("NoCalendar") %]
 
 [% RenderBlockStart("CalendarDiv") %]
-                <h2>
-                    [% Data.CalendarStrg %]
-                </h2>
+                <form action="[% Env("CGIHandle") %]" method="post" id="SelectCalendarForm">
+                    <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+                    <h2>
+                        [% Data.CalendarIDStrg %]
+                    </h2>
+                </form>
 
                 <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
 [% RenderBlockEnd("CalendarDiv") %]
 
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
+
+$('#CalendarID').bind('change', function(){
+    $('#SelectCalendarForm').submit();
+});
 
 Core.Agent.AppointmentCalendar.Init({
     AllDayText: [% Translate("All-day") | JSON %],

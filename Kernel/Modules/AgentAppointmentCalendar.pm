@@ -71,16 +71,30 @@ sub Run {
         );
     }
 
+    # get all user's calendars
     my @Calendars = $CalendarObject->CalendarList(
         UserID => $Self->{UserID},
     );
 
+    # check if we found some
     if (@Calendars) {
 
-        my %CalendarData = map { $_->{CalendarID} => $_->{CalendarName} } @Calendars;
-        $Param{CalendarStrg} = $LayoutObject->BuildSelection(
-            Data         => \%CalendarData,
-            Name         => 'Calendar',
+        # transform data for select box
+        my @CalendarData = map {
+            {
+                Key   => $_->{CalendarID},
+                Value => $_->{CalendarName},
+            }
+        } @Calendars;
+
+        # define the current ID
+        $Param{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || $CalendarData[0]->{Key};
+
+        # calendar selection
+        $Param{CalendarIDStrg} = $LayoutObject->BuildSelection(
+            Data         => \@CalendarData,
+            SelectedID   => $Param{CalendarID},
+            Name         => 'CalendarID',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -94,14 +108,18 @@ sub Run {
             },
         );
     }
+
+    # show no calendar found message
     else {
         $LayoutObject->Block(
             Name => 'NoCalendar',
         );
     }
 
+    # get text direction from language object
     my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
 
+    # output page
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
