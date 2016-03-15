@@ -142,10 +142,15 @@ $("button#AddCalendar").bind("click", function () {
             Label: [% Translate("Add") | JSON %],
             Function: function () {
                 var Data = Core.AJAX.SerializeForm($('#CalendarDialogForm'));
-                Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function () {
-                    location.reload();
-                }, 'text');
-            }
+                Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
+                    if (Response.CalendarID > 0) {
+                        location.reload();
+                    }
+                    if (Response.Error != null && Response.Error.ServerError != '') {
+                        alert(Response.Error.ServerError); // TODO: Add translated text in .tt file
+                    }
+                }, 'json');
+            },
         },
         {
             Label: [% Translate("Cancel") | JSON %],

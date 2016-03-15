@@ -30,8 +30,46 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
+    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+    if ( $Self->{Subaction} eq 'CalendarAdd' ) {
+        my $CalendarName = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
+
+        my %Error;
+        my %Calendar = ();
+
+        if ( !$CalendarName ) {
+            $Error{ServerError} = "MissingCalendarName";
+        }
+        else {
+            %Calendar = $CalendarObject->CalendarCreate(
+                Name   => $CalendarName,
+                UserID => $Self->{UserID},
+            );
+        }
+
+        if ( !%Calendar ) {
+            $Error{ServerError} = "AlreadyExists";
+        }
+
+        my $JSONResponse = $JSONObject->Encode(
+            Data => {
+                CalendarID => $Calendar{CalendarID},
+                Error      => \%Error,
+            },
+        );
+
+        return $LayoutObject->Attachment(
+            ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+            Content     => $JSONResponse,
+            Type        => 'inline',
+            NoCache     => 1,
+        );
+    }
 
     $LayoutObject->Block(
         Name => 'CalendarDiv',

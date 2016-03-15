@@ -54,13 +54,21 @@ sub new {
 
 creates a new calendar for given user.
 
-    my $CalendarID = $CalendarObject->CalendarCreate(
+    my %Calendar = $CalendarObject->CalendarCreate(
         Name    => 'Meetings',          # (required) Personal calendar name
         UserID  => 4,                   # (required) UserID
     );
 
 returns CalendarID if successful:
-    $CalendarID = 5;
+    %Calendar = (
+        CalendarID   = 2,
+        UserID       = 4,
+        CalendarName = 'Meetings',
+        CreateTime   = '2016-01-01 08:00:00',
+        CreateBy     = 4,
+        ChangeTime   = '2016-01-01 08:00:00',
+        ChangeBy     = 4,
+    );
 
 =cut
 
@@ -84,7 +92,7 @@ sub CalendarCreate {
     );
 
     # If user already has Calendar with same name, return
-    return '' if %Calendar;
+    return if %Calendar;
 
     my $SQL = '
         INSERT INTO calendar
