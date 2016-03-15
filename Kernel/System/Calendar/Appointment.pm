@@ -323,6 +323,108 @@ sub AppointmentGet {
     return %Result;
 }
 
+=item AppointmentUpdate()
+
+updates an existing appointment.
+
+    my $Success = $AppointmentObject->AppointmentUpdate(
+        ApointmentID        => 1,                                       # (required)
+        CalendarID          => 1,                                       # (required) Valid CalendarID
+        Title               => 'Webinar',                               # (required) Title
+        Description         => 'How to use Process tickets...',         # (required) Description
+        Location            => 'Straubing'                              # (optional) Location
+        StartTime           => '2016-01-01 16:00:00',                   # (required)
+        EndTime             => '2016-01-01 17:00:00',                   # (optional)
+        TimezoneID          => 'Timezone',                              # (required)
+        RecurrenceFrequency => '1',                                     # (optional)
+        RecurrenceCount     => '1',                                     # (optional)
+        RecurrenceInterval  => '',                                      # (optional)
+        RecurrenceUntil     => '',                                      # (optional)
+        RecurrenceByMonth   => '',                                      # (optional)
+        RecurrenceByDay     => '',                                      # (optional)
+        UserID              => 1,                                       # (required) UserID
+    );
+
+returns 1 if successful:
+    $Success = 1;
+
+=cut
+
+sub AppointmentUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID CalendarID Title Description StartTime TimezoneID UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # needed objects
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # check StartTime
+    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{StartTime},
+    );
+    return if !$StartTimeSystem;
+
+    # Check EndTime
+    if ( $Param{EndTime} ) {
+        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{EndTime},
+        );
+        return if !$EndTimeSystem;
+    }
+
+    # TODO: Check timezome
+
+    # check RecurrenceCount
+    return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
+
+    # check RecurrenceInterval
+    return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
+
+    # check RecurrenceUntil
+    if ( $Param{RecurrenceUntil} ) {
+        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{RecurrenceUntil},
+        );
+        return if !$RecurrenceUntilSystem;
+    }
+
+    # check RecurrenceByMonth
+    return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
+
+    # check RecurrenceByDay
+    return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
+
+    my $SQL = '
+        UPDATE calendar_appointment
+        SET
+            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, timezone_id=?, recur_freq=?, recur_count=?,
+            recur_interval=?, recur_until=?, recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
+        WHERE id=?
+    ';
+
+    # update db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{CalendarID}, \$Param{Title}, \$Param{Description}, \$Param{Location}, \$Param{StartTime},
+            \$Param{EndTime},
+            \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
+            \$Param{RecurrenceUntil}, \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay}, \$Param{UserID}
+        ],
+    );
+
+    return 1;
+}
+
 1;
 
 =back
