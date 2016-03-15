@@ -190,7 +190,7 @@ sub AppointmentList {
     my $SQL = '
         SELECT id
         FROM calendar_appointment
-        WHERE CalendarID=?
+        WHERE calendar_id=?
     ';
 
     my @Bind;
@@ -231,6 +231,96 @@ sub AppointmentList {
     }
 
     return @Result;
+}
+
+=item AppointmentGet()
+
+get Appointment.
+
+    my %Appointment = $AppointmentObject->AppointmentGet(
+        AppointmentID          => 1,                            # (required)
+    );
+
+returns a hash:
+    %Appointment = (
+        ID                  => 1,
+        CalendarID          => 1,
+        Title               => 'Webinar',
+        Description         => 'How to use Process tickets...',
+        Location            => 'Straubing',
+        StartTime           => '2016-01-01 16:00:00',
+        EndTime             => '2016-01-01 17:00:00',
+        TimezoneID          => 'Timezone',
+        RecurrenceFrequency => '1',
+        RecurrenceCount     => '1',
+        RecurrenceInterval  => '',
+        RecurrenceUntil     => '',
+        RecurrenceByMonth   => '',
+        RecurrenceByDay     => '',
+        CreateTime          => '2016-01-01 00:00:00',
+        CreateBy            => 2,
+        ChangeTime          => '2016-01-01 00:00:00',
+        ChangeBy            => 2,
+    );
+
+=cut
+
+sub AppointmentGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # needed objects
+    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    my $SQL = '
+        SELECT id, calendar_id, title, description, location, start_time, end_time, timezone_id,
+            recur_freq, recur_count, recur_interval, recur_until, recur_bymonth, recur_byday,
+            create_time, create_by, change_time, change_by
+        FROM calendar_appointment
+        WHERE id=?
+    ';
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => [ \$Param{AppointmentID} ],
+    );
+
+    my %Result;
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $Result{ID}                  = $Row[0];
+        $Result{CalendarID}          = $Row[1];
+        $Result{Title}               = $Row[2];
+        $Result{Description}         = $Row[3];
+        $Result{Location}            = $Row[4];
+        $Result{StartTime}           = $Row[5];
+        $Result{EndTime}             = $Row[6];
+        $Result{TimezoneID}          = $Row[7];
+        $Result{RecurrenceFrequency} = $Row[8];
+        $Result{RecurrenceCount}     = $Row[9];
+        $Result{RecurrenceInterval}  = $Row[10];
+        $Result{RecurrenceUntil}     = $Row[11];
+        $Result{RecurrenceByMonth}   = $Row[12];
+        $Result{RecurrenceByDay}     = $Row[13];
+        $Result{CreateTime}          = $Row[14];
+        $Result{CreateBy}            = $Row[15];
+        $Result{ChangeTime}          = $Row[16];
+        $Result{ChangeBy}            = $Row[17];
+    }
+
+    return %Result;
 }
 
 1;
