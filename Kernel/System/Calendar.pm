@@ -78,13 +78,13 @@ sub CalendarCreate {
         }
     }
 
-    my $CalendarID = $Self->_CalendarNameCheck(
+    my %Calendar = $Self->CalendarGet(
         Name   => $Param{Name},
         UserID => $Param{UserID},
     );
 
     # If user already has Calendar with same name, return
-    return '' if $CalendarID;
+    return '' if %Calendar;
 
     my $SQL = '
         INSERT INTO calendar
@@ -100,15 +100,37 @@ sub CalendarCreate {
         ],
     );
 
-    $CalendarID = $Self->_CalendarNameCheck(
+    %Calendar = $Self->CalendarGet(
         Name   => $Param{Name},
         UserID => $Param{UserID},
     );
 
-    return $CalendarID;
+    return %Calendar;
 }
 
-sub _CalendarNameCheck {
+=item CalendarGet()
+
+get calendar by name for given user.
+
+    my %Calendar = $CalendarObject->CalendarGet(
+        Name    => 'Meetings',          # (required) Personal calendar name
+        UserID  => 4,                   # (required) UserID
+    );
+
+returns Calendar data:
+    %Calendar = (
+        CalendarID   = 2,
+        UserID       = 3,
+        CalendarName = 'Meetings',
+        CreateTime   = '2016-01-01 08:00:00',
+        CreateBy     = 3,
+        ChangeTime   = '2016-01-01 08:00:00',
+        ChangeBy     = 3,
+    );
+
+=cut
+
+sub CalendarGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -126,7 +148,7 @@ sub _CalendarNameCheck {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
-        SELECT id
+        SELECT id, user_id, name, create_time, create_by, change_time, change_by
         FROM calendar
         WHERE
             name=? AND
@@ -140,12 +162,18 @@ sub _CalendarNameCheck {
         Limit => 1,
     );
 
-    my $CalendarID;
+    my %Calendar;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $CalendarID = $Row[0];
+        $Calendar{CalendarID}   = $Row[0];
+        $Calendar{UserID}       = $Row[1];
+        $Calendar{CalendarName} = $Row[2];
+        $Calendar{CreateTime}   = $Row[3];
+        $Calendar{CreateBy}     = $Row[4];
+        $Calendar{ChangeTime}   = $Row[5];
+        $Calendar{ChangeBy}     = $Row[6];
     }
 
-    return $CalendarID;
+    return %Calendar;
 }
 
 1;
