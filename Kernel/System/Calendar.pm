@@ -257,6 +257,52 @@ sub CalendarList {
     return @Result;
 }
 
+=item CalendarUpdate()
+
+updates an existing calendar.
+
+    my $Success = $CalendarObject->CalendarUpdate(
+        CalendarID  => 1,                   # (required) CalendarID
+        Name        => 'Meetings',          # (required) Personal calendar name
+        OwnerID     => 2,                   # (required) Calendar owner UserID
+        UserID      => 4,                   # (required) UserID (who made update)
+    );
+
+returns 1 if successful:
+
+=cut
+
+sub CalendarUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID Name UserID OwnerID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $SQL = '
+        UPDATE calendar
+        SET user_id=?, name=?, change_time=current_timestamp, change_by=?
+        WHERE CalendarID=?
+    ';
+
+    # create db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{OwnerID}, \$Param{Name}, \$Param{UserID}, \$Param{CalendarID},
+        ],
+    );
+
+    return 1;
+}
+
 1;
 
 =back

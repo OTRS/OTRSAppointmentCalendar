@@ -418,7 +418,8 @@ sub AppointmentUpdate {
             \$Param{CalendarID}, \$Param{Title}, \$Param{Description}, \$Param{Location}, \$Param{StartTime},
             \$Param{EndTime},
             \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil}, \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay}, \$Param{UserID}
+            \$Param{RecurrenceUntil}, \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay}, \$Param{UserID},
+            \$Param{AppointmentID}
         ],
     );
 
