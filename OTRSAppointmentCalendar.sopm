@@ -83,5 +83,31 @@
                 <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <TableCreate Name="calendar_appointment">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="calendar_id" Required="true" Type="BIGINT"/>
+            <Column Name="title" Required="true" Size="255" Type="VARCHAR"/>
+            <Column Name="description" Required="true" Size="3800" Type="VARCHAR"/>
+            <Column Name="location" Required="false" Size="255" Type="VARCHAR"/>
+            <Column Name="start_time" Required="true" Type="DATE"/>
+            <Column Name="end_time" Type="DATE"/>
+            <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
+            <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
+            <Column Name="recur_count" Type="INTEGER"/>
+            <Column Name="recur_interval" Type="INTEGER"/>
+            <Column Name="recur_until" Type="DATE"/>
+            <Column Name="recur_bymonth" Type="SMALLINT"/>
+            <Column Name="recur_byday" Type="SMALLINT"/>
+            <Column Name="create_time" Type="DATE"/>
+            <Column Name="create_by" Type="INTEGER"/>
+            <Column Name="change_time" Type="DATE"/>
+            <Column Name="change_by" Type="INTEGER"/>
+            <Unique Name="calendar_appointment_id">
+                <UniqueColumn Name="id"/>
+            </Unique>
+            <ForeignKey ForeignTable="calendar">
+                <Reference Local="calendar_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
     </DatabaseInstall>
 </otrs_package>
