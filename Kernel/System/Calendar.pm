@@ -59,7 +59,7 @@ creates a new calendar for given user.
         UserID  => 4,                   # (required) UserID
     );
 
-returns CalendarID if successful:
+returns Calendar hash if successful:
     %Calendar = (
         CalendarID   = 2,
         UserID       = 4,
