@@ -24,25 +24,26 @@ $Kernel::OM->ObjectParamAdd(
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # This will be ok
-my %Calendar1 = $CalendarObject->CalendarCreate(
+my $Calendar1 = $CalendarObject->CalendarCreate(
     Name   => 'Test calendar',
     UserID => 1,
 );
 
 $Self->True(
-    %Calendar1,
+    \$Calendar1,
     'CalendarCreate("Test calendar", 1)',
 );
 
 # Try with same name
-my %Calendar2 = $CalendarObject->CalendarCreate(
+my $Calendar2 = $CalendarObject->CalendarCreate(
     Name   => 'Test calendar',
     UserID => 1,
 );
 
-$Self->Fail(
-    %Calendar2,
-    'CalendarCreate("Test calendar", 1)',
+$Self->Is(
+    $Calendar2,
+    undef,
+    'CalendarCreate("Test calendar", 1) again same name',
 );
 
 1;
