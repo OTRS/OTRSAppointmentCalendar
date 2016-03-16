@@ -60,7 +60,7 @@ sub new {
 
 creates a new appointment.
 
-    my $Success = $AppointmentObject->AppointmentCreate(
+    my $AppointmentID = $AppointmentObject->AppointmentCreate(
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (required) Description
@@ -77,8 +77,7 @@ creates a new appointment.
         UserID              => 1,                                       # (required) UserID
     );
 
-returns 1 if successful:
-    $Success = 1;
+returns AppointmentID if successful
 
 =cut
 
@@ -162,7 +161,21 @@ sub AppointmentCreate {
         ],
     );
 
-    return 1;
+    # get appointment id
+    my $AppointmentID = $Self->_AppointmentGetID(
+        UniqueID => $UniqueID,
+    );
+
+    # return if there is not article created
+    if ( !$AppointmentID ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Can\'t get AppointmentID from INSERT!',
+        );
+        return;
+    }
+
+    return $AppointmentID;
 }
 
 =item AppointmentList()
@@ -440,6 +453,10 @@ sub AppointmentUpdate {
     return 1;
 }
 
+=begin Internal:
+
+=cut
+
 sub _GetUniqueID {
     my ( $Self, %Param ) = @_;
 
@@ -478,6 +495,42 @@ sub _GetUniqueID {
     return "$StartTimeStrg-$Hash\@$FQDN";
 }
 
+sub _AppointmentGetId {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(UniqueID)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # sql query
+    my @Bind = ( \$Param{UniqueID} );
+    my $SQL  = 'SELECT id FROM calendar_appointment WHERE unique_id = ? ORDER BY id DESC';
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # start query
+    return if !$DBObject->Prepare(
+        SQL   => $SQL,
+        Bind  => \@Bind,
+        Limit => 1,
+    );
+
+    my $ID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $ID = $Row[0];
+    }
+
+    return $ID;
+}
+
 1;
 
 =back
@@ -488,6 +541,4 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
-did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
-
-=cut
+did not
