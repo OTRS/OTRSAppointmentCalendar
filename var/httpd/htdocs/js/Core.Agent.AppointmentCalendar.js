@@ -100,7 +100,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
                 // return true;
             },
             events: Params.Events,
@@ -112,7 +112,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     JSEvent: JSEvent,
                     View: View
                 };
-                OpenEditDialog(Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
                 return false;
             }
         });
@@ -134,6 +134,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @function
+     * @param {Integer} CalendarID - ID of the calendar user is editing
      * @param {String} Action - Action which is used in framework right now.
      * @param {String} Subaction - Subaction which is used in framework right now.
      * @param {Object} DialogText - Hash with dialog text translations.
@@ -141,7 +142,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @description
      *      This function open the add appointment dialog after selecting a time period.
      */
-    function OpenEditDialog(Action, Subaction, DialogText, AppointmentData) {
+    function OpenEditDialog(CalendarID, Action, Subaction, DialogText, AppointmentData) {
         var Data;
 
         if (!Action) {
@@ -149,10 +150,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         if (!Subaction) {
-            Subaction = 'AJAX';
+            Subaction = 'AJAXMask';
         }
 
         Data = {
+            CalendarID: CalendarID,
             Action: Action,
             Subaction: Subaction,
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,

@@ -495,7 +495,7 @@ sub _GetUniqueID {
     return "$StartTimeStrg-$Hash\@$FQDN";
 }
 
-sub _AppointmentGetId {
+sub _AppointmentGetID {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff

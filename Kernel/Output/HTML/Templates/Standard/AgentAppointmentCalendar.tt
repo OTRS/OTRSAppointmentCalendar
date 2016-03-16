@@ -66,6 +66,7 @@ $('#CalendarID').bind('change', function(){
 });
 
 Core.Agent.AppointmentCalendar.Init({
+    CalendarID: $('#CalendarID').val(),
     AllDayText: [% Translate("All-day") | JSON %],
     IsRTL: [% Data.IsRTLLanguage %],
     MonthNames: [

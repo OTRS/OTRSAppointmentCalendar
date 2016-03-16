@@ -126,7 +126,7 @@ sub Run {
         TemplateFile => 'AgentAppointmentCalendar',
         Data         => {
             EditAction    => 'AgentAppointmentEdit',
-            EditSubaction => 'AJAX',
+            EditSubaction => 'EditMask',
             FirstDay      => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
             IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
             %Param,

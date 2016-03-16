@@ -6,11 +6,12 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-[% RenderBlockStart("AJAX") %]
+[% RenderBlockStart("EditMask") %]
 <div class="InnerContent">
     <form action="[% Env("CGIHandle") %]" method="post" id="EditAppointmentForm">
         <input type="hidden" name="Action" value="[% Env("Action") %]" id="AgentAppointmentEdit"/>
         <input type="hidden" name="Subaction" value="Store"/>
+        <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
         <input type="hidden" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic info") | html %]</span></legend>
@@ -54,72 +55,112 @@
 // Initialize appointment ID
 var $AppointmentID = $('input[name="AppointmentID"]'),
     AppointmentID = $AppointmentID.val(),
-    CalEvent = null;
-
-if (AppointmentID == '') {
-
-    // Generate an ID
-    // TODO: proper callback with stored ID
-    AppointmentID = Core.UI.GetID($AppointmentID);
-    $AppointmentID.val(AppointmentID);
-} else {
-
-    // Try to find the existing event with the same ID
-    if ($('#calendar').fullCalendar('clientEvents', AppointmentID).length > 0) {
-        CalEvent = $('#calendar').fullCalendar('clientEvents', AppointmentID)[0];
-    }
-}
+    Data,
+    CalEvent;
 
 // Bind button actions
 $('#EditFormSubmit').bind('click', function() {
 
-    // Edit screen
-    if (CalEvent) {
-        CalEvent.title = $('input[name="Title"]').val();
-        CalEvent.Description = $('textarea[name="Description"]').val();
-        CalEvent.Location = $('input[name="Location"]').val();
-        CalEvent.start = $.fullCalendar.moment()
-            .year(parseInt($('#StartYear').val(), 10))
-            .month(parseInt($('#StartMonth').val(), 10) - 1)
-            .date(parseInt($('#StartDay').val(), 10))
-            .hour(parseInt($('#StartHour').val(), 10))
-            .minute(parseInt($('#StartMinute').val(), 10));
-        CalEvent.end = $.fullCalendar.moment()
-            .year(parseInt($('#EndYear').val(), 10))
-            .month(parseInt($('#EndMonth').val(), 10) - 1)
-            .date(parseInt($('#EndDay').val(), 10))
-            .hour(parseInt($('#EndHour').val(), 10))
-            .minute(parseInt($('#EndMinute').val(), 10));
-        $('#calendar').fullCalendar('updateEvent', CalEvent);
-    }
+    Data = {
+        CalendarID: [% Data.CalendarID | JSON %],
+        Title: $('input[name="Title"]').val(),
+        Description: $('textarea[name="Description"]').val(),
+        Location: $('input[name="Location"]').val(),
+        StartYear: $('#StartYear').val(),
+        StartMonth: $('#StartMonth').val(),
+        StartDay: $('#StartDay').val(),
+        StartHour: $('#StartHour').val(),
+        StartMinute: $('#StartMinute').val(),
+        EndYear: $('#EndYear').val(),
+        EndMonth: $('#EndMonth').val(),
+        EndDay: $('#EndDay').val(),
+        EndHour: $('#EndHour').val(),
+        EndMinute: $('#EndMinute').val()
+    };
 
     // Add screen
-    else {
-        $('#calendar').fullCalendar('renderEvent',
-            {
-                id: $AppointmentID.val(),
-                title: $('input[name="Title"]').val(),
-                Description: $('textarea[name="Description"]').val(),
-                Location: $('input[name="Location"]').val(),
-                start: $.fullCalendar.moment()
-                    .year(parseInt($('#StartYear').val(), 10))
-                    .month(parseInt($('#StartMonth').val(), 10) - 1)
-                    .date(parseInt($('#StartDay').val(), 10))
-                    .hour(parseInt($('#StartHour').val(), 10))
-                    .minute(parseInt($('#StartMinute').val(), 10)),
-                end: $.fullCalendar.moment()
-                    .year(parseInt($('#EndYear').val(), 10))
-                    .month(parseInt($('#EndMonth').val(), 10) - 1)
-                    .date(parseInt($('#EndDay').val(), 10))
-                    .hour(parseInt($('#EndHour').val(), 10))
-                    .minute(parseInt($('#EndMinute').val(), 10)),
-            },
-            true
+    if (AppointmentID == '') {
+
+        Data.Action = 'AgentAppointmentEdit';
+        Data.Subaction = 'AddAppointment';
+
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+                if (Response.AppointmentID) {
+                    $('#calendar').fullCalendar('renderEvent',
+                        {
+                            id: Response.AppointmentID,
+                            CalendarID: Response.CalendarID,
+                            title: $('input[name="Title"]').val(),
+                            Description: $('textarea[name="Description"]').val(),
+                            Location: $('input[name="Location"]').val(),
+                            start: $.fullCalendar.moment()
+                                .year(parseInt($('#StartYear').val(), 10))
+                                .month(parseInt($('#StartMonth').val(), 10) - 1)
+                                .date(parseInt($('#StartDay').val(), 10))
+                                .hour(parseInt($('#StartHour').val(), 10))
+                                .minute(parseInt($('#StartMinute').val(), 10)),
+                            end: $.fullCalendar.moment()
+                                .year(parseInt($('#EndYear').val(), 10))
+                                .month(parseInt($('#EndMonth').val(), 10) - 1)
+                                .date(parseInt($('#EndDay').val(), 10))
+                                .hour(parseInt($('#EndHour').val(), 10))
+                                .minute(parseInt($('#EndMinute').val(), 10)),
+                        },
+                        true
+                    );
+
+                    // Close the dialog
+                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                }
+            }
         );
+
     }
 
-    // Close the dialog
-    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+    // Edit screen
+    else {
+
+        Data.Action = 'AgentAppointmentEdit';
+        Data.Subaction = 'EditAppointment';
+        Data.AppointmentID = AppointmentID;
+
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+                if (Response.Success) {
+                    if ($('#calendar').fullCalendar('clientEvents', AppointmentID).length > 0) {
+                        CalEvent = $('#calendar').fullCalendar('clientEvents', AppointmentID)[0];
+
+                        CalEvent.title = $('input[name="Title"]').val();
+                        CalEvent.Description = $('textarea[name="Description"]').val();
+                        CalEvent.Location = $('input[name="Location"]').val();
+                        CalEvent.start = $.fullCalendar.moment()
+                            .year(parseInt($('#StartYear').val(), 10))
+                            .month(parseInt($('#StartMonth').val(), 10) - 1)
+                            .date(parseInt($('#StartDay').val(), 10))
+                            .hour(parseInt($('#StartHour').val(), 10))
+                            .minute(parseInt($('#StartMinute').val(), 10));
+                        CalEvent.end = $.fullCalendar.moment()
+                            .year(parseInt($('#EndYear').val(), 10))
+                            .month(parseInt($('#EndMonth').val(), 10) - 1)
+                            .date(parseInt($('#EndDay').val(), 10))
+                            .hour(parseInt($('#EndHour').val(), 10))
+                            .minute(parseInt($('#EndMinute').val(), 10));
+                        $('#calendar').fullCalendar('updateEvent', CalEvent);
+                    }
+
+                    // Close the dialog
+                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                }
+            }
+        );
+
+    }
+
 });
 
 // Close the dialog
@@ -128,4 +169,4 @@ $('#EditFormCancel').bind('click', function() {
 });
 
 //]]></script>
-[% RenderBlockEnd("AJAX") %]
+[% RenderBlockEnd("EditMask") %]
