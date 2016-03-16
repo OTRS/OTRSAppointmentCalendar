@@ -38,7 +38,7 @@ sub Run {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     for my $Key (
-        qw(Title Description Location
+        qw(AppointmentID Title Description Location
         StartYear StartMonth StartDay StartHour StartMinute
         EndYear EndMonth EndDay EndHour EndMinute
         )
@@ -88,7 +88,7 @@ sub Run {
             Data         => {
                 %Param,
                 %GetParam,
-                }
+            },
         );
         return $LayoutObject->Attachment(
             NoCache     => 1,

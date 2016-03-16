@@ -127,7 +127,7 @@ Core.Agent.AppointmentCalendar.Init({
     },
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
-        EditSubaction: [% Data.EditSubaction | JSON %],
+        EditSubaction: [% Data.EditSubaction | JSON %]
     }
 });
 

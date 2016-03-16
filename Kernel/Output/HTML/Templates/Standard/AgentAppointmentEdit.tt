@@ -51,29 +51,78 @@
 
 <script type="text/javascript">//<![CDATA[
 
-// bind button actions
+// Initialize appointment ID
+var $AppointmentID = $('input[name="AppointmentID"]'),
+    AppointmentID = $AppointmentID.val(),
+    CalEvent = null;
+
+if (AppointmentID == '') {
+
+    // Generate an ID
+    // TODO: proper callback with stored ID
+    AppointmentID = Core.UI.GetID($AppointmentID);
+    $AppointmentID.val(AppointmentID);
+} else {
+
+    // Try to find the existing event with the same ID
+    if ($('#calendar').fullCalendar('clientEvents', AppointmentID).length > 0) {
+        CalEvent = $('#calendar').fullCalendar('clientEvents', AppointmentID)[0];
+    }
+}
+
+// Bind button actions
 $('#EditFormSubmit').bind('click', function() {
-    $('#calendar').fullCalendar('renderEvent',
-        {
-            title: $('input[name="Title"]').val(),
-            start: $.fullCalendar.moment()
-                .year(parseInt($('#StartYear').val(), 10))
-                .month(parseInt($('#StartMonth').val(), 10) - 1)
-                .date(parseInt($('#StartDay').val(), 10))
-                .hour(parseInt($('#StartHour').val(), 10))
-                .minute(parseInt($('#StartMinute').val(), 10)),
-            end: $.fullCalendar.moment()
-                .year(parseInt($('#EndYear').val(), 10))
-                .month(parseInt($('#EndMonth').val(), 10) - 1)
-                .date(parseInt($('#EndDay').val(), 10))
-                .hour(parseInt($('#EndHour').val(), 10))
-                .minute(parseInt($('#EndMinute').val(), 10)),
-        },
-        true
-    );
+
+    // Edit screen
+    if (CalEvent) {
+        CalEvent.title = $('input[name="Title"]').val();
+        CalEvent.Description = $('textarea[name="Description"]').val();
+        CalEvent.Location = $('input[name="Location"]').val();
+        CalEvent.start = $.fullCalendar.moment()
+            .year(parseInt($('#StartYear').val(), 10))
+            .month(parseInt($('#StartMonth').val(), 10) - 1)
+            .date(parseInt($('#StartDay').val(), 10))
+            .hour(parseInt($('#StartHour').val(), 10))
+            .minute(parseInt($('#StartMinute').val(), 10));
+        CalEvent.end = $.fullCalendar.moment()
+            .year(parseInt($('#EndYear').val(), 10))
+            .month(parseInt($('#EndMonth').val(), 10) - 1)
+            .date(parseInt($('#EndDay').val(), 10))
+            .hour(parseInt($('#EndHour').val(), 10))
+            .minute(parseInt($('#EndMinute').val(), 10));
+        $('#calendar').fullCalendar('updateEvent', CalEvent);
+    }
+
+    // Add screen
+    else {
+        $('#calendar').fullCalendar('renderEvent',
+            {
+                id: $AppointmentID.val(),
+                title: $('input[name="Title"]').val(),
+                Description: $('textarea[name="Description"]').val(),
+                Location: $('input[name="Location"]').val(),
+                start: $.fullCalendar.moment()
+                    .year(parseInt($('#StartYear').val(), 10))
+                    .month(parseInt($('#StartMonth').val(), 10) - 1)
+                    .date(parseInt($('#StartDay').val(), 10))
+                    .hour(parseInt($('#StartHour').val(), 10))
+                    .minute(parseInt($('#StartMinute').val(), 10)),
+                end: $.fullCalendar.moment()
+                    .year(parseInt($('#EndYear').val(), 10))
+                    .month(parseInt($('#EndMonth').val(), 10) - 1)
+                    .date(parseInt($('#EndDay').val(), 10))
+                    .hour(parseInt($('#EndHour').val(), 10))
+                    .minute(parseInt($('#EndMinute').val(), 10)),
+            },
+            true
+        );
+    }
+
+    // Close the dialog
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });
 
+// Close the dialog
 $('#EditFormCancel').bind('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });

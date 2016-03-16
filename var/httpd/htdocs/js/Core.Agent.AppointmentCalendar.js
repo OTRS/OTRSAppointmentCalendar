@@ -92,18 +92,29 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     ]
                 }
             },
-            select: function(Start, End, Event, View, Resource) {
+            select: function(Start, End, JSEvent, View, Resource) {
                 var Data = {
                     Start: Start,
                     End: End,
-                    Event: Event,
+                    JSEvent: JSEvent,
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params.AddAction, Params.AddSubaction, Params.DialogText, Data);
-                return true;
+                OpenEditDialog(Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                // return true;
             },
-            events: Params.Events
+            events: Params.Events,
+            eventClick: function(CalEvent, JSEvent, View) {
+                var Data = {
+                    Start: CalEvent.start,
+                    End: CalEvent.end,
+                    CalEvent: CalEvent,
+                    JSEvent: JSEvent,
+                    View: View
+                };
+                OpenEditDialog(Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                return false;
+            }
         });
     };
 
@@ -144,6 +155,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         Data = {
             Action: Action,
             Subaction: Subaction,
+            AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
+            Title: AppointmentData.CalEvent ? AppointmentData.CalEvent.title : null,
+            Description: AppointmentData.CalEvent ? AppointmentData.CalEvent.Description : null,
+            Location: AppointmentData.CalEvent ? AppointmentData.CalEvent.Location : null,
             StartYear: AppointmentData.Start.year(),
             StartMonth: AppointmentData.Start.month() + 1,
             StartDay: AppointmentData.Start.date(),
