@@ -11,9 +11,12 @@ package Kernel::System::Calendar::Appointment;
 use strict;
 use warnings;
 
+use Digest::MD5;
+
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Time',
@@ -102,6 +105,13 @@ sub AppointmentCreate {
     );
     return if !$StartTimeSystem;
 
+    # generate a UniqueID
+    my $UniqueID = $Self->_GetUniqueID(
+        CalendarID => $Param{CalendarID},
+        StartTime  => $StartTimeSystem,
+        UserID     => $Param{UserID},
+    );
+
     # Check EndTime
     if ( $Param{EndTime} ) {
         my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
@@ -134,20 +144,21 @@ sub AppointmentCreate {
 
     my $SQL = '
         INSERT INTO calendar_appointment
-            (calendar_id, title, description, location, start_time, end_time, timezone_id, recur_freq, recur_count,
-                recur_interval, recur_until, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)
+            (calendar_id, unique_id, title, description, location, start_time, end_time,
+            timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
+            recur_byday, create_time, create_by, change_time, change_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)
     ';
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title}, \$Param{Description}, \$Param{Location}, \$Param{StartTime},
-            \$Param{EndTime},
-            \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil},
-            \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay}, \$Param{UserID}, \$Param{UserID}
+            \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
+            \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{TimezoneID},
+            \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},   \$Param{RecurrenceInterval},
+            \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},
+            \$Param{UserID},              \$Param{UserID}
         ],
     );
 
@@ -238,13 +249,14 @@ sub AppointmentList {
 get Appointment.
 
     my %Appointment = $AppointmentObject->AppointmentGet(
-        AppointmentID          => 1,                            # (required)
+        AppointmentID => 1,                               # (required)
     );
 
 returns a hash:
     %Appointment = (
         ID                  => 1,
         CalendarID          => 1,
+        UniqueID            => '20160101T160000-71E386@localhost',
         Title               => 'Webinar',
         Description         => 'How to use Process tickets...',
         Location            => 'Straubing',
@@ -284,9 +296,9 @@ sub AppointmentGet {
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     my $SQL = '
-        SELECT id, calendar_id, title, description, location, start_time, end_time, timezone_id,
-            recur_freq, recur_count, recur_interval, recur_until, recur_bymonth, recur_byday,
-            create_time, create_by, change_time, change_by
+        SELECT id, calendar_id, unique_id, title, description, location, start_time, end_time,
+            timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
+            recur_byday, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE id=?
     ';
@@ -302,22 +314,23 @@ sub AppointmentGet {
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result{ID}                  = $Row[0];
         $Result{CalendarID}          = $Row[1];
-        $Result{Title}               = $Row[2];
-        $Result{Description}         = $Row[3];
-        $Result{Location}            = $Row[4];
-        $Result{StartTime}           = $Row[5];
-        $Result{EndTime}             = $Row[6];
-        $Result{TimezoneID}          = $Row[7];
-        $Result{RecurrenceFrequency} = $Row[8];
-        $Result{RecurrenceCount}     = $Row[9];
-        $Result{RecurrenceInterval}  = $Row[10];
-        $Result{RecurrenceUntil}     = $Row[11];
-        $Result{RecurrenceByMonth}   = $Row[12];
-        $Result{RecurrenceByDay}     = $Row[13];
-        $Result{CreateTime}          = $Row[14];
-        $Result{CreateBy}            = $Row[15];
-        $Result{ChangeTime}          = $Row[16];
-        $Result{ChangeBy}            = $Row[17];
+        $Result{UniqueID}            = $Row[2];
+        $Result{Title}               = $Row[3];
+        $Result{Description}         = $Row[4];
+        $Result{Location}            = $Row[5];
+        $Result{StartTime}           = $Row[6];
+        $Result{EndTime}             = $Row[7];
+        $Result{TimezoneID}          = $Row[8];
+        $Result{RecurrenceFrequency} = $Row[9];
+        $Result{RecurrenceCount}     = $Row[10];
+        $Result{RecurrenceInterval}  = $Row[11];
+        $Result{RecurrenceUntil}     = $Row[12];
+        $Result{RecurrenceByMonth}   = $Row[13];
+        $Result{RecurrenceByDay}     = $Row[14];
+        $Result{CreateTime}          = $Row[15];
+        $Result{CreateBy}            = $Row[16];
+        $Result{ChangeTime}          = $Row[17];
+        $Result{ChangeBy}            = $Row[18];
     }
 
     return %Result;
@@ -406,8 +419,9 @@ sub AppointmentUpdate {
     my $SQL = '
         UPDATE calendar_appointment
         SET
-            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, timezone_id=?, recur_freq=?, recur_count=?,
-            recur_interval=?, recur_until=?, recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
+            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?,
+            timezone_id=?, recur_freq=?, recur_count=?, recur_interval=?, recur_until=?,
+            recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -415,15 +429,53 @@ sub AppointmentUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title}, \$Param{Description}, \$Param{Location}, \$Param{StartTime},
-            \$Param{EndTime},
-            \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil}, \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay}, \$Param{UserID},
+            \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
+            \$Param{StartTime},  \$Param{EndTime}, \$Param{TimezoneID},  \$Param{RecurrenceFrequency},
+            \$Param{RecurrenceCount},   \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+            \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},    \$Param{UserID},
             \$Param{AppointmentID}
         ],
     );
 
     return 1;
+}
+
+sub _GetUniqueID {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID StartTime UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # calculate a hash
+    my $CurrentTimestamp = $TimeObject->CurrentTimestamp();
+    my $String           = "$Param{CalendarID}-$CurrentTimestamp-$Param{UserID}";
+    my $Digest           = unpack( 'N', Digest::MD5->new()->add($String)->digest() );
+    my $DigestHex        = sprintf( '%x', $Digest );
+    my $Hash             = uc( sprintf( "%.6s", $DigestHex ) );
+
+    # prepare start timestamp for UniqueID
+    my $StartTimeStrg = $TimeObject->SystemTime2TimeStamp(
+        SystemTime => $Param{StartTime},
+    );
+    $StartTimeStrg =~ s/[-:]//g;
+    $StartTimeStrg =~ s/\s/T/;
+
+    # get system FQDN
+    my $FQDN = $Kernel::OM->Get('Kernel::Config')->Get('FQDN');
+
+    # return UniqueID
+    return "$StartTimeStrg-$Hash\@$FQDN";
 }
 
 1;

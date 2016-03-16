@@ -90,6 +90,7 @@
         <TableCreate Name="calendar_appointment">
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
             <Column Name="calendar_id" Required="true" Type="BIGINT"/>
+            <Column Name="unique_id" Required="true" Size="255" Type="VARCHAR"/>
             <Column Name="title" Required="true" Size="255" Type="VARCHAR"/>
             <Column Name="description" Required="true" Size="3800" Type="VARCHAR"/>
             <Column Name="location" Required="false" Size="255" Type="VARCHAR"/>
@@ -114,4 +115,8 @@
             </ForeignKey>
         </TableCreate>
     </DatabaseInstall>
+    <DatabaseUninstall Type="pre">
+        <TableDrop Name="calendar_appointment"/>
+        <TableDrop Name="calendar"/>
+    </DatabaseUninstall>
 </otrs_package>
