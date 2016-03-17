@@ -16,11 +16,18 @@
                 <h2>[% Translate("Actions") | html %]</h2>
             </div>
             <div class="Content">
+
                 <ul class="ActionList">
                     <li>
+[% IF Data.Overview %]
                         <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendar" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
                             <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
                         </a>
+[% ELSE %]
+                        <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
+                            <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
+                        </a>
+[% END %]
                     </li>
 [% RenderBlockStart("AddLink") %]
                     <li>

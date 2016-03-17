@@ -77,7 +77,7 @@ sub Run {
                     Subaction => 'StoreNew',
                 },
             );
-            return _Mask(%Param);
+            return $Self->_Mask(%Param);
         }
 
         # create calendar
@@ -131,10 +131,11 @@ sub Run {
             );
         }
 
-        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Calendars");
+        $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
+        $Param{Overview} = 1;
     }
 
-    return _Mask(%Param);
+    return $Self->_Mask(%Param);
 }
 
 sub _Mask {
@@ -149,7 +150,7 @@ sub _Mask {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarManage',
         Data         => {
-            %Param
+            %Param,
         },
     );
     $Output .= $LayoutObject->Footer();
