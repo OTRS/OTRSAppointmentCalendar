@@ -104,12 +104,9 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label>[% Translate("Valid") | html %]:</label>
+                        <label>[% Translate("Validity") | html %]:</label>
                         <div class="Field">
-                            <select name="ValidID" id="ValidID" class="W95pc Modernize">
-                                <option value="1">[% Translate("Valid") | html %]</option>
-                                <option value="0">[% Translate("Invalid") | html %]</option>
-                            </select>
+                            [% Data.ValidID %]
                         </div>
                         <div class="Clear"></div>
 

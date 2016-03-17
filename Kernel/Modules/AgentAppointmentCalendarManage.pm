@@ -31,12 +31,26 @@ sub Run {
     # get needed objects
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $ValidObject    = $Kernel::OM->Get('Kernel::System::Valid');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     if ( $Self->{Subaction} eq 'New' ) {
+
+        my %Valid          = $ValidObject->ValidList();
+        my $ValidSelection = $LayoutObject->BuildSelection(
+            Data  => \%Valid,
+            Name  => 'ValidID',
+            ID    => 'ValidID',
+            Class => 'W75pc Modernize',
+
+            SelectedID => 1,
+            Title      => Translatable("Valid"),
+        );
+
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
+                ValidID   => $ValidSelection,
                 Subaction => 'StoreNew',
             },
         );
