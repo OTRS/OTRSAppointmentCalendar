@@ -61,21 +61,23 @@ sub Run {
             );
 
             if (%Calendar) {
-                $Error{'CalendarNameInvalid'} = "ExistsError";
+                $Error{CalendarNameInvalid} = "ServerError";
+                $Error{CalendarNameExists}  = 1;
             }
         }
 
         if (%Error) {
+            $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
+
             $LayoutObject->Block(
-                Title => $LayoutObject->{LanguageObject}->Translate("Add new Calendar"),
-                Name  => 'CalendarEdit',
-                Data  => {
+                Name => 'CalendarEdit',
+                Data => {
                     %Error,
                     %GetParam,
                     Subaction => 'StoreNew',
                 },
             );
-            return _Mask();
+            return _Mask(%Param);
         }
 
         # create calendar

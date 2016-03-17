@@ -85,7 +85,11 @@
                             <input type="text" id="CalendarName" name="CalendarName" value="[% Data.CalendarName | html %]"
                                 class="W95pc Validate_Required [% Data.CalendarNameInvalid | html %]" />
                             <div id="CalendarNameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+[% IF Data.CalendarNameExists %]
+                            <div id="CalendarNameServerError" class="TooltipErrorMessage"><p>[% Translate("Calendar with same name already exists.") | html %]</p></div>
+[% ELSE %]
                             <div id="CalendarNameServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+[% END %]
                         </div>
                         <div class="Clear"></div>
 
