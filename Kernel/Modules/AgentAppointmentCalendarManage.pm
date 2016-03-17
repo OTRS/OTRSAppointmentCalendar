@@ -33,22 +33,50 @@ sub Run {
     my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    if ( $Self->{Subaction} eq 'CalendarAdd' ) {
+    my $Title;
 
-    }
-
-    # get all user's calendars
-    my @Calendars = $CalendarObject->CalendarList(
-        UserID => $Self->{UserID},
-    );
-
-    for my $Calendar (@Calendars) {
+    if ( $Self->{Subaction} eq 'New' ) {
         $LayoutObject->Block(
-            Name => 'Calendar',
+            Name => 'CalendarEdit',
             Data => {
-                %{$Calendar},
             },
         );
+        $Title = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
+    }
+    else {
+
+        # get all user's calendars
+        my @Calendars = $CalendarObject->CalendarList(
+            UserID => $Self->{UserID},
+        );
+
+        $LayoutObject->Block(
+            Name => 'AddLink',
+            Data => {
+            },
+        );
+        $LayoutObject->Block(
+            Name => 'ExportLink',
+            Data => {
+            },
+        );
+
+        $LayoutObject->Block(
+            Name => 'Overview',
+            Data => {
+            },
+        );
+
+        for my $Calendar (@Calendars) {
+            $LayoutObject->Block(
+                Name => 'Calendar',
+                Data => {
+                    %{$Calendar},
+                },
+            );
+        }
+
+        $Title = $LayoutObject->{LanguageObject}->Translate("Calendars");
     }
 
     # output page
@@ -57,7 +85,7 @@ sub Run {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarManage',
         Data         => {
-
+            Title => $Title,
         },
     );
     $Output .= $LayoutObject->Footer();

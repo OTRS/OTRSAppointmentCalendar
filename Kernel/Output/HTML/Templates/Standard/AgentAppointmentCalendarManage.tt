@@ -17,6 +17,25 @@
             </div>
             <div class="Content">
                 <ul class="ActionList">
+                    <li>
+                        <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendar" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
+                            <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
+                        </a>
+                    </li>
+[% RenderBlockStart("AddLink") %]
+                    <li>
+                        <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=New" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-plus-square"></i>[% Translate("Add new calendar") | html %]</span>
+                        </a>
+                    </li>
+[% RenderBlockEnd("AddLink") %]
+[% RenderBlockStart("ExportLink") %]
+                    <li>
+                        <a href="#" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-download"></i>[% Translate("Export calendar") | html %]</span>
+                        </a>
+                    </li>
+[% RenderBlockEnd("ExportLink") %]
                 </ul>
             </div>
         </div>
@@ -25,11 +44,11 @@
     <div class="ContentColumn">
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Translate("Calendars") | html %]</h2>
+                <h2>[% Data.Title | html %]</h2>
             </div>
 
-#[% RenderBlockStart("OverviewResult") %]
             <div class="Content">
+[% RenderBlockStart("Overview") %]
                 <table class="DataTable" id="User">
                     <thead>
                         <tr>
@@ -50,10 +69,45 @@
 [% RenderBlockEnd("Calendar") %]
                     </tbody>
                 </table>
+[% RenderBlockEnd("Overview") %]
+[% RenderBlockStart("CalendarEdit") %]
+                <form action="[% Env("CGIHandle") %]" method="post" name="CalendarFrom" id="CalendarFrom" class="Validate PreventMultipleSubmits">
+                    <input type="hidden" name="Action" value="[% Env("Action") %]" />
+                    <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]"/>
+                    <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
+                    <fieldset class="TableLike">
+                        <legend><span>[% Translate("Calendar") | html %]</span></legend>
+                        <label for="CalendarName" class="Mandatory">
+                            <span class="Marker">*</span>
+                            [% Translate("Calendar name") | html %]:
+                        </label>
+                        <div class="Field">
+                            <input type="text" id="CalendarName" name="CalendarName" value="[% Data.CalendarName | html %]" class="W95pc Validate_Required" />
+                            <div id="CalendarNameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="CalendarNameServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+                        <div class="Clear"></div>
+
+                        <label>[% Translate("Valid") | html %]:</label>
+                        <div class="Field">
+                            <select name="ValidID" id="ValidID" class="W95pc Modernize">
+                                <option value="1">[% Translate("Valid") | html %]</option>
+                                <option value="0">[% Translate("Invalid") | html %]</option>
+                            </select>
+                        </div>
+                        <div class="Clear"></div>
+
+                        <div class="Field SpacingTop">
+                            <button value="Save" type="submit" id="Submit" class="Primary">[% Translate("Save") | html %]</button>
+                            [% Translate("or") | html %]
+                            <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" title="[% Translate("Cancel") | html %]">
+                                <span>[% Translate("Cancel") | html %]</span>
+                            </a>
+                        </div>
+                    </fieldset>
+                </form>
+[% RenderBlockEnd("CalendarEdit") %]
             </div>
         </div>
     </div>
 </div>
-[% RenderBlockStart("EditMask") %]
-
-[% RenderBlockEnd("EditMask") %]
