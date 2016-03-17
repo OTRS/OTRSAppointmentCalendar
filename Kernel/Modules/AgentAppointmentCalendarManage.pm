@@ -133,6 +133,15 @@ sub Run {
         my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
             UserID => $Calendar{UserID},
         );
+
+        $LayoutObject->Block(
+            Name => 'CalendarEdit',
+            Data => {
+                %Calendar,
+                Subaction => 'Update',
+            },
+        );
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
     }
     else {
 
