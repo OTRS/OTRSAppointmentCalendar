@@ -17,9 +17,9 @@
             <div class="Content">
                 <ul class="ActionList">
                     <li>
-                        <button value="Add" type="button" class="CallForAction Fullsize Center" id="AddCalendar">
-                            <span><i class="fa fa-plus-square"></i>[% Translate("Add new calendar") | html %]</span>
-                        </button>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-calendar"></i>[% Translate("Manage Calendars") | html %]</span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -30,7 +30,7 @@
             </div>
             <div class="Content">
                 <p class="FieldExplanation">
-                    [% Translate("This is a sandbox page for the Appointment Calendar control. Feel free to experiment, you can't mess it up.") | html %]
+                    [% Translate("This is an overview page for the Appointment Calendar.") | html %]
                 </p>
             </div>
         </div>
@@ -145,33 +145,6 @@ Core.Agent.AppointmentCalendar.Init({
     }
 });
 
-$("button#AddCalendar").bind("click", function () {
-    Core.UI.Dialog.ShowContentDialog($('#CalendarAddDialog'), [% Translate("Add new calendar") | JSON %], '20px', 'Center', true, [
-        {
-            Label: [% Translate("Add") | JSON %],
-            Function: function () {
-                var Data = Core.AJAX.SerializeForm($('#CalendarDialogForm'));
-                Core.AJAX.FunctionCall(Core.Config.Get('CGIHandle'), Data, function (Response) {
-                    if (Response.CalendarID > 0) {
-                        location.reload();
-                    }
-                    if (Response.Error != null && Response.Error.ServerError != '') {
-                        alert(Response.Error.ServerError); // TODO: Add translated text in .tt file
-                    }
-                }, 'json');
-            },
-        },
-        {
-            Label: [% Translate("Cancel") | JSON %],
-            Function: function () {
-                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-                return false;
-            }
-        }
-    ]);
-    return false;
-});
-
 //]]></script>
 [% END %]
 
@@ -180,17 +153,4 @@ $("button#AddCalendar").bind("click", function () {
     </div>
     <div class="Clear"></div>
 
-    <div id="CalendarAddDialog" class="Hidden">
-        <form action="[% Env("CGIHandle") %]" method="post" id="CalendarDialogForm" name="CalendarDialogForm">
-            <input type="hidden" value="AgentAppointmentCalendar" name="Action"/>
-            <input type="hidden" value="CalendarAdd" name="Subaction"/>
-            <fieldset class="TableLike">
-                <label for="CalendarName" class="Mandatory"><span class="Marker">*</span>[% Translate("Calendar name") | html %]:</label>
-                <div class="Field">
-                    <input type="text" name="CalendarName" id="CalendarName" class="W75pc" />
-                </div>
-                <div class="Clear"></div>
-            </fieldset>
-        </form>
-    </div>
 </div>

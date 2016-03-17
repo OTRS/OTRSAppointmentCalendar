@@ -6,11 +6,10 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Appointment Calendar sandbox page.</Description>
+                <Description Translatable="1">Appointment Calendar overview page.</Description>
                 <Title Translatable="1">Calendar</Title>
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
-                    <Description Translatable="1">Sandbox page</Description>
                     <Name Translatable="1">Calendar</Name>
                     <Link>Action=AgentAppointmentCalendar</Link>
                     <LinkOption></LinkOption>
@@ -19,6 +18,17 @@
                     <Block>ItemArea</Block>
                     <AccessKey>c</AccessKey>
                     <Prio>75</Prio>
+                </NavBar>
+                <NavBar>
+                    <Description Translatable="1">Appointment Calendar overview page.</Description>
+                    <Name Translatable="1">Appointment Calendar Overview</Name>
+                    <Link>Action=AgentAppointmentCalendar</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>6000</Prio>
                 </NavBar>
                 <Loader>
                     <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
@@ -64,7 +74,18 @@
             <FrontendModuleReg>
                 <Description Translatable="1">Calendar manage screen.</Description>
                 <Title Translatable="1">Manage calendars</Title>
-                <NavBarName></NavBarName>
+                <NavBarName>Calendar</NavBarName>
+                <NavBar>
+                    <Description Translatable="1">Manage different calendars.</Description>
+                    <Name Translatable="1">Manage Calendars</Name>
+                    <Link>Action=AgentAppointmentCalendarManage</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>9000</Prio>
+                </NavBar>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
