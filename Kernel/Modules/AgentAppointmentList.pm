@@ -68,19 +68,18 @@ sub Run {
             my @Appointments;
 
             for my $AppointmentID (@AppointmentIDs) {
-                my %Appointment = $AppointmentObject->AppointmentGet(
+                my %AppointmentData = $AppointmentObject->AppointmentGet(
                     AppointmentID => $AppointmentID,
                 );
 
-                # rename some keys for compatibility reasons
-                $Appointment{id}    = $Appointment{ID};
-                $Appointment{start} = $Appointment{StartTime};
-                $Appointment{end}   = $Appointment{EndTime};
-                $Appointment{title} = $Appointment{Title};
-                delete $Appointment{ID};
-                delete $Appointment{StartTime};
-                delete $Appointment{EndTime};
-                delete $Appointment{Title};
+                my %Appointment = (
+                    id          => $AppointmentData{ID},
+                    start       => $AppointmentData{StartTime},
+                    end         => $AppointmentData{EndTime},
+                    title       => $AppointmentData{Title},
+                    Description => $AppointmentData{Description},
+                    Location    => $AppointmentData{Location},
+                );
 
                 push @Appointments, \%Appointment;
             }
