@@ -42,8 +42,14 @@ sub Run {
         UserID => $Self->{UserID},
     );
 
-    # get text direction from language object
-    my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
+    for my $Calendar (@Calendars) {
+        $LayoutObject->Block(
+            Name => 'Calendar',
+            Data => {
+                %{$Calendar},
+            },
+        );
+    }
 
     # output page
     my $Output = $LayoutObject->Header();

@@ -6,6 +6,54 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+    <h1 class="Header">[% Translate("Calendar Management") | html %]</h1>
+
+    <div class="SidebarColumn">
+
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="ContentColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Calendars") | html %]</h2>
+            </div>
+
+#[% RenderBlockStart("OverviewResult") %]
+            <div class="Content">
+                <table class="DataTable" id="User">
+                    <thead>
+                        <tr>
+                            <th>[% Translate("Name") | html %]</th>
+                            <th>[% Translate("Validity") | html %]</th>
+                            <th>[% Translate("Changed") | html %]</th>
+                            <th>[% Translate("Created") | html %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+[% RenderBlockStart("Calendar") %]
+                        <tr>
+                            <td><a href="#">[% Data.CalendarName | html %]</a></td>
+                            <td>[% Data.ValidID | html %]</td>
+                            <td>[% Data.ChangeTime | html %]</td>
+                            <td>[% Data.CreateTime | html %]</td>
+                        </tr>
+[% RenderBlockEnd("Calendar") %]
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 [% RenderBlockStart("EditMask") %]
 
 [% RenderBlockEnd("EditMask") %]
