@@ -72,11 +72,15 @@ sub Run {
                     AppointmentID => $AppointmentID,
                 );
 
-                # additional keys for compatibility reasons
+                # rename some keys for compatibility reasons
                 $Appointment{id}    = $Appointment{ID};
                 $Appointment{start} = $Appointment{StartTime};
                 $Appointment{end}   = $Appointment{EndTime};
                 $Appointment{title} = $Appointment{Title};
+                delete $Appointment{ID};
+                delete $Appointment{StartTime};
+                delete $Appointment{EndTime};
+                delete $Appointment{Title};
 
                 push @Appointments, \%Appointment;
             }

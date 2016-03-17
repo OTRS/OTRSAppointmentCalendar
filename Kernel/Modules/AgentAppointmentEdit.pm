@@ -39,7 +39,12 @@ sub Run {
 
     # get params
     my %GetParam;
+    PARAMNAME:
     for my $Key (@ParamNames) {
+
+        # skip the Action parameter, it's giving BuildDateSelection problems for some reason
+        next PARAMNAME if $Key eq 'Action';
+
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -54,28 +59,20 @@ sub Run {
 
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
-            Prefix      => 'Start',
-            StartYear   => $GetParam{StartYear},
-            StartMonth  => $GetParam{StartMonth},
-            StartDay    => $GetParam{StartDay},
-            StartHour   => $GetParam{StartHour},
-            StartMinute => $GetParam{StartMinute},
-            Format      => 'DateInputFormatLong',
-            Class       => $Param{Errors}->{DateInvalid},
-            Validate    => 1,
+            %GetParam,
+            Prefix   => 'Start',
+            Format   => 'DateInputFormatLong',
+            Class    => $Param{Errors}->{DateInvalid},
+            Validate => 1,
         );
 
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
-            Prefix    => 'End',
-            EndYear   => $GetParam{EndYear},
-            EndMonth  => $GetParam{EndMonth},
-            EndDay    => $GetParam{EndDay},
-            EndHour   => $GetParam{EndHour},
-            EndMinute => $GetParam{EndMinute},
-            Format    => 'DateInputFormatLong',
-            Class     => $Param{Errors}->{DateInvalid},
-            Validate  => 1,
+            %GetParam,
+            Prefix   => 'End',
+            Format   => 'DateInputFormatLong',
+            Class    => $Param{Errors}->{DateInvalid},
+            Validate => 1,
         );
 
         # html mask output
@@ -125,15 +122,13 @@ sub Run {
 
             # build JSON output
             my $JSON = '';
-            if ($AppointmentID) {
-                $JSON = $LayoutObject->JSONEncode(
-                    Data => {
-                        Success       => 1,
-                        CalendarID    => $GetParam{CalendarID},
-                        AppointmentID => $AppointmentID,
-                    },
-                );
-            }
+            $JSON = $LayoutObject->JSONEncode(
+                Data => {
+                    Success => $AppointmentID ? 1 : 0,
+                    CalendarID    => $GetParam{CalendarID},
+                    AppointmentID => $AppointmentID ? $AppointmentID : undef,
+                },
+            );
 
             # send JSON response
             return $LayoutObject->Attachment(
@@ -167,15 +162,13 @@ sub Run {
 
             # build JSON output
             my $JSON = '';
-            if ($Success) {
-                $JSON = $LayoutObject->JSONEncode(
-                    Data => {
-                        Success       => 1,
-                        CalendarID    => $GetParam{CalendarID},
-                        AppointmentID => $GetParam{AppointmentID},
-                    },
-                );
-            }
+            $JSON = $LayoutObject->JSONEncode(
+                Data => {
+                    Success       => $Success,
+                    CalendarID    => $GetParam{CalendarID},
+                    AppointmentID => $GetParam{AppointmentID},
+                },
+            );
 
             # send JSON response
             return $LayoutObject->Attachment(

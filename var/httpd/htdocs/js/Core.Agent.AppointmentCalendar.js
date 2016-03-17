@@ -100,7 +100,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditMaskSubaction, Params.DialogText, Data);
                 // return true;
             },
             events: Params.Events,
@@ -112,7 +112,31 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     JSEvent: JSEvent,
                     View: View
                 };
-                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Params.DialogText, Data);
+                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditMaskSubaction, Params.DialogText, Data);
+                return false;
+            },
+            eventDrop: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
+                var Data = {
+                    CalEvent: CalEvent,
+                    Delta: Delta,
+                    RevertFunc: RevertFunc,
+                    JSEvent: JSEvent,
+                    UI: UI,
+                    View: View
+                };
+                UpdateAppointment(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Data);
+                return false;
+            },
+            eventResize: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
+                var Data = {
+                    CalEvent: CalEvent,
+                    Delta: Delta,
+                    RevertFunc: RevertFunc,
+                    JSEvent: JSEvent,
+                    UI: UI,
+                    View: View
+                };
+                UpdateAppointment(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Data);
                 return false;
             }
         });
@@ -131,6 +155,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @private
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @function
@@ -191,6 +216,60 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Core.UI.InputFields.Activate($('.Dialog:visible'));
 
             }, 'html'
+        );
+    }
+
+    /**
+     * @private
+     * @name UpdateAppointment
+     * @memberof Core.Agent.AppointmentCalendar
+     * @function
+     * @param {Integer} CalendarID - ID of the calendar user is editing
+     * @param {String} Action - Action which is used in framework right now.
+     * @param {String} Subaction - Subaction which is used in framework right now.
+     * @param {Object} AppointmentData - Hash with appointment data.
+     * @description
+     *      This function updates the appointment with supplied data.
+     */
+    function UpdateAppointment(CalendarID, Action, Subaction, AppointmentData) {
+        var Data;
+
+        if (!Action) {
+            Action = 'AgentAppointmentEdit';
+        }
+
+        if (!Subaction) {
+            Subaction = 'EditAppointment';
+        }
+
+        Data = {
+            CalendarID: CalendarID,
+            Action: Action,
+            Subaction: Subaction,
+            AppointmentID: AppointmentData.CalEvent.id,
+            Title: AppointmentData.CalEvent.title,
+            Description: AppointmentData.CalEvent.Description,
+            Location: AppointmentData.CalEvent.Location,
+            StartYear: AppointmentData.CalEvent.start.year(),
+            StartMonth: AppointmentData.CalEvent.start.month() + 1,
+            StartDay: AppointmentData.CalEvent.start.date(),
+            StartHour: AppointmentData.CalEvent.start.hour(),
+            StartMinute: AppointmentData.CalEvent.start.minute(),
+            EndYear: AppointmentData.CalEvent.end.year(),
+            EndMonth: AppointmentData.CalEvent.end.month() + 1,
+            EndDay: AppointmentData.CalEvent.end.date(),
+            EndHour: AppointmentData.CalEvent.end.hour(),
+            EndMinute: AppointmentData.CalEvent.end.minute()
+        };
+
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+                if (!Response.Success) {
+                    AppointmentData.RevertFunc();
+                }
+            }
         );
     }
 

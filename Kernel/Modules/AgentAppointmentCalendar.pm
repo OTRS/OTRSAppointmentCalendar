@@ -125,10 +125,12 @@ sub Run {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendar',
         Data         => {
-            EditAction    => 'AgentAppointmentEdit',
-            EditSubaction => 'EditMask',
-            FirstDay      => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
-            IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
+            EditAction        => 'AgentAppointmentEdit',
+            EditMaskSubaction => 'EditMask',
+            EditSubaction     => 'EditAppointment',
+            AddSubaction      => 'AddAppointment',
+            FirstDay          => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
+            IsRTLLanguage     => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
             %Param,
         },
     );
