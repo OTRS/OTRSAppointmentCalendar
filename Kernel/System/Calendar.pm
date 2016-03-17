@@ -57,17 +57,19 @@ creates a new calendar for given user.
     my %Calendar = $CalendarObject->CalendarCreate(
         Name    => 'Meetings',          # (required) Personal calendar name
         UserID  => 4,                   # (required) UserID
+        ValidID => 1,                   # (optional) Default is 1.
     );
 
 returns Calendar hash if successful:
     %Calendar = (
-        CalendarID   = 2,
-        UserID       = 4,
-        CalendarName = 'Meetings',
-        CreateTime   = '2016-01-01 08:00:00',
-        CreateBy     = 4,
-        ChangeTime   = '2016-01-01 08:00:00',
-        ChangeBy     = 4,
+        CalendarID   => 2,
+        UserID       => 4,
+        CalendarName => 'Meetings',
+        CreateTime   => '2016-01-01 08:00:00',
+        CreateBy     => 4,
+        ChangeTime   => '2016-01-01 08:00:00',
+        ChangeBy     => 4,
+        ValidID      => 1,
     );
 
 =cut
@@ -86,6 +88,8 @@ sub CalendarCreate {
         }
     }
 
+    my $ValidID = defined $Param{ValidID} ? $Param{ValidID} : 1;
+
     my %Calendar = $Self->CalendarGet(
         Name   => $Param{Name},
         UserID => $Param{UserID},
@@ -96,15 +100,15 @@ sub CalendarCreate {
 
     my $SQL = '
         INSERT INTO calendar
-            (user_id, name, create_time, create_by, change_time, change_by)
-        VALUES (?, ?, current_timestamp, ?, current_timestamp, ?)
+            (user_id, name, create_time, create_by, change_time, change_by, valid_id)
+        VALUES (?, ?, current_timestamp, ?, current_timestamp, ?, ?)
     ';
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{UserID}, \$Param{Name}, \$Param{UserID}, \$Param{Name},
+            \$Param{UserID}, \$Param{Name}, \$Param{UserID}, \$Param{Name}, \$ValidID
         ],
     );
 
@@ -127,13 +131,14 @@ get calendar by name for given user.
 
 returns Calendar data:
     %Calendar = (
-        CalendarID   = 2,
-        UserID       = 3,
-        CalendarName = 'Meetings',
-        CreateTime   = '2016-01-01 08:00:00',
-        CreateBy     = 3,
-        ChangeTime   = '2016-01-01 08:00:00',
-        ChangeBy     = 3,
+        CalendarID   => 2,
+        UserID       => 3,
+        CalendarName => 'Meetings',
+        CreateTime   => '2016-01-01 08:00:00',
+        CreateBy     => 3,
+        ChangeTime   => '2016-01-01 08:00:00',
+        ChangeBy     => 3,
+        ValidID      => 1,
     );
 
 =cut
@@ -156,7 +161,7 @@ sub CalendarGet {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
-        SELECT id, user_id, name, create_time, create_by, change_time, change_by
+        SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
         FROM calendar
         WHERE
             name=? AND
@@ -179,6 +184,7 @@ sub CalendarGet {
         $Calendar{CreateBy}     = $Row[4];
         $Calendar{ChangeTime}   = $Row[5];
         $Calendar{ChangeBy}     = $Row[6];
+        $Calendar{ValidID}      = $Row[7];
     }
 
     return %Calendar;
@@ -189,28 +195,29 @@ sub CalendarGet {
 get calendar list.
 
     my @Result = $CalendarObject->CalendarList(
-        UserID  => 4,                   # (optional) Filter by User
+        UserID  => 4,               # (optional) Filter by User
+        ValidID => 1,               # (optional) Default 1.
     );
 
 returns:
     @Result = [
         {
-            CalendarID   = 2,
-            UserID       = 3,
-            CalendarName = 'Meetings',
-            CreateTime   = '2016-01-01 08:00:00',
-            CreateBy     = 3,
-            ChangeTime   = '2016-01-01 08:00:00',
-            ChangeBy     = 3,
+            CalendarID   => 2,
+            UserID       => 3,
+            CalendarName => 'Meetings',
+            CreateTime   => '2016-01-01 08:00:00',
+            CreateBy     => 3,
+            ChangeTime   => '2016-01-01 08:00:00',
+            ChangeBy     => 3,
         },
         {
-            CalendarID   = 3,
-            UserID       = 3,
-            CalendarName = 'Customer presentations',
-            CreateTime   = '2016-01-01 08:00:00',
-            CreateBy     = 3,
-            ChangeTime   = '2016-01-01 08:00:00',
-            ChangeBy     = 3,
+            CalendarID   => 3,
+            UserID       => 3,
+            CalendarName => 'Customer presentations',
+            CreateTime   => '2016-01-01 08:00:00',
+            CreateBy     => 3,
+            ChangeTime   => '2016-01-01 08:00:00',
+            ChangeBy     => 3,
         },
         ...
     ];
@@ -220,15 +227,19 @@ returns:
 sub CalendarList {
     my ( $Self, %Param ) = @_;
 
+    my $ValidID = defined $Param{ValidID} ? $Param{ValidID} : 1;
+
     # create needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
-        SELECT id, user_id, name, create_time, create_by, change_time, change_by
+        SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
         FROM calendar
         WHERE 1=1
+        valid_id=?
     ';
     my @Bind;
+    push @Bind, \$ValidID;
 
     if ( $Param{UserID} ) {
         $SQL .= 'AND user_id=? ';
@@ -251,6 +262,7 @@ sub CalendarList {
         $Calendar{CreateBy}     = $Row[4];
         $Calendar{ChangeTime}   = $Row[5];
         $Calendar{ChangeBy}     = $Row[6];
+        $Calendar{ValidID}      = $Row[7];
         push @Result, \%Calendar;
     }
 
@@ -266,6 +278,7 @@ updates an existing calendar.
         Name        => 'Meetings',          # (required) Personal calendar name
         OwnerID     => 2,                   # (required) Calendar owner UserID
         UserID      => 4,                   # (required) UserID (who made update)
+        ValidID     => 1,                   # (required) ValidID
     );
 
 returns 1 if successful:
@@ -276,7 +289,7 @@ sub CalendarUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID Name UserID OwnerID)) {
+    for my $Needed (qw(CalendarID Name UserID OwnerID ValidID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -288,7 +301,7 @@ sub CalendarUpdate {
 
     my $SQL = '
         UPDATE calendar
-        SET user_id=?, name=?, change_time=current_timestamp, change_by=?
+        SET user_id=?, name=?, change_time=current_timestamp, change_by=?, valid_id=?
         WHERE CalendarID=?
     ';
 
@@ -296,7 +309,7 @@ sub CalendarUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{OwnerID}, \$Param{Name}, \$Param{UserID}, \$Param{CalendarID},
+            \$Param{OwnerID}, \$Param{Name}, \$Param{UserID}, \$Param{CalendarID}, \$Param{ValidID}
         ],
     );
 
