@@ -82,7 +82,8 @@
                             [% Translate("Calendar name") | html %]:
                         </label>
                         <div class="Field">
-                            <input type="text" id="CalendarName" name="CalendarName" value="[% Data.CalendarName | html %]" class="W95pc Validate_Required" />
+                            <input type="text" id="CalendarName" name="CalendarName" value="[% Data.CalendarName | html %]"
+                                class="W95pc Validate_Required [% Data.CalendarNameInvalid | html %]" />
                             <div id="CalendarNameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="CalendarNameServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>

@@ -27,21 +27,74 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # get needed objects
-    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
-
-    my $Title;
 
     if ( $Self->{Subaction} eq 'New' ) {
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
+                Subaction => 'StoreNew',
             },
         );
-        $Title = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
+    }
+    elsif ( $Self->{Subaction} eq 'StoreNew' ) {
+
+        # Get data
+        my %GetParam;
+        $GetParam{CalendarName} = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
+        $GetParam{ValidID}      = $ParamObject->GetParam( Param => 'ValidID' )      || '';
+
+        my %Error;
+
+        # Check name
+        if ( !$GetParam{CalendarName} ) {
+            $Error{'CalendarNameInvalid'} = 'ServerError';
+        }
+        else {
+            # Check if user has already calendar with same name
+            my %Calendar = $CalendarObject->CalendarGet(
+                CalendarName => $GetParam{CalendarName},
+                UserID       => $Self->{UserID},
+            );
+
+            if (%Calendar) {
+                $Error{'CalendarNameInvalid'} = "ExistsError";
+            }
+        }
+
+        if (%Error) {
+            $LayoutObject->Block(
+                Title => $LayoutObject->{LanguageObject}->Translate("Add new Calendar"),
+                Name  => 'CalendarEdit',
+                Data  => {
+                    %Error,
+                    %GetParam,
+                    Subaction => 'StoreNew',
+                },
+            );
+            return _Mask();
+        }
+
+        # create calendar
+        my %Calendar = $CalendarObject->CalendarCreate(
+            %GetParam,
+            UserID => $Self->{UserID},
+        );
+
+        if ( !%Calendar ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('System was unable to create Calendar!'),
+                Comment => Translatable('Please contact the admin.'),
+            );
+        }
+
+        # Redirect
+        return $LayoutObject->Redirect(
+            OP => "Action=AgentAppointmentCalendarManage",
+        );
     }
     else {
 
@@ -76,8 +129,17 @@ sub Run {
             );
         }
 
-        $Title = $LayoutObject->{LanguageObject}->Translate("Calendars");
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Calendars");
     }
+
+    return _Mask(%Param);
+}
+
+sub _Mask {
+    my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # output page
     my $Output = $LayoutObject->Header();
@@ -85,7 +147,7 @@ sub Run {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarManage',
         Data         => {
-            Title => $Title,
+            %Param
         },
     );
     $Output .= $LayoutObject->Footer();

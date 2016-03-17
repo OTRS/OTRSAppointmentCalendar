@@ -55,9 +55,9 @@ sub new {
 creates a new calendar for given user.
 
     my %Calendar = $CalendarObject->CalendarCreate(
-        Name    => 'Meetings',          # (required) Personal calendar name
-        UserID  => 4,                   # (required) UserID
-        ValidID => 1,                   # (optional) Default is 1.
+        CalendarName    => 'Meetings',          # (required) Personal calendar name
+        UserID          => 4,                   # (required) UserID
+        ValidID         => 1,                   # (optional) Default is 1.
     );
 
 returns Calendar hash if successful:
@@ -78,7 +78,7 @@ sub CalendarCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(Name UserID)) {
+    for my $Needed (qw(CalendarName UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -91,8 +91,8 @@ sub CalendarCreate {
     my $ValidID = defined $Param{ValidID} ? $Param{ValidID} : 1;
 
     my %Calendar = $Self->CalendarGet(
-        Name   => $Param{Name},
-        UserID => $Param{UserID},
+        CalendarName => $Param{CalendarName},
+        UserID       => $Param{UserID},
     );
 
     # If user already has Calendar with same name, return
@@ -108,13 +108,13 @@ sub CalendarCreate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{UserID}, \$Param{Name}, \$Param{UserID}, \$Param{Name}, \$ValidID
+            \$Param{UserID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{CalendarName}, \$ValidID
         ],
     );
 
     %Calendar = $Self->CalendarGet(
-        Name   => $Param{Name},
-        UserID => $Param{UserID},
+        CalendarName => $Param{CalendarName},
+        UserID       => $Param{UserID},
     );
 
     return %Calendar;
@@ -125,8 +125,8 @@ sub CalendarCreate {
 get calendar by name for given user.
 
     my %Calendar = $CalendarObject->CalendarGet(
-        Name    => 'Meetings',          # (required) Personal calendar name
-        UserID  => 4,                   # (required) UserID
+        CalendarName    => 'Meetings',          # (required) Personal calendar name
+        UserID          => 4,                   # (required) UserID
     );
 
 returns Calendar data:
@@ -147,7 +147,7 @@ sub CalendarGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(Name UserID)) {
+    for my $Needed (qw(CalendarName UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -171,7 +171,7 @@ sub CalendarGet {
     # db query
     return if !$DBObject->Prepare(
         SQL   => $SQL,
-        Bind  => [ \$Param{Name}, \$Param{UserID} ],
+        Bind  => [ \$Param{CalendarName}, \$Param{UserID} ],
         Limit => 1,
     );
 
@@ -275,11 +275,11 @@ sub CalendarList {
 updates an existing calendar.
 
     my $Success = $CalendarObject->CalendarUpdate(
-        CalendarID  => 1,                   # (required) CalendarID
-        Name        => 'Meetings',          # (required) Personal calendar name
-        OwnerID     => 2,                   # (required) Calendar owner UserID
-        UserID      => 4,                   # (required) UserID (who made update)
-        ValidID     => 1,                   # (required) ValidID
+        CalendarID       => 1,                   # (required) CalendarID
+        CalendarName     => 'Meetings',          # (required) Personal calendar name
+        OwnerID          => 2,                   # (required) Calendar owner UserID
+        UserID           => 4,                   # (required) UserID (who made update)
+        ValidID          => 1,                   # (required) ValidID
     );
 
 returns 1 if successful:
@@ -290,7 +290,7 @@ sub CalendarUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID Name UserID OwnerID ValidID)) {
+    for my $Needed (qw(CalendarID CalendarName UserID OwnerID ValidID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -310,7 +310,7 @@ sub CalendarUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{OwnerID}, \$Param{Name}, \$Param{UserID}, \$Param{CalendarID}, \$Param{ValidID}
+            \$Param{OwnerID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{CalendarID}, \$Param{ValidID}
         ],
     );
 
