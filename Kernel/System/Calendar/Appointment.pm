@@ -211,6 +211,20 @@ sub AppointmentList {
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
+    # Check time
+    if ( $Param{StartTime} ) {
+        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{StartTime},
+        );
+        return if !$StartTimeSystem;
+    }
+    if ( $Param{EndTime} ) {
+        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{EndTime},
+        );
+        return if !$EndTimeSystem;
+    }
+
     my $SQL = '
         SELECT id
         FROM calendar_appointment
@@ -220,26 +234,25 @@ sub AppointmentList {
     my @Bind;
     push @Bind, \$Param{CalendarID};
 
-    # check start time
-    if ( $Param{StartTime} ) {
-        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{StartTime},
-        );
-        return if !$StartTimeSystem;
+    if ( $Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND start_time > ? ';
-        push @Bind, \$Param{StartTime}
+        $SQL .= 'AND ((start_time > ? AND start_time < ?) OR (end_time > ? AND end_time < ?)) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
     }
+    elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-    # check end time
-    if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{EndTime},
-        );
-        return if !$EndTimeSystem;
+        $SQL .= 'AND (start_time > ? AND start_time < ?) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
+    }
+    elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND end_time < ? ';
-        push @Bind, \$Param{EndTime}
+        $SQL .= 'AND (end_time > ? AND end_time < ?) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
     }
 
     # db query
