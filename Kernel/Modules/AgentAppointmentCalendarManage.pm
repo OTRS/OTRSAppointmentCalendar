@@ -11,6 +11,8 @@ package Kernel::Modules::AgentAppointmentCalendarManage;
 use strict;
 use warnings;
 
+use Kernel::Language qw(Translatable);
+
 our $ObjectManagerDisabled = 1;
 
 sub new {
@@ -96,6 +98,40 @@ sub Run {
         # Redirect
         return $LayoutObject->Redirect(
             OP => "Action=AgentAppointmentCalendarManage",
+        );
+    }
+    elsif ( $Self->{Subaction} eq 'Edit' ) {
+
+        # Get data
+        my %GetParam;
+        $GetParam{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || '';
+
+        if ( !$GetParam{CalendarID} ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('No CalendarID!'),
+                Comment => Translatable('Please contact the admin.'),
+            );
+        }
+
+        # TODO: Check permissions (who can edit??)
+
+        # get calendar data
+        my %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $GetParam{CalendarID},
+        );
+
+        if ( !%Calendar ) {
+
+            # fake message
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('You have no access to this calendar!'),
+                Comment => Translatable('Please contact the admin.'),
+            );
+        }
+
+        # get user data
+        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+            UserID => $Calendar{UserID},
         );
     }
     else {

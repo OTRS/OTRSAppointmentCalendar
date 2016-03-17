@@ -68,7 +68,11 @@
                     <tbody>
 [% RenderBlockStart("Calendar") %]
                         <tr>
-                            <td><a href="#">[% Data.CalendarName | html %]</a></td>
+                            <td>
+                                <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Edit;CalendarID=[% Data.CalendarID | uri %]">
+                                    [% Data.CalendarName | html %]
+                                </a>
+                            </td>
                             <td>[% Data.ValidID | html %]</td>
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>

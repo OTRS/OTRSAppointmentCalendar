@@ -127,6 +127,8 @@ get calendar by name for given user.
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarName    => 'Meetings',          # (required) Personal calendar name
         UserID          => 4,                   # (required) UserID
+                                                # or
+        CalendarID      => 4,                   # (required) CalendarID
     );
 
 returns Calendar data:
@@ -147,31 +149,44 @@ sub CalendarGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarName UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
+    if ( !$Param{CalendarID} && ( !$Param{CalendarName} || !$Param{UserID} ) ) {
+
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need CalendarID or CalendarName and UserID!"
+        );
+        return;
     }
 
     # create needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my $SQL = '
-        SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
-        FROM calendar
-        WHERE
-            name=? AND
-            user_id=?
-    ';
+    my ( $SQL, @Bind );
+
+    if ( $Param{CalendarID} ) {
+        $SQL = '
+            SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
+            FROM calendar
+            WHERE
+                id=?
+        ';
+        push @Bind, \$Param{CalendarID};
+    }
+    else {
+        $SQL = '
+            SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
+            FROM calendar
+            WHERE
+                name=? AND
+                user_id=?
+        ';
+        push @Bind, ( \$Param{CalendarName}, \$Param{UserID} );
+    }
 
     # db query
     return if !$DBObject->Prepare(
         SQL   => $SQL,
-        Bind  => [ \$Param{CalendarName}, \$Param{UserID} ],
+        Bind  => \@Bind,
         Limit => 1,
     );
 
