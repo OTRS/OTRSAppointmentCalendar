@@ -209,6 +209,7 @@ returns:
             CreateBy     => 3,
             ChangeTime   => '2016-01-01 08:00:00',
             ChangeBy     => 3,
+            ValidID      => 1,
         },
         {
             CalendarID   => 3,
@@ -218,6 +219,7 @@ returns:
             CreateBy     => 3,
             ChangeTime   => '2016-01-01 08:00:00',
             ChangeBy     => 3,
+            ValidID      => 0,
         },
         ...
     ];
