@@ -235,8 +235,7 @@ sub CalendarList {
     my $SQL = '
         SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
         FROM calendar
-        WHERE 1=1
-        valid_id=?
+        WHERE valid_id=?
     ';
     my @Bind;
     push @Bind, \$ValidID;
