@@ -63,7 +63,7 @@ creates a new appointment.
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
-        Description         => 'How to use Process tickets...',         # (required) Description
+        Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing'                              # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (optional)
@@ -85,7 +85,7 @@ sub AppointmentCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID Title Description StartTime TimezoneID UserID)) {
+    for my $Needed (qw(CalendarID Title StartTime TimezoneID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -357,7 +357,7 @@ updates an existing appointment.
         ApointmentID        => 1,                                       # (required)
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
-        Description         => 'How to use Process tickets...',         # (required) Description
+        Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing'                              # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (optional)
@@ -380,7 +380,7 @@ sub AppointmentUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID CalendarID Title Description StartTime TimezoneID UserID)) {
+    for my $Needed (qw(AppointmentID CalendarID Title StartTime TimezoneID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
