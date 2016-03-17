@@ -129,6 +129,17 @@ Core.Agent.AppointmentCalendar.Init({
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
         EditSubaction: [% Data.EditSubaction | JSON %]
+    },
+    Events: {
+        url: Core.Config.Get('CGIHandle'),
+        type: 'POST',
+        data: {
+            Action: 'AgentAppointmentList',
+            Subaction: 'ListAppointments',
+            CalendarID: [% Data.CalendarID | JSON %],
+        },
+        startParam: 'StartTime',
+        endParam: 'EndTime',
     }
 });
 

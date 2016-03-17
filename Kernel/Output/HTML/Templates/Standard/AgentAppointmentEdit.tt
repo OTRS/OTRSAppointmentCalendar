@@ -53,10 +53,8 @@
 <script type="text/javascript">//<![CDATA[
 
 // Initialize appointment ID
-var $AppointmentID = $('input[name="AppointmentID"]'),
-    AppointmentID = $AppointmentID.val(),
-    Data,
-    CalEvent;
+var AppointmentID = $('input[name="AppointmentID"]').val(),
+    Data;
 
 // Bind button actions
 $('#EditFormSubmit').bind('click', function() {
@@ -89,28 +87,7 @@ $('#EditFormSubmit').bind('click', function() {
             Data,
             function (Response) {
                 if (Response.AppointmentID) {
-                    $('#calendar').fullCalendar('renderEvent',
-                        {
-                            id: Response.AppointmentID,
-                            CalendarID: Response.CalendarID,
-                            title: $('input[name="Title"]').val(),
-                            Description: $('textarea[name="Description"]').val(),
-                            Location: $('input[name="Location"]').val(),
-                            start: $.fullCalendar.moment()
-                                .year(parseInt($('#StartYear').val(), 10))
-                                .month(parseInt($('#StartMonth').val(), 10) - 1)
-                                .date(parseInt($('#StartDay').val(), 10))
-                                .hour(parseInt($('#StartHour').val(), 10))
-                                .minute(parseInt($('#StartMinute').val(), 10)),
-                            end: $.fullCalendar.moment()
-                                .year(parseInt($('#EndYear').val(), 10))
-                                .month(parseInt($('#EndMonth').val(), 10) - 1)
-                                .date(parseInt($('#EndDay').val(), 10))
-                                .hour(parseInt($('#EndHour').val(), 10))
-                                .minute(parseInt($('#EndMinute').val(), 10)),
-                        },
-                        true
-                    );
+                    $('#calendar').fullCalendar('refetchEvents');
 
                     // Close the dialog
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
@@ -132,26 +109,7 @@ $('#EditFormSubmit').bind('click', function() {
             Data,
             function (Response) {
                 if (Response.Success) {
-                    if ($('#calendar').fullCalendar('clientEvents', AppointmentID).length > 0) {
-                        CalEvent = $('#calendar').fullCalendar('clientEvents', AppointmentID)[0];
-
-                        CalEvent.title = $('input[name="Title"]').val();
-                        CalEvent.Description = $('textarea[name="Description"]').val();
-                        CalEvent.Location = $('input[name="Location"]').val();
-                        CalEvent.start = $.fullCalendar.moment()
-                            .year(parseInt($('#StartYear').val(), 10))
-                            .month(parseInt($('#StartMonth').val(), 10) - 1)
-                            .date(parseInt($('#StartDay').val(), 10))
-                            .hour(parseInt($('#StartHour').val(), 10))
-                            .minute(parseInt($('#StartMinute').val(), 10));
-                        CalEvent.end = $.fullCalendar.moment()
-                            .year(parseInt($('#EndYear').val(), 10))
-                            .month(parseInt($('#EndMonth').val(), 10) - 1)
-                            .date(parseInt($('#EndDay').val(), 10))
-                            .hour(parseInt($('#EndHour').val(), 10))
-                            .minute(parseInt($('#EndMinute').val(), 10));
-                        $('#calendar').fullCalendar('updateEvent', CalEvent);
-                    }
+                    $('#calendar').fullCalendar('refetchEvents');
 
                     // Close the dialog
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));

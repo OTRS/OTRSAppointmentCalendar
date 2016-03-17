@@ -31,19 +31,15 @@ sub Run {
 
     my $Output;
 
-    # get params
-    my %GetParam;
-
     # get param object
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    for my $Key (
-        qw(CalendarID AppointmentID Title Description Location
-        StartYear StartMonth StartDay StartHour StartMinute
-        EndYear EndMonth EndDay EndHour EndMinute
-        )
-        )
-    {
+    # get names of all parameters
+    my @ParamNames = $ParamObject->GetParamNames();
+
+    # get params
+    my %GetParam;
+    for my $Key (@ParamNames) {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -58,20 +54,28 @@ sub Run {
 
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
-            %GetParam,
-            Prefix   => 'Start',
-            Format   => 'DateInputFormatLong',
-            Class    => $Param{Errors}->{DateInvalid},
-            Validate => 1,
+            Prefix      => 'Start',
+            StartYear   => $GetParam{StartYear},
+            StartMonth  => $GetParam{StartMonth},
+            StartDay    => $GetParam{StartDay},
+            StartHour   => $GetParam{StartHour},
+            StartMinute => $GetParam{StartMinute},
+            Format      => 'DateInputFormatLong',
+            Class       => $Param{Errors}->{DateInvalid},
+            Validate    => 1,
         );
 
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
-            %GetParam,
-            Prefix   => 'End',
-            Format   => 'DateInputFormatLong',
-            Class    => $Param{Errors}->{DateInvalid},
-            Validate => 1,
+            Prefix    => 'End',
+            EndYear   => $GetParam{EndYear},
+            EndMonth  => $GetParam{EndMonth},
+            EndDay    => $GetParam{EndDay},
+            EndHour   => $GetParam{EndHour},
+            EndMinute => $GetParam{EndMinute},
+            Format    => 'DateInputFormatLong',
+            Class     => $Param{Errors}->{DateInvalid},
+            Validate  => 1,
         );
 
         # html mask output
@@ -124,6 +128,7 @@ sub Run {
             if ($AppointmentID) {
                 $JSON = $LayoutObject->JSONEncode(
                     Data => {
+                        Success       => 1,
                         CalendarID    => $GetParam{CalendarID},
                         AppointmentID => $AppointmentID,
                     },
@@ -165,7 +170,9 @@ sub Run {
             if ($Success) {
                 $JSON = $LayoutObject->JSONEncode(
                     Data => {
-                        Success => 1,
+                        Success       => 1,
+                        CalendarID    => $GetParam{CalendarID},
+                        AppointmentID => $GetParam{AppointmentID},
                     },
                 );
             }
