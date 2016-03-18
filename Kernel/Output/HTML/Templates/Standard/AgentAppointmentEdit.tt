@@ -76,6 +76,7 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         StartDay: $('#StartDay').val(),
         StartHour: $('#StartHour').val(),
         StartMinute: $('#StartMinute').val(),
+        EndUsed: $('#EndUsed').prop('checked') ? '1' : '0',
         EndYear: $('#EndYear').val(),
         EndMonth: $('#EndMonth').val(),
         EndDay: $('#EndDay').val(),

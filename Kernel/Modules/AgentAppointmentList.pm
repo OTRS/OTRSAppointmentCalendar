@@ -76,6 +76,7 @@ sub Run {
                     id          => $AppointmentData{ID},
                     start       => $AppointmentData{StartTime},
                     end         => $AppointmentData{EndTime},
+                    allDay      => $AppointmentData{EndTime} ? 0 : 1,
                     title       => $AppointmentData{Title},
                     Description => $AppointmentData{Description},
                     Location    => $AppointmentData{Location},

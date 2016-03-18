@@ -70,7 +70,7 @@ sub Run {
             %GetParam,
             Prefix      => 'End',
             EndOptional => 1,
-            EndUsed     => 1,
+            EndUsed     => $GetParam{EndUsed} // 1,
             Format      => 'DateInputFormatLong',
             Validate    => 1,
         );
@@ -104,18 +104,32 @@ sub Run {
 
         if ( $GetParam{CalendarID} ) {
 
-            my $AppointmentID = $AppointmentObject->AppointmentCreate(
-                %GetParam,
-                StartTime => sprintf(
+            my $StartTime;
+            my $EndTime;
+
+            if ( $GetParam{EndUsed} ) {
+                $StartTime = sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
                     $GetParam{StartHour}, $GetParam{StartMinute}
-                ),
-                EndTime => sprintf(
+                );
+                $EndTime = sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                     $GetParam{EndHour}, $GetParam{EndMinute}
-                ),
+                );
+            }
+            else {
+                $StartTime = sprintf(
+                    "%04d-%02d-%02d 00:00:00",
+                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay}
+                );
+            }
+
+            my $AppointmentID = $AppointmentObject->AppointmentCreate(
+                %GetParam,
+                StartTime  => $StartTime,
+                EndTime    => $EndTime,
                 TimezoneID => 'Europe/Belgrade',
                 UserID     => $Self->{UserID},
             );
@@ -144,18 +158,32 @@ sub Run {
 
         if ( $GetParam{CalendarID} && $GetParam{AppointmentID} ) {
 
-            my $Success = $AppointmentObject->AppointmentUpdate(
-                %GetParam,
-                StartTime => sprintf(
+            my $StartTime;
+            my $EndTime;
+
+            if ( $GetParam{EndUsed} ) {
+                $StartTime = sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
                     $GetParam{StartHour}, $GetParam{StartMinute}
-                ),
-                EndTime => sprintf(
+                );
+                $EndTime = sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                     $GetParam{EndHour}, $GetParam{EndMinute}
-                ),
+                );
+            }
+            else {
+                $StartTime = sprintf(
+                    "%04d-%02d-%02d 00:00:00",
+                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay}
+                );
+            }
+
+            my $Success = $AppointmentObject->AppointmentUpdate(
+                %GetParam,
+                StartTime  => $StartTime,
+                EndTime    => $EndTime,
                 TimezoneID => 'Europe/Belgrade',
                 UserID     => $Self->{UserID},
             );

@@ -191,11 +191,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             StartDay: AppointmentData.Start.date(),
             StartHour: AppointmentData.Start.hour(),
             StartMinute: AppointmentData.Start.minute(),
-            EndYear: AppointmentData.End.year(),
-            EndMonth: AppointmentData.End.month() + 1,
-            EndDay: AppointmentData.End.date(),
-            EndHour: AppointmentData.End.hour(),
-            EndMinute: AppointmentData.End.minute()
+            EndUsed: AppointmentData.CalEvent ? (
+                AppointmentData.CalEvent.allDay ? 0 : 1
+            ) : 1,
+            EndYear: AppointmentData.End ? AppointmentData.End.year() : null,
+            EndMonth: AppointmentData.End ? AppointmentData.End.month() + 1 : null,
+            EndDay: AppointmentData.End ? AppointmentData.End.date() : null,
+            EndHour: AppointmentData.End ? AppointmentData.End.hour() : null,
+            EndMinute: AppointmentData.End ? AppointmentData.End.minute() : null
         };
 
         ShowWaitingDialog();
@@ -255,12 +258,17 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             StartDay: AppointmentData.CalEvent.start.date(),
             StartHour: AppointmentData.CalEvent.start.hour(),
             StartMinute: AppointmentData.CalEvent.start.minute(),
-            EndYear: AppointmentData.CalEvent.end.year(),
-            EndMonth: AppointmentData.CalEvent.end.month() + 1,
-            EndDay: AppointmentData.CalEvent.end.date(),
-            EndHour: AppointmentData.CalEvent.end.hour(),
-            EndMinute: AppointmentData.CalEvent.end.minute()
+            EndUsed: AppointmentData.CalEvent.end ? '1' : '0',
+            EndYear: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.year() : null,
+            EndMonth: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.month() + 1 : null,
+            EndDay: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.date() : null,
+            EndHour: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.hour() : null,
+            EndMinute: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.minute() : null
         };
+
+        // Update the allDay property
+        AppointmentData.CalEvent.allDay = !Data.EndUsed;
+        $('#calendar').fullCalendar('updateEvent', AppointmentData.CalEvent);
 
         Core.AJAX.FunctionCall(
             Core.Config.Get('CGIHandle'),
