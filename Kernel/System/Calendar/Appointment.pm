@@ -17,6 +17,7 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Time',
@@ -52,6 +53,9 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    $Self->{CacheType} = 'Appointment';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
     return $Self;
 }
@@ -166,7 +170,7 @@ sub AppointmentCreate {
         UniqueID => $UniqueID,
     );
 
-    # return if there is not article created
+    # return if there is not appointment created
     if ( !$AppointmentID ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -317,6 +321,16 @@ sub AppointmentGet {
         }
     }
 
+    # check cache
+    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => $Param{AppointmentID},
+    );
+
+    if ( ref $Data eq 'HASH' ) {
+        return %{$Data};
+    }
+
     # needed objects
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
@@ -358,6 +372,14 @@ sub AppointmentGet {
         $Result{ChangeTime}          = $Row[17];
         $Result{ChangeBy}            = $Row[18];
     }
+
+    # cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        Key   => $Param{AppointmentID},
+        Value => \%Result,
+        TTL   => $Self->{CacheTTL},
+    );
 
     return %Result;
 }
@@ -463,6 +485,63 @@ sub AppointmentUpdate {
         ],
     );
 
+    # delete cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Param{AppointmentID},
+    );
+
+    return 1;
+}
+
+=item AppointmentDelete()
+
+deletes an existing appointment.
+
+    my $Success = $AppointmentObject->AppointmentDelete(
+        ApointmentID        => 1,                                       # (required)
+    );
+
+returns 1 if successful:
+    $Success = 1;
+
+=cut
+
+sub AppointmentDelete {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # TODO: Check who is able to delete appointment
+
+    my $SQL = '
+        DELETE FROM calendar_appointment
+        WHERE id=?
+    ';
+
+    # delete db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{AppointmentID},
+        ],
+    );
+
+    # delete cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Param{AppointmentID},
+    );
+
     return 1;
 }
 
@@ -542,51 +621,6 @@ sub _AppointmentGetID {
     }
 
     return $ID;
-}
-
-=item AppointmentDelete()
-
-deletes an existing appointment.
-
-    my $Success = $AppointmentObject->AppointmentDelete(
-        ApointmentID        => 1,                                       # (required)
-    );
-
-returns 1 if successful:
-    $Success = 1;
-
-=cut
-
-sub AppointmentDelete {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(AppointmentID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    # TODO: Check who is able to delete appointment
-
-    my $SQL = '
-        DELETE FROM calendar_appointment
-        WHERE id=?
-    ';
-
-    # delete db record
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{AppointmentID},
-        ],
-    );
-
-    return 1;
 }
 
 1;
