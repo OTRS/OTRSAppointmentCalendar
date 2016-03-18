@@ -544,6 +544,51 @@ sub _AppointmentGetID {
     return $ID;
 }
 
+=item AppointmentDelete()
+
+deletes an existing appointment.
+
+    my $Success = $AppointmentObject->AppointmentDelete(
+        ApointmentID        => 1,                                       # (required)
+    );
+
+returns 1 if successful:
+    $Success = 1;
+
+=cut
+
+sub AppointmentDelete {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # TODO: Check who is able to delete appointment
+
+    my $SQL = '
+        DELETE FROM calendar_appointment
+        WHERE id=?
+    ';
+
+    # delete db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{AppointmentID},
+        ],
+    );
+
+    return 1;
+}
+
 1;
 
 =back
