@@ -31,21 +31,13 @@ sub Run {
     # get needed objects
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $ValidObject    = $Kernel::OM->Get('Kernel::System::Valid');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+    my %GetParam;
 
     if ( $Self->{Subaction} eq 'New' ) {
 
-        my %Valid          = $ValidObject->ValidList();
-        my $ValidSelection = $LayoutObject->BuildSelection(
-            Data  => \%Valid,
-            Name  => 'ValidID',
-            ID    => 'ValidID',
-            Class => 'W75pc Modernize',
-
-            SelectedID => 1,
-            Title      => Translatable("Valid"),
-        );
+        my $ValidSelection = $Self->_ValidSelectionGet();
 
         $LayoutObject->Block(
             Name => 'CalendarEdit',
@@ -59,7 +51,6 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
         # Get data
-        my %GetParam;
         $GetParam{CalendarName} = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
         $GetParam{ValidID}      = $ParamObject->GetParam( Param => 'ValidID' )      || '';
 
@@ -83,13 +74,19 @@ sub Run {
         }
 
         if (%Error) {
+
+            # Set title
             $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
+
+            # Get valid selection
+            my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
             $LayoutObject->Block(
                 Name => 'CalendarEdit',
                 Data => {
                     %Error,
                     %GetParam,
+                    ValidID   => $ValidSelection,
                     Subaction => 'StoreNew',
                 },
             );
@@ -152,6 +149,8 @@ sub Run {
             Name => 'CalendarEdit',
             Data => {
                 %Calendar,
+
+                #ValidID   => $ValidSelection,
                 Subaction => 'Update',
             },
         );
@@ -214,6 +213,27 @@ sub _Mask {
     );
     $Output .= $LayoutObject->Footer();
     return $Output;
+}
+
+sub _ValidSelectionGet {
+    my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ValidObject  = $Kernel::OM->Get('Kernel::System::Valid');
+
+    my %Valid          = $ValidObject->ValidList();
+    my $ValidSelection = $LayoutObject->BuildSelection(
+        Data  => \%Valid,
+        Name  => 'ValidID',
+        ID    => 'ValidID',
+        Class => 'W75pc Modernize',
+
+        SelectedID => $Param{ValidID} || 1,
+        Title => Translatable("Valid"),
+    );
+
+    return $ValidSelection;
 }
 
 1;
