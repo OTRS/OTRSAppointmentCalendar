@@ -145,16 +145,23 @@ sub Run {
             UserID => $Calendar{UserID},
         );
 
+        # Get valid selection
+        my $ValidSelection = $Self->_ValidSelectionGet(%Calendar);
+
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
                 %Calendar,
-
-                #ValidID   => $ValidSelection,
+                ValidID   => $ValidSelection,
                 Subaction => 'Update',
             },
         );
+
+        # set title
         $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
+    }
+    elsif ( $Self->{Subaction} eq 'Update' ) {
+
     }
     else {
 

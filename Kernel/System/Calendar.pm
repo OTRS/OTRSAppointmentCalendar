@@ -211,7 +211,11 @@ get calendar list.
 
     my @Result = $CalendarObject->CalendarList(
         UserID  => 4,               # (optional) Filter by User
-        ValidID => 1,               # (optional) Default 1.
+        ValidID => 1,               # (optional) Default 0.
+                                    # 0 - All states
+                                    # 1 - All valid
+                                    # 2 - All invalid
+                                    # 3 - All temporary invalid
     );
 
 returns:
@@ -252,10 +256,14 @@ sub CalendarList {
     my $SQL = '
         SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
         FROM calendar
-        WHERE valid_id=?
+        WHERE 1=1
     ';
     my @Bind;
-    push @Bind, \$ValidID;
+
+    if ( $Param{ValidID} ) {
+        $SQL .= ' AND valid_id=? ';
+        push @Bind, \$ValidID;
+    }
 
     if ( $Param{UserID} ) {
         $SQL .= 'AND user_id=? ';
