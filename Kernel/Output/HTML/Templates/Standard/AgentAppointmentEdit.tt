@@ -62,15 +62,11 @@
 
 <script type="text/javascript">//<![CDATA[
 
-// Initialize appointment ID
-var AppointmentID = $('input[name="AppointmentID"]').val(),
-    Data;
-
 Core.Form.Validate.Init();
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
 
-    Data = {
+    var Data = {
         CalendarID: [% Data.CalendarID | JSON %],
         Title: $('input[name="Title"]').val(),
         Description: $('textarea[name="Description"]').val(),
@@ -87,48 +83,47 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         EndMinute: $('#EndMinute').val()
     };
 
-    // Add screen
-    if (AppointmentID == '') {
-
-        Data.Action = 'AgentAppointmentEdit';
-        Data.Subaction = 'AddAppointment';
-
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (Response) {
-                if (Response.AppointmentID) {
-                    $('#calendar').fullCalendar('refetchEvents');
-
-                    // Close the dialog
-                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-                }
-            }
-        );
-
-    }
+[% IF Data.AppointmentID %]
 
     // Edit screen
-    else {
+    Data.Action = 'AgentAppointmentEdit';
+    Data.Subaction = 'EditAppointment';
+    Data.AppointmentID = $('input[name="AppointmentID"]').val();
 
-        Data.Action = 'AgentAppointmentEdit';
-        Data.Subaction = 'EditAppointment';
-        Data.AppointmentID = AppointmentID;
+    Core.AJAX.FunctionCall(
+        Core.Config.Get('CGIHandle'),
+        Data,
+        function (Response) {
+            if (Response.Success) {
+                $('#calendar').fullCalendar('refetchEvents');
 
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (Response) {
-                if (Response.Success) {
-                    $('#calendar').fullCalendar('refetchEvents');
-
-                    // Close the dialog
-                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-                }
+                // Close the dialog
+                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
             }
-        );
+        }
+    );
 
-    }
+[% ELSE %]
+
+    // Add screen
+    Data.Action = 'AgentAppointmentEdit';
+    Data.Subaction = 'AddAppointment';
+
+    Core.AJAX.FunctionCall(
+        Core.Config.Get('CGIHandle'),
+        Data,
+        function (Response) {
+            if (Response.AppointmentID) {
+                $('#calendar').fullCalendar('refetchEvents');
+
+                // Close the dialog
+                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+            }
+        }
+    );
+
+[% END %]
+
 });
 
 // Save the appointment
@@ -136,11 +131,13 @@ $('#EditFormSubmit').bind('click', function() {
     $('#EditAppointmentForm').submit();
 });
 
+[% IF Data.AppointmentID %]
+
 // Delete the appointment
 $('#EditFormDelete').bind('click', function() {
     Data = {
         CalendarID: [% Data.CalendarID | JSON %],
-        AppointmentID: AppointmentID,
+        AppointmentID: $('input[name="AppointmentID"]').val(),
         Action: 'AgentAppointmentEdit',
         Subaction: 'DeleteAppointment'
     };
@@ -158,6 +155,8 @@ $('#EditFormDelete').bind('click', function() {
         }
     );
 });
+
+[% END %]
 
 // Close the dialog
 $('#EditFormCancel').bind('click', function() {
