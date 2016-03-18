@@ -185,7 +185,7 @@ sub Run {
             UserID       => $Self->{UserID},
         );
 
-        if ( $Calendar{CalendarID} != $GetParam{CalendarID} ) {
+        if ( defined $Calendar{CalendarID} && $Calendar{CalendarID} != $GetParam{CalendarID} ) {
             $Error{CalendarNameInvalid} = "ServerError";
             $Error{CalendarNameExists}  = 1;
         }

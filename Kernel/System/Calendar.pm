@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 our @ObjectDependencies = (
+    'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::Log',
 );
@@ -46,6 +47,9 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    $Self->{CacheType} = 'Calendar';
+    $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
     return $Self;
 }
@@ -117,6 +121,19 @@ sub CalendarCreate {
         UserID       => $Param{UserID},
     );
 
+    # cache value
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        Key   => $Calendar{CalendarID},
+        Value => \%Calendar,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    # reset CalendarList
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => 'CalendarList',
+    );
+
     return %Calendar;
 }
 
@@ -158,7 +175,22 @@ sub CalendarGet {
         return;
     }
 
-    # create needed objects
+    my %Calendar;
+
+    if ( $Param{CalendarID} ) {
+
+        # check if value is cached
+        my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+            Type => $Self->{CacheType},
+            Key  => $Param{CalendarID},
+        );
+
+        if ( ref $Data eq 'HASH' ) {
+            return %{$Data};
+        }
+    }
+
+    # create db object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my ( $SQL, @Bind );
@@ -190,7 +222,6 @@ sub CalendarGet {
         Limit => 1,
     );
 
-    my %Calendar;
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Calendar{CalendarID}   = $Row[0];
         $Calendar{UserID}       = $Row[1];
@@ -200,6 +231,17 @@ sub CalendarGet {
         $Calendar{ChangeTime}   = $Row[5];
         $Calendar{ChangeBy}     = $Row[6];
         $Calendar{ValidID}      = $Row[7];
+    }
+
+    if ( $Param{CalendarID} ) {
+
+        # cache
+        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+            Type  => $Self->{CacheType},
+            Key   => $Param{CalendarID},
+            Value => \%Calendar,
+            TTL   => $Self->{CacheTTL},
+        );
     }
 
     return %Calendar;
@@ -248,7 +290,18 @@ returns:
 sub CalendarList {
     my ( $Self, %Param ) = @_;
 
-    my $ValidID = defined $Param{ValidID} ? $Param{ValidID} : 1;
+    # Make different cache type for list (so we can clear cache by this value)
+    my $CacheType = 'CalendarList';
+
+    # get cached value if exists
+    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $CacheType,
+        Key  => "$Param{UserID}-$Param{ValidID}",
+    );
+
+    if ( ref $Data eq 'ARRAY' ) {
+        return @{$Data};
+    }
 
     # create needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -262,7 +315,7 @@ sub CalendarList {
 
     if ( $Param{ValidID} ) {
         $SQL .= ' AND valid_id=? ';
-        push @Bind, \$ValidID;
+        push @Bind, \$Param{ValidID};
     }
 
     if ( $Param{UserID} ) {
@@ -289,6 +342,14 @@ sub CalendarList {
         $Calendar{ValidID}      = $Row[7];
         push @Result, \%Calendar;
     }
+
+    # cache data
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $CacheType,
+        Key   => "$Param{UserID}-$Param{ValidID}",
+        Value => \@Result,
+        TTL   => $Self->{CacheTTL},
+    );
 
     return @Result;
 }
@@ -323,6 +384,9 @@ sub CalendarUpdate {
         }
     }
 
+    # needed objects
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     my $SQL = '
         UPDATE calendar
         SET name=?, change_time=current_timestamp, change_by=?, valid_id=?
@@ -345,6 +409,16 @@ sub CalendarUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => \@Bind,
+    );
+
+    # clear cache
+    $CacheObject->CleanUp(
+        Type => 'CalendarList',
+    );
+
+    $CacheObject->Delete(
+        Type => $Self->{CacheType},
+        Key  => $Param{CalendarID}
     );
 
     return 1;
