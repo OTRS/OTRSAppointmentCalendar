@@ -254,6 +254,12 @@ sub Run {
         );
 
         for my $Calendar (@Calendars) {
+
+            # Valid text
+            $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
+                ValidID => $Calendar->{ValidID},
+            );
+
             $LayoutObject->Block(
                 Name => 'Calendar',
                 Data => {
@@ -300,7 +306,7 @@ sub _ValidSelectionGet {
         Data  => \%Valid,
         Name  => 'ValidID',
         ID    => 'ValidID',
-        Class => 'W75pc Modernize',
+        Class => 'W95pc Modernize',
 
         SelectedID => $Param{ValidID} || 1,
         Title => Translatable("Valid"),
