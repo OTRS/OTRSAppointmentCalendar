@@ -62,17 +62,17 @@ sub Run {
             %GetParam,
             Prefix   => 'Start',
             Format   => 'DateInputFormatLong',
-            Class    => $Param{Errors}->{DateInvalid},
             Validate => 1,
         );
 
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'End',
-            Format   => 'DateInputFormatLong',
-            Class    => $Param{Errors}->{DateInvalid},
-            Validate => 1,
+            Prefix      => 'End',
+            EndOptional => 1,
+            EndUsed     => 1,
+            Format      => 'DateInputFormatLong',
+            Validate    => 1,
         );
 
         # html mask output

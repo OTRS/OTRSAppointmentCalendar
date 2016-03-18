@@ -8,24 +8,30 @@
 
 [% RenderBlockStart("EditMask") %]
 <div class="InnerContent">
-    <form action="[% Env("CGIHandle") %]" method="post" id="EditAppointmentForm">
+    <form id="EditAppointmentForm" class="Validate">
         <input type="hidden" name="Action" value="[% Env("Action") %]" id="AgentAppointmentEdit"/>
         <input type="hidden" name="Subaction" value="Store"/>
         <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
         <input type="hidden" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic info") | html %]</span></legend>
-            <label>[% Translate("Title") | html %]:</label>
+            <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
             <div class="Field">
-                <input type="text" name="Title" value="[% Data.Title | html %]" class="W95pc" />
+                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W95pc Validate_Required" />
+                <div id="TitleError" class="TooltipErrorMessage">
+                    <p>[% Translate("This field is required.") | html %]</p>
+                </div>
+                <div id="TitleServerError" class="TooltipErrorMessage">
+                    <p>[% Translate("This field is required.") | html %]</p>
+                </div>
             </div>
             <div class="Clear"></div>
-            <label>[% Translate("Description") | html %]:</label>
+            <label for="Description">[% Translate("Description") | html %]:</label>
             <div class="Field">
                 <textarea name="Description" class="W95pc">[% Data.Description | html %]</textarea>
             </div>
             <div class="Clear"></div>
-            <label>[% Translate("Location") | html %]:</label>
+            <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
                 <input type="text" name="Location" value="[% Data.Location | html %]" class="W95pc" />
             </div>
@@ -40,13 +46,14 @@
             <label>[% Translate("End date") | html %]:</label>
             <div class="Field">
                 [% Data.EndDateString %]
+                <p class="FieldExplanation">Turn off the End date for an all-day appointment.</p>
             </div>
         </fieldset>
     </form>
 </div>
 
 <div class="ContentFooter Center">
-    <button id="EditFormSubmit" class="Primary CallForAction" value="Store"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
+    <button id="EditFormSubmit" class="Primary CallForAction" value="[% Translate("Save") | html %]"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
     <button id="EditFormCancel" class="CallForAction"><span>[% Translate("Cancel") | html %]</span></button>
 </div>
 
@@ -56,8 +63,9 @@
 var AppointmentID = $('input[name="AppointmentID"]').val(),
     Data;
 
-// Bind button actions
-$('#EditFormSubmit').bind('click', function() {
+Core.Form.Validate.Init();
+
+Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
 
     Data = {
         CalendarID: [% Data.CalendarID | JSON %],
@@ -118,13 +126,29 @@ $('#EditFormSubmit').bind('click', function() {
         );
 
     }
+});
 
+$('#EditFormSubmit').bind('click', function() {
+    $('#EditAppointmentForm').submit();
 });
 
 // Close the dialog
 $('#EditFormCancel').bind('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });
+
+function InitAllDay() {
+    var $EndUsed = $('#EndUsed');
+    if (!$EndUsed.prop('checked')) {
+        $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', true);
+    } else {
+        $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', false);
+    }
+}
+
+InitAllDay();
+
+$('#EndUsed').on('change', InitAllDay);
 
 //]]></script>
 [% RenderBlockEnd("EditMask") %]
