@@ -54,6 +54,9 @@
 
 <div class="ContentFooter Center">
     <button id="EditFormSubmit" class="Primary CallForAction" value="[% Translate("Save") | html %]"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
+[% IF Data.AppointmentID %]
+    <button id="EditFormDelete" class="CallForAction"><span>[% Translate("Delete") | html %]</span></button>
+[% END %]
     <button id="EditFormCancel" class="CallForAction"><span>[% Translate("Cancel") | html %]</span></button>
 </div>
 
@@ -128,8 +131,32 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
     }
 });
 
+// Save the appointment
 $('#EditFormSubmit').bind('click', function() {
     $('#EditAppointmentForm').submit();
+});
+
+// Delete the appointment
+$('#EditFormDelete').bind('click', function() {
+    Data = {
+        CalendarID: [% Data.CalendarID | JSON %],
+        AppointmentID: AppointmentID,
+        Action: 'AgentAppointmentEdit',
+        Subaction: 'DeleteAppointment'
+    };
+
+    Core.AJAX.FunctionCall(
+        Core.Config.Get('CGIHandle'),
+        Data,
+        function (Response) {
+            if (Response.Success) {
+                $('#calendar').fullCalendar('refetchEvents');
+
+                // Close the dialog
+                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+            }
+        }
+    );
 });
 
 // Close the dialog

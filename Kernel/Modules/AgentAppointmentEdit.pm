@@ -180,6 +180,34 @@ sub Run {
         }
     }
 
+    elsif ( $Self->{Subaction} eq 'DeleteAppointment' ) {
+
+        if ( $GetParam{CalendarID} && $GetParam{AppointmentID} ) {
+
+            my $Success = $AppointmentObject->AppointmentDelete(
+                %GetParam,
+            );
+
+            # build JSON output
+            my $JSON = '';
+            $JSON = $LayoutObject->JSONEncode(
+                Data => {
+                    Success       => $Success,
+                    CalendarID    => $GetParam{CalendarID},
+                    AppointmentID => $GetParam{AppointmentID},
+                },
+            );
+
+            # send JSON response
+            return $LayoutObject->Attachment(
+                ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+                Content     => $JSON,
+                Type        => 'inline',
+                NoCache     => 1,
+            );
+        }
+    }
+
     return;
 }
 
