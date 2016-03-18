@@ -162,6 +162,72 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'Update' ) {
 
+        # Get data
+        $GetParam{CalendarID}   = $ParamObject->GetParam( Param => 'CalendarID' )   || '';
+        $GetParam{CalendarName} = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
+        $GetParam{ValidID}      = $ParamObject->GetParam( Param => 'ValidID' )      || '';
+
+        my %Error;
+
+        # check needed stuff
+        for my $Needed (qw(CalendarID CalendarName )) {
+            if ( !$GetParam{$Needed} ) {
+                $Error{ $Needed . 'Invalid' } = 'ServerError';
+                $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
+
+                return $Self->_Mask( %Param, %GetParam, %Error );
+            }
+        }
+
+        # Check if user has already calendar with same name
+        my %Calendar = $CalendarObject->CalendarGet(
+            CalendarName => $GetParam{CalendarName},
+            UserID       => $Self->{UserID},
+        );
+
+        if ( $Calendar{CalendarID} != $GetParam{CalendarID} ) {
+            $Error{CalendarNameInvalid} = "ServerError";
+            $Error{CalendarNameExists}  = 1;
+        }
+
+        if (%Error) {
+
+            # Set title
+            $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
+
+            # Get valid selection
+            my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
+
+            $LayoutObject->Block(
+                Name => 'CalendarEdit',
+                Data => {
+                    %Error,
+                    %GetParam,
+                    ValidID   => $ValidSelection,
+                    Subaction => 'Update',
+                },
+            );
+            return $Self->_Mask(%Param);
+        }
+
+        # update calendar
+        my $Success = $CalendarObject->CalendarUpdate(
+            %GetParam,
+            UserID => $Self->{UserID},
+        );
+
+        if ( !$Success ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('System was unable to update Calendar!'),
+                Comment => Translatable('Please contact the admin.'),
+            );
+        }
+
+        # Redirect
+        return $LayoutObject->Redirect(
+            OP => "Action=AgentAppointmentCalendarManage",
+        );
+
     }
     else {
 

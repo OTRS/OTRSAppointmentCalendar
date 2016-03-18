@@ -300,7 +300,7 @@ updates an existing calendar.
     my $Success = $CalendarObject->CalendarUpdate(
         CalendarID       => 1,                   # (required) CalendarID
         CalendarName     => 'Meetings',          # (required) Personal calendar name
-        OwnerID          => 2,                   # (required) Calendar owner UserID
+        OwnerID          => 2,                   # (optional) Calendar owner UserID
         UserID           => 4,                   # (required) UserID (who made update)
         ValidID          => 1,                   # (required) ValidID
     );
@@ -313,7 +313,7 @@ sub CalendarUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID CalendarName UserID OwnerID ValidID)) {
+    for my $Needed (qw(CalendarID CalendarName UserID ValidID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -325,16 +325,26 @@ sub CalendarUpdate {
 
     my $SQL = '
         UPDATE calendar
-        SET user_id=?, name=?, change_time=current_timestamp, change_by=?, valid_id=?
-        WHERE CalendarID=?
+        SET name=?, change_time=current_timestamp, change_by=?, valid_id=?
     ';
+
+    my @Bind;
+    push @Bind, ( \$Param{CalendarName}, \$Param{UserID}, \$Param{ValidID} );
+
+    if ( $Param{OwnerID} ) {
+        $SQL .= ', user_id ';
+        push @Bind, \$Param{OwnerID};
+    }
+
+    $SQL .= '
+            WHERE id=?
+    ';
+    push @Bind, \$Param{CalendarID};
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
-        Bind => [
-            \$Param{OwnerID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{CalendarID}, \$Param{ValidID}
-        ],
+        Bind => \@Bind,
     );
 
     return 1;
