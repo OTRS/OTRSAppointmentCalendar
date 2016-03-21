@@ -254,4 +254,101 @@ $Self->Is(
     'AppointmentGet() - ChangeBy ok',
 );
 
+my %AppointmentGet2 = $AppointmentObject->AppointmentGet();
+$Self->False(
+    $AppointmentGet2{AppointmentID},
+    'AppointmentGet() - Missing AppointmentID',
+);
+
+my %Calendar2 = $CalendarObject->CalendarCreate(
+    CalendarName => 'Test calendar 2',
+    UserID       => $UserID,
+);
+
+my $Update1 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID       => $AppointmentID7,
+    CalendarID          => $Calendar2{CalendarID},
+    Title               => 'Webinar title',
+    Description         => 'Description details',
+    Location            => 'England',
+    StartTime           => '2016-01-02 16:00:00',
+    EndTime             => '2016-01-02 17:00:00',
+    TimezoneID          => 'Timezone',
+    RecurrenceFrequency => '2',
+    RecurrenceCount     => '2',
+    UserID              => 1,
+);
+$Self->True(
+    $Update1,
+    'AppointmentUpdate() - #1',
+);
+
+my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
+    AppointmentID => $AppointmentID7,
+);
+$Self->Is(
+    $AppointmentGet3{ID},
+    $AppointmentID7,
+    'AppointmentUpdate() - AppointmentID ok',
+);
+$Self->Is(
+    $AppointmentGet3{CalendarID},
+    $Calendar2{CalendarID},
+    'AppointmentUpdate() - CalendarID ok',
+);
+$Self->True(
+    $AppointmentGet3{UniqueID},
+    'AppointmentUpdate() - UniqueID ok',
+);
+$Self->Is(
+    $AppointmentGet3{Title},
+    'Webinar title',
+    'AppointmentUpdate() - Title ok',
+);
+$Self->Is(
+    $AppointmentGet3{Description},
+    'Description details',
+    'AppointmentUpdate() - Description ok',
+);
+$Self->Is(
+    $AppointmentGet3{Location},
+    'England',
+    'AppointmentUpdate() - Location ok',
+);
+$Self->Is(
+    $AppointmentGet3{StartTime},
+    '2016-01-02 16:00:00',
+    'AppointmentUpdate() - StartTime ok',
+);
+$Self->Is(
+    $AppointmentGet3{EndTime},
+    '2016-01-02 17:00:00',
+    'AppointmentUpdate() - EndTime ok',
+);
+$Self->Is(
+    $AppointmentGet3{TimezoneID},
+    'Timezone',
+    'AppointmentUpdate() - TimezoneID ok',
+);
+$Self->Is(
+    $AppointmentGet3{RecurrenceFrequency},
+    2,
+    'AppointmentUpdate() - RecurrenceFrequency ok',
+);
+$Self->Is(
+    $AppointmentGet3{RecurrenceCount},
+    2,
+    'AppointmentUpdate() - RecurrenceCount ok',
+);
+$Self->Is(
+    $AppointmentGet3{CreateBy},
+    $UserID,
+    'AppointmentUpdate() - CreateBy ok',
+);
+$Self->Is(
+    $AppointmentGet3{ChangeBy},
+    $UserID,
+    'AppointmentUpdate() - ChangeBy ok',
+);
+
 1;

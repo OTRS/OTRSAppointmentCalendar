@@ -413,11 +413,11 @@ sub AppointmentGet {
 updates an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentUpdate(
-        ApointmentID        => 1,                                       # (required)
+        AppointmentID       => 1,                                       # (required)
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
-        Location            => 'Straubing'                              # (optional) Location
+        Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (optional)
         TimezoneID          => 'Timezone',                              # (required)
@@ -535,7 +535,7 @@ sub AppointmentUpdate {
 deletes an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentDelete(
-        ApointmentID        => 1,                                       # (required)
+        AppointmentID        => 1,                                       # (required)
     );
 
 returns 1 if successful:
