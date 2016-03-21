@@ -244,6 +244,7 @@ sub Run {
 
             my $Success = $AppointmentObject->AppointmentDelete(
                 %GetParam,
+                UserID => $Self->{UserID},
             );
 
             # build JSON output

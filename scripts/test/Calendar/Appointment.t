@@ -351,4 +351,115 @@ $Self->Is(
     'AppointmentUpdate() - ChangeBy ok',
 );
 
+my $Update2 = $AppointmentObject->AppointmentUpdate(
+    CalendarID => $Calendar2{CalendarID},
+    Title      => 'Webinar title',
+    StartTime  => '2016-01-02 16:00:00',
+    TimezoneID => 'Timezone',
+    UserID     => 1,
+);
+$Self->False(
+    $Update2,
+    'AppointmentUpdate() - #2 no AppointmentID',
+);
+
+my $Update3 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID7,
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    TimezoneID    => 'Timezone',
+    UserID        => 1,
+);
+$Self->False(
+    $Update3,
+    'AppointmentUpdate() - #3 no CalendarID',
+);
+
+my $Update4 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID7,
+    CalendarID    => $Calendar2{CalendarID},
+    StartTime     => '2016-01-02 16:00:00',
+    TimezoneID    => 'Timezone',
+    UserID        => 1,
+);
+$Self->False(
+    $Update4,
+    'AppointmentUpdate() - #4 no Title',
+);
+
+my $Update5 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID7,
+    CalendarID    => $Calendar2{CalendarID},
+    Title         => 'Webinar title',
+    TimezoneID    => 'Timezone',
+    UserID        => 1,
+);
+$Self->False(
+    $Update5,
+    'AppointmentUpdate() - #5 no StartTime',
+);
+
+my $Update6 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID7,
+    CalendarID    => $Calendar2{CalendarID},
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    UserID        => 1,
+);
+$Self->False(
+    $Update6,
+    'AppointmentUpdate() - #6 no TimezoneID',
+);
+
+my $Update7 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID7,
+    CalendarID    => $Calendar2{CalendarID},
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    TimezoneID    => 'Timezone',
+
+);
+$Self->False(
+    $Update7,
+    'AppointmentUpdate() - #7 no UserID',
+);
+
+my $Delete1 = $AppointmentObject->AppointmentDelete(
+
+    # AppointmentID => $AppointmentID7,
+    UserID => $UserID,
+);
+$Self->False(
+    $Delete1,
+    'AppointmentDelete() - #1 without AppointmentID',
+);
+
+my $Delete2 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $AppointmentID7,
+
+    # UserID  => $UserID,
+);
+$Self->False(
+    $Delete2,
+    'AppointmentDelete() - #2 without UserID',
+);
+
+my $Delete3 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $AppointmentID7,
+    UserID        => $UserID,
+);
+$Self->True(
+    $Delete3,
+    'AppointmentDelete() - #3 OK',
+);
+
+my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
+    AppointmentID => $AppointmentID7,
+    UserID        => $UserID,
+);
+$Self->False(
+    $AppointmentGet4{ID},
+    'AppointmentDelete() - #4 check if really deleted',
+);
+
 1;

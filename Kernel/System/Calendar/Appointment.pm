@@ -535,7 +535,8 @@ sub AppointmentUpdate {
 deletes an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentDelete(
-        AppointmentID        => 1,                                       # (required)
+        AppointmentID   => 1,                              # (required)
+        UserID          => 1,                              # (required)
     );
 
 returns 1 if successful:
@@ -550,7 +551,7 @@ sub AppointmentDelete {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID)) {
+    for my $Needed (qw(AppointmentID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
