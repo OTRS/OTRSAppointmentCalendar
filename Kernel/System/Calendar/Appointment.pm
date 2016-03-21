@@ -80,7 +80,7 @@ creates a new appointment.
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
-        Location            => 'Straubing'                              # (optional) Location
+        Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (optional)
         TimezoneID          => 'Timezone',                              # (required)
