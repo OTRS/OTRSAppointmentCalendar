@@ -128,7 +128,7 @@ sub CalendarCreate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{UserID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{CalendarName}, \$ValidID
+            \$Param{UserID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{UserID}, \$ValidID
         ],
     );
 
