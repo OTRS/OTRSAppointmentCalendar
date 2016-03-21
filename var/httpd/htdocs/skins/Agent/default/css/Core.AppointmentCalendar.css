@@ -13,14 +13,13 @@
 
     #CalendarToolbar {
         width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        margin-bottom: 10px;
     }
 
     .CalendarSwitch {
         font-size: 11px;
         margin-right: 10px;
+        display: inline-block;
+        margin-bottom: 10px;
     }
 
     .CalendarColorSwatch {

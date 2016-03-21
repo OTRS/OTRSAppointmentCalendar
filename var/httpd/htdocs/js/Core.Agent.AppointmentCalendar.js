@@ -92,6 +92,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     ]
                 }
             },
+            loading: function(IsLoading) {
+                if (IsLoading) {
+                    $('.CalendarWidget').addClass('Loading');
+                } else {
+                    $('.CalendarWidget').removeClass('Loading');
+                }
+            },
             select: function(Start, End, JSEvent, View, Resource) {
                 var Data = {
                     Start: Start,

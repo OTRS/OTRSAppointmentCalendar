@@ -37,7 +37,7 @@
     </div>
 
     <div class="ContentColumn">
-        <div class="WidgetSimple">
+        <div class="WidgetSimple CalendarWidget">
             <div class="Header">
                 <h2>[% Translate("Calendar") | html %]</h2>
             </div>
@@ -54,7 +54,7 @@
 [% RenderBlockStart("CalendarSwitch") %]
                         <span class="CalendarSwitch">
                             <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
-                                <!-- <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]"> -->
+                                <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]">
                             </span>
                             <label for="Calendar[% Data.CalendarID | html %]">
                                 [% Data.CalendarName | html %]
@@ -137,31 +137,45 @@ Core.Agent.AppointmentCalendar.Init({
         EditSubaction: [% Data.EditSubaction | JSON %],
         AddSubaction: [% Data.AddSubaction | JSON %]
     },
-    EventSources: [
-[% RenderBlockStart("CalendarSource") %]
-        {
-            url: Core.Config.Get('CGIHandle'),
-            type: 'POST',
-            data: {
-                Action: 'AgentAppointmentList',
-                Subaction: 'ListAppointments',
-                CalendarID: [% Data.CalendarID | JSON %],
-            },
-            color: [% Data.CalendarColor | JSON %],
-            startParam: 'StartTime',
-            endParam: 'EndTime'
-        }
-[% RenderBlockStart("CalendarSourceComma") %]
-        ,
-[% RenderBlockEnd("CalendarSourceComma") %]
-[% RenderBlockEnd("CalendarSource") %]
-    ]
 });
 
-// $('.CalendarSwitch input[type="checkbox"]').bind('change', function(){
-//     var $CalendarSource = $(this);
-//
-// });
+var EventSources = {
+[% RenderBlockStart("CalendarSource") %]
+    [% Data.CalendarID | JSON %]: {
+        url: Core.Config.Get('CGIHandle'),
+        type: 'POST',
+        data: {
+            Action: 'AgentAppointmentList',
+            Subaction: 'ListAppointments',
+            CalendarID: [% Data.CalendarID | JSON %],
+        },
+        color: [% Data.CalendarColor | JSON %],
+        startParam: 'StartTime',
+        endParam: 'EndTime',
+
+        // workaround for removeEventSource
+        googleCalendarId: [% Data.CalendarID | JSON %],
+    }
+[% RenderBlockStart("CalendarSourceComma") %]
+    ,
+[% RenderBlockEnd("CalendarSourceComma") %]
+[% RenderBlockEnd("CalendarSource") %]
+};
+
+$('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
+    CalendarSwitchInit($(this));
+    $(this).bind('change', function() {
+        CalendarSwitchInit($(this));
+    });
+});
+
+function CalendarSwitchInit($CalendarSwitch) {
+    if ($CalendarSwitch.prop('checked')) {
+        $('#calendar').fullCalendar('addEventSource', EventSources[$CalendarSwitch.data('id')]);
+    } else {
+        $('#calendar').fullCalendar('removeEventSource', EventSources[$CalendarSwitch.data('id')]);
+    }
+}
 
 //]]></script>
 [% END %]
