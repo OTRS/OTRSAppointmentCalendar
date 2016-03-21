@@ -67,9 +67,9 @@
 <script type="text/javascript">//<![CDATA[
 
 Core.Form.Validate.Init();
+Core.Agent.AppointmentCalendar.AllDayInit($('#EndUsed'));
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
-
     var Data = {
         CalendarID: $('select[name="CalendarID"]').val(),
         Title: $('input[name="Title"]').val(),
@@ -90,42 +90,20 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
 
 [% IF Data.AppointmentID %]
 
-    // Edit screen
+    // Edit the appointment
     Data.Action = 'AgentAppointmentEdit';
     Data.Subaction = 'EditAppointment';
     Data.AppointmentID = $('input[name="AppointmentID"]').val();
 
-    Core.AJAX.FunctionCall(
-        Core.Config.Get('CGIHandle'),
-        Data,
-        function (Response) {
-            if (Response.Success) {
-                $('#calendar').fullCalendar('refetchEvents');
-
-                // Close the dialog
-                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-            }
-        }
-    );
+    Core.Agent.AppointmentCalendar.EditAppointment(Data);
 
 [% ELSE %]
 
-    // Add screen
+    // Add the appointment
     Data.Action = 'AgentAppointmentEdit';
     Data.Subaction = 'AddAppointment';
 
-    Core.AJAX.FunctionCall(
-        Core.Config.Get('CGIHandle'),
-        Data,
-        function (Response) {
-            if (Response.AppointmentID) {
-                $('#calendar').fullCalendar('refetchEvents');
-
-                // Close the dialog
-                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-            }
-        }
-    );
+    Core.Agent.AppointmentCalendar.EditAppointment(Data);
 
 [% END %]
 
@@ -140,25 +118,12 @@ $('#EditFormSubmit').bind('click', function() {
 
 // Delete the appointment
 $('#EditFormDelete').bind('click', function() {
-    Data = {
+    Core.Agent.AppointmentCalendar.EditAppointment({
         CalendarID: [% Data.CalendarID | JSON %],
         AppointmentID: $('input[name="AppointmentID"]').val(),
         Action: 'AgentAppointmentEdit',
         Subaction: 'DeleteAppointment'
-    };
-
-    Core.AJAX.FunctionCall(
-        Core.Config.Get('CGIHandle'),
-        Data,
-        function (Response) {
-            if (Response.Success) {
-                $('#calendar').fullCalendar('refetchEvents');
-
-                // Close the dialog
-                Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-            }
-        }
-    );
+    });
 });
 
 [% END %]
@@ -167,19 +132,6 @@ $('#EditFormDelete').bind('click', function() {
 $('#EditFormCancel').bind('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });
-
-function InitAllDay() {
-    var $EndUsed = $('#EndUsed');
-    if (!$EndUsed.prop('checked')) {
-        $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', true);
-    } else {
-        $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', false);
-    }
-}
-
-InitAllDay();
-
-$('#EndUsed').on('change', InitAllDay);
 
 //]]></script>
 [% RenderBlockEnd("EditMask") %]

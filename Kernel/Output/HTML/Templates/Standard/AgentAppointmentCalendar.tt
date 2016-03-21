@@ -154,7 +154,7 @@ var EventSources = {
         endParam: 'EndTime',
 
         // workaround for removeEventSource
-        googleCalendarId: [% Data.CalendarID | JSON %],
+        googleCalendarId: [% Data.CalendarID | JSON %]
     }
 [% RenderBlockStart("CalendarSourceComma") %]
     ,
@@ -163,19 +163,8 @@ var EventSources = {
 };
 
 $('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
-    CalendarSwitchInit($(this));
-    $(this).bind('change', function() {
-        CalendarSwitchInit($(this));
-    });
+    Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources);
 });
-
-function CalendarSwitchInit($CalendarSwitch) {
-    if ($CalendarSwitch.prop('checked')) {
-        $('#calendar').fullCalendar('addEventSource', EventSources[$CalendarSwitch.data('id')]);
-    } else {
-        $('#calendar').fullCalendar('removeEventSource', EventSources[$CalendarSwitch.data('id')]);
-    }
-}
 
 //]]></script>
 [% END %]

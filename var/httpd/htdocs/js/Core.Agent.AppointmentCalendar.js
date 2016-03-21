@@ -23,7 +23,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     /**
      * @name Init
      * @memberof Core.Agent.AppointmentCalendar
-     * @function
      * @param {Object} Params - Hash with different config options.
      * @param {Array} Params.MonthNames - Array containing the localized strings for each month.
      * @param {Array} Params.MonthNamesShort - Array containing the localized strings for each month on shorth format.
@@ -165,11 +164,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @private
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
-     * @function
      * @param {Object} Params - Hash with configuration.
      * @param {Object} AppointmentData - Hash with appointment data.
      * @description
-     *      This function open the add appointment dialog after selecting a time period.
+     *      This method opens the appointment dialog after selecting a time period or an appointment.
      */
     function OpenEditDialog(Params, AppointmentData) {
         var Data = {
@@ -187,7 +185,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             StartMinute: AppointmentData.Start.minute(),
             EndUsed: AppointmentData.CalEvent ? (
                 AppointmentData.CalEvent.allDay ? 0 : 1
-            ) : 1,
+            ) : AppointmentData.End.hasTime() ? 1 : 0,
             EndYear: AppointmentData.End ? AppointmentData.End.year() : null,
             EndMonth: AppointmentData.End ? AppointmentData.End.month() + 1 : null,
             EndDay: AppointmentData.End ? AppointmentData.End.date() : null,
@@ -211,11 +209,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @private
      * @name UpdateAppointment
      * @memberof Core.Agent.AppointmentCalendar
-     * @function
      * @param {Object} Params - Hash with configuration.
      * @param {Object} AppointmentData - Hash with appointment data.
      * @description
-     *      This function updates the appointment with supplied data.
+     *      This method updates the appointment with supplied data.
      */
     function UpdateAppointment(Params, AppointmentData) {
         var Data = {
@@ -249,6 +246,74 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             function (Response) {
                 if (!Response.Success) {
                     AppointmentData.RevertFunc();
+                }
+            }
+        );
+    }
+
+    /**
+     * @name CalendarSwitchInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
+     * @param {Object} EventSources - hash with calendar sources.
+     * @description
+     *      This method initializes calendar checkbox behavior.
+     */
+    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources) {
+
+        // Show/hide the calendar appointments
+        if ($CalendarSwitch.prop('checked')) {
+            $('#calendar').fullCalendar('addEventSource', EventSources[$CalendarSwitch.data('id')]);
+        } else {
+            $('#calendar').fullCalendar('removeEventSource', EventSources[$CalendarSwitch.data('id')]);
+        }
+
+        // Register change event handler
+        $CalendarSwitch.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources);
+        });
+    }
+
+    /**
+     * @name AllDayInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $EndUsed - end time checkbox element.
+     * @description
+     *      This method initializes calendar checkbox behavior.
+     */
+    TargetNS.AllDayInit = function ($EndUsed) {
+
+        // Show/hide the start hour/minute and complete end time
+        if (!$EndUsed.prop('checked')) {
+            $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', true);
+        } else {
+            $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', false);
+        }
+
+        // Register change event handler
+        $EndUsed.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            TargetNS.AllDayInit($EndUsed);
+        });
+    }
+
+    /**
+     * @private
+     * @name EditAppointment
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {Object} Data - Hash with call and appointment data.
+     * @description
+     *      This method submits an edit appointment call to the backend and refreshes the view.
+     */
+    TargetNS.EditAppointment = function (Data) {
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+                if (Response.Success) {
+                    $('#calendar').fullCalendar('refetchEvents');
+
+                    // Close the dialog
+                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                 }
             }
         );
