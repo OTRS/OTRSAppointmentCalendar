@@ -11,6 +11,10 @@
 
 @media screen,projection,tv,handheld {
 
+    #EditAppointmentForm {
+        width: 560px;
+    }
+    
     #CalendarToolbar {
         width: 100%;
     }

@@ -201,17 +201,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Core.Config.Get('CGIHandle'),
             Data,
             function (HTML) {
-
-                // if the waiting dialog was cancelled, do not show the search
-                // dialog as well
-                if (!$('.Dialog:visible').length) {
-                    return;
-                }
-
                 Core.UI.Dialog.ShowContentDialog(HTML, Params.DialogText.EditTitle, '10px', 'Center', true, undefined, true);
-
                 Core.UI.InputFields.Activate($('.Dialog:visible'));
-
             }, 'html'
         );
     }
