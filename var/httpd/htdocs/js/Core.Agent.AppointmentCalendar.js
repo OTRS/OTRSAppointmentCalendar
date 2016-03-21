@@ -34,7 +34,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.ButtonText.month - Localized string for the word "month".
      * @param {String} Params.ButtonText.week - Localized string for the word "week".
      * @param {String} Params.ButtonText.day - Localized string for the word "day".
-     * @param {Array} Params.Events - Array of hashes including the data for each event.
+     * @param {Array} Params.EventSources - Array of hashes including the data for each event.
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -100,10 +100,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditMaskSubaction, Params.DialogText, Data);
-                // return true;
+                OpenEditDialog(Params, Data);
+                return false;
             },
-            events: Params.Events,
             eventClick: function(CalEvent, JSEvent, View) {
                 var Data = {
                     Start: CalEvent.start,
@@ -112,7 +111,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     JSEvent: JSEvent,
                     View: View
                 };
-                OpenEditDialog(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditMaskSubaction, Params.DialogText, Data);
+                OpenEditDialog(Params, Data);
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
@@ -124,7 +123,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     UI: UI,
                     View: View
                 };
-                UpdateAppointment(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Data);
+                UpdateAppointment(Params, Data);
                 return false;
             },
             eventResize: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
@@ -136,9 +135,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     UI: UI,
                     View: View
                 };
-                UpdateAppointment(Params.CalendarID, Params.Callbacks.EditAction, Params.Callbacks.EditSubaction, Data);
+                UpdateAppointment(Params, Data);
                 return false;
-            }
+            },
+            eventSources: Params.EventSources
         });
     };
 
@@ -159,29 +159,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @function
-     * @param {Integer} CalendarID - ID of the calendar user is editing
-     * @param {String} Action - Action which is used in framework right now.
-     * @param {String} Subaction - Subaction which is used in framework right now.
-     * @param {Object} DialogText - Hash with dialog text translations.
+     * @param {Object} Params - Hash with configuration.
      * @param {Object} AppointmentData - Hash with appointment data.
      * @description
      *      This function open the add appointment dialog after selecting a time period.
      */
-    function OpenEditDialog(CalendarID, Action, Subaction, DialogText, AppointmentData) {
-        var Data;
-
-        if (!Action) {
-            Action = 'AgentAppointmentEdit';
-        }
-
-        if (!Subaction) {
-            Subaction = 'AJAXMask';
-        }
-
-        Data = {
-            CalendarID: CalendarID,
-            Action: Action,
-            Subaction: Subaction,
+    function OpenEditDialog(Params, AppointmentData) {
+        var Data = {
+            CalendarID: AppointmentData.CalEvent ? AppointmentData.CalEvent.CalendarID : Params.DefaultCalendarID,
+            Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+            Subaction: Params.Callbacks.EditMaskSubaction ? Params.Callbacks.EditMaskSubaction : 'EditMask',
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
             Title: AppointmentData.CalEvent ? AppointmentData.CalEvent.title : null,
             Description: AppointmentData.CalEvent ? AppointmentData.CalEvent.Description : null,
@@ -214,7 +201,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     return;
                 }
 
-                Core.UI.Dialog.ShowContentDialog(HTML, DialogText.EditTitle, '10px', 'Center', true, undefined, true);
+                Core.UI.Dialog.ShowContentDialog(HTML, Params.DialogText.EditTitle, '10px', 'Center', true, undefined, true);
 
                 Core.UI.InputFields.Activate($('.Dialog:visible'));
 
@@ -227,28 +214,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name UpdateAppointment
      * @memberof Core.Agent.AppointmentCalendar
      * @function
-     * @param {Integer} CalendarID - ID of the calendar user is editing
-     * @param {String} Action - Action which is used in framework right now.
-     * @param {String} Subaction - Subaction which is used in framework right now.
+     * @param {Object} Params - Hash with configuration.
      * @param {Object} AppointmentData - Hash with appointment data.
      * @description
      *      This function updates the appointment with supplied data.
      */
-    function UpdateAppointment(CalendarID, Action, Subaction, AppointmentData) {
-        var Data;
-
-        if (!Action) {
-            Action = 'AgentAppointmentEdit';
-        }
-
-        if (!Subaction) {
-            Subaction = 'EditAppointment';
-        }
-
-        Data = {
-            CalendarID: CalendarID,
-            Action: Action,
-            Subaction: Subaction,
+    function UpdateAppointment(Params, AppointmentData) {
+        var Data = {
+            CalendarID: AppointmentData.CalEvent.CalendarID,
+            Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+            Subaction: Params.Callbacks.EditSubaction ? Params.Callbacks.EditSubaction : 'EditAppointment',
             AppointmentID: AppointmentData.CalEvent.id,
             Title: AppointmentData.CalEvent.title,
             Description: AppointmentData.CalEvent.Description,

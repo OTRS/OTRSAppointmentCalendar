@@ -11,6 +11,26 @@
 
 @media screen,projection,tv,handheld {
 
+    #CalendarToolbar {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        margin-bottom: 10px;
+    }
+
+    .CalendarSwitch {
+        font-size: 11px;
+        margin-right: 10px;
+    }
+
+    .CalendarColorSwatch {
+        display: inline-block;
+        vertical-align: middle;
+        padding: 1px;
+        min-width: 12px;
+        min-height: 12px;
+    }
+
     .fc button {
         background: #eee;
         border: 1px solid #ccc;

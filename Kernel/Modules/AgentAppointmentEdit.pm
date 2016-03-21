@@ -57,6 +57,36 @@ sub Run {
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {
 
+        # get all user's valid calendars
+        my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
+            Valid => 'valid',
+        );
+        my @Calendars = $CalendarObject->CalendarList(
+            UserID  => $Self->{UserID},
+            ValidID => $ValidID,
+        );
+
+        # transform data for select box
+        my @CalendarData = map {
+            {
+                Key   => $_->{CalendarID},
+                Value => $_->{CalendarName},
+            }
+        } @Calendars;
+
+        # define the current ID
+        $Param{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || $CalendarData[0]->{Key};
+
+        # calendar selection
+        $Param{CalendarIDStrg} = $LayoutObject->BuildSelection(
+            Data         => \@CalendarData,
+            SelectedID   => $GetParam{CalendarID} || $CalendarData[0]->{Key},
+            Name         => 'CalendarID',
+            Multiple     => 0,
+            Class        => 'Modernize',
+            PossibleNone => 0,
+        );
+
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,

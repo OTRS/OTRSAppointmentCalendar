@@ -48,12 +48,21 @@
 [% RenderBlockEnd("NoCalendar") %]
 
 [% RenderBlockStart("CalendarDiv") %]
-                <form action="[% Env("CGIHandle") %]" method="post" id="SelectCalendarForm">
-                    <input type="hidden" name="Action" value="[% Env("Action") %]"/>
-                    <h2>
-                        [% Data.CalendarIDStrg %]
-                    </h2>
-                </form>
+                <div id="CalendarToolbar">
+                    <form action="[% Env("CGIHandle") %]" method="post" id="SelectCalendarForm">
+                        <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+[% RenderBlockStart("CalendarSwitch") %]
+                        <span class="CalendarSwitch">
+                            <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
+                                <!-- <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]"> -->
+                            </span>
+                            <label for="Calendar[% Data.CalendarID | html %]">
+                                [% Data.CalendarName | html %]
+                            </label>
+                        </span>
+[% RenderBlockEnd("CalendarSwitch") %]
+                    </form>
+                </div>
 
                 <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
 [% RenderBlockEnd("CalendarDiv") %]
@@ -61,12 +70,8 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 
-$('#CalendarID').bind('change', function(){
-    $('#SelectCalendarForm').submit();
-});
-
 Core.Agent.AppointmentCalendar.Init({
-    CalendarID: $('#CalendarID').val(),
+    DefaultCalendarID: [% Data.DefaultCalendarID | JSON %],
     AllDayText: [% Translate("All-day") | JSON %],
     IsRTL: [% Data.IsRTLLanguage %],
     MonthNames: [
@@ -132,18 +137,31 @@ Core.Agent.AppointmentCalendar.Init({
         EditSubaction: [% Data.EditSubaction | JSON %],
         AddSubaction: [% Data.AddSubaction | JSON %]
     },
-    Events: {
-        url: Core.Config.Get('CGIHandle'),
-        type: 'POST',
-        data: {
-            Action: 'AgentAppointmentList',
-            Subaction: 'ListAppointments',
-            CalendarID: [% Data.CalendarID | JSON %],
-        },
-        startParam: 'StartTime',
-        endParam: 'EndTime',
-    }
+    EventSources: [
+[% RenderBlockStart("CalendarSource") %]
+        {
+            url: Core.Config.Get('CGIHandle'),
+            type: 'POST',
+            data: {
+                Action: 'AgentAppointmentList',
+                Subaction: 'ListAppointments',
+                CalendarID: [% Data.CalendarID | JSON %],
+            },
+            color: [% Data.CalendarColor | JSON %],
+            startParam: 'StartTime',
+            endParam: 'EndTime'
+        }
+[% RenderBlockStart("CalendarSourceComma") %]
+        ,
+[% RenderBlockEnd("CalendarSourceComma") %]
+[% RenderBlockEnd("CalendarSource") %]
+    ]
 });
+
+// $('.CalendarSwitch input[type="checkbox"]').bind('change', function(){
+//     var $CalendarSource = $(this);
+//
+// });
 
 //]]></script>
 [% END %]

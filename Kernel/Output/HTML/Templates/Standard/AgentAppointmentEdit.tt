@@ -11,7 +11,6 @@
     <form id="EditAppointmentForm" class="Validate">
         <input type="hidden" name="Action" value="[% Env("Action") %]" id="AgentAppointmentEdit"/>
         <input type="hidden" name="Subaction" value="Store"/>
-        <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
         <input type="hidden" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic info") | html %]</span></legend>
@@ -34,6 +33,11 @@
             <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
                 <input type="text" name="Location" value="[% Data.Location | html %]" class="W95pc" />
+            </div>
+            <div class="Clear"></div>
+            <label for="CalendarID">[% Translate("Calendar") | html %]:</label>
+            <div class="Field">
+                [% Data.CalendarIDStrg %]
             </div>
         </fieldset>
         <fieldset class="TableLike">
@@ -67,7 +71,7 @@ Core.Form.Validate.Init();
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
 
     var Data = {
-        CalendarID: [% Data.CalendarID | JSON %],
+        CalendarID: $('select[name="CalendarID"]').val(),
         Title: $('input[name="Title"]').val(),
         Description: $('textarea[name="Description"]').val(),
         Location: $('input[name="Location"]').val(),
