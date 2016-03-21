@@ -11,6 +11,10 @@ package Kernel::System::Calendar;
 use strict;
 use warnings;
 
+use Kernel::System::EventHandler;
+
+use vars qw(@ISA);
+
 our @ObjectDependencies = (
     'Kernel::System::Cache',
     'Kernel::System::DB',
@@ -48,6 +52,15 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    @ISA = qw(
+        Kernel::System::EventHandler
+    );
+
+    # init of event handler
+    $Self->EventHandlerInit(
+        Config => 'AppointmentCalendar::EventModulePost',
+    );
+
     $Self->{CacheType} = 'Calendar';
     $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
@@ -75,6 +88,9 @@ returns Calendar hash if successful:
         ChangeBy     => 4,
         ValidID      => 1,
     );
+
+Events:
+    CalendarCreate
 
 =cut
 
@@ -121,6 +137,8 @@ sub CalendarCreate {
         UserID       => $Param{UserID},
     );
 
+    return if !%Calendar;
+
     # cache value
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $Self->{CacheType},
@@ -132,6 +150,15 @@ sub CalendarCreate {
     # reset CalendarList
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => 'CalendarList',
+    );
+
+    # fire event
+    $Self->EventHandler(
+        Event => 'CalendarCreate',
+        Data  => {
+            %Calendar,
+        },
+        UserID => $Param{UserID},
     );
 
     return %Calendar;
@@ -368,6 +395,9 @@ updates an existing calendar.
 
 returns 1 if successful:
 
+Events:
+    CalendarUpdate
+
 =cut
 
 sub CalendarUpdate {
@@ -419,6 +449,15 @@ sub CalendarUpdate {
     $CacheObject->Delete(
         Type => $Self->{CacheType},
         Key  => $Param{CalendarID}
+    );
+
+    # fire event
+    $Self->EventHandler(
+        Event => 'CalendarUpdate',
+        Data  => {
+            Calendar => $Param{CalendarID},
+        },
+        UserID => $Param{UserID},
     );
 
     return 1;
