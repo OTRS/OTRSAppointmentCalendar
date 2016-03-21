@@ -84,8 +84,6 @@ $Self->False(
 
 # Try without calendar name
 my %Calendar3 = $CalendarObject->CalendarCreate(
-
-    # CalendarName    => 'Meetings',
     UserID => $UserID,
 );
 
@@ -97,8 +95,6 @@ $Self->False(
 # Try without UserID
 my %Calendar4 = $CalendarObject->CalendarCreate(
     CalendarName => 'Meetings',
-
-    # UserID          => 1,
 );
 
 $Self->False(
@@ -241,7 +237,36 @@ my @CalendarList4 = $CalendarObject->CalendarList(
 );
 $Self->True(
     scalar @CalendarList4 == 1,
-    'CalendarList(UserID = 1, ValidID = 2) valid state',
+    'CalendarList(UserID = 1, ValidID = 2) invalid state',
+);
+
+# Try without OwnerID
+my $Update1 = $CalendarObject->CalendarUpdate(
+    CalendarID   => $Calendar1{CalendarID},
+    CalendarName => 'Meetings',            # (required) Personal calendar name
+                                           # OwnerID          => 2,                   # (optional) Calendar owner UserID
+    UserID       => $UserID,               # (required) UserID (who made update)
+    ValidID      => 2,                     # (required) ValidID
+);
+$Self->True(
+    $Update1,
+    "CalendarUpdate(CalendarID => 2, CalendarName => $Calendar1{CalendarID}, UserID => $UserID, ValidID => 2)",
+);
+
+my %CalendarGet6 = $CalendarObject->CalendarGet(
+    CalendarID => $CalendarGet1{CalendarID},
+);
+
+$Self->Is(
+    $CalendarGet6{CalendarName},
+    'Meetings',
+    "Check CalendarName",
+);
+
+$Self->Is(
+    $CalendarGet6{ValidID},
+    2,
+    "Check ValidID",
 );
 
 1;
