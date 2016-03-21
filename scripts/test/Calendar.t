@@ -23,10 +23,12 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
+my $UserID = 1;    # Use root
+
 # This will be ok
 my %Calendar1 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
-    UserID       => 1,
+    UserID       => $UserID,
 );
 
 $Self->True(
@@ -72,7 +74,7 @@ $Self->True(
 # Try with same name
 my %Calendar2 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
-    UserID       => 1,
+    UserID       => $UserID,
 );
 
 $Self->False(
@@ -84,7 +86,7 @@ $Self->False(
 my %Calendar3 = $CalendarObject->CalendarCreate(
 
     # CalendarName    => 'Meetings',
-    UserID => 1,
+    UserID => $UserID,
 );
 
 $Self->False(
@@ -102,6 +104,144 @@ my %Calendar4 = $CalendarObject->CalendarCreate(
 $Self->False(
     $Calendar4{CalendarID},
     'CalendarCreate( CalendarName => "Meetings" ) without UserID',
+);
+
+my %Calendar5 = $CalendarObject->CalendarCreate(
+    CalendarName => 'Test calendar 2',
+    UserID       => $UserID,
+    ValidID      => 2,
+);
+
+$Self->True(
+    $Calendar5{CalendarID},
+    'CalendarCreate( CalendarName => "Meetings", UserID => 1, ValidID => 2,) invalid state',
+);
+
+my %CalendarGet1 = $CalendarObject->CalendarGet(
+    CalendarName => 'Test calendar',
+    UserID       => $UserID,
+);
+
+$Self->True(
+    $CalendarGet1{CalendarID},
+    'CalendarGet( CalendarName => "Test calendar", UserID => 1 )',
+);
+
+my %CalendarGet2 = $CalendarObject->CalendarGet(
+    CalendarID => $CalendarGet1{CalendarID},
+);
+
+my $Compare = $Self->IsDeeply(
+    \%CalendarGet1,
+    \%CalendarGet2,
+    'Same',
+);
+
+$Self->True(
+    $Compare,
+    'Compare results',
+);
+
+# Try without params
+my %CalendarGet3 = $CalendarObject->CalendarGet();
+$Self->False(
+    $CalendarGet3{CalendarID},
+    'CalendarGet() without parameters',
+);
+
+# Missing UserID
+my %CalendarGet4 = $CalendarObject->CalendarGet(
+    CalendarName => 'Test calendar',
+);
+$Self->False(
+    $CalendarGet4{CalendarID},
+    'CalendarGet( CalendarName => "Test calendar") without UserID',
+);
+
+# Missing CalendarName
+my %CalendarGet5 = $CalendarObject->CalendarGet(
+    UserID => $UserID,
+);
+$Self->False(
+    $CalendarGet5{CalendarID},
+    'CalendarGet(UserID => 1) without CalendarName',
+);
+
+# Without params
+my @CalendarList1 = $CalendarObject->CalendarList();
+$Self->True(
+    scalar @CalendarList1 > 1,
+    'CalendarList() without parameters',
+);
+
+my %CalendarListItem1 = %{ $CalendarList1[0] };
+$Self->True(
+    $CalendarListItem1{CalendarID},
+    'CalendarList() has CalendarID',
+);
+
+$Self->True(
+    $CalendarListItem1{UserID},
+    'CalendarList() has UserID',
+);
+
+$Self->True(
+    $CalendarListItem1{CalendarName},
+    'CalendarList() has CalendarName',
+);
+
+$Self->True(
+    $CalendarListItem1{CreateTime},
+    'CalendarList() has CreateTime',
+);
+
+$Self->True(
+    $CalendarListItem1{CreateBy},
+    'CalendarList() has CreateBy',
+);
+
+$Self->True(
+    $CalendarListItem1{ChangeTime},
+    'CalendarList() has ChangeTime',
+);
+
+$Self->True(
+    $CalendarListItem1{ChangeBy},
+    'CalendarList() has ChangeBy',
+);
+
+$Self->True(
+    $CalendarListItem1{ValidID},
+    'CalendarList() has ValidID',
+);
+
+# With UserID
+my @CalendarList2 = $CalendarObject->CalendarList(
+    UserID => $UserID,
+);
+$Self->True(
+    scalar @CalendarList2 == 2,
+    'CalendarList( UserID = 1) with UserID',
+);
+
+# only valid
+my @CalendarList3 = $CalendarObject->CalendarList(
+    UserID  => $UserID,
+    ValidID => 1,
+);
+$Self->True(
+    scalar @CalendarList3 == 1,
+    'CalendarList(UserID = 1, ValidID = 1) valid state',
+);
+
+# only invalid
+my @CalendarList4 = $CalendarObject->CalendarList(
+    UserID  => $UserID,
+    ValidID => 2,
+);
+$Self->True(
+    scalar @CalendarList4 == 1,
+    'CalendarList(UserID = 1, ValidID = 2) valid state',
 );
 
 1;
