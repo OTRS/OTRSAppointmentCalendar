@@ -13,7 +13,10 @@ use warnings;
 
 use Digest::MD5;
 
+use vars qw(@ISA);
+
 use Kernel::System::VariableCheck qw(:all);
+use Kernel::System::EventHandler;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -54,6 +57,15 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    @ISA = qw(
+        Kernel::System::EventHandler
+    );
+
+    # init of event handler
+    $Self->EventHandlerInit(
+        Config => 'AppointmentCalendar::EventModulePost',
+    );
+
     $Self->{CacheType} = 'Appointment';
     $Self->{CacheTTL}  = 60 * 60 * 24 * 20;
 
@@ -82,6 +94,9 @@ creates a new appointment.
     );
 
 returns AppointmentID if successful
+
+Events:
+    AppointmentCreate
 
 =cut
 
@@ -178,6 +193,15 @@ sub AppointmentCreate {
         );
         return;
     }
+
+    # fire event
+    $Self->EventHandler(
+        Event => 'AppointmentCreate',
+        Data  => {
+            AppointmentID => $AppointmentID,
+        },
+        UserID => $Param{UserID},
+    );
 
     return $AppointmentID;
 }
@@ -409,6 +433,9 @@ updates an existing appointment.
 returns 1 if successful:
     $Success = 1;
 
+Events:
+    AppointmentUpdate
+
 =cut
 
 sub AppointmentUpdate {
@@ -491,6 +518,15 @@ sub AppointmentUpdate {
         Key  => $Param{AppointmentID},
     );
 
+    # fire event
+    $Self->EventHandler(
+        Event => 'AppointmentUpdate',
+        Data  => {
+            AppointmentID => $Param{AppointmentID},
+        },
+        UserID => $Param{UserID},
+    );
+
     return 1;
 }
 
@@ -504,6 +540,9 @@ deletes an existing appointment.
 
 returns 1 if successful:
     $Success = 1;
+
+Events:
+    AppointmentDelete
 
 =cut
 
@@ -540,6 +579,15 @@ sub AppointmentDelete {
     $Kernel::OM->Get('Kernel::System::Cache')->Delete(
         Type => $Self->{CacheType},
         Key  => $Param{AppointmentID},
+    );
+
+    # fire event
+    $Self->EventHandler(
+        Event => 'AppointmentDelete',
+        Data  => {
+            AppointmentID => $Param{AppointmentID},
+        },
+        UserID => $Param{UserID},
     );
 
     return 1;
