@@ -10,6 +10,32 @@
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Filelist>
         <File Permission="640" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Class/ReturnValue.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Fast.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained/Fast.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Text/vFile/asData.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Property.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/FreeBusy.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Event.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Journal.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Todo.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Standard.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Daylight.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Procedure.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/None.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Display.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/URI.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Email.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Audio.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Date/ICal.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Date/Leapyear.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Date/ICal/Duration.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
@@ -19,6 +45,7 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>

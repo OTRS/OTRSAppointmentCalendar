@@ -36,13 +36,6 @@
                         </a>
                     </li>
 [% RenderBlockEnd("AddLink") %]
-[% RenderBlockStart("ExportLink") %]
-                    <li>
-                        <a href="#" class="CallForAction Fullsize Center">
-                            <span><i class="fa fa-download"></i>[% Translate("Export calendar") | html %]</span>
-                        </a>
-                    </li>
-[% RenderBlockEnd("ExportLink") %]
                 </ul>
             </div>
         </div>
@@ -60,9 +53,10 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th>[% Translate("Validity") | html %]</th>
-                            <th>[% Translate("Changed") | html %]</th>
-                            <th>[% Translate("Created") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Validity") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Changed") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Created") | html %]</th>
+                            <th class="Center W10pc">[% Translate("Export") | html %]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,6 +70,7 @@
                             <td>[% Data.Valid | html %]</td>
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
+                            <td class="Center"><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Export;CalendarID=[% Data.CalendarID | uri %];[% Env("ChallengeTokenParam") | html %]"><i class="fa fa-download"></i><span class="InvisibleText">[% Translate("Export") | html %]</span></a></td>
                         </tr>
 [% RenderBlockEnd("Calendar") %]
                     </tbody>
