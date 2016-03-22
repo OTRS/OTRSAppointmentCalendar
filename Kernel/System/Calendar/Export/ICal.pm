@@ -170,9 +170,11 @@ sub Export {
         # add both required and optional properties
         # remove time zone flag for all day appointments
         $ICalEvent->add_properties(
-            summary => $Appointment{Title},
-            dtstart => $Appointment{AllDay} ? substr( $ICalStartTime->ical(), 0, -1 ) : $ICalStartTime->ical(),
-            dtend   => $Appointment{AllDay} ? substr( $ICalEndTime->ical(), 0, -1 ) : $ICalEndTime->ical(),
+            summary         => $Appointment{Title},
+            dtstart         => $Appointment{AllDay} ? substr( $ICalStartTime->ical(), 0, -1 ) : $ICalStartTime->ical(),
+            dtend           => $Appointment{AllDay} ? substr( $ICalEndTime->ical(), 0, -1 ) : $ICalEndTime->ical(),
+            uid             => $Appointment{UniqueID},
+            'last-modified' => $Appointment{ChangeTime},
             %ICalEventProperties,
         );
 
