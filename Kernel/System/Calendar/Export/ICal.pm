@@ -7,8 +7,7 @@
 # --
 
 package Kernel::System::Calendar::Export::ICal;
-
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxCheck)
+## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxChec)k
 
 use strict;
 use warnings;
@@ -97,11 +96,30 @@ sub Export {
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $Param{CalendarID},
     );
-    return if !%Calendar;
+    return if !$Calendar{CalendarID};
+
+    my @AppointmentIDs = $AppointmentObject->AppointmentList(
+        CalendarID => $Calendar{CalendarID},
+    );
+    return if !scalar @AppointmentIDs;
 
     my $ICal = Data::ICal->new(
         calname => $Calendar{CalendarName},
     );
+
+    for my $AppointmentID (@AppointmentIDs) {
+        my %Appointment = $AppointmentObject->AppointmentGet(
+            AppointmentID => $AppointmentID,
+        );
+        return if !$Appointment{AppointmentID};
+
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+        my $StartTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Appointment{StartTime},
+        );
+    }
 
     # my $ical_date = Date::ICal->new(
     #     year => 2013,
@@ -119,6 +137,12 @@ sub Export {
     # $calendar->add_entry($event);
 
     return $ICal->as_string();
+}
+
+no warnings 'redefine';
+
+sub Data::ICal::product_id {    ## no critic
+    return 'OTRS ' . $Kernel::OM->Get('Kernel::Config')->Get('Version');
 }
 
 1;
