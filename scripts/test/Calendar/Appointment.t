@@ -41,21 +41,10 @@ $Self->True(
 my $AppointmentID1 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
-
-    #    Description         => 'How to use Process tickets...', # opt
-    #    Location            => 'Straubing', # opt
-    StartTime => '2016-01-01 16:00:00',
-
-    #    EndTime             => '2016-01-01 17:00:00',   # op
+    StartTime  => '2016-01-01 16:00:00',
+    EndTime    => '2016-01-01 17:00:00',
     TimezoneID => 'Timezone',
-
-    # RecurrenceFrequency => '1',                                     # (optional)
-    # RecurrenceCount     => '1',                                     # (optional)
-    # RecurrenceInterval  => '',                                      # (optional)
-    # RecurrenceUntil     => '',                                      # (optional)
-    # RecurrenceByMonth   => '',                                      # (optional)
-    # RecurrenceByDay     => '',                                      # (optional)
-    UserID => $UserID,    # (required) UserID
+    UserID     => $UserID,
 );
 
 $Self->True(
@@ -67,6 +56,7 @@ $Self->True(
 my $AppointmentID2 = $AppointmentObject->AppointmentCreate(
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
+    EndTime    => '2016-01-01 17:00:00',
     TimezoneID => 'Timezone',
     UserID     => $UserID,
 );
@@ -80,6 +70,7 @@ $Self->False(
 my $AppointmentID3 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-01-01 16:00:00',
+    EndTime    => '2016-01-01 17:00:00',
     TimezoneID => 'Timezone',
     UserID     => $UserID,
 );
@@ -93,6 +84,7 @@ $Self->False(
 my $AppointmentID4 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
+    EndTime    => '2016-01-01 17:00:00',
     TimezoneID => 'Timezone',
     UserID     => $UserID,
 );
@@ -102,11 +94,12 @@ $Self->False(
     'AppointmentCreate #4',
 );
 
-# No TimezoneID
+# No EndTime
 my $AppointmentID5 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
+    TimezoneID => 'Timezone',
     UserID     => $UserID,
 );
 
@@ -115,12 +108,13 @@ $Self->False(
     'AppointmentCreate #5',
 );
 
-# No UserID
+# No TimezoneID
 my $AppointmentID6 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
-    TimezoneID => 'Timezone',
+    EndTime    => '2016-01-01 17:00:00',
+    UserID     => $UserID,
 );
 
 $Self->False(
@@ -128,13 +122,28 @@ $Self->False(
     'AppointmentCreate #6',
 );
 
+# No UserID
 my $AppointmentID7 = $AppointmentObject->AppointmentCreate(
+    CalendarID => $Calendar1{CalendarID},
+    Title      => 'Webinar',
+    StartTime  => '2016-01-01 16:00:00',
+    EndTime    => '2016-01-01 17:00:00',
+    TimezoneID => 'Timezone',
+);
+
+$Self->False(
+    $AppointmentID7,
+    'AppointmentCreate #7',
+);
+
+my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     CalendarID          => $Calendar1{CalendarID},
     Title               => 'Title',
     Description         => 'Description',
     Location            => 'Germany',
     StartTime           => '2016-01-01 16:00:00',
     EndTime             => '2016-01-01 17:00:00',
+    AllDay              => 1,
     TimezoneID          => 'TimezoneID',
     RecurrenceFrequency => '1',
     RecurrenceCount     => '1',
@@ -178,12 +187,12 @@ $Self->Is(
 );
 
 my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
 );
 
 $Self->Is(
     $AppointmentGet1{ID},
-    $AppointmentID7,
+    $AppointmentID8,
     'AppointmentGet() - ID ok',
 );
 $Self->Is(
@@ -219,6 +228,11 @@ $Self->Is(
     $AppointmentGet1{EndTime},
     '2016-01-01 17:00:00',
     'AppointmentGet() - EndTime ok',
+);
+$Self->Is(
+    $AppointmentGet1{AllDay},
+    1,
+    'AppointmentGet() - AllDay ok',
 );
 $Self->Is(
     $AppointmentGet1{TimezoneID},
@@ -266,13 +280,14 @@ my %Calendar2 = $CalendarObject->CalendarCreate(
 );
 
 my $Update1 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID       => $AppointmentID7,
+    AppointmentID       => $AppointmentID8,
     CalendarID          => $Calendar2{CalendarID},
     Title               => 'Webinar title',
     Description         => 'Description details',
     Location            => 'England',
     StartTime           => '2016-01-02 16:00:00',
     EndTime             => '2016-01-02 17:00:00',
+    AllDay              => 0,
     TimezoneID          => 'Timezone',
     RecurrenceFrequency => '2',
     RecurrenceCount     => '2',
@@ -284,11 +299,11 @@ $Self->True(
 );
 
 my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
 );
 $Self->Is(
     $AppointmentGet3{ID},
-    $AppointmentID7,
+    $AppointmentID8,
     'AppointmentUpdate() - AppointmentID ok',
 );
 $Self->Is(
@@ -325,6 +340,10 @@ $Self->Is(
     '2016-01-02 17:00:00',
     'AppointmentUpdate() - EndTime ok',
 );
+$Self->False(
+    $AppointmentGet3{AllDay},
+    'AppointmentUpdate() - AllDay ok',
+);
 $Self->Is(
     $AppointmentGet3{TimezoneID},
     'Timezone',
@@ -351,10 +370,12 @@ $Self->Is(
     'AppointmentUpdate() - ChangeBy ok',
 );
 
+# missing AppointmentID
 my $Update2 = $AppointmentObject->AppointmentUpdate(
     CalendarID => $Calendar2{CalendarID},
     Title      => 'Webinar title',
     StartTime  => '2016-01-02 16:00:00',
+    EndTime    => '2016-01-03 17:00:00',
     TimezoneID => 'Timezone',
     UserID     => 1,
 );
@@ -363,10 +384,12 @@ $Self->False(
     'AppointmentUpdate() - #2 no AppointmentID',
 );
 
+# no CalendarID
 my $Update3 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 'Timezone',
     UserID        => 1,
 );
@@ -375,10 +398,12 @@ $Self->False(
     'AppointmentUpdate() - #3 no CalendarID',
 );
 
+# no title
 my $Update4 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 'Timezone',
     UserID        => 1,
 );
@@ -387,10 +412,12 @@ $Self->False(
     'AppointmentUpdate() - #4 no Title',
 );
 
+# no StartTime
 my $Update5 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
+    EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 'Timezone',
     UserID        => 1,
 );
@@ -399,20 +426,34 @@ $Self->False(
     'AppointmentUpdate() - #5 no StartTime',
 );
 
+# no EndTime
 my $Update6 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
+    CalendarID    => $Calendar2{CalendarID},
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    TimezoneID    => 'Timezone',
+    UserID        => 1,
+);
+$Self->False(
+    $Update6,
+    'AppointmentUpdate() - #6 no EndTime',
+);
+
+my $Update7 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     UserID        => 1,
 );
 $Self->False(
-    $Update6,
-    'AppointmentUpdate() - #6 no TimezoneID',
+    $Update7,
+    'AppointmentUpdate() - #7 no TimezoneID',
 );
 
-my $Update7 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID7,
+my $Update8 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
@@ -420,13 +461,13 @@ my $Update7 = $AppointmentObject->AppointmentUpdate(
 
 );
 $Self->False(
-    $Update7,
-    'AppointmentUpdate() - #7 no UserID',
+    $Update8,
+    'AppointmentUpdate() - #8 no UserID',
 );
 
 my $Delete1 = $AppointmentObject->AppointmentDelete(
 
-    # AppointmentID => $AppointmentID7,
+    # AppointmentID => $AppointmentID8,
     UserID => $UserID,
 );
 $Self->False(
@@ -435,7 +476,7 @@ $Self->False(
 );
 
 my $Delete2 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
 
     # UserID  => $UserID,
 );
@@ -445,7 +486,7 @@ $Self->False(
 );
 
 my $Delete3 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
     UserID        => $UserID,
 );
 $Self->True(
@@ -454,7 +495,7 @@ $Self->True(
 );
 
 my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID7,
+    AppointmentID => $AppointmentID8,
     UserID        => $UserID,
 );
 $Self->False(
