@@ -7,7 +7,6 @@
 # --
 
 package Kernel::System::Calendar::Export::ICal;
-## nofilter(TidyAll::Plugin::OTRS::Perl::SyntaxChec)k
 
 use strict;
 use warnings;
@@ -67,8 +66,9 @@ sub new {
 export calendar to iCalendar format
 
     my $ICalString = $ExportObject->Export(
-        CalendarID => 1,    # (required) Valid CalendarID
-        UserID     => 1,    # (required) UserID
+        CalendarID   => 1,    # (required) Valid CalendarID
+        UserID       => 1,    # (required) UserID
+        UserTimeZone => 1,    # (optional) Time zone offset
     );
 
 returns iCalendar string if successful
@@ -89,6 +89,9 @@ sub Export {
         }
     }
 
+    # time zone offset
+    $Param{UserTimeZone} = $Param{UserTimeZone} ? int $Param{UserTimeZone} : 0;
+
     # needed objects
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
@@ -101,9 +104,9 @@ sub Export {
     my @AppointmentIDs = $AppointmentObject->AppointmentList(
         CalendarID => $Calendar{CalendarID},
     );
-    return if !scalar @AppointmentIDs;
+    return if !( scalar @AppointmentIDs );
 
-    my $ICal = Data::ICal->new(
+    my $ICalCalendar = Data::ICal->new(
         calname => $Calendar{CalendarName},
     );
 
@@ -111,32 +114,69 @@ sub Export {
         my %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $AppointmentID,
         );
-        return if !$Appointment{AppointmentID};
+        return if !$Appointment{ID};
 
         # get time object
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
+        # check end time
+        my $ICalEndTime;
+        if ( $Appointment{EndTime} ) {
+            my $EndTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{EndTime},
+            );
+            $ICalEndTime = Date::ICal->new(
+                epoch => $EndTime - ( $Param{UserTimeZone} * 3600 ),
+            );
+        }
+
+        # calculate start time
+        my $ICalStartTime;
         my $StartTime = $TimeObject->TimeStamp2SystemTime(
             String => $Appointment{StartTime},
         );
+        if ($ICalEndTime) {
+            $ICalStartTime = Date::ICal->new(
+                epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
+            );
+        }
+        else {
+            my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
+                SystemTime => $StartTime,
+            );
+            $ICalStartTime = Date::ICal->new(
+                year  => $Year,
+                month => $Month,
+                day   => $Day,
+            );
+        }
+
+        # create iCalendar event entry
+        my $ICalEvent = Data::ICal::Entry::Event->new();
+
+        # optional properties
+        my %ICalEventProperties;
+        if ( $Appointment{Description} ) {
+            $ICalEventProperties{description} = $Appointment{Description};
+        }
+        if ( $Appointment{Location} ) {
+            $ICalEventProperties{location} = $Appointment{Location};
+        }
+        if ($ICalEndTime) {
+            $ICalEventProperties{dtend} = $ICalEndTime->ical();
+        }
+
+        # add both required and optional properties
+        $ICalEvent->add_properties(
+            summary => $Appointment{Title},
+            dtstart => $ICalEndTime ? $ICalStartTime->ical() : substr( $ICalStartTime->ical(), 0, -1 ),
+            %ICalEventProperties,
+        );
+
+        $ICalCalendar->add_entry($ICalEvent);
     }
 
-    # my $ical_date = Date::ICal->new(
-    #     year => 2013,
-    #     month => 9,
-    #     day => 6,
-    # );
-    #
-    # my $event = Data::ICal::Entry::Event->new();
-    # $event->add_properties(
-    #     summary => "my party",
-    #     description => "I'll cry if I want to",
-    #     dtstart => $ical_date->ical(),
-    # );
-    #
-    # $calendar->add_entry($event);
-
-    return $ICal->as_string();
+    return $ICalCalendar->as_string();
 }
 
 no warnings 'redefine';

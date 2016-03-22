@@ -248,8 +248,9 @@ sub Run {
 
         # get iCalendar string
         my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
-            CalendarID => $Calendar{CalendarID},
-            UserID     => $Self->{UserID},
+            CalendarID   => $Calendar{CalendarID},
+            UserID       => $Self->{UserID},
+            UserTimeZone => $Self->{UserTimeZone} ? $Self->{UserTimeZone} : undef,
         );
 
         if ( !$ICalString ) {
