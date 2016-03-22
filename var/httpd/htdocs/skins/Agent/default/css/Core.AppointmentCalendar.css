@@ -14,7 +14,7 @@
     #EditAppointmentForm {
         width: 560px;
     }
-    
+
     #CalendarToolbar {
         width: 100%;
     }
@@ -32,6 +32,16 @@
         padding: 1px;
         min-width: 12px;
         min-height: 12px;
+    }
+
+    .AllDay:before {
+        content: "\f185";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .fc button {
@@ -104,12 +114,12 @@
         padding-bottom: 3px;
     }
 
-    form#CalendarDialogForm {
-        width: 400px;
-    }
-
     .fc-ltr .fc-time-grid .fc-event-container {
         margin-right: 2px;
+    }
+
+    .fc-time-area .fc-event-container {
+        top: 2px;
     }
 
 } /* end @media */

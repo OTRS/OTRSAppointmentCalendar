@@ -137,66 +137,58 @@ sub Run {
         );
     }
 
-    elsif ( $Self->{Subaction} eq 'AddAppointment' ) {
-
-        if ( $GetParam{CalendarID} ) {
-
-            my $AppointmentID = $AppointmentObject->AppointmentCreate(
-                %GetParam,
-                StartTime => sprintf(
-                    "%04d-%02d-%02d %02d:%02d:00",
-                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
-                    $GetParam{StartHour}, $GetParam{StartMinute}
-                ),
-                EndTime => sprintf(
-                    "%04d-%02d-%02d %02d:%02d:00",
-                    $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
-                    $GetParam{EndHour}, $GetParam{EndMinute}
-                ),
-                TimezoneID => 'Europe/Belgrade',
-                UserID     => $Self->{UserID},
+    elsif (
+        $Self->{Subaction} eq 'AddAppointment'
+        || $Self->{Subaction} eq 'EditAppointment'
+        )
+    {
+        if ( $GetParam{AllDay} ) {
+            $GetParam{StartTime} = sprintf(
+                "%04d-%02d-%02d 00:00:00",
+                $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay}
             );
-
-            # build JSON output
-            $JSON = $LayoutObject->JSONEncode(
-                Data => {
-                    Success => $AppointmentID ? 1 : 0,
-                    CalendarID    => $GetParam{CalendarID},
-                    AppointmentID => $AppointmentID ? $AppointmentID : undef,
-                },
+            $GetParam{EndTime} = sprintf(
+                "%04d-%02d-%02d 00:00:00",
+                $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay}
             );
         }
-    }
-
-    elsif ( $Self->{Subaction} eq 'EditAppointment' ) {
-
-        if ( $GetParam{CalendarID} && $GetParam{AppointmentID} ) {
-
-            my $Success = $AppointmentObject->AppointmentUpdate(
-                %GetParam,
-                StartTime => sprintf(
-                    "%04d-%02d-%02d %02d:%02d:00",
-                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
-                    $GetParam{StartHour}, $GetParam{StartMinute}
-                ),
-                EndTime => sprintf(
-                    "%04d-%02d-%02d %02d:%02d:00",
-                    $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
-                    $GetParam{EndHour}, $GetParam{EndMinute}
-                ),
-                TimezoneID => 'Europe/Belgrade',
-                UserID     => $Self->{UserID},
+        else {
+            $GetParam{StartTime} = sprintf(
+                "%04d-%02d-%02d %02d:%02d:00",
+                $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
+                $GetParam{StartHour}, $GetParam{StartMinute}
             );
-
-            # build JSON output
-            $JSON = $LayoutObject->JSONEncode(
-                Data => {
-                    Success       => $Success,
-                    CalendarID    => $GetParam{CalendarID},
-                    AppointmentID => $GetParam{AppointmentID},
-                },
+            $GetParam{EndTime} = sprintf(
+                "%04d-%02d-%02d %02d:%02d:00",
+                $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
+                $GetParam{EndHour}, $GetParam{EndMinute}
             );
         }
+
+        my $Success;
+
+        $GetParam{TimezoneID} = 'Europe/Belgrade';
+        $GetParam{UserID}     = $Self->{UserID};
+
+        if ( $GetParam{AppointmentID} ) {
+            $Success = $AppointmentObject->AppointmentUpdate(
+                %GetParam,
+            );
+        }
+        else {
+            $Success = $AppointmentObject->AppointmentCreate(
+                %GetParam,
+            );
+        }
+
+        # build JSON output
+        $JSON = $LayoutObject->JSONEncode(
+            Data => {
+                Success => $Success ? 1 : 0,
+                CalendarID    => $GetParam{CalendarID},
+                AppointmentID => $GetParam{AppointmentID} ? $GetParam{AppointmentID} : $Success,
+            },
+        );
     }
 
     elsif ( $Self->{Subaction} eq 'DeleteAppointment' ) {

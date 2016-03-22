@@ -56,6 +56,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 end: '18:00',
                 dow: [ 1, 2, 3, 4, 5 ]
             },
+            eventLimit: true,
             height: 600,
             editable: true,
             selectable: true,
@@ -145,7 +146,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 UpdateAppointment(Params, Data);
                 return false;
             },
-            eventSources: Params.EventSources
+            eventRender: function(Event, $Element) {
+                if (Event.allDay) {
+                    $Element.addClass('AllDay');
+                }
+            }
         });
     };
 
