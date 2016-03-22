@@ -109,7 +109,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Resource: Resource
                 };
                 OpenEditDialog(Params, Data);
-                return false;
+                $('#calendar').fullCalendar('unselect');
             },
             eventClick: function(CalEvent, JSEvent, View) {
                 var Data = {
@@ -132,7 +132,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View
                 };
                 UpdateAppointment(Params, Data);
-                return false;
             },
             eventResize: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
                 var Data = {
@@ -144,7 +143,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View
                 };
                 UpdateAppointment(Params, Data);
-                return false;
             },
             eventRender: function(Event, $Element) {
                 if (Event.allDay) {
