@@ -82,7 +82,8 @@ creates a new appointment.
         Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
-        EndTime             => '2016-01-01 17:00:00',                   # (optional)
+        EndTime             => '2016-01-01 17:00:00',                   # (required)
+        AllDay              => '0',                                     # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
         RecurrenceFrequency => '1',                                     # (optional)
         RecurrenceCount     => '1',                                     # (optional)
@@ -104,7 +105,7 @@ sub AppointmentCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID Title StartTime TimezoneID UserID)) {
+    for my $Needed (qw(CalendarID Title StartTime EndTime TimezoneID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -131,12 +132,10 @@ sub AppointmentCreate {
     );
 
     # Check EndTime
-    if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{EndTime},
-        );
-        return if !$EndTimeSystem;
-    }
+    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{EndTime},
+    );
+    return if !$EndTimeSystem;
 
     # TODO: Check timezome
 
@@ -162,10 +161,10 @@ sub AppointmentCreate {
 
     my $SQL = '
         INSERT INTO calendar_appointment
-            (calendar_id, unique_id, title, description, location, start_time, end_time,
+            (calendar_id, unique_id, title, description, location, start_time, end_time, all_day,
             timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
             recur_byday, create_time, create_by, change_time, change_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)
     ';
 
     # create db record
@@ -173,10 +172,11 @@ sub AppointmentCreate {
         SQL  => $SQL,
         Bind => [
             \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-            \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{TimezoneID},
-            \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},   \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},
-            \$Param{UserID},              \$Param{UserID}
+            \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
+            \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},
+            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+            \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
+            \$Param{UserID},             \$Param{UserID}
         ],
     );
 
@@ -316,6 +316,7 @@ returns a hash:
         Location            => 'Straubing',
         StartTime           => '2016-01-01 16:00:00',
         EndTime             => '2016-01-01 17:00:00',
+        AllDay              => 0,
         TimezoneID          => 'Timezone',
         RecurrenceFrequency => '1',
         RecurrenceCount     => '1',
@@ -360,7 +361,7 @@ sub AppointmentGet {
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     my $SQL = '
-        SELECT id, calendar_id, unique_id, title, description, location, start_time, end_time,
+        SELECT id, calendar_id, unique_id, title, description, location, start_time, end_time, all_day,
             timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
             recur_byday, create_time, create_by, change_time, change_by
         FROM calendar_appointment
@@ -384,17 +385,18 @@ sub AppointmentGet {
         $Result{Location}            = $Row[5];
         $Result{StartTime}           = $Row[6];
         $Result{EndTime}             = $Row[7];
-        $Result{TimezoneID}          = $Row[8];
-        $Result{RecurrenceFrequency} = $Row[9];
-        $Result{RecurrenceCount}     = $Row[10];
-        $Result{RecurrenceInterval}  = $Row[11];
-        $Result{RecurrenceUntil}     = $Row[12];
-        $Result{RecurrenceByMonth}   = $Row[13];
-        $Result{RecurrenceByDay}     = $Row[14];
-        $Result{CreateTime}          = $Row[15];
-        $Result{CreateBy}            = $Row[16];
-        $Result{ChangeTime}          = $Row[17];
-        $Result{ChangeBy}            = $Row[18];
+        $Result{AllDay}              = $Row[8];
+        $Result{TimezoneID}          = $Row[9];
+        $Result{RecurrenceFrequency} = $Row[10];
+        $Result{RecurrenceCount}     = $Row[11];
+        $Result{RecurrenceInterval}  = $Row[12];
+        $Result{RecurrenceUntil}     = $Row[13];
+        $Result{RecurrenceByMonth}   = $Row[14];
+        $Result{RecurrenceByDay}     = $Row[15];
+        $Result{CreateTime}          = $Row[16];
+        $Result{CreateBy}            = $Row[17];
+        $Result{ChangeTime}          = $Row[18];
+        $Result{ChangeBy}            = $Row[19];
     }
 
     # cache
@@ -419,7 +421,8 @@ updates an existing appointment.
         Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
-        EndTime             => '2016-01-01 17:00:00',                   # (optional)
+        EndTime             => '2016-01-01 17:00:00',                   # (required)
+        AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
         RecurrenceFrequency => '1',                                     # (optional)
         RecurrenceCount     => '1',                                     # (optional)
@@ -442,7 +445,7 @@ sub AppointmentUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID CalendarID Title StartTime TimezoneID UserID)) {
+    for my $Needed (qw(AppointmentID CalendarID Title StartTime EndTime TimezoneID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -462,12 +465,10 @@ sub AppointmentUpdate {
     return if !$StartTimeSystem;
 
     # Check EndTime
-    if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{EndTime},
-        );
-        return if !$EndTimeSystem;
-    }
+    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{EndTime},
+    );
+    return if !$EndTimeSystem;
 
     # TODO: Check timezome
 
@@ -494,7 +495,7 @@ sub AppointmentUpdate {
     my $SQL = '
         UPDATE calendar_appointment
         SET
-            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?,
+            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
             timezone_id=?, recur_freq=?, recur_count=?, recur_interval=?, recur_until=?,
             recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
         WHERE id=?
@@ -505,10 +506,10 @@ sub AppointmentUpdate {
         SQL  => $SQL,
         Bind => [
             \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
-            \$Param{StartTime},  \$Param{EndTime}, \$Param{TimezoneID},  \$Param{RecurrenceFrequency},
-            \$Param{RecurrenceCount},   \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
-            \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},    \$Param{UserID},
-            \$Param{AppointmentID}
+            \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
+            \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},   \$Param{RecurrenceInterval},
+            \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},
+            \$Param{UserID},              \$Param{AppointmentID}
         ],
     );
 

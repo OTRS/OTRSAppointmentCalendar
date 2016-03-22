@@ -127,7 +127,8 @@
             <Column Name="description" Size="3800" Type="VARCHAR"/>
             <Column Name="location" Size="255" Type="VARCHAR"/>
             <Column Name="start_time" Required="true" Type="DATE"/>
-            <Column Name="end_time" Type="DATE"/>
+            <Column Name="end_time" Required="true" Type="DATE"/>
+            <Column Name="all_day" Type="SMALLINT"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
             <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
             <Column Name="recur_count" Type="INTEGER"/>
