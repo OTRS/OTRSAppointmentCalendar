@@ -54,6 +54,8 @@ sub Run {
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
+    my $JSON = '';
+
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {
 
@@ -90,20 +92,25 @@ sub Run {
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix   => 'Start',
-            Format   => 'DateInputFormatLong',
-            Validate => 1,
+            Prefix      => 'Start',
+            StartHour   => $GetParam{StartHour} || 0,
+            StartMinute => $GetParam{StartMinute} || 0,
+            Format      => 'DateInputFormatLong',
+            Validate    => 1,
         );
 
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
-            Prefix      => 'End',
-            EndOptional => 1,
-            EndUsed     => $GetParam{EndUsed} // 1,
-            Format      => 'DateInputFormatLong',
-            Validate    => 1,
+            Prefix    => 'End',
+            EndHour   => $GetParam{EndHour} || 0,
+            EndMinute => $GetParam{EndMinute} || 0,
+            Format    => 'DateInputFormatLong',
+            Validate  => 1,
         );
+
+        # all day
+        $Param{AllDayChecked} = $GetParam{AllDay} ? 'checked="checked"' : '';
 
         # html mask output
         $LayoutObject->Block(
@@ -134,52 +141,29 @@ sub Run {
 
         if ( $GetParam{CalendarID} ) {
 
-            my $StartTime;
-            my $EndTime;
-
-            if ( $GetParam{EndUsed} ) {
-                $StartTime = sprintf(
+            my $AppointmentID = $AppointmentObject->AppointmentCreate(
+                %GetParam,
+                StartTime => sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
                     $GetParam{StartHour}, $GetParam{StartMinute}
-                );
-                $EndTime = sprintf(
+                ),
+                EndTime => sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                     $GetParam{EndHour}, $GetParam{EndMinute}
-                );
-            }
-            else {
-                $StartTime = sprintf(
-                    "%04d-%02d-%02d 00:00:00",
-                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay}
-                );
-            }
-
-            my $AppointmentID = $AppointmentObject->AppointmentCreate(
-                %GetParam,
-                StartTime  => $StartTime,
-                EndTime    => $EndTime,
+                ),
                 TimezoneID => 'Europe/Belgrade',
                 UserID     => $Self->{UserID},
             );
 
             # build JSON output
-            my $JSON = '';
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
                     Success => $AppointmentID ? 1 : 0,
                     CalendarID    => $GetParam{CalendarID},
                     AppointmentID => $AppointmentID ? $AppointmentID : undef,
                 },
-            );
-
-            # send JSON response
-            return $LayoutObject->Attachment(
-                ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-                Content     => $JSON,
-                Type        => 'inline',
-                NoCache     => 1,
             );
         }
     }
@@ -188,52 +172,29 @@ sub Run {
 
         if ( $GetParam{CalendarID} && $GetParam{AppointmentID} ) {
 
-            my $StartTime;
-            my $EndTime;
-
-            if ( $GetParam{EndUsed} ) {
-                $StartTime = sprintf(
+            my $Success = $AppointmentObject->AppointmentUpdate(
+                %GetParam,
+                StartTime => sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
                     $GetParam{StartHour}, $GetParam{StartMinute}
-                );
-                $EndTime = sprintf(
+                ),
+                EndTime => sprintf(
                     "%04d-%02d-%02d %02d:%02d:00",
                     $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                     $GetParam{EndHour}, $GetParam{EndMinute}
-                );
-            }
-            else {
-                $StartTime = sprintf(
-                    "%04d-%02d-%02d 00:00:00",
-                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay}
-                );
-            }
-
-            my $Success = $AppointmentObject->AppointmentUpdate(
-                %GetParam,
-                StartTime  => $StartTime,
-                EndTime    => $EndTime,
+                ),
                 TimezoneID => 'Europe/Belgrade',
                 UserID     => $Self->{UserID},
             );
 
             # build JSON output
-            my $JSON = '';
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
                     Success       => $Success,
                     CalendarID    => $GetParam{CalendarID},
                     AppointmentID => $GetParam{AppointmentID},
                 },
-            );
-
-            # send JSON response
-            return $LayoutObject->Attachment(
-                ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-                Content     => $JSON,
-                Type        => 'inline',
-                NoCache     => 1,
             );
         }
     }
@@ -248,7 +209,6 @@ sub Run {
             );
 
             # build JSON output
-            my $JSON = '';
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
                     Success       => $Success,
@@ -256,18 +216,16 @@ sub Run {
                     AppointmentID => $GetParam{AppointmentID},
                 },
             );
-
-            # send JSON response
-            return $LayoutObject->Attachment(
-                ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-                Content     => $JSON,
-                Type        => 'inline',
-                NoCache     => 1,
-            );
         }
     }
 
-    return;
+    # send JSON response
+    return $LayoutObject->Attachment(
+        ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+        Content     => $JSON,
+        Type        => 'inline',
+        NoCache     => 1,
+    );
 }
 
 1;

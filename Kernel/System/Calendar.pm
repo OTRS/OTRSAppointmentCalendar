@@ -318,12 +318,14 @@ sub CalendarList {
     my ( $Self, %Param ) = @_;
 
     # Make different cache type for list (so we can clear cache by this value)
-    my $CacheType = 'CalendarList';
+    my $CacheType     = 'CalendarList';
+    my $CacheKeyUser  = $Param{UserID} || 'all-user-ids';
+    my $CacheKeyValid = $Param{ValidID} || 'all-valid-ids';
 
     # get cached value if exists
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$Param{UserID}-$Param{ValidID}",
+        Key  => "$CacheKeyUser-$CacheKeyValid",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -373,7 +375,7 @@ sub CalendarList {
     # cache data
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $CacheType,
-        Key   => "$Param{UserID}-$Param{ValidID}",
+        Key   => "$CacheKeyUser-$CacheKeyValid",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );

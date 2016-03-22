@@ -50,7 +50,11 @@
             <label>[% Translate("End date") | html %]:</label>
             <div class="Field">
                 [% Data.EndDateString %]
-                <p class="FieldExplanation">Turn off the End date for an all-day appointment.</p>
+            </div>
+            <div class="Clear"></div>
+            <label for="AllDay">[% Translate("All day") | html %]:</label>
+            <div class="Field">
+                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
             </div>
         </fieldset>
     </form>
@@ -67,7 +71,7 @@
 <script type="text/javascript">//<![CDATA[
 
 Core.Form.Validate.Init();
-Core.Agent.AppointmentCalendar.AllDayInit($('#EndUsed'));
+Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
     var Data = {
@@ -80,12 +84,12 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         StartDay: $('#StartDay').val(),
         StartHour: $('#StartHour').val(),
         StartMinute: $('#StartMinute').val(),
-        EndUsed: $('#EndUsed').prop('checked') ? '1' : '0',
         EndYear: $('#EndYear').val(),
         EndMonth: $('#EndMonth').val(),
         EndDay: $('#EndDay').val(),
         EndHour: $('#EndHour').val(),
-        EndMinute: $('#EndMinute').val()
+        EndMinute: $('#EndMinute').val(),
+        AllDay: $('#AllDay').prop('checked') ? '1' : '0'
     };
 
 [% IF Data.AppointmentID %]

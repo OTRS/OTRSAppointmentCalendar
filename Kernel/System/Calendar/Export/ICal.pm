@@ -120,31 +120,35 @@ sub Export {
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
         # check end time
-        my $ICalEndTime;
-        if ( $Appointment{EndTime} ) {
-            my $EndTime = $TimeObject->TimeStamp2SystemTime(
-                String => $Appointment{EndTime},
-            );
-            $ICalEndTime = Date::ICal->new(
-                epoch => $EndTime - ( $Param{UserTimeZone} * 3600 ),
-            );
-        }
+        my $EndTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Appointment{EndTime},
+        );
+        my $ICalEndTime = Date::ICal->new(
+            epoch => $EndTime - ( $Param{UserTimeZone} * 3600 ),
+        );
 
         # calculate start time
-        my $ICalStartTime;
         my $StartTime = $TimeObject->TimeStamp2SystemTime(
             String => $Appointment{StartTime},
         );
-        if ($ICalEndTime) {
-            $ICalStartTime = Date::ICal->new(
-                epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
-            );
-        }
-        else {
+        my $ICalStartTime = Date::ICal->new(
+            epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
+        );
+
+        # recalculate for all day appointment
+        if ( $Appointment{AllDay} ) {
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
                 SystemTime => $StartTime,
             );
             $ICalStartTime = Date::ICal->new(
+                year  => $Year,
+                month => $Month,
+                day   => $Day,
+            );
+            ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
+                SystemTime => $EndTime,
+            );
+            $ICalEndTime = Date::ICal->new(
                 year  => $Year,
                 month => $Month,
                 day   => $Day,
@@ -162,14 +166,13 @@ sub Export {
         if ( $Appointment{Location} ) {
             $ICalEventProperties{location} = $Appointment{Location};
         }
-        if ($ICalEndTime) {
-            $ICalEventProperties{dtend} = $ICalEndTime->ical();
-        }
 
         # add both required and optional properties
+        # remove time zone flag for all day appointments
         $ICalEvent->add_properties(
             summary => $Appointment{Title},
-            dtstart => $ICalEndTime ? $ICalStartTime->ical() : substr( $ICalStartTime->ical(), 0, -1 ),
+            dtstart => $Appointment{AllDay} ? substr( $ICalStartTime->ical(), 0, -1 ) : $ICalStartTime->ical(),
+            dtend   => $Appointment{AllDay} ? substr( $ICalEndTime->ical(), 0, -1 ) : $ICalEndTime->ical(),
             %ICalEventProperties,
         );
 

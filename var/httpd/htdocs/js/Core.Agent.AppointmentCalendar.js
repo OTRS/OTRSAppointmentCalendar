@@ -68,6 +68,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             buttonText: Params.ButtonText,
             schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
             slotDuration: '00:30:00',
+            forceEventDuration: true,
             nowIndicator: true,
             views: {
                 month: {
@@ -183,14 +184,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             StartDay: AppointmentData.Start.date(),
             StartHour: AppointmentData.Start.hour(),
             StartMinute: AppointmentData.Start.minute(),
-            EndUsed: AppointmentData.CalEvent ? (
-                AppointmentData.CalEvent.allDay ? 0 : 1
-            ) : AppointmentData.End.hasTime() ? 1 : 0,
-            EndYear: AppointmentData.End ? AppointmentData.End.year() : null,
-            EndMonth: AppointmentData.End ? AppointmentData.End.month() + 1 : null,
-            EndDay: AppointmentData.End ? AppointmentData.End.date() : null,
-            EndHour: AppointmentData.End ? AppointmentData.End.hour() : null,
-            EndMinute: AppointmentData.End ? AppointmentData.End.minute() : null
+            EndYear: AppointmentData.End.year(),
+            EndMonth: AppointmentData.End.month() + 1,
+            EndDay: AppointmentData.End.date(),
+            EndHour: AppointmentData.End.hour(),
+            EndMinute: AppointmentData.End.minute(),
+            AllDay: AppointmentData.CalEvent ?
+                (AppointmentData.CalEvent.allDay ? '1' : '0') :
+                (AppointmentData.End.hasTime() ? '0' : '1')
         };
 
         ShowWaitingDialog();
@@ -228,17 +229,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             StartDay: AppointmentData.CalEvent.start.date(),
             StartHour: AppointmentData.CalEvent.start.hour(),
             StartMinute: AppointmentData.CalEvent.start.minute(),
-            EndUsed: AppointmentData.CalEvent.end ? '1' : '0',
-            EndYear: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.year() : null,
-            EndMonth: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.month() + 1 : null,
-            EndDay: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.date() : null,
-            EndHour: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.hour() : null,
-            EndMinute: AppointmentData.CalEvent.end ? AppointmentData.CalEvent.end.minute() : null
+            EndYear: AppointmentData.CalEvent.end.year(),
+            EndMonth: AppointmentData.CalEvent.end.month() + 1,
+            EndDay: AppointmentData.CalEvent.end.date(),
+            EndHour: AppointmentData.CalEvent.end.hour(),
+            EndMinute: AppointmentData.CalEvent.end.minute(),
+            AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1'
         };
-
-        // Update the allDay property
-        AppointmentData.CalEvent.allDay = !Data.EndUsed;
-        $('#calendar').fullCalendar('updateEvent', AppointmentData.CalEvent);
 
         Core.AJAX.FunctionCall(
             Core.Config.Get('CGIHandle'),
@@ -277,22 +274,22 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     /**
      * @name AllDayInit
      * @memberof Core.Agent.AppointmentCalendar
-     * @param {jQueryObject} $EndUsed - end time checkbox element.
+     * @param {jQueryObject} $AllDay - all day checkbox element.
      * @description
-     *      This method initializes calendar checkbox behavior.
+     *      This method initializes all day checkbox behavior.
      */
-    TargetNS.AllDayInit = function ($EndUsed) {
+    TargetNS.AllDayInit = function ($AllDay) {
 
         // Show/hide the start hour/minute and complete end time
-        if (!$EndUsed.prop('checked')) {
-            $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', true);
+        if ($AllDay.prop('checked')) {
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true);
         } else {
-            $('#StartHour,#StartMinute,#EndYear,#EndMonth,#EndDay,#EndHour,#EndMinute').prop('disabled', false);
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false);
         }
 
         // Register change event handler
-        $EndUsed.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            TargetNS.AllDayInit($EndUsed);
+        $AllDay.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            TargetNS.AllDayInit($AllDay);
         });
     }
 
