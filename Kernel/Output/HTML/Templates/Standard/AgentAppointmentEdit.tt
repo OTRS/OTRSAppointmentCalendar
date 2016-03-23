@@ -62,6 +62,18 @@
             <div class="Field">
                 <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
             </div>
+            <div class="Clear"></div>
+            <label for="RecurrenceFrequency">[% Translate("Repeat") | html %]:</label>
+            <div class="Field">
+                [% Data.RecurrenceFrequencyString %]
+                <div id="RecurrenceUntilDiv" class="Hidden">
+                    [% Translate("until") | html %]
+                    [% Data.RecurrenceUntilString %]
+                    <div id="RecurrenceUntilDayError" class="TooltipErrorMessage">
+                        <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                    </div>
+                </div>
+            </div>
         </fieldset>
     </form>
 </div>
@@ -95,6 +107,10 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         EndDay: $('#EndDay').val(),
         EndHour: $('#EndHour').val(),
         EndMinute: $('#EndMinute').val(),
+        RecurrenceFrequency: $('#RecurrenceFrequency').val(),
+        RecurrenceUntilYear: $('#RecurrenceUntilYear').val(),
+        RecurrenceUntilMonth: $('#RecurrenceUntilMonth').val(),
+        RecurrenceUntilDay: $('#RecurrenceUntilDay').val(),
         AllDay: $('#AllDay').prop('checked') ? '1' : '0'
     };
 
@@ -120,14 +136,14 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
 });
 
 // Save the appointment
-$('#EditFormSubmit').bind('click', function() {
+$('#EditFormSubmit').on('click', function() {
     $('#EditAppointmentForm').submit();
 });
 
 [% IF Data.AppointmentID %]
 
 // Delete the appointment
-$('#EditFormDelete').bind('click', function() {
+$('#EditFormDelete').on('click', function() {
     Core.Agent.AppointmentCalendar.EditAppointment({
         CalendarID: [% Data.CalendarID | JSON %],
         AppointmentID: $('input[name="AppointmentID"]').val(),
@@ -139,9 +155,17 @@ $('#EditFormDelete').bind('click', function() {
 [% END %]
 
 // Close the dialog
-$('#EditFormCancel').bind('click', function() {
+$('#EditFormCancel').on('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });
+
+$('#RecurrenceFrequency').on('change', function() {
+    if ($('#RecurrenceFrequency').val() === 0) {
+        $('#RecurrenceUntilDiv').hide();
+    } else {
+        $('#RecurrenceUntilDiv').show();
+    }
+}).trigger('change');
 
 //]]></script>
 [% RenderBlockEnd("EditMask") %]

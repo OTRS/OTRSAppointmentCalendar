@@ -154,8 +154,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 };
                 UpdateAppointment(Params, Data);
             },
-            eventRender: function(Event, $Element) {
-                if (Event.allDay) {
+            eventRender: function(CalEvent, $Element) {
+                if (CalEvent.allDay) {
                     $Element.addClass('AllDay');
                 }
             }

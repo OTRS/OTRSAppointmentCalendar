@@ -90,30 +90,34 @@ sub Run {
                 String => $Appointment{StartTime},
             );
             (
-                my $Sec,
-                $Appointment{StartMinute},
-                $Appointment{StartHour},
-                $Appointment{StartDay},
-                $Appointment{StartMonth},
+                my $S, $Appointment{StartMinute},
+                $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
                 $Appointment{StartYear}
-                ) = $TimeObject->SystemTime2Date(
-                SystemTime => $StartTime,
-                );
+            ) = $TimeObject->SystemTime2Date( SystemTime => $StartTime );
 
             # get end time components
             my $EndTime = $TimeObject->TimeStamp2SystemTime(
                 String => $Appointment{EndTime},
             );
             (
-                $Sec,
-                $Appointment{EndMinute},
-                $Appointment{EndHour},
-                $Appointment{EndDay},
-                $Appointment{EndMonth},
+                $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay}, $Appointment{EndMonth},
                 $Appointment{EndYear}
-                ) = $TimeObject->SystemTime2Date(
-                SystemTime => $EndTime,
+            ) = $TimeObject->SystemTime2Date( SystemTime => $EndTime );
+
+            # get recurrence until components
+            if ( $Appointment{RecurrenceUntil} ) {
+                my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
+                    String => $Appointment{RecurrenceUntil},
                 );
+                (
+                    $S,
+                    $Appointment{RecurrenceUntilMinute},
+                    $Appointment{RecurrenceUntilHour},
+                    $Appointment{RecurrenceUntilDay},
+                    $Appointment{RecurrenceUntilMonth},
+                    $Appointment{RecurrenceUntilYear}
+                ) = $TimeObject->SystemTime2Date( SystemTime => $RecurrenceUntil );
+            }
         }
 
         # calendar selection
@@ -161,6 +165,51 @@ sub Run {
         else {
             $Param{AllDayChecked} = '';
         }
+
+        # recurrence selection
+        $Param{RecurrenceFrequencyString} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => '0',
+                    Value => Translatable('None'),
+                },
+                {
+                    Key   => '1',
+                    Value => Translatable('Every Day'),
+                },
+                {
+                    Key   => '7',
+                    Value => Translatable('Every Week'),
+                },
+                {
+                    Key   => '30',
+                    Value => Translatable('Every Month'),
+                },
+                {
+                    Key   => '365',
+                    Value => Translatable('Every Year'),
+                },
+                {
+                    Key   => '-1',
+                    Value => Translatable('Custom'),
+                },
+            ],
+            SelectedID => $Appointment{RecurrenceFrequency} // $GetParam{RecurrenceFrequency},
+            Name       => 'RecurrenceFrequency',
+            Multiple   => 0,
+            Class      => 'Modernize',
+            PossibleNone => 0,
+        );
+
+        # recurrence until date string
+        $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
+            %Appointment,
+            %GetParam,
+            Format            => 'DateInputFormatLong',
+            Prefix            => 'RecurrenceUntil',
+            ValidateDateAfter => 'Start',
+            Validate          => 1,
+        );
 
         # html mask output
         $LayoutObject->Block(
@@ -214,6 +263,19 @@ sub Run {
                 "%04d-%02d-%02d %02d:%02d:00",
                 $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                 $GetParam{EndHour}, $GetParam{EndMinute}
+            );
+        }
+
+        if (
+            $GetParam{RecurrenceUntilYear}  &&
+            $GetParam{RecurrenceUntilMonth} &&
+            $GetParam{RecurrenceUntilDay}
+            )
+        {
+            $GetParam{RecurrenceUntil} = sprintf(
+                "%04d-%02d-%02d 00:00:00",
+                $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
+                $GetParam{RecurrenceUntilDay}
             );
         }
 

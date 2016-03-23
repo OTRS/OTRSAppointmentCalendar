@@ -147,8 +147,21 @@
                 <Reference Local="calendar_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <TableCreate Name="calendar_recurring">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
+            <Column Name="start_time" Required="true" Type="DATE"/>
+            <Column Name="end_time" Required="true" Type="DATE"/>
+            <Unique Name="calendar_recurring_id">
+                <UniqueColumn Name="id"/>
+            </Unique>
+            <ForeignKey ForeignTable="calendar_appointment">
+                <Reference Local="appointment_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
     </DatabaseInstall>
     <DatabaseUninstall Type="pre">
+        <TableDrop Name="calendar_recurring"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>
     </DatabaseUninstall>

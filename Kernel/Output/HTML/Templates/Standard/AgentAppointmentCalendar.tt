@@ -153,7 +153,16 @@ var EventSources = {
         endParam: 'EndTime',
 
         // workaround for removeEventSource
-        googleCalendarId: [% Data.CalendarID | JSON %]
+        googleCalendarId: [% Data.CalendarID | JSON %],
+        eventDataTransform: function(AppointmentData) {
+            return {
+                id: AppointmentData.ID,
+                start: AppointmentData.StartTime,
+                end: AppointmentData.EndTime,
+                title: AppointmentData.Title,
+                allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
+            };
+        }
     }
 [% RenderBlockStart("CalendarSourceComma") %]
     ,

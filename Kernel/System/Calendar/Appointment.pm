@@ -131,13 +131,16 @@ sub AppointmentCreate {
         UserID     => $Param{UserID},
     );
 
-    # Check EndTime
+    # check EndTime
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{EndTime},
     );
     return if !$EndTimeSystem;
 
-    # TODO: Check timezome
+    # TODO: check timezone
+
+    # check RecurrenceFreq
+    return if ( $Param{RecurrenceFreq} && !IsInteger( $Param{RecurrenceCount} ) );
 
     # check RecurrenceCount
     return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
@@ -146,11 +149,13 @@ sub AppointmentCreate {
     return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
 
     # check RecurrenceUntil
+    my $RecurrenceUntilSystem;
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
         return if !$RecurrenceUntilSystem;
+        return if !( $StartTimeSystem < $RecurrenceUntilSystem );
     }
 
     # check RecurrenceByMonth
@@ -194,6 +199,38 @@ sub AppointmentCreate {
         return;
     }
 
+    # add recurring appointments
+    if ( $Param{RecurrenceFrequency} && $Param{RecurrenceUntil} ) {
+
+        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+
+            # calculate recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24,
+                my $StartTime = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $StartTimeSystem,
+                );
+            my $EndTime = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $EndTimeSystem,
+            );
+
+            $SQL = '
+                INSERT INTO calendar_recurring
+                    (appointment_id, start_time, end_time)
+                VALUES (?, ?, ?)
+            ';
+
+            # create db record
+            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+                SQL  => $SQL,
+                Bind => [
+                    \$AppointmentID, \$StartTime, \$EndTime
+                ],
+            );
+        }
+
+    }
+
     # fire event
     $Self->EventHandler(
         Event => 'AppointmentCreate',
@@ -208,7 +245,7 @@ sub AppointmentCreate {
 
 =item AppointmentList()
 
-get a list of Appointments.
+get a hash of Appointments.
 
     my @Appointments = $AppointmentObject->AppointmentList(
         CalendarID          => 1,                                       # (required) Valid CalendarID
@@ -216,9 +253,28 @@ get a list of Appointments.
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
     );
 
-returns a list of AppointmentIDs:
-    @Appointments = [ 1, 2, 5, 7,...];
-
+returns an array of hashes with select Appointment data:
+    @Appointments = [
+        {
+            ID          => 1,
+            CalendarID  => 1,
+            UniqueID    => '20160101T160000-71E386@localhost',
+            Title       => 'Webinar',
+            StartTime   => '2016-01-01 16:00:00',
+            EndTime     => '2016-01-01 17:00:00',
+            AllDay      => 0,
+        },
+        {
+            ID          => 2,
+            CalendarID  => 1,
+            UniqueID    => '20160101T180000-A78B57@localhost',
+            Title       => 'Webinar',
+            StartTime   => '2016-01-01 18:00:00',
+            EndTime     => '2016-01-01 19:00:00',
+            AllDay      => 0,
+        },
+        ...
+    ];
 =cut
 
 sub AppointmentList {
@@ -233,6 +289,19 @@ sub AppointmentList {
             );
             return;
         }
+    }
+
+    my $CacheKeyStart = $Param{UserID}  || 'any';
+    my $CacheKeyEnd   = $Param{EndTime} || 'any';
+
+    # check cache
+    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType},
+        Key  => "$Param{CalendarID}-$CacheKeyStart-$CacheKeyEnd",
+    );
+
+    if ( ref $Data eq 'ARRAY' ) {
+        return @{$Data};
     }
 
     # needed objects
@@ -253,18 +322,29 @@ sub AppointmentList {
         return if !$EndTimeSystem;
     }
 
-    my $SQL = '
-        SELECT id
-        FROM calendar_appointment
-        WHERE calendar_id=?
+    my $SQL1 = '
+        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, ca.start_time, ca.end_time, ca.all_day
+        FROM calendar_appointment ca
+        WHERE 1=1
+    ';
+    my $SQL2 = '
+        UNION
+        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, cr.start_time, cr.end_time, ca.all_day
+        FROM calendar_recurring cr
+        JOIN calendar_appointment ca ON ca.id = cr.appointment_id
+        WHERE 1=1
     ';
 
     my @Bind;
-    push @Bind, \$Param{CalendarID};
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND ((start_time >= ? AND start_time < ?) OR (end_time > ? AND end_time <= ?)) ';
+        $SQL1 .= 'AND ((ca.start_time >= ? AND ca.start_time < ?) OR (ca.end_time > ? AND ca.end_time <= ?)) ';
+        $SQL2 .= 'AND ((cr.start_time >= ? AND cr.start_time < ?) OR (cr.end_time > ? AND cr.end_time <= ?)) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
         push @Bind, \$Param{StartTime};
         push @Bind, \$Param{EndTime};
         push @Bind, \$Param{StartTime};
@@ -272,28 +352,51 @@ sub AppointmentList {
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND (start_time >= ? AND start_time < ?) ';
+        $SQL1 .= 'AND (ca.start_time >= ? AND ca.start_time < ?) ';
+        $SQL2 .= 'AND (cr.start_time >= ? AND cr.start_time < ?) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
         push @Bind, \$Param{StartTime};
         push @Bind, \$Param{EndTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND (end_time > ? AND end_time <= ?) ';
+        $SQL1 .= 'AND (ca.end_time > ? AND ca.end_time <= ?) ';
+        $SQL2 .= 'AND (cr.end_time > ? AND cr.end_time <= ?) ';
+        push @Bind, \$Param{StartTime};
+        push @Bind, \$Param{EndTime};
         push @Bind, \$Param{StartTime};
         push @Bind, \$Param{EndTime};
     }
 
     # db query
     return if !$DBObject->Prepare(
-        SQL  => $SQL,
+        SQL  => $SQL1 . $SQL2,
         Bind => \@Bind,
     );
 
     my @Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        push @Result, $Row[0];
+        my %Appointment = (
+            ID         => $Row[0],
+            CalendarID => $Row[1],
+            UniqueID   => $Row[2],
+            Title      => $Row[3],
+            StartTime  => $Row[4],
+            EndTime    => $Row[5],
+            AllDay     => $Row[6],
+        );
+        push @Result, \%Appointment;
     }
+
+    # cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType},
+        Key   => "$Param{CalendarID}-$CacheKeyStart-$CacheKeyEnd",
+        Value => \@Result,
+        TTL   => $Self->{CacheTTL},
+    );
 
     return @Result;
 }
