@@ -71,7 +71,6 @@
 <script type="text/javascript">//<![CDATA[
 
 Core.Agent.AppointmentCalendar.Init({
-    DefaultCalendarID: [% Data.DefaultCalendarID | JSON %],
     AllDayText: [% Translate("All-day") | JSON %],
     IsRTL: [% Data.IsRTLLanguage %],
     MonthNames: [

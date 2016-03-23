@@ -24,16 +24,26 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name Init
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with different config options.
+     * @param {String} Params.AllDayText - Localized string for the word "All-day".
+     * @param {Boolean} Params.IsRTL - Is current locale is right text based?
      * @param {Array} Params.MonthNames - Array containing the localized strings for each month.
      * @param {Array} Params.MonthNamesShort - Array containing the localized strings for each month on shorth format.
      * @param {Array} Params.DayNames - Array containing the localized strings for each week day.
      * @param {Array} Params.DayNamesShort - Array containing the localized strings for each week day on short format.
      * @param {Array} Params.ButtonText - Array containing the localized strings for each week day on short format.
      * @param {String} Params.ButtonText.today - Localized string for the word "Today".
-     * @param {String} Params.ButtonText.month - Localized string for the word "month".
-     * @param {String} Params.ButtonText.week - Localized string for the word "week".
-     * @param {String} Params.ButtonText.day - Localized string for the word "day".
-     * @param {Array} Params.EventSources - Array of hashes including the data for each event.
+     * @param {String} Params.ButtonText.month - Localized string for the word "Month".
+     * @param {String} Params.ButtonText.week - Localized string for the word "Week".
+     * @param {String} Params.ButtonText.day - Localized string for the word "Day".
+     * @param {String} Params.ButtonText.timeline - Localized string for the word "Timeline".
+     * @param {String} Params.FirstDay - First day of the week (0: Sunday).
+     * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
+     * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
+     * @param {Array} Params.Callbacks - Array containing names of the callbacks.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
+     * @param {Array} Params.Callbacks.EditSubaction - Name of the edit subaction.
+     * @param {Array} Params.Callbacks.AddSubaction - Name of the add subaction.
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -48,7 +58,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             allDayText: Params.AllDayText,
             isRTL: Params.IsRTL,
             columnFormat: 'ddd, D MMM',
-            timeFormat: 'H:mm',
+            timeFormat: 'HH:mm',
             slotLabelFormat: 'HH:mm',
             titleFormat: 'D MMM YYYY #W',
             businessHours: {
@@ -169,7 +179,15 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with configuration.
+     * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
+     * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
+     * @param {Array} Params.Callbacks - Array containing names of the callbacks.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
      * @param {Object} AppointmentData - Hash with appointment data.
+     * @param {Moment} AppointmentData.Start - Moment object with start date/time.
+     * @param {Moment} AppointmentData.End - Moment object with end date/time.
+     * @param {Object} AppointmentData.CalEvent - Calendar event object (FullCalendar).
      * @description
      *      This method opens the appointment dialog after selecting a time period or an appointment.
      */
@@ -208,7 +226,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name UpdateAppointment
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with configuration.
+     * @param {Array} Params.Callbacks - Array containing names of the callbacks.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.EditSubaction - Name of the edit subaction.
      * @param {Object} AppointmentData - Hash with appointment data.
+     * @param {Object} AppointmentData.CalEvent - Calendar event object (FullCalendar).
      * @description
      *      This method updates the appointment with supplied data.
      */
@@ -247,7 +269,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
      * @param {Object} EventSources - hash with calendar sources.
      * @description
-     *      This method initializes calendar checkbox behavior.
+     *      This method initializes calendar checkbox behavior and loads multiple calendars to the
+     *      FullCalendar control.
      */
     TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources) {
 
@@ -291,6 +314,24 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name EditAppointment
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Data - Hash with call and appointment data.
+     * @param {Integer} Data.CalendarID - Appointment calendar ID.
+     * @param {Integer} Data.AppointmentID - Appointment ID.
+     * @param {Integer} Data.Action - Edit action.
+     * @param {Integer} Data.Subaction - Edit subaction.
+     * @param {Integer} Data.Title - Appointment title.
+     * @param {Integer} Data.Description - Appointment description.
+     * @param {Integer} Data.Location - Appointment location.
+     * @param {Integer} Data.StartYear - Appointment start year.
+     * @param {Integer} Data.StartMonth - Appointment start month.
+     * @param {Integer} Data.StartDay - Appointment start day.
+     * @param {Integer} Data.StartHour - Appointment start hour.
+     * @param {Integer} Data.StartMinute - Appointment start minute.
+     * @param {Integer} Data.EndYear - Appointment end year.
+     * @param {Integer} Data.EndMonth - Appointment end month.
+     * @param {Integer} Data.EndDay - Appointment end day.
+     * @param {Integer} Data.EndHour - Appointment end hour.
+     * @param {Integer} Data.EndMinute - Appointment end minute.
+     * @param {Integer} Data.AllDay - Is appointment an all-day appointment (0|1)?
      * @description
      *      This method submits an edit appointment call to the backend and refreshes the view.
      */
