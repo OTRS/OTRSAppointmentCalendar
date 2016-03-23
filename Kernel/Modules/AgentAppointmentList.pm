@@ -73,14 +73,11 @@ sub Run {
                 );
 
                 my %Appointment = (
-                    id          => $AppointmentData{ID},
-                    start       => $AppointmentData{StartTime},
-                    end         => $AppointmentData{EndTime},
-                    allDay      => $AppointmentData{AllDay} ? 1 : 0,
-                    title       => $AppointmentData{Title},
-                    CalendarID  => $AppointmentData{CalendarID},
-                    Description => $AppointmentData{Description},
-                    Location    => $AppointmentData{Location},
+                    id     => $AppointmentData{ID},
+                    start  => $AppointmentData{StartTime},
+                    end    => $AppointmentData{EndTime},
+                    allDay => int $AppointmentData{AllDay},
+                    title  => $AppointmentData{Title},
                 );
 
                 push @Appointments, \%Appointment;

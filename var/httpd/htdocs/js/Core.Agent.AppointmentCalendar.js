@@ -175,26 +175,20 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function OpenEditDialog(Params, AppointmentData) {
         var Data = {
-            CalendarID: AppointmentData.CalEvent ? AppointmentData.CalEvent.CalendarID : Params.DefaultCalendarID,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditMaskSubaction ? Params.Callbacks.EditMaskSubaction : 'EditMask',
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
-            Title: AppointmentData.CalEvent ? AppointmentData.CalEvent.title : null,
-            Description: AppointmentData.CalEvent ? AppointmentData.CalEvent.Description : null,
-            Location: AppointmentData.CalEvent ? AppointmentData.CalEvent.Location : null,
-            StartYear: AppointmentData.Start.year(),
-            StartMonth: AppointmentData.Start.month() + 1,
-            StartDay: AppointmentData.Start.date(),
-            StartHour: AppointmentData.Start.hour(),
-            StartMinute: AppointmentData.Start.minute(),
-            EndYear: AppointmentData.End.year(),
-            EndMonth: AppointmentData.End.month() + 1,
-            EndDay: AppointmentData.End.date(),
-            EndHour: AppointmentData.End.hour(),
-            EndMinute: AppointmentData.End.minute(),
-            AllDay: AppointmentData.CalEvent ?
-                (AppointmentData.CalEvent.allDay ? '1' : '0') :
-                (AppointmentData.End.hasTime() ? '0' : '1')
+            StartYear: !AppointmentData.CalEvent ? AppointmentData.Start.year() : null,
+            StartMonth: !AppointmentData.CalEvent ? AppointmentData.Start.month() + 1 : null,
+            StartDay: !AppointmentData.CalEvent ? AppointmentData.Start.date() : null,
+            StartHour: !AppointmentData.CalEvent ? AppointmentData.Start.hour() : null,
+            StartMinute: !AppointmentData.CalEvent ? AppointmentData.Start.minute() : null,
+            EndYear: !AppointmentData.CalEvent ? AppointmentData.End.year() : null,
+            EndMonth: !AppointmentData.CalEvent ? AppointmentData.End.month() + 1 : null,
+            EndDay: !AppointmentData.CalEvent ? AppointmentData.End.date() : null,
+            EndHour: !AppointmentData.CalEvent ? AppointmentData.End.hour() : null,
+            EndMinute: !AppointmentData.CalEvent ? AppointmentData.End.minute() : null,
+            AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null
         };
 
         ShowWaitingDialog();
@@ -220,13 +214,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function UpdateAppointment(Params, AppointmentData) {
         var Data = {
-            CalendarID: AppointmentData.CalEvent.CalendarID,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditSubaction ? Params.Callbacks.EditSubaction : 'EditAppointment',
             AppointmentID: AppointmentData.CalEvent.id,
-            Title: AppointmentData.CalEvent.title,
-            Description: AppointmentData.CalEvent.Description,
-            Location: AppointmentData.CalEvent.Location,
             StartYear: AppointmentData.CalEvent.start.year(),
             StartMonth: AppointmentData.CalEvent.start.month() + 1,
             StartDay: AppointmentData.CalEvent.start.date(),

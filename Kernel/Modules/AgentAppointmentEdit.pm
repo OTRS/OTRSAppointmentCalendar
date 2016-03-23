@@ -76,13 +76,50 @@ sub Run {
             }
         } @Calendars;
 
-        # define the current ID
-        $Param{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || $CalendarData[0]->{Key};
+        my %Appointment;
+        if ( $GetParam{AppointmentID} ) {
+            %Appointment = $AppointmentObject->AppointmentGet(
+                AppointmentID => $GetParam{AppointmentID},
+            );
+
+            # get time object
+            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+            # get start time components
+            my $StartTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{StartTime},
+            );
+            (
+                my $Sec,
+                $Appointment{StartMinute},
+                $Appointment{StartHour},
+                $Appointment{StartDay},
+                $Appointment{StartMonth},
+                $Appointment{StartYear}
+                ) = $TimeObject->SystemTime2Date(
+                SystemTime => $StartTime,
+                );
+
+            # get end time components
+            my $EndTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{EndTime},
+            );
+            (
+                $Sec,
+                $Appointment{EndMinute},
+                $Appointment{EndHour},
+                $Appointment{EndDay},
+                $Appointment{EndMonth},
+                $Appointment{EndYear}
+                ) = $TimeObject->SystemTime2Date(
+                SystemTime => $EndTime,
+                );
+        }
 
         # calendar selection
         $Param{CalendarIDStrg} = $LayoutObject->BuildSelection(
             Data         => \@CalendarData,
-            SelectedID   => $GetParam{CalendarID} || $CalendarData[0]->{Key},
+            SelectedID   => $Appointment{CalendarID} // $GetParam{CalendarID},
             Name         => 'CalendarID',
             Multiple     => 0,
             Class        => 'Modernize',
@@ -92,9 +129,10 @@ sub Run {
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
+            %Appointment,
             Prefix      => 'Start',
-            StartHour   => $GetParam{StartHour} || 0,
-            StartMinute => $GetParam{StartMinute} || 0,
+            StartHour   => $Appointment{StartHour} // $GetParam{StartHour},
+            StartMinute => $Appointment{StartMinute} // $GetParam{StartMinute},
             Format      => 'DateInputFormatLong',
             Validate    => 1,
         );
@@ -102,15 +140,25 @@ sub Run {
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
+            %Appointment,
             Prefix    => 'End',
-            EndHour   => $GetParam{EndHour} || 0,
-            EndMinute => $GetParam{EndMinute} || 0,
+            EndHour   => $Appointment{EndHour} // $GetParam{EndHour},
+            EndMinute => $Appointment{EndMinute} // $GetParam{EndMinute},
             Format    => 'DateInputFormatLong',
             Validate  => 1,
         );
 
         # all day
-        $Param{AllDayChecked} = $GetParam{AllDay} ? 'checked="checked"' : '';
+        if (
+            $GetParam{AllDay} ||
+            ( $GetParam{AppointmentID} && $Appointment{AllDay} )
+            )
+        {
+            $Param{AllDayChecked} = 'checked="checked"';
+        }
+        else {
+            $Param{AllDayChecked} = '';
+        }
 
         # html mask output
         $LayoutObject->Block(
@@ -118,6 +166,7 @@ sub Run {
             Data => {
                 %Param,
                 %GetParam,
+                %Appointment,
             },
         );
 
@@ -126,6 +175,7 @@ sub Run {
             Data         => {
                 %Param,
                 %GetParam,
+                %Appointment,
             },
         );
         return $LayoutObject->Attachment(
@@ -167,11 +217,17 @@ sub Run {
 
         my $Success;
 
+        # TODO: timezone support
         $GetParam{TimezoneID} = 'Europe/Belgrade';
         $GetParam{UserID}     = $Self->{UserID};
 
         if ( $GetParam{AppointmentID} ) {
+            my %Appointment = $AppointmentObject->AppointmentGet(
+                AppointmentID => $GetParam{AppointmentID},
+            );
+
             $Success = $AppointmentObject->AppointmentUpdate(
+                %Appointment,
                 %GetParam,
             );
         }
@@ -185,7 +241,6 @@ sub Run {
         $JSON = $LayoutObject->JSONEncode(
             Data => {
                 Success => $Success ? 1 : 0,
-                CalendarID    => $GetParam{CalendarID},
                 AppointmentID => $GetParam{AppointmentID} ? $GetParam{AppointmentID} : $Success,
             },
         );
@@ -193,7 +248,7 @@ sub Run {
 
     elsif ( $Self->{Subaction} eq 'DeleteAppointment' ) {
 
-        if ( $GetParam{CalendarID} && $GetParam{AppointmentID} ) {
+        if ( $GetParam{AppointmentID} ) {
 
             my $Success = $AppointmentObject->AppointmentDelete(
                 %GetParam,
@@ -204,7 +259,6 @@ sub Run {
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
                     Success       => $Success,
-                    CalendarID    => $GetParam{CalendarID},
                     AppointmentID => $GetParam{AppointmentID},
                 },
             );
