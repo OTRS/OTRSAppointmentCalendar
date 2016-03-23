@@ -130,22 +130,24 @@ sub Run {
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix      => 'Start',
-            StartHour   => $Appointment{StartHour} // $GetParam{StartHour},
-            StartMinute => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Format      => 'DateInputFormatLong',
-            Validate    => 1,
+            Prefix             => 'Start',
+            StartHour          => $Appointment{StartHour} // $GetParam{StartHour},
+            StartMinute        => $Appointment{StartMinute} // $GetParam{StartMinute},
+            Format             => 'DateInputFormatLong',
+            ValidateDateBefore => 'End',
+            Validate           => 1,
         );
 
         # end date string
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix    => 'End',
-            EndHour   => $Appointment{EndHour} // $GetParam{EndHour},
-            EndMinute => $Appointment{EndMinute} // $GetParam{EndMinute},
-            Format    => 'DateInputFormatLong',
-            Validate  => 1,
+            Prefix            => 'End',
+            EndHour           => $Appointment{EndHour} // $GetParam{EndHour},
+            EndMinute         => $Appointment{EndMinute} // $GetParam{EndMinute},
+            Format            => 'DateInputFormatLong',
+            ValidateDateAfter => 'Start',
+            Validate          => 1,
         );
 
         # all day

@@ -45,11 +45,17 @@
             <label>[% Translate("Start date") | html %]:</label>
             <div class="Field">
                 [% Data.StartDateString %]
+                <div id="StartDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Please set this to value before End date.") | html %]</p>
+                </div>
             </div>
             <div class="Clear"></div>
             <label>[% Translate("End date") | html %]:</label>
             <div class="Field">
                 [% Data.EndDateString %]
+                <div id="EndDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                </div>
             </div>
             <div class="Clear"></div>
             <label for="AllDay">[% Translate("All day") | html %]:</label>
