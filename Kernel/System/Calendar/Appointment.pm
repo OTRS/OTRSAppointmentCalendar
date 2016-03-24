@@ -235,9 +235,13 @@ get a hash of Appointments.
         CalendarID          => 1,                                       # (required) Valid CalendarID
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
+        Result              => 'HASH',                                  # (optional), ARRAY|HASH
     );
 
-returns an array of hashes with select Appointment data:
+returns an array of hashes with select Appointment data or simple array of AppointmentIDs:
+
+Result => 'HASH':
+
     @Appointments = [
         {
             ID          => 1,
@@ -259,6 +263,11 @@ returns an array of hashes with select Appointment data:
         },
         ...
     ];
+
+Result => 'ARRAY':
+
+    @Appointments = [ 1, 2, 3, ... ]
+
 =cut
 
 sub AppointmentList {
@@ -275,6 +284,9 @@ sub AppointmentList {
         }
     }
 
+    # output array of hashes by default
+    $Param{Result} = $Param{Result} || 'HASH';
+
     # cache keys
     my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
     my $CacheKeyStart = $Param{StartTime} || 'any';
@@ -283,7 +295,7 @@ sub AppointmentList {
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$CacheKeyStart-$CacheKeyEnd",
+        Key  => "$CacheKeyStart-$CacheKeyEnd-$Param{Result}",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -374,10 +386,13 @@ sub AppointmentList {
         push @Result, \%Appointment;
     }
 
+    # if Result was ARRAY, output only unique IDs
+    @Result = keys { map { $_->{ID} => 1 } @Result } if $Param{Result} eq 'ARRAY';
+
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $CacheType,
-        Key   => "$CacheKeyStart-$CacheKeyEnd",
+        Key   => "$CacheKeyStart-$CacheKeyEnd-$Param{Result}",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );

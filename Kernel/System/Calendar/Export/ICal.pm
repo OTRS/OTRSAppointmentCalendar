@@ -103,6 +103,7 @@ sub Export {
 
     my @AppointmentIDs = $AppointmentObject->AppointmentList(
         CalendarID => $Calendar{CalendarID},
+        Result     => 'ARRAY',
     );
     return if !( scalar @AppointmentIDs );
 
@@ -166,6 +167,44 @@ sub Export {
         if ( $Appointment{Location} ) {
             $ICalEventProperties{location} = $Appointment{Location};
         }
+        if ( $Appointment{RecurrenceFrequency} ) {
+            $ICalEventProperties{rrule} = 'FREQ=';
+            if ( $Appointment{RecurrenceFrequency} == 1 ) {
+                $ICalEventProperties{rrule} .= 'DAILY';
+            }
+            elsif ( $Appointment{RecurrenceFrequency} == 7 ) {
+                $ICalEventProperties{rrule} .= 'WEEKLY';
+            }
+            elsif ( $Appointment{RecurrenceFrequency} == 30 ) {
+                $ICalEventProperties{rrule} .= 'MONTHLY';
+            }
+            elsif ( $Appointment{RecurrenceFrequency} == 365 ) {
+                $ICalEventProperties{rrule} .= 'YEARLY';
+            }
+            else {
+                $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceFrequency};
+            }
+            if ( $Appointment{RecurrenceUntil} ) {
+                my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
+                    String => $Appointment{RecurrenceUntil},
+                );
+                my $ICalRecurrenceUntil = Date::ICal->new(
+                    epoch => $RecurrenceUntil - ( $Param{UserTimeZone} * 3600 ),
+                );
+                $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
+            }
+            elsif ( $Appointment{RecurrenceCount} ) {
+                $ICalEventProperties{rrule} .= ';COUNT=' . $Appointment{RecurrenceCount};
+            }
+        }
+
+        # calculate last modified time
+        my $ChangeTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Appointment{ChangeTime},
+        );
+        my $ICalChangeTime = Date::ICal->new(
+            epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
+        );
 
         # add both required and optional properties
         # remove time zone flag for all day appointments
@@ -174,7 +213,7 @@ sub Export {
             dtstart         => $Appointment{AllDay} ? substr( $ICalStartTime->ical(), 0, -1 ) : $ICalStartTime->ical(),
             dtend           => $Appointment{AllDay} ? substr( $ICalEndTime->ical(), 0, -1 ) : $ICalEndTime->ical(),
             uid             => $Appointment{UniqueID},
-            'last-modified' => $Appointment{ChangeTime},
+            'last-modified' => $ICalChangeTime->ical(),
             %ICalEventProperties,
         );
 
