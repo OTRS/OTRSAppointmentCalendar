@@ -196,9 +196,10 @@ for my $Appointment (@Appointments1) {
     );
 }
 
+# Before any appointment
 my @Appointments2 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 00:00:00',
+    StartTime  => '1900-01-01 00:00:00',
     EndTime    => '2016-01-01 00:15:59',
 );
 
@@ -208,12 +209,28 @@ $Self->Is(
     'AppointmentList() #2',
 );
 
+# After appointment
+my @Appointments3 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-01-01 00:00:00',
+    EndTime    => '2016-03-23 06:00:00'
+
+        # 2016-03-23 06:00:00 2016-03-21 14:00:00  2016-03-23 05:00:00
+
+);
+
+# $Self->Is(
+#     scalar @Appointments3,
+#     0,
+#     'AppointmentList() #3',
+# );
+
 # missing CalendarID
-my @Appointments3 = $AppointmentObject->AppointmentList();
+my @Appointments4 = $AppointmentObject->AppointmentList();
 $Self->Is(
-    scalar @Appointments3,
+    scalar @Appointments4,
     0,
-    'AppointmentList() #3',
+    'AppointmentList() #4',
 );
 
 # add recurring appointment once a day
