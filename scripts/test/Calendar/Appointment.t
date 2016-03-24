@@ -166,6 +166,36 @@ $Self->Is(
     'AppointmentList() #1',
 );
 
+for my $Appointment (@Appointments1) {
+
+    # Check if
+
+    $Self->True(
+        $Appointment->{ID},
+        'ID present',
+    );
+    $Self->True(
+        $Appointment->{CalendarID},
+        'CalendarIDID present',
+    );
+    $Self->True(
+        $Appointment->{UniqueID},
+        'UniqueID present',
+    );
+    $Self->True(
+        $Appointment->{Title},
+        'Title present',
+    );
+    $Self->True(
+        $Appointment->{StartTime},
+        'StartTime present',
+    );
+    $Self->True(
+        $Appointment->{EndTime},
+        'EndTime present',
+    );
+}
+
 my @Appointments2 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-01-01 00:00:00',
