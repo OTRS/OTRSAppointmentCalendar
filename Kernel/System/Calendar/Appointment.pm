@@ -307,9 +307,9 @@ sub AppointmentList {
         Key  => "$CacheKeyStart-$CacheKeyEnd",
     );
 
-    # if ( ref $Data eq 'ARRAY' ) {
-    #     return @{$Data};
-    # }
+    if ( ref $Data eq 'ARRAY' ) {
+        return @{$Data};
+    }
 
     # needed objects
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
@@ -329,11 +329,16 @@ sub AppointmentList {
         return if !$EndTimeSystem;
     }
 
-    my $SQL = '
-        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, ca.start_time, ca.end_time,
-            ca.all_day, cr.start_time, cr.end_time
+    my $SQL1 = '
+        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, ca.start_time, ca.end_time, ca.all_day
         FROM calendar_appointment ca
-        LEFT JOIN calendar_recurring cr ON ca.id = cr.appointment_id
+        WHERE 1=1
+    ';
+    my $SQL2 = '
+        UNION
+        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, cr.start_time, cr.end_time, ca.all_day
+        FROM calendar_recurring cr
+        JOIN calendar_appointment ca ON ca.id = cr.appointment_id
         WHERE 1=1
     ';
 
@@ -341,42 +346,27 @@ sub AppointmentList {
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= '
-            AND (
-                (
-                    ( cr.start_time >= ? AND cr.start_time < ? ) OR
-                    ( ca.start_time >= ? AND ca.start_time < ? )
-                ) OR (
-                    ( cr.end_time > ? AND cr.end_time <= ? ) OR
-                    ( ca.end_time > ? AND ca.end_time <= ? )
-                )
-            )
-        ';
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
+        $SQL1 .= 'AND ((ca.start_time >= ? AND ca.start_time < ?) OR (ca.end_time > ? AND ca.end_time <= ?)) ';
+        $SQL2 .= 'AND ((cr.start_time >= ? AND cr.start_time < ?) OR (cr.end_time > ? AND cr.end_time <= ?)) ';
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime},
+            \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND (ca.start_time >= ? AND ca.start_time < ?) ';
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
+        $SQL1 .= 'AND (ca.start_time >= ? AND ca.start_time < ?) ';
+        $SQL2 .= 'AND (cr.start_time >= ? AND cr.start_time < ?) ';
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND (ca.end_time > ? AND ca.end_time <= ?) ';
-        push @Bind, \$Param{StartTime};
-        push @Bind, \$Param{EndTime};
+        $SQL1 .= 'AND (ca.end_time > ? AND ca.end_time <= ?) ';
+        $SQL2 .= 'AND (cr.end_time > ? AND cr.end_time <= ?) ';
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
     }
 
     # db query
     return if !$DBObject->Prepare(
-        SQL  => $SQL,
+        SQL  => $SQL1 . $SQL2,
         Bind => \@Bind,
     );
 
@@ -388,8 +378,8 @@ sub AppointmentList {
             CalendarID => $Row[1],
             UniqueID   => $Row[2],
             Title      => $Row[3],
-            StartTime  => $Row[7] // $Row[4],
-            EndTime    => $Row[8] // $Row[5],
+            StartTime  => $Row[4],
+            EndTime    => $Row[5],
             AllDay     => $Row[6],
         );
         push @Result, \%Appointment;
