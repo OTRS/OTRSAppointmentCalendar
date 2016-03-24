@@ -296,9 +296,10 @@ sub AppointmentList {
         }
     }
 
+    # cache keys
     my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
-    my $CacheKeyStart = $Param{UserID} || 'any';
-    my $CacheKeyEnd   = $Param{EndTime} || 'any';
+    my $CacheKeyStart = $Param{StartTime} || 'any';
+    my $CacheKeyEnd   = $Param{EndTime}   || 'any';
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
@@ -649,10 +650,10 @@ sub AppointmentUpdate {
 
             # calculate recurring times
             $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24,
-                my $StartTime = $TimeObject->SystemTime2TimeStamp(
+            $EndTimeSystem   = $EndTimeSystem   + $Param{RecurrenceFrequency} * 60 * 60 * 24,
+            my $StartTime = $TimeObject->SystemTime2TimeStamp(
                 SystemTime => $StartTimeSystem,
-                );
+            );
             my $EndTime = $TimeObject->SystemTime2TimeStamp(
                 SystemTime => $EndTimeSystem,
             );
