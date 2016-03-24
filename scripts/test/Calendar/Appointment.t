@@ -216,6 +216,41 @@ $Self->Is(
     'AppointmentList() #3',
 );
 
+# add recurring appointment once a day
+my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Recurring appointment',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-03-01 16:00:00',
+    EndTime             => '2016-03-01 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 'TimezoneID',
+    RecurrenceFrequency => '1',                       # each day
+    RecurrenceCount     => '',
+    RecurrenceInterval  => '',
+    RecurrenceUntil     => '2016-03-05 16:00:00',
+    RecurrenceByMonth   => '',
+    RecurrenceByDay     => '',
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec1,
+    'Recurring appointment #1 created',
+);
+
+# List recurring appointments
+my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-03-01 00:00:00',    # (optional) Filter by start date
+    EndTime    => '2016-03-06 00:00:00',    # (optional) Filter by end date
+);
+$Self->Is(
+    scalar @AppointmentsRec1,
+    5,
+    'AppointmentList() - # rec1 ok',
+);
+
 my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
 );
