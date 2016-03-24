@@ -139,8 +139,8 @@ sub AppointmentCreate {
 
     # TODO: check timezone
 
-    # check RecurrenceFreq
-    return if ( $Param{RecurrenceFreq} && !IsInteger( $Param{RecurrenceCount} ) );
+    # check RecurrenceFrequency
+    return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
 
     # check RecurrenceCount
     return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
@@ -231,6 +231,11 @@ sub AppointmentCreate {
 
     }
 
+    # clean up list method cache
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'List' . $Param{CalendarID},
+    );
+
     # fire event
     $Self->EventHandler(
         Event => 'AppointmentCreate',
@@ -291,13 +296,14 @@ sub AppointmentList {
         }
     }
 
-    my $CacheKeyStart = $Param{UserID}  || 'any';
+    my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
+    my $CacheKeyStart = $Param{UserID} || 'any';
     my $CacheKeyEnd   = $Param{EndTime} || 'any';
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
-        Type => $Self->{CacheType},
-        Key  => "$Param{CalendarID}-$CacheKeyStart-$CacheKeyEnd",
+        Type => $CacheType,
+        Key  => "$CacheKeyStart-$CacheKeyEnd",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -392,8 +398,8 @@ sub AppointmentList {
 
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type  => $Self->{CacheType},
-        Key   => "$Param{CalendarID}-$CacheKeyStart-$CacheKeyEnd",
+        Type  => $CacheType,
+        Key   => "$CacheKeyStart-$CacheKeyEnd",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );
@@ -575,6 +581,9 @@ sub AppointmentUpdate {
 
     # TODO: Check timezome
 
+    # check RecurrenceFrequency
+    return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
+
     # check RecurrenceCount
     return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
 
@@ -582,11 +591,13 @@ sub AppointmentUpdate {
     return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
 
     # check RecurrenceUntil
+    my $RecurrenceUntilSystem;
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
         return if !$RecurrenceUntilSystem;
+        return if !( $StartTimeSystem < $RecurrenceUntilSystem );
     }
 
     # check RecurrenceByMonth
@@ -595,7 +606,22 @@ sub AppointmentUpdate {
     # check RecurrenceByDay
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
+    # delete recurring appointments
     my $SQL = '
+        DELETE FROM calendar_recurring
+        WHERE appointment_id=?
+    ';
+
+    # delete db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{AppointmentID},
+        ],
+    );
+
+    # update parent appointment
+    $SQL = '
         UPDATE calendar_appointment
         SET
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
@@ -616,10 +642,47 @@ sub AppointmentUpdate {
         ],
     );
 
+    # add recurring appointments
+    if ( $Param{RecurrenceFrequency} && $Param{RecurrenceUntil} ) {
+
+        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+
+            # calculate recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24,
+                my $StartTime = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $StartTimeSystem,
+                );
+            my $EndTime = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $EndTimeSystem,
+            );
+
+            $SQL = '
+                INSERT INTO calendar_recurring
+                    (appointment_id, start_time, end_time)
+                VALUES (?, ?, ?)
+            ';
+
+            # create db record
+            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+                SQL  => $SQL,
+                Bind => [
+                    \$Param{AppointmentID}, \$StartTime, \$EndTime
+                ],
+            );
+        }
+
+    }
+
     # delete cache
     $Kernel::OM->Get('Kernel::System::Cache')->Delete(
         Type => $Self->{CacheType},
         Key  => $Param{AppointmentID},
+    );
+
+    # clean up list method cache
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'List' . $Param{CalendarID},
     );
 
     # fire event
@@ -667,7 +730,26 @@ sub AppointmentDelete {
 
     # TODO: Check who is able to delete appointment
 
+    my %Appointment = $Self->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
+    );
+
+    # delete recurring appointments
     my $SQL = '
+        DELETE FROM calendar_recurring
+        WHERE appointment_id=?
+    ';
+
+    # delete db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{AppointmentID},
+        ],
+    );
+
+    # delete single appointments
+    $SQL = '
         DELETE FROM calendar_appointment
         WHERE id=?
     ';
@@ -684,6 +766,11 @@ sub AppointmentDelete {
     $Kernel::OM->Get('Kernel::System::Cache')->Delete(
         Type => $Self->{CacheType},
         Key  => $Param{AppointmentID},
+    );
+
+    # clean up list method cache
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'List' . $Appointment{CalendarID},
     );
 
     # fire event

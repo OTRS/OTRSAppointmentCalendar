@@ -160,7 +160,7 @@ $('#EditFormCancel').on('click', function() {
 });
 
 $('#RecurrenceFrequency').on('change', function() {
-    if ($('#RecurrenceFrequency').val() === 0) {
+    if ($('#RecurrenceFrequency').val() == 0) {
         $('#RecurrenceUntilDiv').hide();
     } else {
         $('#RecurrenceUntilDiv').show();
