@@ -27,6 +27,9 @@ $Selenium->RunTest(
         my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
 
+        # get script alias
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
+
         # change resolution (desktop mode)
         $Selenium->set_window_size( 768, 1050 );
 
@@ -46,6 +49,19 @@ $Selenium->RunTest(
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
+
+        # Open AgentAppointmentCalendarManage page
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarManage");
+
+        # expand Calendar menu
+        $Selenium->find_element( "#NavigationContainer li#nav-Calendar a", "css" )->click();
+
+        # Click Manage calendars
+        $Selenium->find_element( "#NavigationContainer li#nav-Calendar ul li#nav-Calendar-ManageCalendars a", "css" )
+            ->click();
+
+        # Click Add new calendar
+        $Selenium->find_element( ".SidebarColumn ul.ActionList a#Add", "css" )->click();
 
         print "Done\n";
         }
