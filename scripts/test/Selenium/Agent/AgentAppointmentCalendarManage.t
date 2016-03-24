@@ -96,6 +96,43 @@ $Selenium->RunTest(
             JavaScript => "return typeof(\$) === 'function' && \$('div#OTRS_UI_Tooltips_ErrorTooltip').length"
         );
 
+        # Update calendar name
+        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
+        $Selenium->send_keys_to_active_element("2");
+
+        # Set it to invalid
+        $Selenium->find_element( "form input#ValidID_Search", "css" )->click();
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('div.InputField_ListContainer li[data-id=\"2\"]').length"
+        );
+        $Selenium->find_element( "div.InputField_ListContainer li[data-id=\"2\"]", "css" )->click();
+
+        # Submit
+        sleep(1);
+        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+
+        # Edit calendar (invalid)
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('.ContentColumn table').length"
+        );
+        $Selenium->find_element( ".ContentColumn table tbody tr:nth-of-type(2) a", "css" )->click();
+
+        # Set it to invalid-temporary
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('form input#ValidID_Search').length"
+        );
+        $Selenium->find_element( "form input#ValidID_Search", "css" )->click();
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('div.InputField_ListContainer li[data-id=\"3\"]').length"
+        );
+        $Selenium->find_element( "div.InputField_ListContainer li[data-id=\"3\"]", "css" )->click();
+
+        # Submit
+        sleep(1);
+        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+
         print "Done\n";
         }
 );
