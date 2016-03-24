@@ -65,28 +65,6 @@ sub Run {
                 %GetParam,
             );
 
-            # my @Appointments;
-            #
-            # for my $AppointmentID (@AppointmentIDs) {
-            #     my %AppointmentData = $AppointmentObject->AppointmentGet(
-            #         AppointmentID => $AppointmentID,
-            #     );
-            #
-            #     my %Appointment = (
-            #         id     => $AppointmentData{ID},
-            #         start  => $AppointmentData{StartTime},
-            #         end    => $AppointmentData{EndTime},
-            #         allDay => int $AppointmentData{AllDay},
-            #         title  => $AppointmentData{Title},
-            #     );
-            #
-            #     if ( $AppointmentData{RecurrenceFrequency} ) {
-            #
-            #     }
-            #
-            #     push @Appointments, \%Appointment;
-            # }
-
             # build JSON output
             my $JSON = '';
             if (@Appointments) {

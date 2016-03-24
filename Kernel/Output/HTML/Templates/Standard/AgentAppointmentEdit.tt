@@ -94,9 +94,7 @@
 <script type="text/javascript">//<![CDATA[
 
 Core.Form.Validate.Init();
-
 Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
-
 Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceFrequency: $('#RecurrenceFrequency'),
     $RecurrenceLimitDiv: $('#RecurrenceLimitDiv'),
@@ -104,7 +102,6 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
 });
-
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
     var Data = new Object();
 
@@ -120,14 +117,12 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
 
     // Edit the appointment
     Data.Subaction = 'EditAppointment';
-
     Core.Agent.AppointmentCalendar.EditAppointment(Data);
 
 [% ELSE %]
 
     // Add the appointment
     Data.Subaction = 'AddAppointment';
-
     Core.Agent.AppointmentCalendar.EditAppointment(Data);
 
 [% END %]
