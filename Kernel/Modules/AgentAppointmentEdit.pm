@@ -267,6 +267,7 @@ sub Run {
         }
 
         if (
+            $GetParam{RecurrenceFrequency}  &&
             $GetParam{RecurrenceUntilYear}  &&
             $GetParam{RecurrenceUntilMonth} &&
             $GetParam{RecurrenceUntilDay}
