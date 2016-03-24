@@ -246,7 +246,7 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     RecurrenceFrequency => '1',                       # each day
     RecurrenceCount     => '',
     RecurrenceInterval  => '',
-    RecurrenceUntil     => '2016-03-05 16:00:00',
+    RecurrenceUntil     => '2016-03-06 00:00:00',
     RecurrenceByMonth   => '',
     RecurrenceByDay     => '',
     UserID              => $UserID,
@@ -596,7 +596,6 @@ my $Update8 = $AppointmentObject->AppointmentUpdate(
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     TimezoneID    => 'Timezone',
-
 );
 $Self->False(
     $Update8,
@@ -604,8 +603,6 @@ $Self->False(
 );
 
 my $Delete1 = $AppointmentObject->AppointmentDelete(
-
-    # AppointmentID => $AppointmentID8,
     UserID => $UserID,
 );
 $Self->False(
@@ -615,8 +612,6 @@ $Self->False(
 
 my $Delete2 = $AppointmentObject->AppointmentDelete(
     AppointmentID => $AppointmentID8,
-
-    # UserID  => $UserID,
 );
 $Self->False(
     $Delete2,
