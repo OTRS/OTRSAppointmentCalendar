@@ -76,14 +76,14 @@ sub Run {
             }
         } @Calendars;
 
+        # get time object
+        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
             %Appointment = $AppointmentObject->AppointmentGet(
                 AppointmentID => $GetParam{AppointmentID},
             );
-
-            # get time object
-            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
             # get start time components
             my $StartTime = $TimeObject->TimeStamp2SystemTime(
@@ -100,8 +100,8 @@ sub Run {
                 String => $Appointment{EndTime},
             );
             (
-                $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay}, $Appointment{EndMonth},
-                $Appointment{EndYear}
+                $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
+                $Appointment{EndMonth}, $Appointment{EndYear}
             ) = $TimeObject->SystemTime2Date( SystemTime => $EndTime );
 
             # get recurrence until components
@@ -216,12 +216,24 @@ sub Run {
             PossibleNone => 0,
         );
 
+        # get current and start time for difference
+        my $SystemTime = $TimeObject->SystemTime();
+        my $StartTime  = $TimeObject->Date2SystemTime(
+            Year   => $Appointment{StartYear}   // $GetParam{StartYear},
+            Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
+            Day    => $Appointment{StartDay}    // $GetParam{StartDay},
+            Hour   => $Appointment{StartHour}   // $GetParam{StartHour},
+            Minute => $Appointment{StartMinute} // $GetParam{StartMinute},
+            Second => 0,
+        );
+
         # recurrence until date string
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
             %Appointment,
             %GetParam,
             Prefix            => 'RecurrenceUntil',
             Format            => 'DateInputFormat',
+            DiffTime          => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
             ValidateDateAfter => 'Start',
             Validate          => 1,
         );
