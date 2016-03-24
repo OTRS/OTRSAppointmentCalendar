@@ -166,7 +166,7 @@ sub Run {
             $Param{AllDayChecked} = '';
         }
 
-        # recurrence selection
+        # recurrence frequency selection
         $Param{RecurrenceFrequencyString} = $LayoutObject->BuildSelection(
             Data => [
                 {
@@ -189,13 +189,28 @@ sub Run {
                     Key   => '365',
                     Value => Translatable('Every Year'),
                 },
-                {
-                    Key   => '-1',
-                    Value => Translatable('Custom'),
-                },
             ],
             SelectedID => $Appointment{RecurrenceFrequency} // $GetParam{RecurrenceFrequency},
             Name       => 'RecurrenceFrequency',
+            Multiple   => 0,
+            Class      => 'Modernize',
+            PossibleNone => 0,
+        );
+
+        # recurrence limit string
+        $Param{RecurrenceLimitString} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => 1,
+                    Value => Translatable('until ...'),
+                },
+                {
+                    Key   => 2,
+                    Value => Translatable('for ... times'),
+                },
+            ],
+            SelectedID => $Appointment{RecurrenceCount} ? '2' : '1',
+            Name       => 'RecurrenceLimit',
             Multiple   => 0,
             Class      => 'Modernize',
             PossibleNone => 0,
@@ -205,8 +220,8 @@ sub Run {
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
             %Appointment,
             %GetParam,
-            Format            => 'DateInputFormatLong',
             Prefix            => 'RecurrenceUntil',
+            Format            => 'DateInputFormat',
             ValidateDateAfter => 'Start',
             Validate          => 1,
         );

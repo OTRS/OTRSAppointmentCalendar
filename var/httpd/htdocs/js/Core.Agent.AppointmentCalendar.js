@@ -310,6 +310,40 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @name RecurringInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {Object} Fields - Array with references to recurring fields.
+     * @param {jQueryObject} Fields.$RecurrenceFrequency - drop down with recurrence frequency.
+     * @param {jQueryObject} Fields.$RecurrenceLimitDiv - layer with recurrence limit fields.
+     * @param {jQueryObject} Fields.$RecurrenceLimit - drop down with recurrence limit field.
+     * @param {jQueryObject} Fields.$RecurrenceCountDiv - layer with reccurence count field.
+     * @param {jQueryObject} Fields.$RecurrenceUntilDiv - layer with reccurence until fields.
+     * @description
+     *      This method initializes recurrence fields behavior.
+     */
+    TargetNS.RecurringInit = function (Fields) {
+        Fields.$RecurrenceFrequency.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            if ($(this).val() == 0) {
+                Fields.$RecurrenceLimitDiv.hide();
+                Fields.$RecurrenceCountDiv.hide();
+                Fields.$RecurrenceUntilDiv.hide();
+            } else {
+                Fields.$RecurrenceLimitDiv.show();
+                Fields.$RecurrenceLimit.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+                    if ($(this).val() == 1) {
+                        Fields.$RecurrenceCountDiv.hide();
+                        Fields.$RecurrenceUntilDiv.show();
+                    } else {
+                        Fields.$RecurrenceUntilDiv.hide();
+                        Fields.$RecurrenceCountDiv.show();
+                    }
+                }).trigger('change.AppointmentCalendar');
+                Core.UI.InputFields.Activate(Fields.$RecurrenceLimitDiv);
+            }
+        }).trigger('change.AppointmentCalendar');
+    }
+
+    /**
      * @private
      * @name EditAppointment
      * @memberof Core.Agent.AppointmentCalendar
