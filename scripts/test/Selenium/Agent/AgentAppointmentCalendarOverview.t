@@ -74,6 +74,17 @@ $Selenium->RunTest(
             "#NavigationContainer li#nav-Calendar ul li#nav-Calendar-AppointmentCalendarOverview a", "css"
         )->click();
 
+        #table tbody tr td:nth-of-type(15)
+        my $StartDrag1 = $Selenium->find_element( "table tbody tr td:nth-of-type(15)", "css" );
+
+        #$Selenium->mouse_down($StartDrag1);
+
+        my $StopDrag1 = $Selenium->find_element( "table tbody tr td:nth-of-type(20)", "css" );
+
+        #$Selenium->mouse_up($StopDrag1);
+
+        sleep(4);
+
         print "Done\n";
         }
 );
