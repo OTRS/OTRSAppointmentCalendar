@@ -293,18 +293,23 @@ sub Run {
             );
         }
 
-        if (
-            $GetParam{RecurrenceFrequency}  &&
-            $GetParam{RecurrenceUntilYear}  &&
-            $GetParam{RecurrenceUntilMonth} &&
-            $GetParam{RecurrenceUntilDay}
-            )
-        {
-            $GetParam{RecurrenceUntil} = sprintf(
-                "%04d-%02d-%02d 00:00:00",
-                $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
+        # recurring appointment
+        if ( $GetParam{RecurrenceFrequency} ) {
+
+            # until ...
+            if (
+                $GetParam{RecurrenceLimit} == 1 &&
+                $GetParam{RecurrenceUntilYear}  &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
-            );
+                )
+            {
+                $GetParam{RecurrenceUntil} = sprintf(
+                    "%04d-%02d-%02d 00:00:00",
+                    $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
+                    $GetParam{RecurrenceUntilDay}
+                );
+            }
         }
 
         my $Success;

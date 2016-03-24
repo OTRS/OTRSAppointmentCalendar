@@ -149,9 +149,8 @@ sub AppointmentCreate {
     return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
 
     # check RecurrenceUntil
-    my $RecurrenceUntilSystem;
     if ( $Param{RecurrenceUntil} ) {
-        $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
         return if !$RecurrenceUntilSystem;
@@ -200,35 +199,15 @@ sub AppointmentCreate {
     }
 
     # add recurring appointments
-    if ( $Param{RecurrenceFrequency} && $Param{RecurrenceUntil} ) {
-
-        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
-
-            # calculate recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24,
-                my $StartTime = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $StartTimeSystem,
-                );
-            my $EndTime = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $EndTimeSystem,
-            );
-
-            $SQL = '
-                INSERT INTO calendar_recurring
-                    (appointment_id, start_time, end_time)
-                VALUES (?, ?, ?)
-            ';
-
-            # create db record
-            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-                SQL  => $SQL,
-                Bind => [
-                    \$AppointmentID, \$StartTime, \$EndTime
-                ],
-            );
-        }
-
+    if ( $Param{RecurrenceFrequency} ) {
+        return if !$Self->_AppointmentRecurringCreate(
+            AppointmentID       => $AppointmentID,
+            StartTime           => $Param{StartTime},
+            EndTime             => $Param{EndTime},
+            RecurrenceFrequency => $Param{RecurrenceFrequency},
+            RecurrenceUntil     => $Param{RecurrenceUntil} || undef,
+            RecurrenceCount     => $Param{RecurrenceCount} || undef,
+        );
     }
 
     # clean up list method cache
@@ -572,13 +551,13 @@ sub AppointmentUpdate {
     );
     return if !$StartTimeSystem;
 
-    # Check EndTime
+    # check EndTime
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{EndTime},
     );
     return if !$EndTimeSystem;
 
-    # TODO: Check timezome
+    # TODO: check timezone
 
     # check RecurrenceFrequency
     return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
@@ -590,9 +569,8 @@ sub AppointmentUpdate {
     return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
 
     # check RecurrenceUntil
-    my $RecurrenceUntilSystem;
     if ( $Param{RecurrenceUntil} ) {
-        $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
         return if !$RecurrenceUntilSystem;
@@ -606,21 +584,12 @@ sub AppointmentUpdate {
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
     # delete recurring appointments
-    my $SQL = '
-        DELETE FROM calendar_recurring
-        WHERE appointment_id=?
-    ';
-
-    # delete db record
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{AppointmentID},
-        ],
+    return if !$Self->_AppointmentRecurringDelete(
+        AppointmentID => $Param{AppointmentID},
     );
 
     # update parent appointment
-    $SQL = '
+    my $SQL = '
         UPDATE calendar_appointment
         SET
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
@@ -642,35 +611,15 @@ sub AppointmentUpdate {
     );
 
     # add recurring appointments
-    if ( $Param{RecurrenceFrequency} && $Param{RecurrenceUntil} ) {
-
-        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
-
-            # calculate recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24,
-                my $StartTime = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $StartTimeSystem,
-                );
-            my $EndTime = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $EndTimeSystem,
-            );
-
-            $SQL = '
-                INSERT INTO calendar_recurring
-                    (appointment_id, start_time, end_time)
-                VALUES (?, ?, ?)
-            ';
-
-            # create db record
-            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-                SQL  => $SQL,
-                Bind => [
-                    \$Param{AppointmentID}, \$StartTime, \$EndTime
-                ],
-            );
-        }
-
+    if ( $Param{RecurrenceFrequency} ) {
+        return if !$Self->_AppointmentRecurringCreate(
+            AppointmentID       => $Param{AppointmentID},
+            StartTime           => $Param{StartTime},
+            EndTime             => $Param{EndTime},
+            RecurrenceFrequency => $Param{RecurrenceFrequency},
+            RecurrenceUntil     => $Param{RecurrenceUntil} || undef,
+            RecurrenceCount     => $Param{RecurrenceCount} || undef,
+        );
     }
 
     # delete cache
@@ -729,26 +678,18 @@ sub AppointmentDelete {
 
     # TODO: Check who is able to delete appointment
 
+    # get appointment because of CalendarID
     my %Appointment = $Self->AppointmentGet(
         AppointmentID => $Param{AppointmentID},
     );
 
     # delete recurring appointments
-    my $SQL = '
-        DELETE FROM calendar_recurring
-        WHERE appointment_id=?
-    ';
-
-    # delete db record
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{AppointmentID},
-        ],
+    return if !$Self->_AppointmentRecurringDelete(
+        AppointmentID => $Param{AppointmentID},
     );
 
-    # delete single appointments
-    $SQL = '
+    # delete parent appointments
+    my $SQL = '
         DELETE FROM calendar_appointment
         WHERE id=?
     ';
@@ -787,6 +728,132 @@ sub AppointmentDelete {
 =begin Internal:
 
 =cut
+
+sub _AppointmentRecurringCreate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID StartTime EndTime RecurrenceFrequency)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # check either until or count is supplied
+    if ( !$Param{RecurrenceUntil} && !$Param{RecurrenceCount} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need either RecurrenceUntil or RecurrenceCount!"
+        );
+        return;
+    }
+
+    # get needed objects
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{StartTime},
+    );
+    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        String => $Param{EndTime},
+    );
+
+    # until ...
+    if ( $Param{RecurrenceUntil} ) {
+        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{RecurrenceUntil},
+        );
+        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+
+            # calculate recurring times
+            my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
+            my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+
+            my $SQL = '
+                INSERT INTO calendar_recurring
+                    (appointment_id, start_time, end_time)
+                VALUES (?, ?, ?)
+            ';
+
+            # create db record
+            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+                SQL  => $SQL,
+                Bind => [
+                    \$Param{AppointmentID}, \$StartTime, \$EndTime
+                ],
+            );
+
+            # increase recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+        }
+    }
+
+    # for ... time(s)
+    else {
+        for ( 1 .. $Param{RecurrenceCount} ) {
+
+            # calculate recurring times
+            my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
+            my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+
+            my $SQL = '
+                INSERT INTO calendar_recurring
+                    (appointment_id, start_time, end_time)
+                VALUES (?, ?, ?)
+            ';
+
+            # create db record
+            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+                SQL  => $SQL,
+                Bind => [
+                    \$Param{AppointmentID}, \$StartTime, \$EndTime
+                ],
+            );
+
+            # increase recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
+        }
+    }
+
+    return 1;
+}
+
+sub _AppointmentRecurringDelete {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # delete recurring appointments
+    my $SQL = '
+        DELETE FROM calendar_recurring
+        WHERE appointment_id=?
+    ';
+
+    # delete db record
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{AppointmentID},
+        ],
+    );
+
+    return 1;
+}
 
 sub _GetUniqueID {
     my ( $Self, %Param ) = @_;

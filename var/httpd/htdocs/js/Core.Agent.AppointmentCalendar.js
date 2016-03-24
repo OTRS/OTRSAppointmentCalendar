@@ -256,7 +256,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Core.Config.Get('CGIHandle'),
             Data,
             function (Response) {
-                if (!Response.Success) {
+                if (Response.Success) {
+                    $('#calendar').fullCalendar('refetchEvents');
+                } else {
                     AppointmentData.RevertFunc();
                 }
             }
