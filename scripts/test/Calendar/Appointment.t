@@ -242,13 +242,69 @@ $Self->True(
 # List recurring appointments
 my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-03-01 00:00:00',    # (optional) Filter by start date
-    EndTime    => '2016-03-06 00:00:00',    # (optional) Filter by end date
+    StartTime  => '2016-03-01 00:00:00',
+    EndTime    => '2016-03-06 00:00:00',
 );
 $Self->Is(
     scalar @AppointmentsRec1,
     5,
     'AppointmentList() - # rec1 ok',
+);
+
+# update recurring appointment
+my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID       => $AppointmentIDRec1,
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Classes',
+    Description         => 'Additional description',
+    Location            => 'Germany',
+    StartTime           => '2016-03-02 16:00:00',
+    EndTime             => '2016-03-02 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 'Timezone',
+    RecurrenceFrequency => '2',                        # each 2 days
+    RecurrenceCount     => '',
+    RecurrenceInterval  => '',
+    RecurrenceUntil     => '2016-03-10 17:00:00',
+    RecurrenceByMonth   => '',
+    RecurrenceByDay     => '',
+    UserID              => 1,
+);
+$Self->True(
+    $SuccessRec1,
+    'Updated rec #1',
+);
+
+# List recurring appointments
+@AppointmentsRec1 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-03-01 00:00:00',
+    EndTime    => '2016-03-06 00:00:00',
+);
+$Self->Is(
+    scalar @AppointmentsRec1,
+    2,
+    'Recurring updated - current appointments count check',
+);
+$Self->Is(
+    $AppointmentsRec1[0]->{StartTime},
+    '2016-03-02 16:00:00',
+    'Recurring updated - #1 start time',
+);
+$Self->Is(
+    $AppointmentsRec1[0]->{EndTime},
+    '2016-03-02 17:00:00',
+    'Recurring updated - #1 end time',
+);
+$Self->Is(
+    $AppointmentsRec1[1]->{StartTime},
+    '2016-03-04 16:00:00',
+    'Recurring updated - #1 start time',
+);
+$Self->Is(
+    $AppointmentsRec1[1]->{EndTime},
+    '2016-03-04 17:00:00',
+    'Recurring updated - #1 end time',
 );
 
 my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
