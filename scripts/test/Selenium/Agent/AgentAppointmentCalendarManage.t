@@ -34,7 +34,7 @@ $Selenium->RunTest(
         $Selenium->set_window_size( 768, 1050 );
 
         # create test user
-        my $Language      = 'de';
+        my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => ['users'],
             Language => $Language,
@@ -62,6 +62,39 @@ $Selenium->RunTest(
 
         # Click Add new calendar
         $Selenium->find_element( ".SidebarColumn ul.ActionList a#Add", "css" )->click();
+
+        # Write calendar name
+        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
+        $Selenium->send_keys_to_active_element("Personal calendar");
+
+        # Submit
+        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+
+        #
+        # Let's try to add calendar with same name
+        #
+        # Click Add new calendar
+        $Selenium->find_element( ".SidebarColumn ul.ActionList a#Add", "css" )->click();
+
+        # Write calendar name
+        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
+        $Selenium->send_keys_to_active_element("Personal calendar");
+
+        # Submit
+        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+
+        # Wait for server side error
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('div.Dialog button#DialogButton1').length"
+        );
+
+        # Click ok to dismiss
+        $Selenium->find_element( "div.Dialog button#DialogButton1", "css" )->click();
+
+        # Wait for tooltip message
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('div#OTRS_UI_Tooltips_ErrorTooltip').length"
+        );
 
         print "Done\n";
         }
