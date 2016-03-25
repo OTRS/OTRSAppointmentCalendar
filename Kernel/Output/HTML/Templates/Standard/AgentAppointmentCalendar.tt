@@ -129,6 +129,11 @@ Core.Agent.AppointmentCalendar.Init({
     FirstDay: [% Data.FirstDay | html %],
     DialogText: {
         EditTitle: [% Translate("Appointment") | JSON %],
+        OccurrenceTitle: [% Translate("This is a repeating appointment") | JSON %],
+        OccurrenceText: [% Translate("Would you like to edit just this occurrence or all occurrences?") | JSON %],
+        OccurrenceAll: [% Translate("All occurrences") | JSON %],
+        OccurrenceJustThis: [% Translate("Just this occurrence") | JSON %],
+        Close: [% Translate("Close") | JSON %]
     },
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
@@ -157,6 +162,7 @@ var EventSources = {
         eventDataTransform: function(AppointmentData) {
             return {
                 id: AppointmentData.ID,
+                parentId: AppointmentData.ParentID,
                 start: AppointmentData.StartTime,
                 end: AppointmentData.EndTime,
                 title: AppointmentData.Title,

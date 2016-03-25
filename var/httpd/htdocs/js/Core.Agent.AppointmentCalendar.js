@@ -39,6 +39,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.FirstDay - First day of the week (0: Sunday).
      * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
      * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
+     * @param {String} Params.DialogText.OccurrenceTitle - Title of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceText - Text of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceAll - Text of 'all' button in occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
@@ -181,6 +185,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Object} Params - Hash with configuration.
      * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
      * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
+     * @param {String} Params.DialogText.OccurrenceTitle - Title of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceText - Text of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceAll - Text of 'all' button in occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
@@ -209,16 +217,51 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null
         };
 
-        ShowWaitingDialog();
+        function EditDialog() {
+            ShowWaitingDialog();
+            Core.AJAX.FunctionCall(
+                Core.Config.Get('CGIHandle'),
+                Data,
+                function (HTML) {
+                    Core.UI.Dialog.ShowContentDialog(HTML, Params.DialogText.EditTitle, '10px', 'Center', true, undefined, true);
+                    Core.UI.InputFields.Activate($('.Dialog:visible'));
+                }, 'html'
+            );
+        }
 
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (HTML) {
-                Core.UI.Dialog.ShowContentDialog(HTML, Params.DialogText.EditTitle, '10px', 'Center', true, undefined, true);
-                Core.UI.InputFields.Activate($('.Dialog:visible'));
-            }, 'html'
-        );
+        // Repeating event
+        if (AppointmentData.CalEvent && AppointmentData.CalEvent.parentId) {
+            Core.UI.Dialog.ShowDialog({
+                Title: Params.DialogText.OccurrenceTitle,
+                HTML: Params.DialogText.OccurrenceText,
+                Modal: true,
+                CloseOnClickOutside: true,
+                CloseOnEscape: true,
+                PositionTop: '20%',
+                PositionLeft: 'Center',
+                Buttons: [
+                    {
+                        Label: Params.DialogText.OccurrenceAll,
+                        Class: 'Primary CallForAction',
+                        Function: function() {
+                            Data.AppointmentID = AppointmentData.CalEvent.parentId;
+                            EditDialog();
+                        }
+                    },
+                    {
+                        Label: Params.DialogText.OccurrenceJustThis,
+                        Class: 'CallForAction',
+                        Function: EditDialog
+                    },
+                    {
+                        Type: 'Close',
+                        Label: Params.DialogText.Close
+                    }
+                ]
+            });
+        } else {
+            EditDialog();
+        }
     }
 
     /**
@@ -226,6 +269,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name UpdateAppointment
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with configuration.
+     * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
+     * @param {String} Params.DialogText.OccurrenceTitle - Title of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceText - Text of the occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceAll - Text of 'all' button in occurrence dialog.
+     * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditSubaction - Name of the edit subaction.
@@ -252,17 +300,65 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1'
         };
 
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (Response) {
-                if (Response.Success) {
-                    $('#calendar').fullCalendar('refetchEvents');
-                } else {
-                    AppointmentData.RevertFunc();
+        function Update(Refetch) {
+            Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+            Core.AJAX.FunctionCall(
+                Core.Config.Get('CGIHandle'),
+                Data,
+                function (Response) {
+                    if (Response.Success) {
+                        if (Refetch) {
+                            $('#calendar').fullCalendar('refetchEvents');
+                        }
+                    } else {
+                        AppointmentData.RevertFunc();
+                    }
+
+                    // Close the dialog
+                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                 }
-            }
-        );
+            );
+        }
+
+        // Repeating event
+        if (AppointmentData.CalEvent.parentId) {
+            Core.UI.Dialog.ShowDialog({
+                Title: Params.DialogText.OccurrenceTitle,
+                HTML: Params.DialogText.OccurrenceText,
+                Modal: true,
+                CloseOnClickOutside: true,
+                CloseOnEscape: true,
+                PositionTop: '20%',
+                PositionLeft: 'Center',
+                Buttons: [
+                    {
+                        Label: Params.DialogText.OccurrenceAll,
+                        Class: 'Primary CallForAction',
+                        Function: function() {
+                            Data.AppointmentID = AppointmentData.CalEvent.parentId;
+                            Update();
+                        }
+                    },
+                    {
+                        Label: Params.DialogText.OccurrenceJustThis,
+                        Class: 'CallForAction',
+                        Function: function() {
+                            Update(true);
+                        }
+                    },
+                    {
+                        Type: 'Close',
+                        Label: Params.DialogText.Close,
+                        Function: function() {
+                            Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                            AppointmentData.RevertFunc();
+                        }
+                    }
+                ]
+            });
+        } else {
+            Update();
+        }
     }
 
     /**

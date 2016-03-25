@@ -110,11 +110,8 @@ sub Run {
                     String => $Appointment{RecurrenceUntil},
                 );
                 (
-                    $S,
-                    $Appointment{RecurrenceUntilMinute},
-                    $Appointment{RecurrenceUntilHour},
-                    $Appointment{RecurrenceUntilDay},
-                    $Appointment{RecurrenceUntilMonth},
+                    $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
+                    $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
                     $Appointment{RecurrenceUntilYear}
                 ) = $TimeObject->SystemTime2Date( SystemTime => $RecurrenceUntil );
             }
@@ -198,6 +195,10 @@ sub Run {
         );
 
         # recurrence limit string
+        my $RecurrenceLimit = 1;
+        if ( $Appointment{RecurrenceCount} ) {
+            $RecurrenceLimit = 2;
+        }
         $Param{RecurrenceLimitString} = $LayoutObject->BuildSelection(
             Data => [
                 {
@@ -209,10 +210,10 @@ sub Run {
                     Value => Translatable('for ... times'),
                 },
             ],
-            SelectedID => $Appointment{RecurrenceCount} ? '2' : '1',
-            Name       => 'RecurrenceLimit',
-            Multiple   => 0,
-            Class      => 'Modernize',
+            SelectedID   => $RecurrenceLimit,
+            Name         => 'RecurrenceLimit',
+            Multiple     => 0,
+            Class        => 'Modernize',
             PossibleNone => 0,
         );
 
@@ -296,11 +297,13 @@ sub Run {
         # recurring appointment
         if ( $GetParam{RecurrenceFrequency} ) {
 
+            $GetParam{Recurring} = 1;
+
             # until ...
             if (
-                $GetParam{RecurrenceLimit} == 1 &&
-                $GetParam{RecurrenceUntilYear}  &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceLimit} eq '1' &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -309,6 +312,7 @@ sub Run {
                     $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
                     $GetParam{RecurrenceUntilDay}
                 );
+                $GetParam{RecurrenceCount} = '';
             }
         }
 

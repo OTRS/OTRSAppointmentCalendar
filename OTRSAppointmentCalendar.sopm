@@ -123,6 +123,7 @@
         </TableCreate>
         <TableCreate Name="calendar_appointment">
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="parent_id" Type="BIGINT"/>
             <Column Name="calendar_id" Required="true" Type="BIGINT"/>
             <Column Name="unique_id" Required="true" Size="255" Type="VARCHAR"/>
             <Column Name="title" Required="true" Size="255" Type="VARCHAR"/>
@@ -132,6 +133,7 @@
             <Column Name="end_time" Required="true" Type="DATE"/>
             <Column Name="all_day" Type="SMALLINT"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
+            <Column Name="recurring" Type="SMALLINT"/>
             <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
             <Column Name="recur_count" Type="INTEGER"/>
             <Column Name="recur_interval" Type="INTEGER"/>
@@ -148,22 +150,12 @@
             <ForeignKey ForeignTable="calendar">
                 <Reference Local="calendar_id" Foreign="id"/>
             </ForeignKey>
-        </TableCreate>
-        <TableCreate Name="calendar_recurring">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
-            <Column Name="start_time" Required="true" Type="DATE"/>
-            <Column Name="end_time" Required="true" Type="DATE"/>
-            <Unique Name="calendar_recurring_id">
-                <UniqueColumn Name="id"/>
-            </Unique>
             <ForeignKey ForeignTable="calendar_appointment">
-                <Reference Local="appointment_id" Foreign="id"/>
+                <Reference Local="parent_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
     </DatabaseInstall>
     <DatabaseUninstall Type="pre">
-        <TableDrop Name="calendar_recurring"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>
     </DatabaseUninstall>

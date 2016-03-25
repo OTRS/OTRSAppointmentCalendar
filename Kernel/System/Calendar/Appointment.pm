@@ -77,6 +77,7 @@ sub new {
 creates a new appointment.
 
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
+        ParentID            => 1,                                       # (optional) Valid ParentID for recurring appointments
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
@@ -85,6 +86,7 @@ creates a new appointment.
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => '0',                                     # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
+        Recurring           => '1',                                     # (optional) Flag the appointment as recurring (parent only!)
         RecurrenceFrequency => '1',                                     # (optional)
         RecurrenceCount     => '1',                                     # (optional)
         RecurrenceInterval  => '',                                      # (optional)
@@ -118,13 +120,15 @@ sub AppointmentCreate {
     # needed objects
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
+    # check ParentID
+    return if ( $Param{ParentID} && !IsInteger( $Param{ParentID} ) );
+
     # check StartTime
     my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{StartTime},
     );
     return if !$StartTimeSystem;
 
-    # generate a UniqueID
     my $UniqueID = $Self->_GetUniqueID(
         CalendarID => $Param{CalendarID},
         StartTime  => $StartTimeSystem,
@@ -138,6 +142,9 @@ sub AppointmentCreate {
     return if !$EndTimeSystem;
 
     # TODO: check timezone
+
+    # check Recurring
+    return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
 
     # check RecurrenceFrequency
     return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
@@ -163,25 +170,44 @@ sub AppointmentCreate {
     # check RecurrenceByDay
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
-    my $SQL = '
+    my @Bind;
+
+    # parent ID supplied
+    my $ParentIDCol = my $ParentIDVal = '';
+    if ( $Param{ParentID} ) {
+        $ParentIDCol = 'parent_id,';
+        $ParentIDVal = '?,';
+        push @Bind, \$Param{ParentID};
+
+        # turn off all recurring fields
+        delete $Param{Recurring};
+        delete $Param{RecurrenceFrequency};
+        delete $Param{RecurrenceCount};
+        delete $Param{RecurrenceInterval};
+        delete $Param{RecurrenceUntil};
+        delete $Param{RecurrenceByMonth};
+        delete $Param{RecurrenceByDay};
+    }
+
+    push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
+        \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
+        \$Param{TimezoneID},        \$Param{Recurring},          \$Param{RecurrenceFrequency},
+        \$Param{RecurrenceCount},   \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+        \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},    \$Param{UserID}, \$Param{UserID};
+
+    my $SQL = "
         INSERT INTO calendar_appointment
-            (calendar_id, unique_id, title, description, location, start_time, end_time, all_day,
-            timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
-            recur_byday, create_time, create_by, change_time, change_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?)
-    ';
+            ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
+            end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
+            recur_until, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?,
+            current_timestamp, ?)
+    ";
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
-        Bind => [
-            \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-            \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
-            \$Param{TimezoneID}, \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},
-            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
-            \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
-            \$Param{UserID},             \$Param{UserID}
-        ],
+        Bind => \@Bind,
     );
 
     # get appointment id
@@ -199,14 +225,10 @@ sub AppointmentCreate {
     }
 
     # add recurring appointments
-    if ( $Param{RecurrenceFrequency} ) {
+    if ( $Param{Recurring} ) {
         return if !$Self->_AppointmentRecurringCreate(
-            AppointmentID       => $AppointmentID,
-            StartTime           => $Param{StartTime},
-            EndTime             => $Param{EndTime},
-            RecurrenceFrequency => $Param{RecurrenceFrequency},
-            RecurrenceUntil     => $Param{RecurrenceUntil} || undef,
-            RecurrenceCount     => $Param{RecurrenceCount} || undef,
+            ParentID    => $AppointmentID,
+            Appointment => \%Param,
         );
     }
 
@@ -235,7 +257,7 @@ get a hash of Appointments.
         CalendarID          => 1,                                       # (required) Valid CalendarID
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
-        Result              => 'HASH',                                  # (optional), ARRAY|HASH
+        Result              => 'HASH',                                  # (optional), HASH|ARRAY
     );
 
 returns an array of hashes with select Appointment data or simple array of AppointmentIDs:
@@ -254,11 +276,12 @@ Result => 'HASH':
         },
         {
             ID          => 2,
+            ParentID    => 1,                                           # for recurred (child) appointments only
             CalendarID  => 1,
             UniqueID    => '20160101T180000-A78B57@localhost',
             Title       => 'Webinar',
-            StartTime   => '2016-01-01 18:00:00',
-            EndTime     => '2016-01-01 19:00:00',
+            StartTime   => '2016-01-02 16:00:00',
+            EndTime     => '2016-01-02 17:00:00',
             AllDay      => 0,
         },
         ...
@@ -266,7 +289,7 @@ Result => 'HASH':
 
 Result => 'ARRAY':
 
-    @Appointments = [ 1, 2, 3, ... ]
+    @Appointments = [ 1, 2, ... ]
 
 =cut
 
@@ -321,10 +344,8 @@ sub AppointmentList {
     }
 
     my $SQL = '
-        SELECT ca.id, ca.calendar_id, ca.unique_id, ca.title, ca.start_time, ca.end_time,
-            ca.all_day, cr.start_time, cr.end_time
-        FROM calendar_appointment ca
-        LEFT JOIN calendar_recurring cr ON cr.appointment_id = ca.id
+        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, all_day
+        FROM calendar_appointment
         WHERE 1=1
     ';
 
@@ -333,35 +354,19 @@ sub AppointmentList {
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
         $SQL .= 'AND (
-            (
-                cr.start_time IS NULL AND cr.end_time IS NULL AND (
-                    (ca.start_time >= ? AND ca.start_time < ?) OR
-                    (ca.end_time > ? AND ca.end_time <= ?)
-                )
-            ) OR (
-                cr.start_time AND cr.end_time AND (
-                    (cr.start_time >= ? AND cr.start_time < ?) OR
-                    (cr.end_time > ? AND cr.end_time <= ?)
-                )
-            )
+            (start_time >= ? AND start_time < ?) OR
+            (end_time > ? AND end_time <= ?)
         ) ';
-        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime},
-            \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND (
-            (cr.start_time IS NULL AND ca.start_time >= ?) OR
-            (cr.start_time AND cr.start_time >= ?)
-        )';
+        $SQL .= 'AND start_time >= ? ';
         push @Bind, \$Param{StartTime}, \$Param{StartTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND (
-            (cr.end_time IS NULL AND ca.end_time <= ?) OR
-            (cr.end_time AND cr.end_time <= ?)
-        )';
+        $SQL .= 'AND end_time <= ?';
         push @Bind, \$Param{EndTime}, \$Param{EndTime};
     }
 
@@ -376,12 +381,13 @@ sub AppointmentList {
     while ( my @Row = $DBObject->FetchrowArray() ) {
         my %Appointment = (
             ID         => $Row[0],
-            CalendarID => $Row[1],
-            UniqueID   => $Row[2],
-            Title      => $Row[3],
-            StartTime  => $Row[7] // $Row[4],
-            EndTime    => $Row[8] // $Row[5],
-            AllDay     => $Row[6],
+            ParentID   => $Row[1],
+            CalendarID => $Row[2],
+            UniqueID   => $Row[3],
+            Title      => $Row[4],
+            StartTime  => $Row[5],
+            EndTime    => $Row[6],
+            AllDay     => $Row[7],
         );
         push @Result, \%Appointment;
     }
@@ -410,7 +416,8 @@ get Appointment.
 
 returns a hash:
     %Appointment = (
-        ID                  => 1,
+        ID                  => 2,
+        ParentID            => 1,                                  # only for recurred (child) appointments
         CalendarID          => 1,
         UniqueID            => '20160101T160000-71E386@localhost',
         Title               => 'Webinar',
@@ -420,6 +427,7 @@ returns a hash:
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
         TimezoneID          => 'Timezone',
+        Recurring           => 1,                                  # only for recurring (parent) appointments
         RecurrenceFrequency => '1',
         RecurrenceCount     => '1',
         RecurrenceInterval  => '',
@@ -463,9 +471,9 @@ sub AppointmentGet {
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     my $SQL = '
-        SELECT id, calendar_id, unique_id, title, description, location, start_time, end_time, all_day,
-            timezone_id, recur_freq, recur_count, recur_interval, recur_until, recur_bymonth,
-            recur_byday, create_time, create_by, change_time, change_by
+        SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
+            end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
+            recur_until, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE id=?
     ';
@@ -480,25 +488,27 @@ sub AppointmentGet {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Result{ID}                  = $Row[0];
-        $Result{CalendarID}          = $Row[1];
-        $Result{UniqueID}            = $Row[2];
-        $Result{Title}               = $Row[3];
-        $Result{Description}         = $Row[4];
-        $Result{Location}            = $Row[5];
-        $Result{StartTime}           = $Row[6];
-        $Result{EndTime}             = $Row[7];
-        $Result{AllDay}              = $Row[8];
-        $Result{TimezoneID}          = $Row[9];
-        $Result{RecurrenceFrequency} = $Row[10];
-        $Result{RecurrenceCount}     = $Row[11];
-        $Result{RecurrenceInterval}  = $Row[12];
-        $Result{RecurrenceUntil}     = $Row[13];
-        $Result{RecurrenceByMonth}   = $Row[14];
-        $Result{RecurrenceByDay}     = $Row[15];
-        $Result{CreateTime}          = $Row[16];
-        $Result{CreateBy}            = $Row[17];
-        $Result{ChangeTime}          = $Row[18];
-        $Result{ChangeBy}            = $Row[19];
+        $Result{ParentID}            = $Row[1];
+        $Result{CalendarID}          = $Row[2];
+        $Result{UniqueID}            = $Row[3];
+        $Result{Title}               = $Row[4];
+        $Result{Description}         = $Row[5];
+        $Result{Location}            = $Row[6];
+        $Result{StartTime}           = $Row[7];
+        $Result{EndTime}             = $Row[8];
+        $Result{AllDay}              = $Row[9];
+        $Result{TimezoneID}          = $Row[10];
+        $Result{Recurring}           = $Row[11];
+        $Result{RecurrenceFrequency} = $Row[12];
+        $Result{RecurrenceCount}     = $Row[13];
+        $Result{RecurrenceInterval}  = $Row[14];
+        $Result{RecurrenceUntil}     = $Row[15];
+        $Result{RecurrenceByMonth}   = $Row[16];
+        $Result{RecurrenceByDay}     = $Row[17];
+        $Result{CreateTime}          = $Row[18];
+        $Result{CreateBy}            = $Row[19];
+        $Result{ChangeTime}          = $Row[20];
+        $Result{ChangeBy}            = $Row[21];
     }
 
     # cache
@@ -517,7 +527,7 @@ sub AppointmentGet {
 updates an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentUpdate(
-        AppointmentID       => 1,                                       # (required)
+        AppointmentID       => 2,                                       # (required)
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
@@ -526,6 +536,7 @@ updates an existing appointment.
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
+        Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
         RecurrenceFrequency => '1',                                     # (optional)
         RecurrenceCount     => '1',                                     # (optional)
         RecurrenceInterval  => '',                                      # (optional)
@@ -574,6 +585,9 @@ sub AppointmentUpdate {
 
     # TODO: check timezone
 
+    # check Recurring
+    return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
+
     # check RecurrenceFrequency
     return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
 
@@ -598,18 +612,19 @@ sub AppointmentUpdate {
     # check RecurrenceByDay
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
-    # delete recurring appointments
+    # delete existing recurred appointments
     return if !$Self->_AppointmentRecurringDelete(
-        AppointmentID => $Param{AppointmentID},
+        ParentID => $Param{AppointmentID},
     );
 
     # update parent appointment
     my $SQL = '
         UPDATE calendar_appointment
         SET
-            calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
-            timezone_id=?, recur_freq=?, recur_count=?, recur_interval=?, recur_until=?,
-            recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
+            parent_id=NULL, calendar_id=?, title=?, description=?, location=?, start_time=?,
+            end_time=?, all_day=?, timezone_id=?, recurring=?, recur_freq=?, recur_count=?,
+            recur_interval=?, recur_until=?, recur_bymonth=?, recur_byday=?,
+            change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -619,21 +634,17 @@ sub AppointmentUpdate {
         Bind => [
             \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
             \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
-            \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},   \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},
-            \$Param{UserID},              \$Param{AppointmentID}
+            \$Param{Recurring},          \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},
+            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth},
+            \$Param{RecurrenceByDay},    \$Param{UserID},              \$Param{AppointmentID}
         ],
     );
 
-    # add recurring appointments
-    if ( $Param{RecurrenceFrequency} ) {
+    # add recurred appointments again
+    if ( $Param{Recurring} ) {
         return if !$Self->_AppointmentRecurringCreate(
-            AppointmentID       => $Param{AppointmentID},
-            StartTime           => $Param{StartTime},
-            EndTime             => $Param{EndTime},
-            RecurrenceFrequency => $Param{RecurrenceFrequency},
-            RecurrenceUntil     => $Param{RecurrenceUntil} || undef,
-            RecurrenceCount     => $Param{RecurrenceCount} || undef,
+            ParentID    => $Param{AppointmentID},
+            Appointment => \%Param,
         );
     }
 
@@ -700,10 +711,10 @@ sub AppointmentDelete {
 
     # delete recurring appointments
     return if !$Self->_AppointmentRecurringDelete(
-        AppointmentID => $Param{AppointmentID},
+        ParentID => $Param{AppointmentID},
     );
 
-    # delete parent appointments
+    # delete parent appointment
     my $SQL = '
         DELETE FROM calendar_appointment
         WHERE id=?
@@ -748,7 +759,7 @@ sub _AppointmentRecurringCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID StartTime EndTime RecurrenceFrequency)) {
+    for my $Needed (qw(ParentID Appointment)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -758,81 +769,54 @@ sub _AppointmentRecurringCreate {
         }
     }
 
-    # check either until or count is supplied
-    if ( !$Param{RecurrenceUntil} && !$Param{RecurrenceCount} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Need either RecurrenceUntil or RecurrenceCount!"
-        );
-        return;
-    }
-
     # get needed objects
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
-        String => $Param{StartTime},
+        String => $Param{Appointment}->{StartTime},
     );
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
-        String => $Param{EndTime},
+        String => $Param{Appointment}->{EndTime},
     );
 
     # until ...
-    if ( $Param{RecurrenceUntil} ) {
+    if ( $Param{Appointment}->{RecurrenceUntil} ) {
         my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{RecurrenceUntil},
+            String => $Param{Appointment}->{RecurrenceUntil},
         );
         while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
 
             # calculate recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
 
-            my $SQL = '
-                INSERT INTO calendar_recurring
-                    (appointment_id, start_time, end_time)
-                VALUES (?, ?, ?)
-            ';
-
-            # create db record
-            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-                SQL  => $SQL,
-                Bind => [
-                    \$Param{AppointmentID}, \$StartTime, \$EndTime
-                ],
+            $Self->AppointmentCreate(
+                %{ $Param{Appointment} },
+                ParentID  => $Param{ParentID},
+                StartTime => $StartTime,
+                EndTime   => $EndTime,
             );
-
-            # increase recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
         }
     }
 
     # for ... time(s)
     else {
-        for ( 1 .. $Param{RecurrenceCount} ) {
+        for ( 1 .. $Param{Appointment}->{RecurrenceCount} - 1 ) {
 
             # calculate recurring times
+            $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+            $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
 
-            my $SQL = '
-                INSERT INTO calendar_recurring
-                    (appointment_id, start_time, end_time)
-                VALUES (?, ?, ?)
-            ';
-
-            # create db record
-            return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-                SQL  => $SQL,
-                Bind => [
-                    \$Param{AppointmentID}, \$StartTime, \$EndTime
-                ],
+            $Self->AppointmentCreate(
+                %{ $Param{Appointment} },
+                ParentID  => $Param{ParentID},
+                StartTime => $StartTime,
+                EndTime   => $EndTime,
             );
-
-            # increase recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{RecurrenceFrequency} * 60 * 60 * 24;
         }
     }
 
@@ -843,7 +827,7 @@ sub _AppointmentRecurringDelete {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID)) {
+    for my $Needed (qw(ParentID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -855,15 +839,15 @@ sub _AppointmentRecurringDelete {
 
     # delete recurring appointments
     my $SQL = '
-        DELETE FROM calendar_recurring
-        WHERE appointment_id=?
+        DELETE FROM calendar_appointment
+        WHERE parent_id=?
     ';
 
     # delete db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{AppointmentID},
+            \$Param{ParentID},
         ],
     );
 
