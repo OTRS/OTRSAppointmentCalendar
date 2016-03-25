@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Modules::AgentAppointmentCalendar;
+package Kernel::Modules::AgentAppointmentCalendarOverview;
 
 use strict;
 use warnings;
@@ -154,7 +154,7 @@ sub Run {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AgentAppointmentCalendar',
+        TemplateFile => 'AgentAppointmentCalendarOverview',
         Data         => {
             EditAction        => 'AgentAppointmentEdit',
             EditMaskSubaction => 'EditMask',

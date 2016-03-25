@@ -284,19 +284,15 @@ sub Run {
 
         $LayoutObject->Block(
             Name => 'AddLink',
-            Data => {
-            },
         );
 
         $LayoutObject->Block(
             Name => 'Overview',
-            Data => {
-            },
         );
 
         for my $Calendar (@Calendars) {
 
-            # Valid text
+            # valid text
             $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
                 ValidID => $Calendar->{ValidID},
             );
@@ -308,6 +304,10 @@ sub Run {
                 },
             );
         }
+
+        $LayoutObject->Block(
+            Name => 'CalendarNoDataRow',
+        ) if scalar @Calendars == 0;
 
         $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
         $Param{Overview} = 1;

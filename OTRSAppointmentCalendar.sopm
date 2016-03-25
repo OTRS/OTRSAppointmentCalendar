@@ -36,13 +36,13 @@
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/Leapyear.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal/Duration.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendar.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>

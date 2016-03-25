@@ -18,17 +18,25 @@
             <div class="Content">
 
                 <ul class="ActionList">
+[% IF Env("Subaction") == "Overview" %]
                     <li>
-[% IF Data.Overview %]
-                        <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendar" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
+                        <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
                             <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
                         </a>
-[% ELSE %]
+                    </li>
+[% ELSIF Env("Subaction") != "" %]
+                    <li>
                         <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
                             <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
                         </a>
-[% END %]
                     </li>
+[% ELSE %]
+                    <li>
+                        <a id="Overview" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview" class="CallForAction Fullsize Center" title="[% Translate("Calendar Overview") | html %]">
+                            <span><i class="fa fa-calendar"></i>[% Translate("Calendar Overview") | html %]</span>
+                        </a>
+                    </li>
+[% END %]
 [% RenderBlockStart("AddLink") %]
                     <li>
                         <a id="Add" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=New" class="CallForAction Fullsize Center">
@@ -73,6 +81,13 @@
                             <td class="Center"><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Export;CalendarID=[% Data.CalendarID | uri %];[% Env("ChallengeTokenParam") | html %]"><i class="fa fa-download"></i><span class="InvisibleText">[% Translate("Export") | html %]</span></a></td>
                         </tr>
 [% RenderBlockEnd("Calendar") %]
+[% RenderBlockStart("CalendarNoDataRow") %]
+                        <tr>
+                            <td colspan="5">
+                                [% Translate("No data found.") | html %]
+                            </td>
+                        </tr>
+[% RenderBlockEnd("CalendarNoDataRow") %]
                     </tbody>
                 </table>
 [% RenderBlockEnd("Overview") %]

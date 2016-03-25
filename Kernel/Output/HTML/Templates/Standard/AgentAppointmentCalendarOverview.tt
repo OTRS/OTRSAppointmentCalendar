@@ -17,8 +17,8 @@
             <div class="Content">
                 <ul class="ActionList">
                     <li>
-                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center">
-                            <span><i class="fa fa-calendar"></i>[% Translate("Manage Calendars") | html %]</span>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentCalendarManage;Subaction=Overview" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-calendar-o"></i>[% Translate("Manage Calendars") | html %]</span>
                         </a>
                     </li>
                 </ul>

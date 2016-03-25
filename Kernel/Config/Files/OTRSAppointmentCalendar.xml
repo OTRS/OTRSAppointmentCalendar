@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_config version="1.0" init="Config">
-    <ConfigItem Name="Frontend::Module###AgentAppointmentCalendar" Required="0" Valid="1">
+    <ConfigItem Name="Frontend::Module###AgentAppointmentCalendarOverview" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
@@ -11,7 +11,7 @@
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
                     <Name Translatable="1">Calendar</Name>
-                    <Link>Action=AgentAppointmentCalendar</Link>
+                    <Link>Action=AgentAppointmentCalendarOverview</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Calendar</NavBar>
                     <Type>Menu</Type>
@@ -21,8 +21,8 @@
                 </NavBar>
                 <NavBar>
                     <Description Translatable="1">Appointment Calendar overview page.</Description>
-                    <Name Translatable="1">Appointment Calendar Overview</Name>
-                    <Link>Action=AgentAppointmentCalendar</Link>
+                    <Name Translatable="1">Calendar Overview</Name>
+                    <Link>Action=AgentAppointmentCalendarOverview</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Calendar</NavBar>
                     <Type></Type>
