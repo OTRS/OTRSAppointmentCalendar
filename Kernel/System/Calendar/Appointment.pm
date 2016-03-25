@@ -614,8 +614,8 @@ sub AppointmentUpdate {
     # check RecurrenceByDay
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
-    # get appointment because of CalendarID
-    my %OldAppointment = $Self->AppointmentGet(
+    # get previous CalendarID
+    my $PreviousCalendarID = $Self->_AppointmentGetCalendarID(
         AppointmentID => $Param{AppointmentID},
     );
 
@@ -663,7 +663,7 @@ sub AppointmentUpdate {
 
     # clean up list method cache
     my @CalendarIDs = ( $Param{CalendarID} );
-    push @CalendarIDs, $OldAppointment{CalendarID} if $OldAppointment{CalendarID} ne $Param{CalendarID};
+    push @CalendarIDs, $PreviousCalendarID if $PreviousCalendarID ne $Param{CalendarID};
     for my $CalendarID (@CalendarIDs) {
         $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
             Type => $Self->{CacheType} . 'List' . $CalendarID,
@@ -715,8 +715,8 @@ sub AppointmentDelete {
 
     # TODO: Check who is able to delete appointment
 
-    # get appointment because of CalendarID
-    my %Appointment = $Self->AppointmentGet(
+    # get CalendarID
+    my $CalendarID = $Self->_AppointmentGetCalendarID(
         AppointmentID => $Param{AppointmentID},
     );
 
@@ -747,7 +747,7 @@ sub AppointmentDelete {
 
     # clean up list method cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => $Self->{CacheType} . 'List' . $Appointment{CalendarID},
+        Type => $Self->{CacheType} . 'List' . $CalendarID,
     );
 
     # fire event
@@ -937,6 +937,42 @@ sub _AppointmentGetID {
     }
 
     return $ID;
+}
+
+sub _AppointmentGetCalendarID {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(AppointmentID)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # sql query
+    my $SQL  = 'SELECT calendar_id FROM calendar_appointment WHERE id=?';
+    my @Bind = ( \$Param{AppointmentID} );
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # start query
+    return if !$DBObject->Prepare(
+        SQL   => $SQL,
+        Bind  => \@Bind,
+        Limit => 1,
+    );
+
+    my $CalendarID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $CalendarID = $Row[0];
+    }
+
+    return $CalendarID;
 }
 
 1;
