@@ -614,6 +614,11 @@ sub AppointmentUpdate {
     # check RecurrenceByDay
     return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
+    # get appointment because of CalendarID
+    my %OldAppointment = $Self->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
+    );
+
     # delete existing recurred appointments
     return if !$Self->_AppointmentRecurringDelete(
         ParentID => $Param{AppointmentID},
@@ -657,9 +662,13 @@ sub AppointmentUpdate {
     );
 
     # clean up list method cache
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => $Self->{CacheType} . 'List' . $Param{CalendarID},
-    );
+    my @CalendarIDs = ( $Param{CalendarID} );
+    push @CalendarIDs, $OldAppointment{CalendarID} if $OldAppointment{CalendarID} ne $Param{CalendarID};
+    for my $CalendarID (@CalendarIDs) {
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+            Type => $Self->{CacheType} . 'List' . $CalendarID,
+        );
+    }
 
     # fire event
     $Self->EventHandler(
