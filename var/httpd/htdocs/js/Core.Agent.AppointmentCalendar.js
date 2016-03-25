@@ -297,17 +297,21 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndDay: AppointmentData.CalEvent.end.date(),
             EndHour: AppointmentData.CalEvent.end.hour(),
             EndMinute: AppointmentData.CalEvent.end.minute(),
-            AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1'
+            AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
+            Recurring: AppointmentData.CalEvent.recurring ? '1' : '0'
         };
 
-        function Update(Refetch) {
+        function Update() {
             Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
             Core.AJAX.FunctionCall(
                 Core.Config.Get('CGIHandle'),
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (Refetch) {
+                        if (
+                            AppointmentData.CalEvent.parentID ||
+                            AppointmentData.CalEvent.recurring
+                        ) {
                             $('#calendar').fullCalendar('refetchEvents');
                         }
                     } else {
@@ -336,7 +340,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Class: 'Primary CallForAction',
                         Function: function() {
                             Data.AppointmentID = AppointmentData.CalEvent.parentId;
-                            Update(true);
+                            Update();
                         }
                     },
                     {
@@ -357,7 +361,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 ]
             });
         } else {
-            Update(true);
+            Update();
         }
     }
 
@@ -411,6 +415,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name RecurringInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Fields - Array with references to recurring fields.
+     * @param {jQueryObject} Fields.$Recurring - field with recurring flag.
      * @param {jQueryObject} Fields.$RecurrenceFrequency - drop down with recurrence frequency.
      * @param {jQueryObject} Fields.$RecurrenceLimitDiv - layer with recurrence limit fields.
      * @param {jQueryObject} Fields.$RecurrenceLimit - drop down with recurrence limit field.
@@ -422,10 +427,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     TargetNS.RecurringInit = function (Fields) {
         Fields.$RecurrenceFrequency.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
             if ($(this).val() == 0) {
+                Fields.$Recurring.val(0);
                 Fields.$RecurrenceLimitDiv.hide();
                 Fields.$RecurrenceCountDiv.hide();
                 Fields.$RecurrenceUntilDiv.hide();
             } else {
+                Fields.$Recurring.val(1);
                 Fields.$RecurrenceLimitDiv.show();
                 Fields.$RecurrenceLimit.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
                     if ($(this).val() == 1) {

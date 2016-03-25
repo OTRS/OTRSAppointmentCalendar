@@ -12,6 +12,7 @@
         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
         <input type="hidden" id="Subaction" name="Subaction" value="[% Env("Subaction") | html %]"/>
         <input type="hidden" id="AppointmentID" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
+        <input type="hidden" id="Recurring" name="Recurring" value="[% Data.Recurring | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic info") | html %]</span></legend>
             <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
@@ -96,6 +97,7 @@
 Core.Form.Validate.Init();
 Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
 Core.Agent.AppointmentCalendar.RecurringInit({
+    $Recurring: $('#Recurring'),
     $RecurrenceFrequency: $('#RecurrenceFrequency'),
     $RecurrenceLimitDiv: $('#RecurrenceLimitDiv'),
     $RecurrenceLimit: $('#RecurrenceLimit'),

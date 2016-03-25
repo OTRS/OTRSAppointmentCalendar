@@ -295,8 +295,7 @@ sub Run {
         }
 
         # recurring appointment
-        if ( $GetParam{RecurrenceFrequency} ) {
-            $GetParam{Recurring} = 1;
+        if ( $GetParam{Recurring} && $GetParam{RecurrenceFrequency} ) {
 
             # until ...
             if (
@@ -318,9 +317,6 @@ sub Run {
             elsif ( $GetParam{RecurrenceLimit} eq '2' ) {
                 $GetParam{RecurrenceUntil} = undef;
             }
-        }
-        else {
-            $GetParam{Recurring} = 0;
         }
 
         my $Success;

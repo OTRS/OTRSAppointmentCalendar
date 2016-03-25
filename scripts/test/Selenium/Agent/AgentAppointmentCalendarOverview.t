@@ -63,15 +63,12 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
-        # Open AgentAppointmentCalendarManage page
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarManage");
-
         # expand Calendar menu
         $Selenium->find_element( "#NavigationContainer li#nav-Calendar a", "css" )->click();
 
         # Click Manage calendars
         $Selenium->find_element(
-            "#NavigationContainer li#nav-Calendar ul li#nav-Calendar-AppointmentCalendarOverview a", "css"
+            "#NavigationContainer li#nav-Calendar ul li#nav-Calendar-CalendarOverview a", "css"
         )->click();
 
         #table tbody tr td:nth-of-type(15)

@@ -273,6 +273,7 @@ Result => 'HASH':
             StartTime   => '2016-01-01 16:00:00',
             EndTime     => '2016-01-01 17:00:00',
             AllDay      => 0,
+            Recurring   => 1,                                           # for recurring (parent) appointments only
         },
         {
             ID          => 2,
@@ -344,7 +345,8 @@ sub AppointmentList {
     }
 
     my $SQL = '
-        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, all_day
+        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, all_day,
+            recurring
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -390,6 +392,7 @@ sub AppointmentList {
             StartTime  => $Row[5],
             EndTime    => $Row[6],
             AllDay     => $Row[7],
+            Recurring  => $Row[8],
         );
         push @Result, \%Appointment;
     }

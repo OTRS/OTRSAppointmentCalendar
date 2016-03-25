@@ -7,7 +7,7 @@
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1>[% Translate("Appointment Calendar") | html %]</h1>
+    <h1>[% Translate("Calendar Overview") | html %]</h1>
 
     <div class="SidebarColumn">
         <div class="WidgetSimple">
@@ -167,6 +167,7 @@ var EventSources = {
                 end: AppointmentData.EndTime,
                 title: AppointmentData.Title,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
+                recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
             };
         }
     }
