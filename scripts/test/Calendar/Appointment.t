@@ -12,7 +12,7 @@ use utf8;
 
 use vars (qw($Self));
 
-# get Appointment object
+# get needed objects
 my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
@@ -26,7 +26,7 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 my $UserID = 1;    # Use root
 
-# This will be ok
+# this will be ok
 my %Calendar1 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
     UserID       => $UserID,
@@ -52,7 +52,7 @@ $Self->True(
     'AppointmentCreate #1',
 );
 
-# No CalendarID
+# no CalendarID
 my $AppointmentID2 = $AppointmentObject->AppointmentCreate(
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
@@ -66,7 +66,7 @@ $Self->False(
     'AppointmentCreate #2',
 );
 
-# No Title
+# no Title
 my $AppointmentID3 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-01-01 16:00:00',
@@ -80,7 +80,7 @@ $Self->False(
     'AppointmentCreate #3',
 );
 
-# No StartTime
+# no StartTime
 my $AppointmentID4 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
@@ -94,7 +94,7 @@ $Self->False(
     'AppointmentCreate #4',
 );
 
-# No EndTime
+# no EndTime
 my $AppointmentID5 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
@@ -108,7 +108,7 @@ $Self->False(
     'AppointmentCreate #5',
 );
 
-# No TimezoneID
+# no TimezoneID
 my $AppointmentID6 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
@@ -122,7 +122,7 @@ $Self->False(
     'AppointmentCreate #6',
 );
 
-# No UserID
+# no UserID
 my $AppointmentID7 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
@@ -168,8 +168,7 @@ $Self->Is(
 
 for my $Appointment (@Appointments1) {
 
-    # Check if
-
+    # checks
     $Self->True(
         $Appointment->{ID},
         'ID present',
@@ -196,11 +195,10 @@ for my $Appointment (@Appointments1) {
     );
 }
 
-# Before any appointment
+# before any appointment
 my @Appointments2 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '1900-01-01 00:00:00',
-    EndTime    => '2016-01-01 00:15:59',
+    EndTime    => '2016-01-01 00:00:00',
 );
 
 $Self->Is(
@@ -209,21 +207,17 @@ $Self->Is(
     'AppointmentList() #2',
 );
 
-# After appointment
+# after appointment
 my @Appointments3 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 00:00:00',
-    EndTime    => '2016-03-23 06:00:00'
-
-        # 2016-03-23 06:00:00 2016-03-21 14:00:00  2016-03-23 05:00:00
-
+    StartTime  => '2016-03-23 00:00:00',
 );
 
-# $Self->Is(
-#     scalar @Appointments3,
-#     0,
-#     'AppointmentList() #3',
-# );
+$Self->Is(
+    scalar @Appointments3,
+    0,
+    'AppointmentList() #3',
+);
 
 # missing CalendarID
 my @Appointments4 = $AppointmentObject->AppointmentList();
@@ -241,14 +235,11 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     Location            => 'Germany',
     StartTime           => '2016-03-01 16:00:00',
     EndTime             => '2016-03-01 17:00:00',
-    AllDay              => 1,
+    AllDay              => '1',
     TimezoneID          => 'TimezoneID',
+    Recurring           => '1',
     RecurrenceFrequency => '1',                       # each day
-    RecurrenceCount     => '',
-    RecurrenceInterval  => '',
     RecurrenceUntil     => '2016-03-06 00:00:00',
-    RecurrenceByMonth   => '',
-    RecurrenceByDay     => '',
     UserID              => $UserID,
 );
 $Self->True(
@@ -256,12 +247,13 @@ $Self->True(
     'Recurring appointment #1 created',
 );
 
-# List recurring appointments
+# list recurring appointments
 my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-03-01 00:00:00',
     EndTime    => '2016-03-06 00:00:00',
 );
+
 $Self->Is(
     scalar @AppointmentsRec1,
     5,
@@ -277,8 +269,9 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     Location            => 'Germany',
     StartTime           => '2016-03-02 16:00:00',
     EndTime             => '2016-03-02 17:00:00',
-    AllDay              => 1,
+    AllDay              => '1',
     TimezoneID          => 'Timezone',
+    Recurring           => '1',
     RecurrenceFrequency => '2',                        # each 2 days
     RecurrenceCount     => '',
     RecurrenceInterval  => '',
@@ -292,7 +285,7 @@ $Self->True(
     'Updated rec #1',
 );
 
-# List recurring appointments
+# list recurring appointments
 @AppointmentsRec1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-03-01 00:00:00',
@@ -425,8 +418,9 @@ my $Update1 = $AppointmentObject->AppointmentUpdate(
     Location            => 'England',
     StartTime           => '2016-01-02 16:00:00',
     EndTime             => '2016-01-02 17:00:00',
-    AllDay              => 0,
+    AllDay              => '0',
     TimezoneID          => 'Timezone',
+    Recurring           => '1',
     RecurrenceFrequency => '2',
     RecurrenceCount     => '2',
     UserID              => 1,
