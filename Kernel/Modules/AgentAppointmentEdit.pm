@@ -207,7 +207,7 @@ sub Run {
                 },
                 {
                     Key   => 2,
-                    Value => Translatable('for ... times'),
+                    Value => Translatable('for ... time(s)'),
                 },
             ],
             SelectedID   => $RecurrenceLimit,
@@ -312,7 +312,12 @@ sub Run {
                     $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
                     $GetParam{RecurrenceUntilDay}
                 );
-                $GetParam{RecurrenceCount} = '';
+                $GetParam{RecurrenceCount} = undef;
+            }
+
+            # for ... time(s)
+            elsif ( $GetParam{RecurrenceLimit} eq '2' ) {
+                $GetParam{RecurrenceUntil} = undef;
             }
         }
 

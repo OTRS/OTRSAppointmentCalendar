@@ -346,10 +346,12 @@ sub AppointmentList {
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, all_day
         FROM calendar_appointment
-        WHERE 1=1
+        WHERE calendar_id=?
     ';
 
     my @Bind;
+
+    push @Bind, \$Param{CalendarID};
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 

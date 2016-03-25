@@ -336,14 +336,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Class: 'Primary CallForAction',
                         Function: function() {
                             Data.AppointmentID = AppointmentData.CalEvent.parentId;
-                            Update();
+                            Update(true);
                         }
                     },
                     {
                         Label: Params.DialogText.OccurrenceJustThis,
                         Class: 'CallForAction',
                         Function: function() {
-                            Update(true);
+                            Update();
                         }
                     },
                     {
@@ -357,7 +357,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 ]
             });
         } else {
-            Update();
+            Update(true);
         }
     }
 
