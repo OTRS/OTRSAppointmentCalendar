@@ -44,7 +44,7 @@
             <div class="Content ">
 
 [% RenderBlockStart("NoCalendar") %]
-                <p>[% Translate("Please add a calendar first using button on the right.") | html %]</p>
+                <p>[% Translate("No calendars found. Please add a calendar first by using Manage Calendars page.") | html %]</p>
 [% RenderBlockEnd("NoCalendar") %]
 
 [% RenderBlockStart("CalendarDiv") %]
