@@ -7,7 +7,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Description Translatable="1">Appointment Calendar overview page.</Description>
-                <Title Translatable="1">Calendar</Title>
+                <Title Translatable="1">Overview</Title>
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
                     <Name Translatable="1">Calendar</Name>
@@ -73,7 +73,7 @@
         <Setting>
             <FrontendModuleReg>
                 <Description Translatable="1">Calendar manage screen.</Description>
-                <Title Translatable="1">Manage calendars</Title>
+                <Title Translatable="1">Manage Calendars</Title>
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
                     <Description Translatable="1">Manage different calendars.</Description>
