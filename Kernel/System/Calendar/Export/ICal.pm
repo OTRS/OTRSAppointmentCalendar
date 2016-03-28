@@ -111,11 +111,13 @@ sub Export {
         calname => $Calendar{CalendarName},
     );
 
+    APPOINTMENT_ID:
     for my $AppointmentID (@AppointmentIDs) {
         my %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $AppointmentID,
         );
         return if !$Appointment{ID};
+        next APPOINTMENT_ID if $Appointment{ParentID};
 
         # get time object
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
@@ -167,7 +169,7 @@ sub Export {
         if ( $Appointment{Location} ) {
             $ICalEventProperties{location} = $Appointment{Location};
         }
-        if ( $Appointment{RecurrenceFrequency} ) {
+        if ( $Appointment{Recurring} ) {
             $ICalEventProperties{rrule} = 'FREQ=';
             if ( $Appointment{RecurrenceFrequency} == 1 ) {
                 $ICalEventProperties{rrule} .= 'DAILY';
@@ -189,7 +191,7 @@ sub Export {
                     String => $Appointment{RecurrenceUntil},
                 );
                 my $ICalRecurrenceUntil = Date::ICal->new(
-                    epoch => $RecurrenceUntil - ( $Param{UserTimeZone} * 3600 ),
+                    epoch => $RecurrenceUntil - ( $Param{UserTimeZone} * 3600 ) - 1,    # make it exclusive
                 );
                 $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
             }
