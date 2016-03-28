@@ -374,6 +374,8 @@ sub AppointmentList {
         push @Bind, \$Param{EndTime}, \$Param{EndTime};
     }
 
+    $SQL .= 'ORDER BY id ASC';
+
     # db query
     return if !$DBObject->Prepare(
         SQL  => $SQL,

@@ -352,6 +352,8 @@ sub CalendarList {
         push @Bind, \$Param{UserID};
     }
 
+    $SQL .= 'ORDER BY id ASC';
+
     # db query
     return if !$DBObject->Prepare(
         SQL  => $SQL,
