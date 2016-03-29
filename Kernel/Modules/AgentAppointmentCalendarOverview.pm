@@ -36,41 +36,6 @@ sub Run {
     my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    if ( $Self->{Subaction} eq 'CalendarAdd' ) {
-        my $CalendarName = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
-
-        my %Error;
-        my %Calendar = ();
-
-        if ( !$CalendarName ) {
-            $Error{ServerError} = "MissingCalendarName";
-        }
-        else {
-            %Calendar = $CalendarObject->CalendarCreate(
-                Name   => $CalendarName,
-                UserID => $Self->{UserID},
-            );
-        }
-
-        if ( !%Calendar ) {
-            $Error{ServerError} = "AlreadyExists";
-        }
-
-        my $JSONResponse = $JSONObject->Encode(
-            Data => {
-                CalendarID => $Calendar{CalendarID},
-                Error      => \%Error,
-            },
-        );
-
-        return $LayoutObject->Attachment(
-            ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-            Content     => $JSONResponse,
-            Type        => 'inline',
-            NoCache     => 1,
-        );
-    }
-
     # get all user's valid calendars
     my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
         Valid => 'valid',
