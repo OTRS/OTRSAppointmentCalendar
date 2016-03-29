@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use MIME::Base64 qw();
+use Kernel::Language qw(Translatable);
 
 our $ObjectManagerDisabled = 1;
 
@@ -32,25 +33,77 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+    # my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
-    # output header
-    my $Output = $LayoutObject->CustomerHeader();
+    my %GetParam;
 
-    # start template output
-    $Output .= $LayoutObject->Output(
-        TemplateFile => 'PublicCalendar',
-        Data         => {
+    # check needed parameters
+    for my $Needed (qw(CalendarID UserID)) {
+        $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
+        if ( !$GetParam{$Needed} ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable("No $Needed !"),
+                Comment => Translatable('Please contact the admin.'),
+            );
+        }
+    }
 
-        },
+    # get calendar
+    my %Calendar = $CalendarObject->CalendarGet(
+        CalendarID => $GetParam{CalendarID},
     );
 
-    # add footer
-    $Output .= $LayoutObject->CustomerFooter();
+    if ( !%Calendar ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable("No permission!"),
+            Comment => Translatable('Please contact the admin.'),
+        );
+    }
 
-    return $Output;
+    # get iCalendar string
+    my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
+        CalendarID   => $Calendar{CalendarID},
+        UserID       => $Self->{UserID},
+        UserTimeZone => $Self->{UserTimeZone} ? $Self->{UserTimeZone} : undef,
+    );
+
+    if ( !$ICalString ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('There was an error exporting the calendar!'),
+            Comment => Translatable('Please contact the admin.'),
+        );
+    }
+
+    # prepare the file name
+    my $Filename = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
+        Filename => "$Calendar{CalendarName}.ics",
+        Type     => 'Attachment',
+    );
+
+    # send iCal response
+    return $LayoutObject->Attachment(
+        ContentType => 'text/calendar',
+        Charset     => $LayoutObject->{Charset},
+        Content     => $ICalString || 'Test',
+        Filename    => $Filename,
+        NoCache     => 1,
+    );
+
+    # # start template output
+    # $Output .= $LayoutObject->Output(
+    #     TemplateFile => 'PublicCalendar',
+    #     Data         => {
+
+    #     },
+    # );
+
+    # # add footer
+    # $Output .= $LayoutObject->CustomerFooter();
+
+    # return $Output;
 }
 
 1;
