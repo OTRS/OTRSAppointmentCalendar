@@ -41,7 +41,7 @@ sub Run {
     my %GetParam;
 
     # check needed parameters
-    for my $Needed (qw(CalendarID UserID)) {
+    for my $Needed (qw(CalendarID)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(

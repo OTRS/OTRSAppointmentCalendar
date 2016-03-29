@@ -7,6 +7,7 @@
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+
     <h1 class="Header">[% Translate("Calendar Management") | html %]</h1>
 
     <div class="SidebarColumn">
@@ -86,7 +87,12 @@
                             <td>[% Data.Valid | html %]</td>
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
-                            <td class="Center"><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Export;CalendarID=[% Data.CalendarID | uri %];[% Env("ChallengeTokenParam") | html %]"><i class="fa fa-download"></i><span class="InvisibleText">[% Translate("Export") | html %]</span></a></td>
+                            <td class="Center">
+                                <a href="[% Env("CONTEXT_PREFIX") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %]">
+                                    <i class="fa fa-download"></i>
+                                    <span class="InvisibleText">[% Translate("Export") | html %]</span>
+                                </a>
+                            </td>
                         </tr>
 [% RenderBlockEnd("Calendar") %]
 [% RenderBlockStart("CalendarNoDataRow") %]

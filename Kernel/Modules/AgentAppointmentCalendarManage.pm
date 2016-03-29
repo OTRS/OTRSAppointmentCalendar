@@ -229,52 +229,6 @@ sub Run {
         );
 
     }
-    elsif ( $Self->{Subaction} eq 'Export' ) {
-
-        # get calendar id
-        $GetParam{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || '';
-
-        if ( !$GetParam{CalendarID} ) {
-            return $LayoutObject->ErrorScreen(
-                Message => Translatable('No CalendarID!'),
-                Comment => Translatable('Please contact the admin.'),
-            );
-        }
-
-        # get calendar
-        my %Calendar = $CalendarObject->CalendarGet(
-            CalendarID => $GetParam{CalendarID},
-        );
-
-        # get iCalendar string
-        my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
-            CalendarID   => $Calendar{CalendarID},
-            UserID       => $Self->{UserID},
-            UserTimeZone => $Self->{UserTimeZone} ? $Self->{UserTimeZone} : undef,
-        );
-
-        if ( !$ICalString ) {
-            return $LayoutObject->ErrorScreen(
-                Message => Translatable('There was an error exporting the calendar!'),
-                Comment => Translatable('Please contact the admin.'),
-            );
-        }
-
-        # prepare the file name
-        my $Filename = $Kernel::OM->Get('Kernel::System::Main')->FilenameCleanUp(
-            Filename => "$Calendar{CalendarName}.ics",
-            Type     => 'Attachment',
-        );
-
-        # send iCal response
-        return $LayoutObject->Attachment(
-            ContentType => 'text/calendar',
-            Charset     => $LayoutObject->{Charset},
-            Content     => $ICalString || 'Test',
-            Filename    => $Filename,
-            NoCache     => 1,
-        );
-    }
     else {
 
         # get all user's calendars
