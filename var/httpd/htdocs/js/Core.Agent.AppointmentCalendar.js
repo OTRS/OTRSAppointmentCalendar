@@ -176,6 +176,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         });
 
         $DatepickerObj.datepicker({
+            beforeShowDay: function (DateObject) {
+                return CheckDate(DateObject);
+            },
             showOn: 'button',
             buttonText: Params.ButtonText.jump,
             constrainInput: true,
@@ -194,6 +197,29 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         });
     };
+
+    /**
+     * @private
+     * @name CheckDate
+     * @memberof Core.Agent.AppointmentCalendar
+     * @function
+     * @returns {Array} First element is always true, second element contains the name of a CSS
+     *                  class, third element a description for the date.
+     * @param {DateObject} DateObject - A JS date object to check.
+     * @description
+     *      Check if date has an appointment.
+     */
+    function CheckDate(DateObject) {
+        var DateMoment = $.fullCalendar.moment(DateObject),
+            CalEvents = $('#calendar').fullCalendar('clientEvents'),
+            DayAppointments = $.grep(CalEvents, function (CalEvent) {
+                return DateMoment.isSame(CalEvent.start, 'day');
+            }),
+            DayClass = DayAppointments.length > 0 ? 'Highlight' : '',
+            DayDescription = DayAppointments.length > 0 ? DayAppointments.length.toString() : '';
+
+        return [true, DayClass, DayDescription];
+    }
 
     /**
      * @private
@@ -597,11 +623,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     function AppointmentReached() {
         var Index,
             Appointments = $('#calendar').fullCalendar('clientEvents'),
-            DateCurrent = moment(); // eslint-disable-line no-undef
+            Time = new Date().toISOString();
+        Time = Time.replace("T", " ");
+        Time = Time.replace("Z", "");
 
         // Itterate through all Appointments
         for (Index = 0; Index < Appointments.length; Index++) {
-            if (Appointments[Index].start.isBefore(DateCurrent)) {
+            if (Appointments[Index].start._i > Time) {
                 alert("Remainder reached: " + Appointments[Index].title);
             }
         }
