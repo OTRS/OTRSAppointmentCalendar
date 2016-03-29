@@ -594,5 +594,23 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         });
     };
 
+    function AppointmentReached() {
+        var Index,
+            Appointments = $('#calendar').fullCalendar('clientEvents'),
+            Time = new Date().toISOString();
+        Time = Time.replace("T", " ");
+        Time = Time.replace("Z", "");
+
+        // Itterate through all Appointments
+        for (Index = 0; Index < Appointments.length; Index++) {
+            if (Appointments[Index].start._i > Time) {
+                alert("Remainder reached: " + Appointments[Index].title);
+            }
+        }
+    }
+
+    // Check each 5 seconds
+    setInterval(AppointmentReached, 5000);
+
     return TargetNS;
 }(Core.Agent.AppointmentCalendar || {}));
