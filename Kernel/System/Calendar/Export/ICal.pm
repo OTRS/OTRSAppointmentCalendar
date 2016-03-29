@@ -105,7 +105,6 @@ sub Export {
         CalendarID => $Calendar{CalendarID},
         Result     => 'ARRAY',
     );
-    return if !( scalar @AppointmentIDs );
 
     my $ICalCalendar = Data::ICal->new(
         calname => $Calendar{CalendarName},

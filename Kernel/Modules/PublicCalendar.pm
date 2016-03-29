@@ -41,7 +41,7 @@ sub Run {
     my %GetParam;
 
     # check needed parameters
-    for my $Needed (qw(CalendarID)) {
+    for my $Needed (qw(CalendarID UserID)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
@@ -66,7 +66,7 @@ sub Run {
     # get iCalendar string
     my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
         CalendarID   => $Calendar{CalendarID},
-        UserID       => $Self->{UserID},
+        UserID       => $GetParam{UserID},
         UserTimeZone => $Self->{UserTimeZone} ? $Self->{UserTimeZone} : undef,
     );
 
