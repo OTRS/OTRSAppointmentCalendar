@@ -309,7 +309,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 function (Response) {
                     if (Response.Success) {
                         if (
-                            AppointmentData.CalEvent.parentID ||
+                            AppointmentData.CalEvent.parentId ||
                             AppointmentData.CalEvent.recurring
                         ) {
                             $('#calendar').fullCalendar('refetchEvents');
@@ -340,6 +340,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Class: 'Primary CallForAction',
                         Function: function() {
                             Data.AppointmentID = AppointmentData.CalEvent.parentId;
+                            Data.Recurring = '1';
                             Update();
                         }
                     },
