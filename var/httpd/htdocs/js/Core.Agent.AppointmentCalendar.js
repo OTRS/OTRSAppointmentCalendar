@@ -479,6 +479,46 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @private
+     * @name EditAppointment
+     * @param {Object} Data - Hash with call and appointment data.
+     * @param {Integer} Data.CalendarID - Appointment calendar ID.
+     * @param {Integer} Data.AppointmentID - Appointment ID.
+     * @param {Integer} Data.Action - Edit action.
+     * @param {Integer} Data.Subaction - Edit subaction.
+     * @param {Integer} Data.Title - Appointment title.
+     * @param {Integer} Data.Description - Appointment description.
+     * @param {Integer} Data.Location - Appointment location.
+     * @param {Integer} Data.StartYear - Appointment start year.
+     * @param {Integer} Data.StartMonth - Appointment start month.
+     * @param {Integer} Data.StartDay - Appointment start day.
+     * @param {Integer} Data.StartHour - Appointment start hour.
+     * @param {Integer} Data.StartMinute - Appointment start minute.
+     * @param {Integer} Data.EndYear - Appointment end year.
+     * @param {Integer} Data.EndMonth - Appointment end month.
+     * @param {Integer} Data.EndDay - Appointment end day.
+     * @param {Integer} Data.EndHour - Appointment end hour.
+     * @param {Integer} Data.EndMinute - Appointment end minute.
+     * @param {Integer} Data.AllDay - Is appointment an all-day appointment (0|1)?
+     * @description
+     *      This method submits an edit appointment call to the backend and refreshes the view.
+      */
+    TargetNS.EditAppointment = function (Data) {
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+                if (Response.Success) {
+                    $('#calendar').fullCalendar('refetchEvents');
+
+                    // Close the dialog
+                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+                }
+            }
+        );
+    };
+
+    /**
      * @name InitCalendarFilter
      * @memberof Core.Agent.AppointmentCalendar
      * @function
