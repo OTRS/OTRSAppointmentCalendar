@@ -241,6 +241,10 @@ sub Run {
         );
 
         $LayoutObject->Block(
+            Name => 'CalendarFilter',
+        );
+
+        $LayoutObject->Block(
             Name => 'Overview',
         );
 

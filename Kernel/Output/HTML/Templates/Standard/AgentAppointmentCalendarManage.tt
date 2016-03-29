@@ -48,6 +48,7 @@
                 </ul>
             </div>
         </div>
+[% RenderBlockStart("CalendarFilter") %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2><label for="FilterCalendars">[% Translate("Filter for calendars") | html %]</label></h2>
@@ -56,6 +57,7 @@
                 <input type="text" id="FilterCalendars" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterCalendars" value="" title="[% Translate("Filter for calendars") | html %]">
             </div>
         </div>
+[% RenderBlockEnd("CalendarFilter") %]
     </div>
 
     <div class="ContentColumn">
