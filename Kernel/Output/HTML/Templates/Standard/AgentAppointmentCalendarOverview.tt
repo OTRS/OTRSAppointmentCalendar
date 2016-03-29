@@ -133,12 +133,24 @@ Core.Agent.AppointmentCalendar.Init({
         [% Translate("Fri") | JSON %],
         [% Translate("Sat") | JSON %]
     ],
+    DayNamesMin: [
+        [% Translate("Su") | JSON %],
+        [% Translate("Mo") | JSON %],
+        [% Translate("Tu") | JSON %],
+        [% Translate("We") | JSON %],
+        [% Translate("Th") | JSON %],
+        [% Translate("Fr") | JSON %],
+        [% Translate("Sa") | JSON %]
+    ],
     ButtonText: {
         today: [% Translate("Today") | JSON %],
         month: [% Translate("Month") | JSON %],
         week: [% Translate("Week") | JSON %],
         day: [% Translate("Day") | JSON %],
-        timeline: [% Translate("Timeline") | JSON %]
+        timeline: [% Translate("Timeline") | JSON %],
+        jump:[% Translate("Jump") | JSON %],
+        prevDatepicker: [% Translate("Previous") | JSON %],
+        nextDatepicker: [% Translate("Next") | JSON %]
     },
     FirstDay: [% Data.FirstDay | html %],
     DialogText: {

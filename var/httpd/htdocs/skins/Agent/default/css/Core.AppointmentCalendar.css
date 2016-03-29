@@ -46,7 +46,12 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
-    .fc button {
+    .fc button,
+    .CalendarWidget .ui-datepicker-trigger {
+        box-sizing: border-box;
+        cursor: pointer;
+        height: 2.1em;
+        white-space: nowrap;
         background: #eee;
         border: 1px solid #ccc;
         border-bottom: 1px solid #bbb;
@@ -60,6 +65,10 @@
         font-size: 11px;
         text-shadow: 0 1px 0 #FFF;
         position: relative;
+    }
+
+    .CalendarWidget .ui-datepicker-trigger {
+        margin-top: 10px;
     }
 
     .fc-state-default.fc-corner-left {

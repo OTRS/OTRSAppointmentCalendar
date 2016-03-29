@@ -36,6 +36,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.ButtonText.week - Localized string for the word "Week".
      * @param {String} Params.ButtonText.day - Localized string for the word "Day".
      * @param {String} Params.ButtonText.timeline - Localized string for the word "Timeline".
+     * @param {String} Params.ButtonText.jump - Localized string for the word "Jump".
      * @param {String} Params.FirstDay - First day of the week (0: Sunday).
      * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
      * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
@@ -52,6 +53,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      Initializes the appointment calendar control.
      */
     TargetNS.Init = function (Params) {
+        var $DatepickerObj = $('<input />')
+            .prop('id', 'Datepicker')
+            .prop('type', 'hidden')
+            .insertAfter($('#calendar'));
+
         $('#calendar').fullCalendar({
             header: {
                 left: 'yearly,month,agendaWeek,agendaDay timeline',
@@ -162,6 +168,29 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay) {
                     $Element.addClass('AllDay');
                 }
+            },
+            viewRender: function() {
+                var CurrentDate = $('#calendar').fullCalendar('getDate');
+                $DatepickerObj.datepicker('setDate', CurrentDate.toDate());
+            }
+        });
+
+        $DatepickerObj.datepicker({
+            showOn: 'button',
+            buttonText: Params.ButtonText.jump,
+            constrainInput: true,
+            prevText: Params.ButtonText.prevDatepicker,
+            nextText: Params.ButtonText.nextDatepicker,
+            firstDay: Params.FirstDay,
+            showMonthAfterYear: 0,
+            monthNames: Params.MonthNames,
+            monthNamesShort: Params.MonthNamesShort,
+            dayNames: Params.DayNames,
+            dayNamesShort: Params.DayNamesShort,
+            dayNamesMin: Params.DayNamesMin,
+            isRTL: Params.IsRTL,
+            onSelect: function(DateText) {
+                $('#calendar').fullCalendar('gotoDate', new Date(DateText));
             }
         });
     };
