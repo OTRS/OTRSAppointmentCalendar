@@ -24,6 +24,36 @@
                 </ul>
             </div>
         </div>
+[% RenderBlockStart("CalendarWidget") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Your Calendars") | html %]</h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterCalendars" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterCalendars" value="" title="[% Translate("Filter for calendars") | html %]">
+                <div id="CalendarList" class="SpacingTopSmall">
+                    <div class="FilterMessage Hidden">
+                        [% Translate("No matches found.") | html %]
+                    </div>
+[% RenderBlockStart("CalendarSwitch") %]
+                    <div class="CalendarSwitch">
+                        <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
+                            <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]">
+                        </span>
+                        <label for="Calendar[% Data.CalendarID | html %]">
+                            [% Data.CalendarName | html %]
+                        </label>
+                    </div>
+[% RenderBlockEnd("CalendarSwitch") %]
+                </div>
+            </div>
+        </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.Agent.AppointmentCalendar.InitCalendarFilter($('#FilterCalendars'), $('#CalendarList'));
+//]]></script>
+[% END %]
+[% RenderBlockEnd("CalendarWidget") %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("Description") | html %]</h2>
@@ -48,22 +78,6 @@
 [% RenderBlockEnd("NoCalendar") %]
 
 [% RenderBlockStart("CalendarDiv") %]
-                <div id="CalendarToolbar">
-                    <form action="[% Env("CGIHandle") %]" method="post" id="SelectCalendarForm">
-                        <input type="hidden" name="Action" value="[% Env("Action") %]"/>
-[% RenderBlockStart("CalendarSwitch") %]
-                        <span class="CalendarSwitch">
-                            <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
-                                <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]">
-                            </span>
-                            <label for="Calendar[% Data.CalendarID | html %]">
-                                [% Data.CalendarName | html %]
-                            </label>
-                        </span>
-[% RenderBlockEnd("CalendarSwitch") %]
-                    </form>
-                </div>
-
                 <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
 [% RenderBlockEnd("CalendarDiv") %]
 

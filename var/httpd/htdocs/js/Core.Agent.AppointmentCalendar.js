@@ -450,45 +450,80 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
-     * @name EditAppointment
+     * @name InitCalendarFilter
      * @memberof Core.Agent.AppointmentCalendar
-     * @param {Object} Data - Hash with call and appointment data.
-     * @param {Integer} Data.CalendarID - Appointment calendar ID.
-     * @param {Integer} Data.AppointmentID - Appointment ID.
-     * @param {Integer} Data.Action - Edit action.
-     * @param {Integer} Data.Subaction - Edit subaction.
-     * @param {Integer} Data.Title - Appointment title.
-     * @param {Integer} Data.Description - Appointment description.
-     * @param {Integer} Data.Location - Appointment location.
-     * @param {Integer} Data.StartYear - Appointment start year.
-     * @param {Integer} Data.StartMonth - Appointment start month.
-     * @param {Integer} Data.StartDay - Appointment start day.
-     * @param {Integer} Data.StartHour - Appointment start hour.
-     * @param {Integer} Data.StartMinute - Appointment start minute.
-     * @param {Integer} Data.EndYear - Appointment end year.
-     * @param {Integer} Data.EndMonth - Appointment end month.
-     * @param {Integer} Data.EndDay - Appointment end day.
-     * @param {Integer} Data.EndHour - Appointment end hour.
-     * @param {Integer} Data.EndMinute - Appointment end minute.
-     * @param {Integer} Data.AllDay - Is appointment an all-day appointment (0|1)?
+     * @function
+     * @param {jQueryObject} $FilterInput - Filter input element.
+     * @param {jQueryObject} $Container - Container of calendar switches to be filtered.
      * @description
-     *      This method submits an edit appointment call to the backend and refreshes the view.
+     *      This function initializes a filter input field which can be used to dynamically filter
+     *      a list of calendar switches in calendar overview.
      */
-    TargetNS.EditAppointment = function (Data) {
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (Response) {
-                if (Response.Success) {
-                    $('#calendar').fullCalendar('refetchEvents');
+    TargetNS.InitCalendarFilter = function ($FilterInput, $Container) {
+        var Timeout,
+            $Rows = $Container.find('.CalendarSwitch'),
+            $Elements = $Rows.find('label');
 
-                    // Close the dialog
-                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+        $FilterInput.unbind('keydown.FilterInput').bind('keydown.FilterInput', function () {
+
+            window.clearTimeout(Timeout);
+            Timeout = window.setTimeout(function () {
+
+                var FilterText = ($FilterInput.val() || '').toLowerCase();
+
+                /**
+                 * @private
+                 * @name CheckText
+                 * @memberof Core.Agent.AppointmentCalendar
+                 * @function
+                 * @returns {Boolean} True if text was found, false otherwise.
+                 * @param {jQueryObject} $Element - Element that will be checked.
+                 * @param {String} Filter - The current filter text.
+                 * @description
+                 *      Check if a text exist inside an element.
+                 */
+                function CheckText($Element, Filter) {
+                    var Text;
+
+                    Text = $Element.text();
+                    if (Text && Text.toLowerCase().indexOf(Filter) > -1){
+                        return true;
+                    }
+
+                    return false;
                 }
+
+                if (FilterText.length) {
+                    $Rows.hide();
+                    $Elements.each(function () {
+                        if (CheckText($(this), FilterText)) {
+                            $(this).parent().show();
+                        }
+                    });
+                }
+                else {
+                    $Rows.show();
+                }
+
+                if ($Rows.filter(':visible').length) {
+                    $Container.find('.FilterMessage').hide();
+                }
+                else {
+                    $Container.find('.FilterMessage').show();
+                }
+
+                Core.App.Publish('Event.AppointmentCalendar.CalendarWidget.InitCalendarFilter.Change', [$FilterInput, $Container]);
+
+            }, 100);
+        });
+
+        // Prevent submit when the Return key was pressed
+        $FilterInput.unbind('keypress.FilterInput').bind('keypress.FilterInput', function (Event) {
+            if ((Event.charCode || Event.keyCode) === 13) {
+                Event.preventDefault();
             }
-        );
-    }
+        });
+    };
 
     return TargetNS;
 }(Core.Agent.AppointmentCalendar || {}));
