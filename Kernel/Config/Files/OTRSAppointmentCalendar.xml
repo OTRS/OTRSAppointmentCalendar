@@ -6,21 +6,9 @@
         <SubGroup>Frontend::Public::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>Public calendar</Description>
-                <NavBarName>Calendar</NavBarName>
-                <Title></Title>
-                <NavBar>
-                    <Description>Calendar-Area</Description>
-                    <Name>Calendar</Name>
-                    <Link>Action=PublicCalendar</Link>
-                    <Type></Type>
-                    <Block></Block>
-                    <NavBar></NavBar>
-                    <AccessKey>X</AccessKey>
-                    <Prio>500</Prio>
-                </NavBar>
-                <Loader>
-                </Loader>
+                <Description>PublicCalendar</Description>
+                <Title>PublicCalendar</Title>
+                <NavBarName></NavBarName>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
@@ -41,7 +29,7 @@
                     <NavBar>Calendar</NavBar>
                     <Type>Menu</Type>
                     <Block>ItemArea</Block>
-                    <AccessKey>c</AccessKey>
+                    <AccessKey></AccessKey>
                     <Prio>75</Prio>
                 </NavBar>
                 <NavBar>
