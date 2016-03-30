@@ -623,14 +623,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     function AppointmentReached() {
         var Index,
             Appointments = $('#calendar').fullCalendar('clientEvents'),
-            Time = new Date().toISOString();
-        Time = Time.replace("T", " ");
-        Time = Time.replace("Z", "");
+            DateCurrent = moment(); // eslint-disable-line no-undef
 
         // Itterate through all Appointments
         for (Index = 0; Index < Appointments.length; Index++) {
-            if (Appointments[Index].start._i > Time) {
-                alert("Remainder reached: " + Appointments[Index].title);
+            if (Appointments[Index].start.isBefore(DateCurrent) &&
+                DateCurrent.isBefore(Appointments[Index].end)
+            ) {
+                // alert("Remainder reached: " + Appointments[Index].title);
             }
         }
     }
