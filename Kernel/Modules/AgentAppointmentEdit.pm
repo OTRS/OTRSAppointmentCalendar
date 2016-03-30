@@ -54,7 +54,7 @@ sub Run {
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
-    my $JSON = '';
+    my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {
@@ -300,8 +300,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {

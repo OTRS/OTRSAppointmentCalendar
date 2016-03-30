@@ -49,6 +49,8 @@ sub Run {
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
+    my $JSON = $LayoutObject->JSONEncode( Data => [] );
+
     # check request
     if ( $Self->{Subaction} eq 'ListAppointments' ) {
 
@@ -66,21 +68,21 @@ sub Run {
             );
 
             # build JSON output
-            my $JSON = $LayoutObject->JSONEncode(
+            $JSON = $LayoutObject->JSONEncode(
                 Data => (
                     \@Appointments,
                 ),
             );
-
-            # send JSON response
-            return $LayoutObject->Attachment(
-                ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
-                Content     => $JSON,
-                Type        => 'inline',
-                NoCache     => 1,
-            );
         }
     }
+
+    # send JSON response
+    return $LayoutObject->Attachment(
+        ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+        Content     => $JSON,
+        Type        => 'inline',
+        NoCache     => 1,
+    );
 
     return;
 }
