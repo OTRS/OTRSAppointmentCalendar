@@ -227,6 +227,75 @@ $Self->Is(
     'AppointmentList() #4',
 );
 
+my @Appointments5 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-01-01 00:00:00',
+);
+
+$Self->Is(
+    scalar @Appointments5,
+    2,
+    'AppointmentList() #5',
+);
+
+my @Appointments6 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    EndTime    => '2016-01-02 00:00:00',
+);
+
+$Self->Is(
+    scalar @Appointments6,
+    2,
+    'AppointmentList() #6',
+);
+
+my @Appointments7 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-01-01 16:30:00',
+);
+
+$Self->Is(
+    scalar @Appointments7,
+    2,
+    'AppointmentList() #7',
+);
+
+my @Appointments8 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    EndTime    => '2016-01-01 16:30:00',
+);
+
+$Self->Is(
+    scalar @Appointments8,
+    2,
+    'AppointmentList() #8',
+);
+
+my @Appointments9 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-01-01 16:15:00',
+    EndTime    => '2016-01-01 16:30:00',
+);
+
+$Self->Is(
+    scalar @Appointments9,
+    2,
+    'AppointmentList() #9',
+);
+
+# edge
+my @Appointments10 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-01-01 16:00:00',
+    EndTime    => '2016-01-01 17:00:00',
+);
+
+$Self->Is(
+    scalar @Appointments10,
+    2,
+    'AppointmentList() #10',
+);
+
 # add recurring appointment once a day
 my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     CalendarID          => $Calendar1{CalendarID},
@@ -733,5 +802,86 @@ $Self->Is(
     "AppointmentDays4 - 1",
 );
 
-# without start time/end time
+# edge
+my %AppointmentDays5 = $AppointmentObject->AppointmentDays(
+    StartTime => '2016-02-02 12:00:00',
+    EndTime   => '2016-03-05 17:00:00',
+    UserID    => $UserID,
+);
+
+my @Lst = $AppointmentObject->AppointmentList(
+    StartTime  => '2016-02-02 12:00:00',
+    EndTime    => '2016-03-05 17:00:00',
+    UserID     => $UserID,
+    CalendarID => $Calendar1{CalendarID},
+);
+
+$AppointmentDays5{RR} = \@Lst;
+
+#   '2016-02-21' => 2,
+#   '2016-02-18' => 2,
+#   '2016-02-29' => 2,
+#   '2016-02-09' => 2,
+#   '2016-03-05' => 1,
+#   '2016-02-16' => 2,
+#   '2016-03-02' => 3,
+#   '2016-02-06' => 2,
+#   '2016-02-02' => 2,
+#   '2016-02-20' => 2,
+#   '2016-02-19' => 2,
+#   '2016-03-04' => 2,
+#   '2016-02-07' => 2,
+#   '2016-02-17' => 2,
+#   '2016-02-27' => 2,
+#   '2016-02-22' => 2,
+#   '2016-02-03' => 2,
+#   '2016-02-14' => 2,
+#   '2016-02-13' => 2,
+#   '2016-02-28' => 2,
+#   '2016-03-03' => 1,
+#   '2016-02-04' => 2,
+#   '2016-02-23' => 2,
+#   '2016-02-26' => 2,
+#   '2016-02-15' => 2,
+#   '2016-02-08' => 2,
+#   '2016-02-12' => 2,
+#   '2016-02-24' => 2,
+#   '2016-02-05' => 2,
+#   '2016-03-01' => 2,
+#   '2016-02-11' => 2,
+#   '2016-02-10' => 2,
+#   '2016-02-25' => 2
+for my $Date (qw(2016-03-03 2016-03-05)) {
+    $Self->Is(
+        $AppointmentDays5{$Date},
+        1,
+        "AppointmentDays5 - #$Date",
+    );
+}
+for my $Date (
+    qw(2016-02-02 2016-02-03 2016-02-04 2016-02-05 2016-02-06 2016-02-07 2016-02-08 2016-02-09 2016-02-10 2016-02-11 2016-02-12
+    2016-02-13 2016-02-14 2016-02-15 2016-02-16 2016-02-17 2016-02-18 2016-02-19 2016-02-20 2016-02-21 2016-02-22 2016-02-23
+    2016-02-24 2016-02-25 2016-02-26 2016-02-27 2016-02-28 2016-02-29 2016-03-01 2016-03-04)
+    )
+{
+    $Self->Is(
+        $AppointmentDays5{$Date},
+        2,
+        "AppointmentDays5 - #$Date",
+    );
+}
+for my $Date (qw(2016-03-02)) {
+    $Self->Is(
+        $AppointmentDays5{$Date},
+        3,
+        "AppointmentDays5 - #$Date",
+    );
+}
+
+$Self->Is(
+    scalar keys(%AppointmentDays5),
+    34,
+    "AppointmentDays5 count",
+);
+
 1;
