@@ -232,9 +232,12 @@ sub AppointmentCreate {
         );
     }
 
-    # clean up list method cache
+    # clean up list methods cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType} . 'List' . $Param{CalendarID},
+    );
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'Days' . $Param{UserID},
     );
 
     # fire event
@@ -844,7 +847,7 @@ sub AppointmentUpdate {
         Key  => $Param{AppointmentID},
     );
 
-    # clean up list method cache
+    # clean up list methods cache
     my @CalendarIDs = ( $Param{CalendarID} );
     push @CalendarIDs, $PreviousCalendarID if $PreviousCalendarID ne $Param{CalendarID};
     for my $CalendarID (@CalendarIDs) {
@@ -852,6 +855,9 @@ sub AppointmentUpdate {
             Type => $Self->{CacheType} . 'List' . $CalendarID,
         );
     }
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'Days' . $Param{UserID},
+    );
 
     # fire event
     $Self->EventHandler(
@@ -928,9 +934,12 @@ sub AppointmentDelete {
         Key  => $Param{AppointmentID},
     );
 
-    # clean up list method cache
+    # clean up list methods cache
     $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType} . 'List' . $CalendarID,
+    );
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+        Type => $Self->{CacheType} . 'Days' . $Param{UserID},
     );
 
     # fire event
