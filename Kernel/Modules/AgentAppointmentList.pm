@@ -66,14 +66,11 @@ sub Run {
             );
 
             # build JSON output
-            my $JSON = '';
-            if (@Appointments) {
-                $JSON = $LayoutObject->JSONEncode(
-                    Data => (
-                        \@Appointments,
-                    ),
-                );
-            }
+            my $JSON = $LayoutObject->JSONEncode(
+                Data => (
+                    \@Appointments,
+                ),
+            );
 
             # send JSON response
             return $LayoutObject->Attachment(
