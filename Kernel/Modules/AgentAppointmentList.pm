@@ -76,6 +76,28 @@ sub Run {
         }
     }
 
+    elsif ( $Self->{Subaction} eq 'AppointmentDays' ) {
+
+        # append midnight to the timestamps
+        for my $Timestamp (qw(StartTime EndTime)) {
+            if ( $GetParam{$Timestamp} && !( $GetParam{$Timestamp} =~ /\s\d{2}:\d{2}:\d{2}$/ ) ) {
+                $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00',
+            }
+        }
+
+        my %AppointmentDays = $AppointmentObject->AppointmentDays(
+            %GetParam,
+            UserID => $Self->{UserID},
+        );
+
+        # build JSON output
+        $JSON = $LayoutObject->JSONEncode(
+            Data => (
+                \%AppointmentDays,
+            ),
+        );
+    }
+
     # send JSON response
     return $LayoutObject->Attachment(
         ContentType => 'application/json; charset=' . $LayoutObject->{Charset},

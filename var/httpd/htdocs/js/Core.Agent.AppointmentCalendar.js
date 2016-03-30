@@ -52,6 +52,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
      * @param {Array} Params.Callbacks.EditSubaction - Name of the edit subaction.
      * @param {Array} Params.Callbacks.AddSubaction - Name of the add subaction.
+     * @param {Array} Params.Callbacks.ListAction - Name of the list action.
+     * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -196,7 +198,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 $('#calendar').fullCalendar('gotoDate', new Date(DateText));
             },
             beforeShow: function() {
-                AppointmentDays($('#calendar').fullCalendar('getDate').format('YYYY'), $('#calendar').fullCalendar('getDate').format('M'));
+                var Year = $('#calendar').fullCalendar('getDate').format('YYYY'),
+                    Month = $('#calendar').fullCalendar('getDate').format('M');
+                AppointmentDays(Year, Month, Params);
             },
             beforeShowDay: function(DateObject) {
                 if (AppointmentDaysCacheRefreshed) {
@@ -205,7 +209,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     return [true];
                 }
             },
-            onChangeMonthYear: AppointmentDays
+            onChangeMonthYear: function(Year, Month) {
+                AppointmentDays(Year, Month, Params);
+            }
         });
     };
 
@@ -222,14 +228,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function CheckDate(DateObject) {
         var DateMoment = $.fullCalendar.moment(DateObject),
-            DayAppointments = $.grep(Object.keys(AppointmentDaysCache), function (StartTime) {
-                return DateMoment.isSame(
-                    $.fullCalendar.moment(StartTime, 'YYYY-MM-DD 00:00:00'),
-                    'day'
-                );
-            }),
-            DayClass = DayAppointments.length > 0 ? 'Highlight' : '',
-            DayDescription = DayAppointments.length > 0 ? DayAppointments.length.toString() : '';
+            DayAppointments = AppointmentDaysCache[DateMoment.format('YYYY-MM-DD')],
+            DayClass = DayAppointments ? 'Highlight' : '',
+            DayDescription = DayAppointments ? DayAppointments.toString() : '';
 
         return [true, DayClass, DayDescription];
     }
@@ -240,16 +241,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Integer} Year - Selected year.
      * @param {Integer} Month - Selected month (1-12).
+     * @param {Object} Params - Hash with different config options.
      * @description
      *      Caches the list of appointment days for later use.
      */
-    function AppointmentDays(Year, Month) {
+    function AppointmentDays(Year, Month, Params) {
         var StartTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').startOf('month'),
             EndTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').add(1, 'months').startOf('month'),
             Data = {
-                Action: 'AgentAppointmentList',
-                Subaction: 'ListAppointments',
-                CalendarID: 1,
+                Action: Params.Callbacks.ListAction,
+                Subaction: Params.Callbacks.DaysSubacton,
                 StartTime: StartTime.format('YYYY-MM-DD'),
                 EndTime: EndTime.format('YYYY-MM-DD')
             };
@@ -261,15 +262,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Data,
             function (Response) {
                 if (Response) {
-
-                    // Clear the cache
-                    AppointmentDaysCache = new Object();
-
-                    // Loop through all the appointment days
-                    $.each(Response, function(Index, Appointment) {
-                        AppointmentDaysCache[Appointment.StartTime]++;
-                    });
-
+                    AppointmentDaysCache = Response;
                     AppointmentDaysCacheRefreshed = true;
 
                     // Refresh the date picker because this call is asynchronous

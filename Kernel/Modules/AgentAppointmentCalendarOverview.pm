@@ -118,6 +118,8 @@ sub Run {
             EditMaskSubaction => 'EditMask',
             EditSubaction     => 'EditAppointment',
             AddSubaction      => 'AddAppointment',
+            ListAction        => 'AgentAppointmentList',
+            DaysSubaction     => 'AppointmentDays',
             FirstDay          => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
             IsRTLLanguage     => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
             %Param,
