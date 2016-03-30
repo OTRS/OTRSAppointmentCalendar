@@ -401,8 +401,14 @@ sub AppointmentList {
         push @Result, \%Appointment;
     }
 
-    # if Result was ARRAY, output only unique IDs
-    @Result = keys { map { $_->{ID} => 1 } @Result } if $Param{Result} eq 'ARRAY';
+    # if Result was ARRAY, output only IDs
+    if ( $Param{Result} eq 'ARRAY' ) {
+        my @ResultList;
+        for my $Appointment (@Result) {
+            push @ResultList, $Appointment->{ID};
+        }
+        @Result = @ResultList;
+    }
 
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
