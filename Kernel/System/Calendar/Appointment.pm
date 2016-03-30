@@ -367,13 +367,13 @@ sub AppointmentList {
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND start_time >= ? ';
-        push @Bind, \$Param{StartTime}, \$Param{StartTime};
+        $SQL .= 'AND end_time >= ? ';
+        push @Bind, \$Param{StartTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND end_time <= ? ';
-        push @Bind, \$Param{EndTime}, \$Param{EndTime};
+        $SQL .= 'AND start_time <= ? ';
+        push @Bind, \$Param{EndTime};
     }
 
     $SQL .= 'ORDER BY id ASC';
@@ -498,20 +498,20 @@ sub AppointmentDays {
         $SQL .= 'AND (
             (ca.start_time >= ? AND ca.start_time < ?) OR
             (ca.end_time > ? AND ca.end_time <= ?) OR
-            (start_time <= ? AND end_time >= ?)
+            (ca.start_time <= ? AND ca.end_time >= ?)
         ) ';
         push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime},
             \$Param{EndTime};
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND ca.start_time >= ? ';
-        push @Bind, \$Param{StartTime}, \$Param{StartTime};
+        $SQL .= 'AND ca.end_time >= ? ';
+        push @Bind, \$Param{StartTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND ca.end_time <= ? ';
-        push @Bind, \$Param{EndTime}, \$Param{EndTime};
+        $SQL .= 'AND ca.start_time <= ? ';
+        push @Bind, \$Param{EndTime};
     }
 
     $SQL .= 'ORDER BY ca.id ASC';
@@ -526,19 +526,36 @@ sub AppointmentDays {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
-        my ( $StartTime, $EndTime );
+        my ( $StartTime, $EndTime, $StartTimeSystem, $EndTimeSystem );
 
-        $StartTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[0] lt $Param{StartTime} ? $Param{StartTime} : $Row[0],
+        # StartTime
+        if ( $Param{StartTime} ) {
+            $StartTime = $Row[0] lt $Param{StartTime} ? $Param{StartTime} : $Row[0];
+        }
+        else {
+            $StartTime = $Row[0];
+        }
+
+        # EndTime
+        if ( $Param{EndTime} ) {
+            $EndTime = $Row[1] gt $Param{EndTime} ? $Param{EndTime} : $Row[1];
+        }
+        else {
+            $EndTime = $Row[1];
+        }
+
+        # Get system times
+        $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $StartTime,
         );
 
-        $EndTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[1] gt $Param{EndTime} ? $Param{EndTime} : $Row[1],
+        $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $EndTime,
         );
 
         for (
-            my $LoopSystemTime = $StartTime;
-            $LoopSystemTime < $EndTime;
+            my $LoopSystemTime = $StartTimeSystem;
+            $LoopSystemTime < $EndTimeSystem;
             $LoopSystemTime += 60 * 60 * 24
             )
         {

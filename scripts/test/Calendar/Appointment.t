@@ -683,16 +683,25 @@ for my $Date (qw(2016-02-10 2016-02-11)) {
     );
 }
 
+# Without EndTime
+my %AppointmentDays3 = $AppointmentObject->AppointmentDays(
+    StartTime => '2016-03-01 00:00:00',
+
+    # EndTime   => '2016-03-12 00:00:00',
+    UserID => $UserID,
+);
+
 my @Appointmentsxx = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},    # (required) Valid CalendarID
-    StartTime  => '2016-02-10 00:00:00',     # (optional) Filter by start date
-    EndTime    => '2016-02-12 00:00:00',     # (optional) Filter by end date
-    Result     => 'HASH',                    # (optional), HASH|ARRAY
+    StartTime  => '2016-03-01 00:00:00',
+
+    #EndTime    => '2016-03-03 00:00:00',     # (optional) Filter by end date
+    Result => 'HASH',                        # (optional), HASH|ARRAY
 );
-$AppointmentDays2{RR} = \@Appointmentsxx;
+$AppointmentDays3{RR} = \@Appointmentsxx;
 
 # use Data::Dumper;
-# my $Data = Dumper( \%AppointmentDays2 );
+# my $Data = Dumper( \%AppointmentDays3 );
 # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
 # print $fh '==========================' . $Data;
 # close $fh;
