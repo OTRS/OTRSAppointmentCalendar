@@ -40,9 +40,12 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
+        <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
@@ -152,6 +155,18 @@
             </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
+        <TableCreate Name="calendar_appointment_seen">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="calendar_appointment_id" Type="BIGINT"/>
+            <Column Name="user_id" Type="INTEGER"/>
+            <Column Name="seen" Type="SMALLINT"/>
+            <Unique Name="calendar_appointment_seen_id">
+                <UniqueColumn Name="id"/>
+            </Unique>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
     </DatabaseInstall>
