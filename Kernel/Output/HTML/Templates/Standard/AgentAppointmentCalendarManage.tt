@@ -90,7 +90,7 @@
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
                             <td class="Center">
-                                <a href="[% Env("CONTEXT_PREFIX") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %]">
+                                <a href="[% Env("CONTEXT_PREFIX") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];UserID=[% Env("UserID") | uri %]">
                                     <i class="fa fa-download"></i>
                                     <span class="InvisibleText">[% Translate("Export") | html %]</span>
                                 </a>

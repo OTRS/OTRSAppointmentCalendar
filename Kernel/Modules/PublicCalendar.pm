@@ -33,7 +33,6 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # needed objects
-    # my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
@@ -91,19 +90,6 @@ sub Run {
         Filename    => $Filename,
         NoCache     => 1,
     );
-
-    # # start template output
-    # $Output .= $LayoutObject->Output(
-    #     TemplateFile => 'PublicCalendar',
-    #     Data         => {
-
-    #     },
-    # );
-
-    # # add footer
-    # $Output .= $LayoutObject->CustomerFooter();
-
-    # return $Output;
 }
 
 1;
