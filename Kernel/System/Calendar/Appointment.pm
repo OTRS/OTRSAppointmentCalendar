@@ -370,7 +370,7 @@ sub AppointmentList {
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND end_time <= ?';
+        $SQL .= 'AND end_time <= ? ';
         push @Bind, \$Param{EndTime}, \$Param{EndTime};
     }
 
@@ -458,9 +458,9 @@ sub AppointmentDays {
         Key  => "$CacheKeyStart-$CacheKeyEnd",
     );
 
-    # if ( ref $Data eq 'HASH' ) {
-    #     return %{$Data};
-    # }
+    if ( ref $Data eq 'HASH' ) {
+        return %{$Data};
+    }
 
     # needed objects
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
@@ -506,7 +506,7 @@ sub AppointmentDays {
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND ca.end_time <= ?';
+        $SQL .= 'AND ca.end_time <= ? ';
         push @Bind, \$Param{EndTime}, \$Param{EndTime};
     }
 
@@ -521,21 +521,35 @@ sub AppointmentDays {
     my %Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        my $AppointmentStartTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[1],
+
+        my ( $StartTime, $EndTime );
+
+        $StartTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Row[0] < $Param{StartTime} ? $Param{StartTime} : $Row[0],
         );
-        my $AppointmentEndTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[2],
+
+        $EndTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Row[1] > $Param{EndTime} ? $Param{EndTime} : $Row[1],
         );
+
         for (
-            my $LoopSystemTime = $AppointmentStartTime;
-            $LoopSystemTime < $AppointmentEndTime;
+            my $LoopSystemTime = $StartTime;
+            $LoopSystemTime < $EndTime;
             $LoopSystemTime += 60 * 60 * 24
             )
         {
             my $LoopTime = $TimeObject->SystemTime2TimeStamp(
                 SystemTime => $LoopSystemTime,
             );
+
+            $LoopTime =~ s/\s.*?$//gsm;
+
+            if ( $Result{$LoopTime} ) {
+                $Result{$LoopTime}++;
+            }
+            else {
+                $Result{$LoopTime} = 1;
+            }
         }
     }
 

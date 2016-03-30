@@ -630,4 +630,50 @@ $Self->False(
     'AppointmentDelete() - #4 check if really deleted',
 );
 
+# Create a long appointment
+my $AppointmentID9 = $AppointmentObject->AppointmentCreate(
+    CalendarID  => $Calendar1{CalendarID},
+    Title       => 'Long appointment',
+    Description => 'Test',
+    Location    => 'Straubing',
+    StartTime   => '2016-01-28 12:00:00',
+    EndTime     => '2016-03-02 17:00:00',
+    AllDay      => '1',
+    TimezoneID  => 'Timezone',
+    UserID      => $UserID,
+);
+
+my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
+    CalendarID  => $Calendar1{CalendarID},
+    Title       => 'Long appointment 2',
+    Description => 'Test',
+    Location    => 'Straubing',
+    StartTime   => '2016-02-02 12:00:00',
+    EndTime     => '2016-03-05 17:00:00',
+    AllDay      => '1',
+    TimezoneID  => 'Timezone',
+    UserID      => $UserID,
+);
+
+my %AppointmentDays1 = $AppointmentObject->AppointmentDays(
+    StartTime => '2016-01-25 00:00:00',
+    EndTime   => '2016-03-06 00:00:00',
+    UserID    => $UserID,
+);
+
+my @Appointmentsxx = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},    # (required) Valid CalendarID
+    StartTime  => '2016-01-01 00:00:00',     # (optional) Filter by start date
+    EndTime    => '2016-02-01 00:00:00',     # (optional) Filter by end date
+    Result     => 'HASH',                    # (optional), HASH|ARRAY
+);
+$AppointmentDays1{RR} = \@Appointmentsxx;
+
+# use Data::Dumper;
+# my $Data = Dumper( \%AppointmentDays1 );
+# open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+# print $fh '==========================' . $Data;
+# close $fh;
+
+# bez start time/end time
 1;
