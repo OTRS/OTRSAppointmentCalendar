@@ -413,6 +413,143 @@ sub AppointmentList {
     return @Result;
 }
 
+=item AppointmentDays()
+
+get a hash of days with Appointments in all user calendars.
+
+    my %AppointmentDays = $AppointmentObject->AppointmentDays(
+        StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
+        EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
+        UserID              => 1,                                       # (required) Valid UserID
+    );
+
+returns a hash with days as keys and number of Appoinments as values:
+
+    %AppointmentDays = {
+        '2016-01-01' => 1,
+        '2016-01-13' => 2,
+        '2016-01-30' => 1,
+    };
+
+=cut
+
+sub AppointmentDays {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # cache keys
+    my $CacheType     = $Self->{CacheType} . 'Days' . $Param{UserID};
+    my $CacheKeyStart = $Param{StartTime} || 'any';
+    my $CacheKeyEnd   = $Param{EndTime} || 'any';
+
+    # check cache
+    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $CacheType,
+        Key  => "$CacheKeyStart-$CacheKeyEnd",
+    );
+
+    # if ( ref $Data eq 'HASH' ) {
+    #     return %{$Data};
+    # }
+
+    # needed objects
+    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # check time
+    if ( $Param{StartTime} ) {
+        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{StartTime},
+        );
+        return if !$StartTimeSystem;
+    }
+    if ( $Param{EndTime} ) {
+        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $Param{EndTime},
+        );
+        return if !$EndTimeSystem;
+    }
+
+    my $SQL = '
+        SELECT ca.start_time, ca.end_time
+        FROM calendar_appointment ca
+        JOIN calendar c ON ca.calendar_id = c.id
+        WHERE c.user_id=?
+    ';
+
+    my @Bind;
+
+    push @Bind, \$Param{UserID};
+
+    if ( $Param{StartTime} && $Param{EndTime} ) {
+
+        $SQL .= 'AND (
+            (ca.start_time >= ? AND ca.start_time < ?) OR
+            (ca.end_time > ? AND ca.end_time <= ?)
+        ) ';
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
+    }
+    elsif ( $Param{StartTime} && !$Param{EndTime} ) {
+
+        $SQL .= 'AND ca.start_time >= ? ';
+        push @Bind, \$Param{StartTime}, \$Param{StartTime};
+    }
+    elsif ( !$Param{StartTime} && $Param{EndTime} ) {
+
+        $SQL .= 'AND ca.end_time <= ?';
+        push @Bind, \$Param{EndTime}, \$Param{EndTime};
+    }
+
+    $SQL .= 'ORDER BY ca.id ASC';
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    my %Result;
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        my $AppointmentStartTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Row[1],
+        );
+        my $AppointmentEndTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Row[2],
+        );
+        for (
+            my $LoopSystemTime = $AppointmentStartTime;
+            $LoopSystemTime < $AppointmentEndTime;
+            $LoopSystemTime += 60 * 60 * 24
+            )
+        {
+            my $LoopTime = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $LoopSystemTime,
+            );
+        }
+    }
+
+    # cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $CacheType,
+        Key   => "$CacheKeyStart-$CacheKeyEnd",
+        Value => \%Result,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return %Result;
+}
+
 =item AppointmentGet()
 
 get Appointment.
