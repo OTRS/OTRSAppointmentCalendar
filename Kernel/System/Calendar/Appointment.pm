@@ -359,9 +359,11 @@ sub AppointmentList {
 
         $SQL .= 'AND (
             (start_time >= ? AND start_time < ?) OR
-            (end_time > ? AND end_time <= ?)
+            (end_time > ? AND end_time <= ?) OR
+            (start_time <= ? AND end_time >= ?)
         ) ';
-        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime},
+            \$Param{EndTime};
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
@@ -495,9 +497,11 @@ sub AppointmentDays {
 
         $SQL .= 'AND (
             (ca.start_time >= ? AND ca.start_time < ?) OR
-            (ca.end_time > ? AND ca.end_time <= ?)
+            (ca.end_time > ? AND ca.end_time <= ?) OR
+            (start_time <= ? AND end_time >= ?)
         ) ';
-        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime};
+        push @Bind, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime}, \$Param{EndTime}, \$Param{StartTime},
+            \$Param{EndTime};
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
