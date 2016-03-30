@@ -630,7 +630,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             if (Appointments[Index].start.isBefore(DateCurrent) &&
                 DateCurrent.isBefore(Appointments[Index].end)
             ) {
-                // alert("Remainder reached: " + Appointments[Index].title);
+                if (Appointments[Index].shown != null) {
+                    continue;
+                }
+
+                Appointments[Index].shown = true;
+                alert("Remainder reached: " + Appointments[Index].title);
             }
         }
     }
