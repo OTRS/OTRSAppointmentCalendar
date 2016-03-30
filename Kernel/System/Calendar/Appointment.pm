@@ -525,11 +525,11 @@ sub AppointmentDays {
         my ( $StartTime, $EndTime );
 
         $StartTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[0] < $Param{StartTime} ? $Param{StartTime} : $Row[0],
+            String => $Row[0] lt $Param{StartTime} ? $Param{StartTime} : $Row[0],
         );
 
         $EndTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Row[1] > $Param{EndTime} ? $Param{EndTime} : $Row[1],
+            String => $Row[1] gt $Param{EndTime} ? $Param{EndTime} : $Row[1],
         );
 
         for (

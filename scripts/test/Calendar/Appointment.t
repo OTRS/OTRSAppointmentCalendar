@@ -657,13 +657,13 @@ my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
 
 my %AppointmentDays1 = $AppointmentObject->AppointmentDays(
     StartTime => '2016-01-25 00:00:00',
-    EndTime   => '2016-03-06 00:00:00',
+    EndTime   => '2016-02-01 00:00:00',
     UserID    => $UserID,
 );
 
 my @Appointmentsxx = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},    # (required) Valid CalendarID
-    StartTime  => '2016-01-01 00:00:00',     # (optional) Filter by start date
+    StartTime  => '2016-01-25 00:00:00',     # (optional) Filter by start date
     EndTime    => '2016-02-01 00:00:00',     # (optional) Filter by end date
     Result     => 'HASH',                    # (optional), HASH|ARRAY
 );
