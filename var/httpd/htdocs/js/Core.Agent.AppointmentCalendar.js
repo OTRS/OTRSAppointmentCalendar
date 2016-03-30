@@ -20,6 +20,7 @@ Core.Agent = Core.Agent || {};
  */
 Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
+    // Appointment days cache and ready flag
     var AppointmentDaysCache,
         AppointmentDaysCacheRefreshed = false;
 
@@ -58,16 +59,26 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      Initializes the appointment calendar control.
      */
     TargetNS.Init = function (Params) {
-        var $DatepickerObj = $('<input />')
-            .prop('id', 'Datepicker')
-            .prop('type', 'hidden')
-            .insertAfter($('#calendar'));
+        var $CalendarObj = $('#calendar'),
+            $DatepickerObj = $('<div />')
+                .prop('id', 'Datepicker')
+                .addClass('Hidden')
+                .insertAfter($('#calendar'));
 
-        $('#calendar').fullCalendar({
+        // Initialize calendar
+        $CalendarObj.fullCalendar({
             header: {
                 left: 'yearly,month,agendaWeek,agendaDay timeline',
                 center: 'title',
-                right: 'today prev,next'
+                right: 'jump,today prev,next'
+            },
+            customButtons: {
+                jump: {
+                    text: Params.ButtonText.jump,
+                    click: function() {
+                        ShowDatepicker($CalendarObj, $DatepickerObj, $(this), Params);
+                    }
+                }
             },
             defaultView: 'timeline',
             allDayText: Params.AllDayText,
@@ -134,7 +145,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Resource: Resource
                 };
                 OpenEditDialog(Params, Data);
-                $('#calendar').fullCalendar('unselect');
+                $CalendarObj.fullCalendar('unselect');
             },
             eventClick: function(CalEvent, JSEvent, View) {
                 var Data = {
@@ -173,13 +184,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay) {
                     $Element.addClass('AllDay');
                 }
-            },
-            viewRender: function() {
-                var CurrentDate = $('#calendar').fullCalendar('getDate');
-                $DatepickerObj.datepicker('setDate', CurrentDate.toDate());
             }
         });
 
+        // Initialize datepicker
         $DatepickerObj.datepicker({
             showOn: 'button',
             buttonText: Params.ButtonText.jump,
@@ -195,12 +203,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             dayNamesMin: Params.DayNamesMin,
             isRTL: Params.IsRTL,
             onSelect: function(DateText) {
-                $('#calendar').fullCalendar('gotoDate', new Date(DateText));
-            },
-            beforeShow: function() {
-                var Year = $('#calendar').fullCalendar('getDate').format('YYYY'),
-                    Month = $('#calendar').fullCalendar('getDate').format('M');
-                AppointmentDays(Year, Month, Params);
+                $CalendarObj.fullCalendar('gotoDate', new Date(DateText));
+                $('#DatepickerOverlay').remove();
+                $DatepickerObj.hide();
             },
             beforeShowDay: function(DateObject) {
                 if (AppointmentDaysCacheRefreshed) {
@@ -210,10 +215,42 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             },
             onChangeMonthYear: function(Year, Month) {
-                AppointmentDays(Year, Month, Params);
+                AppointmentDays($DatepickerObj, Year, Month, Params);
             }
         });
     };
+
+    /**
+     * @private
+     * @name ShowDatepicker
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $CalendarObj - Calendar control object.
+     * @param {jQueryObject} $DatepickerObj - Datepicker control object.
+     * @param {jQueryObject} $JumpButton - Datepicker button object.
+     * @param {Object} Params - Hash with different config options.
+     * @description
+     *      Show date picker control.
+     */
+    function ShowDatepicker($CalendarObj, $DatepickerObj, $JumpButton, Params) {
+        var CurrentDate = $CalendarObj.fullCalendar('getDate'),
+            Year = CurrentDate.format('YYYY'),
+            Month = CurrentDate.format('M');
+
+        $('<div />').prop('id', 'DatepickerOverlay')
+            .appendTo($('body'))
+            .on('click.AppointmentCalendar', function () {
+                $(this).remove();
+                $DatepickerObj.hide();
+            });
+
+        AppointmentDays($DatepickerObj, Year, Month, Params);
+
+        $DatepickerObj.datepicker('setDate', CurrentDate.toDate())
+            .css({
+                left: parseInt($JumpButton.offset().left - $DatepickerObj.outerWidth() + $JumpButton.outerWidth(), 10),
+                top: parseInt($JumpButton.offset().top - $DatepickerObj.outerHeight() + $JumpButton.outerHeight(), 10)
+            }).fadeIn(150);
+    }
 
     /**
      * @private
@@ -239,13 +276,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @private
      * @name AppointmentDays
      * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $DatepickerObj - Datepicker control object.
      * @param {Integer} Year - Selected year.
      * @param {Integer} Month - Selected month (1-12).
      * @param {Object} Params - Hash with different config options.
      * @description
      *      Caches the list of appointment days for later use.
      */
-    function AppointmentDays(Year, Month, Params) {
+    function AppointmentDays($DatepickerObj, Year, Month, Params) {
         var StartTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').startOf('month'),
             EndTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').add(1, 'months').startOf('month'),
             Data = {
@@ -266,7 +304,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     AppointmentDaysCacheRefreshed = true;
 
                     // Refresh the date picker because this call is asynchronous
-                    $('#Datepicker').datepicker('refresh');
+                    $DatepickerObj.datepicker('refresh');
                 }
             }
         );
