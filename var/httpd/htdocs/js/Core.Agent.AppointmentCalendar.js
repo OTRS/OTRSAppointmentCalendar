@@ -625,6 +625,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Appointments = $('#calendar').fullCalendar('clientEvents'),
             DateCurrent = moment(); // eslint-disable-line no-undef
 
+        if (DateCurrent.second() > 6 && this.Initialized != null) {
+            // There is no need to check, since times are rounded to minutes
+            return;
+        }
+
+        this.Initialized = true;
+
         // Itterate through all Appointments
         for (Index = 0; Index < Appointments.length; Index++) {
             if (Appointments[Index].start.isBefore(DateCurrent) &&
