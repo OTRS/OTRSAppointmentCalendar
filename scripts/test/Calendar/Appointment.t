@@ -691,20 +691,47 @@ my %AppointmentDays3 = $AppointmentObject->AppointmentDays(
     UserID => $UserID,
 );
 
-my @Appointmentsxx = $AppointmentObject->AppointmentList(
-    CalendarID => $Calendar1{CalendarID},    # (required) Valid CalendarID
-    StartTime  => '2016-03-01 00:00:00',
+for my $Date (qw(2016-03-03 2016-03-05 2016-03-06 2016-03-08 2016-03-10)) {
+    $Self->Is(
+        $AppointmentDays3{$Date},
+        1,
+        "AppointmentDays3 - #$Date",
+    );
+}
 
-    #EndTime    => '2016-03-03 00:00:00',     # (optional) Filter by end date
-    Result => 'HASH',                        # (optional), HASH|ARRAY
+for my $Date (qw(2016-03-01 2016-03-04)) {
+    $Self->Is(
+        $AppointmentDays3{$Date},
+        2,
+        "AppointmentDays3 - #$Date",
+    );
+}
+
+for my $Date (qw(2016-03-02)) {
+    $Self->Is(
+        $AppointmentDays3{$Date},
+        3,
+        "AppointmentDays3 - #$Date",
+    );
+}
+
+# Without StartTime
+my %AppointmentDays4 = $AppointmentObject->AppointmentDays(
+    EndTime => '2016-01-05 00:00:00',
+    UserID  => $UserID,
 );
-$AppointmentDays3{RR} = \@Appointmentsxx;
 
-# use Data::Dumper;
-# my $Data = Dumper( \%AppointmentDays3 );
-# open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-# print $fh '==========================' . $Data;
-# close $fh;
+$Self->Is(
+    scalar keys(%AppointmentDays4),
+    1,
+    "AppointmentDays4 count",
+);
 
-# bez start time/end time
+$Self->Is(
+    $AppointmentDays4{'2016-01-01'},
+    1,
+    "AppointmentDays4 - 1",
+);
+
+# without start time/end time
 1;
