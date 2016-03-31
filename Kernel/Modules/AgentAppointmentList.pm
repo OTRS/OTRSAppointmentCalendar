@@ -66,6 +66,13 @@ sub Run {
                 }
             }
 
+            # reset empty parameters
+            for my $Param ( sort keys %GetParam ) {
+                if ( !$GetParam{$Param} ) {
+                    $GetParam{$Param} = undef;
+                }
+            }
+
             my @Appointments = $AppointmentObject->AppointmentList(
                 %GetParam,
             );
@@ -85,6 +92,13 @@ sub Run {
         for my $Timestamp (qw(StartTime EndTime)) {
             if ( $GetParam{$Timestamp} && !( $GetParam{$Timestamp} =~ /\s\d{2}:\d{2}:\d{2}$/ ) ) {
                 $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00',
+            }
+        }
+
+        # reset empty parameters
+        for my $Param ( sort keys %GetParam ) {
+            if ( !$GetParam{$Param} ) {
+                $GetParam{$Param} = undef;
             }
         }
 

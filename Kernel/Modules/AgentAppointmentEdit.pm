@@ -325,6 +325,13 @@ sub Run {
         $GetParam{TimezoneID} = 'Europe/Belgrade';
         $GetParam{UserID}     = $Self->{UserID};
 
+        # reset empty parameters
+        for my $Param ( sort keys %GetParam ) {
+            if ( !$GetParam{$Param} ) {
+                $GetParam{$Param} = undef;
+            }
+        }
+
         if ( $GetParam{AppointmentID} ) {
             my %Appointment = $AppointmentObject->AppointmentGet(
                 AppointmentID => $GetParam{AppointmentID},
