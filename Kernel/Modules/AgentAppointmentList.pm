@@ -97,6 +97,22 @@ sub Run {
             ),
         );
     }
+    elsif ( $Self->{Subaction} eq 'Seen' ) {
+        my $Seen;
+
+        my $AppointmentID = $ParamObject->GetParam( Param => 'AppointmentID' ) || '';
+
+        if ($AppointmentID) {
+            $Seen = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentSeenGet(
+                AppointmentID => $AppointmentID,
+                UserID        => $Self->{UserID},
+            );
+        }
+
+        $JSON = $LayoutObject->JSONEncode(
+            Data => $Seen,
+        );
+    }
 
     # send JSON response
     return $LayoutObject->Attachment(
