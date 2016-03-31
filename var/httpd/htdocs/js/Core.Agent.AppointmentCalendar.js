@@ -752,7 +752,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                         Core.UI.Dialog.ShowContentDialog(Response.HTML, Response.Title, '100px', 'Center', true, [
                             {
-                                Label: "Dismiss", // TODO: Translate
+                                Label: Core.Config.Get('Dismiss'),
                                 Type: "Close",
                                 Function: function () {
                                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));

@@ -209,6 +209,11 @@ $('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
     Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources);
 });
 
+Core.Config.AddConfig({
+    Dismiss: '[% Translate("Dismiss") | html %]'
+});
+
+
 //]]></script>
 [% END %]
 
