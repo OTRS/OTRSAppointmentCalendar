@@ -1089,19 +1089,38 @@ sub AppointmentSeenSet {
     # needed objects
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    my $SQL = '
-        INSERT INTO calendar_appointment_seen
-            (calendar_appointment_id, user_id, seen)
-        VALUES (?, ?, ?)
-    ';
+    if ( $Param{Seen} ) {
+        my $SQL = '
+            INSERT INTO calendar_appointment_seen
+                (calendar_appointment_id, user_id, seen)
+            VALUES (?, ?, ?)
+        ';
 
-    # create db record
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{AppointmentID}, \$Param{UserID}, \$Param{Seen},
-        ],
-    );
+        # create db record
+        return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+            SQL  => $SQL,
+            Bind => [
+                \$Param{AppointmentID}, \$Param{UserID}, \$Param{Seen},
+            ],
+        );
+    }
+    else {
+        my $SQL = '
+            DELETE
+            FROM calendar_appointment_seen
+            WHERE
+                calendar_appointment_id=? AND
+                user_id=?
+        ';
+
+        # create db record
+        return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+            SQL  => $SQL,
+            Bind => [
+                \$Param{AppointmentID}, \$Param{UserID},
+            ],
+        );
+    }
 
     # delete seen cache
     $CacheObject->CleanUp(

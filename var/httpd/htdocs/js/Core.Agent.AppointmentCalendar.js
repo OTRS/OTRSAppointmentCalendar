@@ -710,7 +710,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     };
 
     function AppointmentReached() {
-        var Data,
+        var AppointmentIDs = [],
+            Data,
             Index,
             Appointments = $('#calendar').fullCalendar('clientEvents'),
             DateCurrent = moment(); // eslint-disable-line no-undef
@@ -731,49 +732,38 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     continue;
                 }
 
-                Data = {
-                    Action: "AgentAppointmentList",
-                    Subaction: "Seen",
-                    AppointmentID: Appointments[Index].id
-                };
+                AppointmentIDs.push(Appointments[Index].id);
+            }
+        }
 
-                Core.AJAX.FunctionCall(
-                    Core.Config.Get('CGIHandle'),
-                    Data,
-                    function (Response) {
+        Data = {
+            Action: "AgentAppointmentList",
+            Subaction: "AppointmentsStarted",
+            AppointmentIDs: AppointmentIDs
+        };
 
-                        if (Response) {
-                            if (Response.Seen != null && !Response.Seen) {
-                                if (Response.AppointmentID == null) {
-                                    return;
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            Data,
+            function (Response) {
+
+                if (Response) {
+                    if (Response.Show) {
+
+                        Core.UI.Dialog.ShowContentDialog(Response.HTML, Response.Title, '100px', 'Center', true, [
+                            {
+                                Label: "Dismiss",
+                                Type: "Close",
+                                Function: function () {
+                                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                                 }
-
-                                DisplayReminder(Response.AppointmentID);
                             }
-                        }
+                        ], true);
+                        Core.UI.InputFields.Activate($('.Dialog:visible'));
                     }
-                );
+                }
             }
-        }
-    }
-
-    function DisplayReminder(AppointmentID) {
-        var Appointments,
-            Index;
-
-        if (AppointmentID == null) {
-            return;
-        }
-
-        // Get appointment list
-        Appointments = $('#calendar').fullCalendar('clientEvents');
-        for (Index = 0; Index < Appointments.length; Index++) {
-            if (Appointments[Index].id == AppointmentID) {
-                Appointments[Index].shown = true;
-                alert("Remainder reached: " + Appointments[Index].title);
-            }
-        }
-
+        );
     }
 
     // Check each 5 seconds

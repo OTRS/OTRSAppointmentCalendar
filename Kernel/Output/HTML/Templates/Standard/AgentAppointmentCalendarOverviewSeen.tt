@@ -6,6 +6,26 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-<div class="">
-    <p>Test</p>
+<div class="InnerContent">
+    <h2>[% Translate("Following appointments has started") | html %]:</h2>
+    <form id="SearchForm">
+        <table class="DataTable">
+            <thead>
+                <tr>
+                    <th>[% Translate("Title") | html %]</th>
+                    <th>[% Translate("Start time") | html %]</th>
+                    <th>[% Translate("End time") | html %]</th>
+                </tr>
+            </thead>
+            <tbody>
+[% RenderBlockStart("Appointment") %]
+                <tr>
+                    <td>[% Data.Title | html %]</td>
+                    <td>[% Data.StartTime | html %]</td>
+                    <td>[% Data.EndTime | html %]</td>
+                </tr>
+[% RenderBlockEnd("Appointment") %]
+            </tbody>
+        </table>
+    </from>
 </div>

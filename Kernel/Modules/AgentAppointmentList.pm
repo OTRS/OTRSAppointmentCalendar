@@ -39,7 +39,10 @@ sub Run {
 
     # get params
     my %GetParam;
+
+    KEY:
     for my $Key (@ParamNames) {
+        next KEY if $Key eq 'AppointmentIDs';
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -97,31 +100,50 @@ sub Run {
             ),
         );
     }
-    elsif ( $Self->{Subaction} eq 'Seen' ) {
-        my $Seen;
+    elsif ( $Self->{Subaction} eq 'AppointmentsStarted' ) {
+        my $Show = 0;
 
-        my $AppointmentID = $ParamObject->GetParam( Param => 'AppointmentID' ) || '';
+        my @AppointmentIDs = $ParamObject->GetArray( Param => 'AppointmentIDs[]' );
 
-        if ($AppointmentID) {
-            $Seen = $AppointmentObject->AppointmentSeenGet(
+        for my $AppointmentID (@AppointmentIDs) {
+            my $Seen = $AppointmentObject->AppointmentSeenGet(
                 AppointmentID => $AppointmentID,
                 UserID        => $Self->{UserID},
             );
 
             if ( !$Seen ) {
+                my %Appointment = $AppointmentObject->AppointmentGet(
+                    AppointmentID => $AppointmentID,
+                );
+
+                $LayoutObject->Block(
+                    Name => 'Appointment',
+                    Data => {
+                        %Appointment,
+                    },
+                );
 
                 # system displays reminder this time, mark it as shown
                 $AppointmentObject->AppointmentSeenSet(
                     AppointmentID => $AppointmentID,
                     UserID        => $Self->{UserID},
                 );
+
+                $Show = 1;
             }
         }
 
+        my $HTML = $LayoutObject->Output(
+            TemplateFile => 'AgentAppointmentCalendarOverviewSeen',
+            Data         => {
+            },
+        );
+
         $JSON = $LayoutObject->JSONEncode(
             Data => {
-                AppointmentID => $AppointmentID,
-                Seen          => $Seen,
+                HTML  => $HTML,
+                Show  => $Show,
+                Title => $LayoutObject->{LanguageObject}->Translate("Ongoing appointments"),
             },
         );
     }
