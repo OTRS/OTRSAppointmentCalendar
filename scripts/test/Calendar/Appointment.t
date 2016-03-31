@@ -175,7 +175,7 @@ for my $Appointment (@Appointments1) {
     );
     $Self->True(
         $Appointment->{CalendarID},
-        'CalendarIDID present',
+        'CalendarID present',
     );
     $Self->True(
         $Appointment->{UniqueID},
@@ -641,11 +641,13 @@ $Self->False(
     'AppointmentUpdate() - #6 no EndTime',
 );
 
+# no TimezoneID
 my $Update7 = $AppointmentObject->AppointmentUpdate(
     AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-02 16:15:00',
     UserID        => 1,
 );
 $Self->False(
@@ -653,11 +655,13 @@ $Self->False(
     'AppointmentUpdate() - #7 no TimezoneID',
 );
 
+# no UserID
 my $Update8 = $AppointmentObject->AppointmentUpdate(
     AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-02 16:15:00',
     TimezoneID    => 'Timezone',
 );
 $Self->False(
@@ -847,6 +851,97 @@ $Self->Is(
     scalar keys(%AppointmentDays5),
     34,
     "AppointmentDays5 count",
+);
+
+my $Seen1 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+$Self->False(
+    $Seen1,
+    "AppointmentSeenGet #1",
+);
+
+my $SeenSet1 = $AppointmentObject->AppointmentSeenSet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $SeenSet1,
+    "AppointmentSeenSet #1",
+);
+
+my $Seen2 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $Seen2,
+    "AppointmentSeenGet #2",
+);
+
+my $Update9 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID1,
+    CalendarID    => $Calendar1{CalendarID},
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-02 16:15:00',
+    TimezoneID    => 'Timezone',
+    UserID        => $UserID,
+);
+$Self->True(
+    $Update9,
+    "AppointmentUpdate #9",
+);
+
+my $Seen3 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+$Self->False(
+    $Seen3,
+    "AppointmentSeenGet #3",
+);
+
+my $SeenSet2 = $AppointmentObject->AppointmentSeenSet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+$Self->True(
+    $SeenSet2,
+    "AppointmentSeenSet #2",
+);
+
+my $Seen4 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $Seen4,
+    "AppointmentSeenGet #4",
+);
+
+# delete appointment
+my $Delete4 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $Delete4,
+    "Delete #4",
+);
+
+my $Seen5 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+    UserID        => $UserID,
+);
+$Self->False(
+    $Seen5,
+    "AppointmentSeenGet #5",
 );
 
 1;
