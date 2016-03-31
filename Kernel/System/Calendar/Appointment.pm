@@ -84,15 +84,15 @@ creates a new appointment.
         Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
-        AllDay              => '0',                                     # (optional) Default 0
+        AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
-        Recurring           => '1',                                     # (optional) Flag the appointment as recurring (parent only!)
-        RecurrenceFrequency => '1',                                     # (optional)
-        RecurrenceCount     => '1',                                     # (optional)
-        RecurrenceInterval  => '',                                      # (optional)
-        RecurrenceUntil     => '',                                      # (optional)
-        RecurrenceByMonth   => '',                                      # (optional)
-        RecurrenceByDay     => '',                                      # (optional)
+        Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
+        RecurrenceFrequency => 1,                                       # (optional)
+        RecurrenceCount     => 1,                                       # (optional)
+        RecurrenceInterval  => 2,                                       # (optional)
+        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+        RecurrenceByMonth   => 2,                                       # (optional)
+        RecurrenceByDay     => 5,                                       # (optional)
         UserID              => 1,                                       # (required) UserID
     );
 
@@ -725,12 +725,12 @@ updates an existing appointment.
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 'Timezone',                              # (required)
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
-        RecurrenceFrequency => '1',                                     # (optional)
-        RecurrenceCount     => '1',                                     # (optional)
-        RecurrenceInterval  => '',                                      # (optional)
-        RecurrenceUntil     => '',                                      # (optional)
-        RecurrenceByMonth   => '',                                      # (optional)
-        RecurrenceByDay     => '',                                      # (optional)
+        RecurrenceFrequency => 1,                                       # (optional)
+        RecurrenceCount     => 1,                                       # (optional)
+        RecurrenceInterval  => 2,                                       # (optional)
+        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+        RecurrenceByMonth   => 2,                                       # (optional)
+        RecurrenceByDay     => 5,                                       # (optional)
         UserID              => 1,                                       # (required) UserID
     );
 

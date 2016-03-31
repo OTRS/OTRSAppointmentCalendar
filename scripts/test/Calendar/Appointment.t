@@ -145,12 +145,8 @@ my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     EndTime             => '2016-01-01 17:00:00',
     AllDay              => 1,
     TimezoneID          => 'TimezoneID',
-    RecurrenceFrequency => '1',
-    RecurrenceCount     => '1',
-    RecurrenceInterval  => '',
-    RecurrenceUntil     => '',
-    RecurrenceByMonth   => '',
-    RecurrenceByDay     => '',
+    RecurrenceFrequency => 1,
+    RecurrenceCount     => 1,
     UserID              => $UserID,
 );
 
@@ -304,10 +300,10 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     Location            => 'Germany',
     StartTime           => '2016-03-01 16:00:00',
     EndTime             => '2016-03-01 17:00:00',
-    AllDay              => '1',
+    AllDay              => 1,
     TimezoneID          => 'TimezoneID',
-    Recurring           => '1',
-    RecurrenceFrequency => '1',                       # each day
+    Recurring           => 1,
+    RecurrenceFrequency => 1,                         # each day
     RecurrenceUntil     => '2016-03-06 00:00:00',
     UserID              => $UserID,
 );
@@ -338,15 +334,11 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     Location            => 'Germany',
     StartTime           => '2016-03-02 16:00:00',
     EndTime             => '2016-03-02 17:00:00',
-    AllDay              => '1',
+    AllDay              => 1,
     TimezoneID          => 'Timezone',
-    Recurring           => '1',
-    RecurrenceFrequency => '2',                        # each 2 days
-    RecurrenceCount     => '',
-    RecurrenceInterval  => '',
+    Recurring           => 1,
+    RecurrenceFrequency => 2,                          # each 2 days
     RecurrenceUntil     => '2016-03-10 17:00:00',
-    RecurrenceByMonth   => '',
-    RecurrenceByDay     => '',
     UserID              => 1,
 );
 $Self->True(
@@ -487,11 +479,11 @@ my $Update1 = $AppointmentObject->AppointmentUpdate(
     Location            => 'England',
     StartTime           => '2016-01-02 16:00:00',
     EndTime             => '2016-01-02 17:00:00',
-    AllDay              => '0',
+    AllDay              => 0,
     TimezoneID          => 'Timezone',
-    Recurring           => '1',
-    RecurrenceFrequency => '2',
-    RecurrenceCount     => '2',
+    Recurring           => 1,
+    RecurrenceFrequency => 2,
+    RecurrenceCount     => 2,
     UserID              => 1,
 );
 $Self->True(
@@ -711,7 +703,7 @@ my $AppointmentID9 = $AppointmentObject->AppointmentCreate(
     Location    => 'Straubing',
     StartTime   => '2016-01-28 12:00:00',
     EndTime     => '2016-03-02 17:00:00',
-    AllDay      => '1',
+    AllDay      => 1,
     TimezoneID  => 'Timezone',
     UserID      => $UserID,
 );
@@ -723,7 +715,7 @@ my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
     Location    => 'Straubing',
     StartTime   => '2016-02-02 12:00:00',
     EndTime     => '2016-03-05 17:00:00',
-    AllDay      => '1',
+    AllDay      => 1,
     TimezoneID  => 'Timezone',
     UserID      => $UserID,
 );
