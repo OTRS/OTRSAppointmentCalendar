@@ -171,6 +171,7 @@
         </TableCreate>
     </DatabaseInstall>
     <DatabaseUninstall Type="pre">
+        <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>
     </DatabaseUninstall>
