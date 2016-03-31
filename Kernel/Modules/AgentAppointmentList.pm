@@ -103,14 +103,26 @@ sub Run {
         my $AppointmentID = $ParamObject->GetParam( Param => 'AppointmentID' ) || '';
 
         if ($AppointmentID) {
-            $Seen = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentSeenGet(
+            $Seen = $AppointmentObject->AppointmentSeenGet(
                 AppointmentID => $AppointmentID,
                 UserID        => $Self->{UserID},
             );
+
+            if ( !$Seen ) {
+
+                # system displays reminder this time, mark it as shown
+                $AppointmentObject->AppointmentSeenSet(
+                    AppointmentID => $AppointmentID,
+                    UserID        => $Self->{UserID},
+                );
+            }
         }
 
         $JSON = $LayoutObject->JSONEncode(
-            Data => $Seen,
+            Data => {
+                AppointmentID => $AppointmentID,
+                Seen          => $Seen,
+            },
         );
     }
 
