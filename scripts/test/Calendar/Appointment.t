@@ -944,4 +944,40 @@ $Self->False(
     "AppointmentSeenGet #5",
 );
 
+# missing AppointmentID
+my $Seen6 = $AppointmentObject->AppointmentSeenGet(
+    UserID => $UserID,
+);
+$Self->False(
+    defined $Seen6,
+    "AppointmentSeenGet #6",
+);
+
+# missing UserID
+my $Seen7 = $AppointmentObject->AppointmentSeenGet(
+    AppointmentID => $AppointmentID1,
+);
+$Self->False(
+    defined $Seen6,
+    "AppointmentSeenGet #7",
+);
+
+# missing AppointmentID
+my $SeenSet3 = $AppointmentObject->AppointmentSeenSet(
+    UserID => $UserID,
+);
+$Self->False(
+    defined $SeenSet3,
+    "AppointmentSeenSet #3",
+);
+
+# missing UserID
+my $SeenSet4 = $AppointmentObject->AppointmentSeenSet(
+    AppointmentID => $AppointmentID1,
+);
+$Self->False(
+    defined $SeenSet4,
+    "AppointmentSeenSet #4",
+);
+
 1;
