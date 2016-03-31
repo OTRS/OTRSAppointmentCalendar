@@ -159,7 +159,8 @@ Core.Agent.AppointmentCalendar.Init({
         OccurrenceText: [% Translate("Would you like to edit just this occurrence or all occurrences?") | JSON %],
         OccurrenceAll: [% Translate("All occurrences") | JSON %],
         OccurrenceJustThis: [% Translate("Just this occurrence") | JSON %],
-        Close: [% Translate("Close") | JSON %]
+        Close: [% Translate("Close") | JSON %],
+        Dismiss: [% Translate("Dismiss") | JSON %]
     },
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
@@ -207,10 +208,6 @@ var EventSources = {
 
 $('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
     Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources);
-});
-
-Core.Config.AddConfig({
-    Dismiss: '[% Translate("Dismiss") | html %]'
 });
 
 

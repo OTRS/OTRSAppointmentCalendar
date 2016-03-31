@@ -48,6 +48,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.DialogText.OccurrenceText - Text of the occurrence dialog.
      * @param {String} Params.DialogText.OccurrenceAll - Text of 'all' button in occurrence dialog.
      * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
+     * @param {String} Params.DialogText.Dismiss - Text of 'Dismiss' button in dialog.
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
@@ -218,6 +219,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 AppointmentDays($DatepickerObj, Year, Month, Params);
             }
         });
+
+        // Check each 5 seconds
+        setInterval(function () {
+            TargetNS.AppointmentReached(Params)
+        }, 5000);
     };
 
     /**
@@ -594,7 +600,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
      * @name EditAppointment
      * @param {Object} Data - Hash with call and appointment data.
      * @param {Integer} Data.CalendarID - Appointment calendar ID.
@@ -709,7 +714,15 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         });
     };
 
-    function AppointmentReached() {
+    /**
+     * @name AppointmentReached
+     * @memberof Core.Agent.AppointmentCalendar
+     * @function
+     * @param {Object} Params - Hash with different config options.
+     * @description
+     *      This function displays dialog with currently active Appointments if needed.
+     */
+    TargetNS.AppointmentReached = function (Params) {
         var AppointmentIDs = [],
             Data,
             Index,
@@ -752,7 +765,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                         Core.UI.Dialog.ShowContentDialog(Response.HTML, Response.Title, '100px', 'Center', true, [
                             {
-                                Label: Core.Config.Get('Dismiss'),
+                                Label: Params.DialogText.Dismiss,
                                 Type: "Close",
                                 Function: function () {
                                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
@@ -765,9 +778,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         );
     }
-
-    // Check each 5 seconds
-    setInterval(AppointmentReached, 5000);
 
     return TargetNS;
 }(Core.Agent.AppointmentCalendar || {}));
