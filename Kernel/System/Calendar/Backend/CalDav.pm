@@ -14,7 +14,8 @@ use warnings;
 use Kernel::System::EventHandler;
 
 our @ObjectDependencies = (
-
+    'Kernel::Config',
+    'Kernel::System::Main',
 );
 
 =head1 NAME

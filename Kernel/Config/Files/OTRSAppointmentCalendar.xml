@@ -205,8 +205,8 @@
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar</SubGroup>
         <Setting>
-            <Option SelectedID="1">
-                <Item Key="CalDev" Translatable="1">CalDev</Item>                
+            <Option SelectedID="CalDav">
+                <Item Key="CalDav" Translatable="1">CalDav</Item>                
             </Option>
         </Setting>
     </ConfigItem>

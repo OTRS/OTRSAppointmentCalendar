@@ -16,9 +16,11 @@ use Kernel::System::EventHandler;
 use vars qw(@ISA);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::Cache',
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::Main',
 );
 
 =head1 NAME
@@ -51,6 +53,23 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    # load backend module
+    my $Backend = $Kernel::OM->Get('Kernel::Config')->{'AppointmentCalendar::Backend'};
+
+    if ($Backend) {
+        my $GenericModule = 'Kernel::System::Calendar::Backend::' . $Backend;
+        return if !$Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule);
+        $Self->{Backend} = $GenericModule->new( %{$Self} );
+    }
+    else {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'Error',
+            Message  => 'Unknown database type! Set option Database::Type in '
+                . 'Kernel/Config.pm to (mysql|postgresql|oracle|db2|mssql).',
+        );
+        return;
+    }
 
     @ISA = qw(
         Kernel::System::EventHandler
