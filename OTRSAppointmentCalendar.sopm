@@ -48,6 +48,7 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
