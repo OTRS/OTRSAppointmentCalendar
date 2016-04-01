@@ -988,4 +988,12 @@ $Self->False(
     "AppointmentSeenSet #4",
 );
 
+# temporary test (for development purpose only)
+my $CalDavObject = $Kernel::OM->Get('Kernel::System::Calendar::Backend::CalDav');
+$CalDavObject->AppointmentList(
+    Url      => 'https://192.168.62.129/dav/root/test',
+    Username => 'root',
+    Password => '******',
+);
+
 1;
