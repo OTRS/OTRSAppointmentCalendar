@@ -845,6 +845,22 @@ $Self->Is(
     "AppointmentDays5 count",
 );
 
+# no UserID
+my %AppointmentDays6 = $AppointmentObject->AppointmentDays(
+    StartTime => '2016-02-02 12:00:00',
+    EndTime   => '2016-03-05 17:00:00',
+);
+
+my $AppointmentDaysEmpty6 = 1;
+if (%AppointmentDays6) {
+    $AppointmentDaysEmpty6 = 0;
+}
+
+$Self->True(
+    $AppointmentDaysEmpty6,
+    "AppointmentDays6 - No UserID",
+);
+
 my $Seen1 = $AppointmentObject->AppointmentSeenGet(
     AppointmentID => $AppointmentID1,
     UserID        => $UserID,
