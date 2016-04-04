@@ -72,9 +72,9 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th class="Center W10pc">[% Translate("Validity") | html %]</th>
-                            <th class="Center W10pc">[% Translate("Changed") | html %]</th>
-                            <th class="Center W10pc">[% Translate("Created") | html %]</th>
+                            <th>[% Translate("Validity") | html %]</th>
+                            <th>[% Translate("Changed") | html %]</th>
+                            <th>[% Translate("Created") | html %]</th>
                             <th class="Center W10pc">[% Translate("Export") | html %]</th>
                         </tr>
                     </thead>
