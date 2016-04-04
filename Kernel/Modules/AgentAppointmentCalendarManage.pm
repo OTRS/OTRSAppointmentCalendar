@@ -305,7 +305,7 @@ sub _ValidSelectionGet {
         Data  => \%Valid,
         Name  => 'ValidID',
         ID    => 'ValidID',
-        Class => 'W95pc Modernize',
+        Class => 'Modernize',
 
         SelectedID => $Param{ValidID} || 1,
         Title => Translatable("Valid"),

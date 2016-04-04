@@ -128,7 +128,7 @@
                         </label>
                         <div class="Field">
                             <input type="text" id="CalendarName" name="CalendarName" value="[% Data.CalendarName | html %]"
-                                class="W95pc Validate_Required [% Data.CalendarNameInvalid | html %]" />
+                                class="Validate_Required W50pc [% Data.CalendarNameInvalid | html %]" />
                             <div id="CalendarNameError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
 [% IF Data.CalendarNameExists %]
                             <div id="CalendarNameServerError" class="TooltipErrorMessage"><p>[% Translate("Calendar with same name already exists.") | html %]</p></div>
@@ -144,13 +144,16 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <div class="Field SpacingTop">
-                            <button value="Save" type="submit" id="Submit" class="Primary">[% Translate("Save") | html %]</button>
+                        <div class="Field">
+                            <button value="Save" type="submit" id="Submit" class="Primary CallForAction">
+                                <span>[% Translate("Save") | html %]</span>
+                            </button>
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" title="[% Translate("Cancel") | html %]">
                                 <span>[% Translate("Cancel") | html %]</span>
                             </a>
                         </div>
+                        <div class="Clear"></div>
                     </fieldset>
                 </form>
 [% RenderBlockEnd("CalendarEdit") %]
