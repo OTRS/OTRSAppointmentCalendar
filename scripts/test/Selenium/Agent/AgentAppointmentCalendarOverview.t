@@ -83,9 +83,9 @@ $Selenium->RunTest(
         # verify all three calendars are visible
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('.CalendarSwitch input[checked=\"checked\"]').length;"
+                "return \$('.CalendarSwitch:visible').length;"
             ),
-            '3',
+            3,
             'All three calendars visible',
         );
 
@@ -244,6 +244,20 @@ $Selenium->RunTest(
             ),
             '2',
             'First and second appointment visible',
+        );
+
+        # filter just third calendar
+        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Yet Another Calendar');
+
+        sleep 1;
+
+        # verify only one calendar is shown
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.CalendarSwitch:visible').length;"
+            ),
+            1,
+            'Calendars are filtered correctly',
         );
 
         }

@@ -86,7 +86,7 @@
                                     [% Data.CalendarName | html %]
                                 </a>
                             </td>
-                            <td>[% Data.Valid | html %]</td>
+                            <td>[% Translate(Data.Valid) | html %]</td>
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
                             <td class="Center">

@@ -99,19 +99,42 @@ $Selenium->RunTest(
         # submit
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
+        # verify two calendars are shown
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.ContentColumn table tbody tr:visible').length;"
+            ),
+            2,
+            'All calendars are displayed',
+        );
+
         # filter just added calendar
         $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Personal calendar2');
 
+        sleep 1;
+
+        # verify only one calendar is shown
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.ContentColumn table tbody tr:visible').length;"
+            ),
+            1,
+            'Calendars are filtered correctly',
+        );
+
         # verify the calendar is invalid
+        my $LanguageObject = Kernel::Language->new(
+            UserLanguage => $Language,
+        );
         $Self->Is(
             $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
                 ->get_text(),
-            'invalid',
+            $LanguageObject->Translate('invalid'),
             'Calendar is marked invalid',
         );
 
         # edit invalid calendar
-        $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) a', 'css' )->VerifiedClick();
+        $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td a', 'css' )->VerifiedClick();
 
         # set it to invalid-temporarily
         $Selenium->execute_script(
@@ -125,7 +148,7 @@ $Selenium->RunTest(
         $Self->Is(
             $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
                 ->get_text(),
-            'invalid-temporarily',
+            $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',
         );
 
