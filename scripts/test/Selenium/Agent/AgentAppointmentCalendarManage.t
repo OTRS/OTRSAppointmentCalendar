@@ -38,104 +38,98 @@ $Selenium->RunTest(
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => ['users'],
             Language => $Language,
-        ) || die "Did not get test user";
+        ) || die 'Did not get test user';
 
         # create test customer user
-        my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate() || die "Did not get test customer user";
+        my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate() || die 'Did not get test customer user';
 
-        #-- start test
+        # start test
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
 
-        # Open AgentAppointmentCalendarManage page
+        # open AgentAppointmentCalendarManage page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarManage");
 
-        # expand Calendar menu
-        $Selenium->find_element( "#NavigationContainer li#nav-Calendar a", "css" )->click();
+        # click Add new calendar
+        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->click();
 
-        # Click Manage calendars
-        $Selenium->find_element( "#NavigationContainer li#nav-Calendar ul li#nav-Calendar-ManageCalendars a", "css" )
-            ->click();
+        # write calendar name
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys('Personal calendar');
 
-        # Click Add new calendar
-        $Selenium->find_element( ".SidebarColumn ul.ActionList a#Add", "css" )->click();
-
-        # Write calendar name
-        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
-        $Selenium->send_keys_to_active_element("Personal calendar");
-
-        # Submit
-        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+        # submit
+        $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
         #
-        # Let's try to add calendar with same name
+        # let's try to add calendar with same name
         #
-        # Click Add new calendar
-        $Selenium->find_element( ".SidebarColumn ul.ActionList a#Add", "css" )->click();
+        # click Add new calendar
+        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->VerifiedClick();
 
-        # Write calendar name
-        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
-        $Selenium->send_keys_to_active_element("Personal calendar");
+        # write calendar name
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys('Personal calendar');
 
-        # Submit
-        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+        # submit
+        $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
-        # Wait for server side error
+        # wait for server side error
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && \$('div.Dialog button#DialogButton1').length"
         );
 
-        # Click ok to dismiss
-        $Selenium->find_element( "div.Dialog button#DialogButton1", "css" )->click();
+        # click ok to dismiss
+        $Selenium->find_element( 'div.Dialog button#DialogButton1', 'css' )->click();
 
-        # Wait for tooltip message
+        # wait for tooltip message
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && \$('div#OTRS_UI_Tooltips_ErrorTooltip').length"
         );
 
-        # Update calendar name
-        $Selenium->find_element( "form#CalendarFrom input#CalendarName", "css" )->click();
-        $Selenium->send_keys_to_active_element("2");
+        # update calendar name
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->click();
+        $Selenium->send_keys_to_active_element('2');
 
-        # Set it to invalid
-        $Selenium->find_element( "form input#ValidID_Search", "css" )->click();
-        $Selenium->WaitFor(
-            JavaScript =>
-                "return typeof(\$) === 'function' && \$('div.InputField_ListContainer li[data-id=\"2\"]').length"
+        # set it to invalid
+        $Selenium->execute_script(
+            "return \$('#ValidID').val(2).trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "div.InputField_ListContainer li[data-id=\"2\"]", "css" )->click();
 
-        # Submit
-        sleep(1);
-        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
+        # submit
+        $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
-        # Edit calendar (invalid)
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && \$('.ContentColumn table').length"
+        # filter just added calendar
+        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Personal calendar2');
+
+        # verify the calendar is invalid
+        $Self->Is(
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
+                ->get_text(),
+            'invalid',
+            'Calendar is marked invalid',
         );
-        $Selenium->find_element( ".ContentColumn table tbody tr:nth-of-type(2) a", "css" )->click();
 
-        # Set it to invalid-temporary
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && \$('form input#ValidID_Search').length"
+        # edit invalid calendar
+        $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) a', 'css' )->VerifiedClick();
+
+        # set it to invalid-temporarily
+        $Selenium->execute_script(
+            "return \$('#ValidID').val(3).trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( "form input#ValidID_Search", "css" )->click();
-        $Selenium->WaitFor(
-            JavaScript =>
-                "return typeof(\$) === 'function' && \$('div.InputField_ListContainer li[data-id=\"3\"]').length"
+
+        # submit
+        $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
+
+        # verify the calendar is invalid temporarily
+        $Self->Is(
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
+                ->get_text(),
+            'invalid-temporarily',
+            'Calendar is marked invalid temporarily',
         );
-        $Selenium->find_element( "div.InputField_ListContainer li[data-id=\"3\"]", "css" )->click();
 
-        # Submit
-        sleep(1);
-        $Selenium->find_element( "form#CalendarFrom button#Submit", "css" )->click();
-
-        print "Done\n";
         }
 );
 
-print "All done!\n";
 1;
