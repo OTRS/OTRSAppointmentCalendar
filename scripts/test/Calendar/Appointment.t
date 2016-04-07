@@ -989,13 +989,13 @@ $Self->False(
 );
 
 # temporary test (for development purpose only)
-# my $CalDavObject = $Kernel::OM->Get('Kernel::System::Calendar::Backend::CalDav');
-# $CalDavObject->AppointmentList(
-#     Url      => 'https://192.168.1.21/dav/root/test',
-#     Username => 'root',
-#     Password => '****',
-#     Realm    => 'Zimbra',
-#     Location => '192.168.1.21:443',
-# );
+my $CalDavObject = $Kernel::OM->Get('Kernel::System::Calendar::Backend::CalDav');
+$CalDavObject->AppointmentList(
+    Url      => 'https://192.168.1.21/dav/root/test',
+    Username => 'root',
+    Password => '442aC88N',
+    Realm    => 'Zimbra',
+    Location => '192.168.1.21:443',
+);
 
 1;

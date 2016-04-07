@@ -138,6 +138,17 @@ sub AppointmentList {
         },
     );
 
+    if ( $Response{Status} ne '200 OK' ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $Response{Status},
+        );
+
+        return;
+    }
+
+    return if !$Response{Content};
+
     # use Data::Dumper;
     # my $Data2 = Dumper( \%Response );
     # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
