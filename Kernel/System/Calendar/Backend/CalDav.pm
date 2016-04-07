@@ -133,8 +133,8 @@ sub AppointmentList {
         Credentials         => {
             User     => $Param{Username},
             Password => $Param{Password},
-            Realm    => 'Zimbra',
-            Location => '192.168.62.129:443',
+            Realm    => $Param{Realm},
+            Location => $Param{Location},
         },
     );
 
