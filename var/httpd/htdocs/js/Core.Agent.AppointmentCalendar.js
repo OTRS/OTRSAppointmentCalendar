@@ -64,7 +64,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             $DatepickerObj = $('<div />')
                 .prop('id', 'Datepicker')
                 .addClass('Hidden')
-                .insertAfter($('#calendar'));
+                .insertAfter($('#calendar')),
+            CurrentAppointment = [];
 
         // Initialize calendar
         $CalendarObj.fullCalendar({
@@ -148,36 +149,30 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
-            eventClick: function(CalEvent, JSEvent, View) {
+            eventClick: function(CalEvent) {
                 var Data = {
                     Start: CalEvent.start,
                     End: CalEvent.end,
-                    CalEvent: CalEvent,
-                    JSEvent: JSEvent,
-                    View: View
+                    CalEvent: CalEvent
                 };
                 OpenEditDialog(Params, Data);
                 return false;
             },
-            eventDrop: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
+            eventDrop: function(CalEvent, Delta, RevertFunc) {
                 var Data = {
                     CalEvent: CalEvent,
+                    PreviousAppointment: CurrentAppointment,
                     Delta: Delta,
-                    RevertFunc: RevertFunc,
-                    JSEvent: JSEvent,
-                    UI: UI,
-                    View: View
+                    RevertFunc: RevertFunc
                 };
                 UpdateAppointment(Params, Data);
             },
-            eventResize: function(CalEvent, Delta, RevertFunc, JSEvent, UI, View) {
+            eventResize: function(CalEvent, Delta, RevertFunc) {
                 var Data = {
                     CalEvent: CalEvent,
+                    PreviousAppointment: CurrentAppointment,
                     Delta: Delta,
-                    RevertFunc: RevertFunc,
-                    JSEvent: JSEvent,
-                    UI: UI,
-                    View: View
+                    RevertFunc: RevertFunc
                 };
                 UpdateAppointment(Params, Data);
             },
@@ -185,6 +180,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay) {
                     $Element.addClass('AllDay');
                 }
+            },
+            eventResizeStart: function(CalEvent) {
+                CurrentAppointment.start = CalEvent.start;
+                CurrentAppointment.end = CalEvent.end;
+            },
+            eventDragStart: function(CalEvent) {
+                CurrentAppointment.start = CalEvent.start;
+                CurrentAppointment.end = CalEvent.end;
             }
         });
 
@@ -458,10 +461,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (
-                            AppointmentData.CalEvent.parentId ||
-                            AppointmentData.CalEvent.recurring
-                        ) {
+                        if (Data.Recurring === '1') {
                             $('#calendar').fullCalendar('refetchEvents');
                         }
                     } else {
@@ -491,6 +491,29 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Function: function() {
                             Data.AppointmentID = AppointmentData.CalEvent.parentId;
                             Data.Recurring = '1';
+                            Data.UpdateDelta = AppointmentData.Delta.asSeconds();
+                            if (
+                                AppointmentData.CalEvent.start.diff(AppointmentData.PreviousAppointment.start, 'seconds')
+                                === Data.UpdateDelta
+                                &&
+                                AppointmentData.CalEvent.end.diff(AppointmentData.PreviousAppointment.end, 'seconds')
+                                === Data.UpdateDelta
+                            ) {
+                                Data.UpdateType = 'Both';
+                            }
+                            else if (
+                                AppointmentData.PreviousAppointment.start.diff(AppointmentData.CalEvent.start, 'seconds')
+                                === Data.UpdateDelta
+                            ) {
+                                Data.UpdateType = 'StartTime';
+                                Data.UpdateDelta = Data.UpdateDelta * -1;
+                            }
+                            else if (
+                                AppointmentData.CalEvent.end.diff(AppointmentData.PreviousAppointment.end, 'seconds')
+                                === Data.UpdateDelta
+                            ) {
+                                Data.UpdateType = 'EndTime';
+                            }
                             Update();
                         }
                     },
@@ -498,6 +521,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Label: Params.DialogText.OccurrenceJustThis,
                         Class: 'CallForAction',
                         Function: function() {
+                            AppointmentData.CalEvent.parentId = null;
                             Update();
                         }
                     },

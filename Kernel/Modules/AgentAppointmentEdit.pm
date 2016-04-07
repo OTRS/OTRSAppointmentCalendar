@@ -271,6 +271,13 @@ sub Run {
         || $Self->{Subaction} eq 'EditAppointment'
         )
     {
+        my %Appointment;
+        if ( $GetParam{AppointmentID} ) {
+            %Appointment = $AppointmentObject->AppointmentGet(
+                AppointmentID => $GetParam{AppointmentID},
+            );
+        }
+
         if ( $GetParam{AllDay} ) {
             $GetParam{StartTime} = sprintf(
                 "%04d-%02d-%02d 00:00:00",
@@ -280,6 +287,38 @@ sub Run {
                 "%04d-%02d-%02d 00:00:00",
                 $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay}
             );
+        }
+        elsif ( $GetParam{Recurring} && $GetParam{UpdateType} && $GetParam{UpdateDelta} ) {
+
+            # get time object
+            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+            my $StartTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{StartTime},
+            );
+            my $EndTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{EndTime},
+            );
+
+            # calculate new start/end times
+            if ( $GetParam{UpdateType} eq 'StartTime' ) {
+                $GetParam{StartTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $StartTime + $GetParam{UpdateDelta},
+                );
+            }
+            elsif ( $GetParam{UpdateType} eq 'EndTime' ) {
+                $GetParam{EndTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $EndTime + $GetParam{UpdateDelta},
+                );
+            }
+            else {
+                $GetParam{StartTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $StartTime + $GetParam{UpdateDelta},
+                );
+                $GetParam{EndTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $EndTime + $GetParam{UpdateDelta},
+                );
+            }
         }
         else {
             $GetParam{StartTime} = sprintf(
@@ -332,11 +371,7 @@ sub Run {
             }
         }
 
-        if ( $GetParam{AppointmentID} ) {
-            my %Appointment = $AppointmentObject->AppointmentGet(
-                AppointmentID => $GetParam{AppointmentID},
-            );
-
+        if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(
                 %Appointment,
                 %GetParam,
