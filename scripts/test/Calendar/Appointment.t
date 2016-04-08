@@ -633,22 +633,8 @@ $Self->False(
     'AppointmentUpdate() - #6 no EndTime',
 );
 
-# no TimezoneID
-my $Update7 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
-    CalendarID    => $Calendar2{CalendarID},
-    Title         => 'Webinar title',
-    StartTime     => '2016-01-02 16:00:00',
-    EndTime       => '2016-01-02 16:15:00',
-    UserID        => 1,
-);
-$Self->False(
-    $Update7,
-    'AppointmentUpdate() - #7 no TimezoneID',
-);
-
 # no UserID
-my $Update8 = $AppointmentObject->AppointmentUpdate(
+my $Update7 = $AppointmentObject->AppointmentUpdate(
     AppointmentID => $AppointmentID8,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
@@ -657,7 +643,7 @@ my $Update8 = $AppointmentObject->AppointmentUpdate(
     TimezoneID    => 1,
 );
 $Self->False(
-    $Update8,
+    $Update7,
     'AppointmentUpdate() - #8 no UserID',
 );
 
