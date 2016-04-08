@@ -734,7 +734,7 @@ updates an existing appointment.
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => -2,                                      # (required)
+        TimezoneID          => -2,                                      # (optional)
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)
@@ -757,7 +757,7 @@ sub AppointmentUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID CalendarID Title StartTime EndTime TimezoneID UserID)) {
+    for my $Needed (qw(AppointmentID CalendarID Title StartTime EndTime UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
