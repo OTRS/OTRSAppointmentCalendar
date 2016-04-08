@@ -33,7 +33,7 @@ Kernel::System::Calendar::Import::ICal - iCalendar import lib
 
 =head1 SYNOPSIS
 
-Export functions for iCalendar format.
+Import functions for iCalendar format.
 
 =head1 PUBLIC INTERFACE
 
@@ -47,7 +47,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $ExportObject = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal');
+    my $ImportObject = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal');
 
 =cut
 
@@ -63,10 +63,19 @@ sub new {
 
 =item Import()
 
-import calendar to iCalendar format
-
-
-returns iCalendar string if successful
+import calendar in iCalendar format
+    my $Success = $ExportObject->Import(
+        ICal         =>                         # (required) iCal string
+            '
+                BEGIN:VCALENDAR
+                PRODID:Zimbra-Calendar-Provider
+                VERSION:2.0
+                METHOD:REQUEST
+                ...
+            ',
+        UserID       => 1,                      # (required) UserID
+    );
+returns 1 if successful
 
 =cut
 
@@ -74,7 +83,7 @@ sub Import {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(iCal)) {
+    for my $Needed (qw(ICal UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -217,6 +226,8 @@ sub Import {
     # }
 
     # return $ICalCalendar->as_string();
+
+    return 1;
 }
 
 # no warnings 'redefine';
