@@ -79,16 +79,23 @@ sub Run {
         # get time object
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
+        # get user timezone offset
+        $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
             %Appointment = $AppointmentObject->AppointmentGet(
                 AppointmentID => $GetParam{AppointmentID},
             );
 
+            $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
+
             # get start time components
             my $StartTime = $TimeObject->TimeStamp2SystemTime(
                 String => $Appointment{StartTime},
             );
+            $StartTime -= $Appointment{TimezoneID} * 3600;
+            $StartTime += $Self->{UserTimeZone} * 3600;
             (
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
@@ -99,6 +106,8 @@ sub Run {
             my $EndTime = $TimeObject->TimeStamp2SystemTime(
                 String => $Appointment{EndTime},
             );
+            $EndTime -= $Appointment{TimezoneID} * 3600;
+            $EndTime += $Self->{UserTimeZone} * 3600;
             (
                 $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
@@ -109,6 +118,8 @@ sub Run {
                 my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
                     String => $Appointment{RecurrenceUntil},
                 );
+                $RecurrenceUntil -= $Appointment{TimezoneID} * 3600;
+                $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
                 (
                     $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
@@ -137,6 +148,9 @@ sub Run {
             Format             => 'DateInputFormatLong',
             ValidateDateBefore => 'End',
             Validate           => 1,
+
+            # we are calculating this locally
+            OverrideTimeZone => 1,
         );
 
         # end date string
@@ -149,6 +163,9 @@ sub Run {
             Format            => 'DateInputFormatLong',
             ValidateDateAfter => 'Start',
             Validate          => 1,
+
+            # we are calculating this locally
+            OverrideTimeZone => 1,
         );
 
         # all day
@@ -237,6 +254,9 @@ sub Run {
             DiffTime          => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
             ValidateDateAfter => 'Start',
             Validate          => 1,
+
+            # we are calculating this locally
+            OverrideTimeZone => 1,
         );
 
         # html mask output

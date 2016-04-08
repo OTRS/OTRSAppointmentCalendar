@@ -77,6 +77,46 @@ sub Run {
                 %GetParam,
             );
 
+            # get time object
+            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+            # get user timezone offset
+            $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+
+            # calculate local times
+            for my $Appointment (@Appointments) {
+                $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? int $Appointment->{TimezoneID} : 0;
+
+                my $StartTime = $TimeObject->TimeStamp2SystemTime(
+                    String => $Appointment->{StartTime},
+                );
+                $StartTime -= $Appointment->{TimezoneID} * 3600;
+                $StartTime += $Self->{UserTimeZone} * 3600;
+                $Appointment->{StartTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $StartTime,
+                );
+
+                my $EndTime = $TimeObject->TimeStamp2SystemTime(
+                    String => $Appointment->{EndTime},
+                );
+                $EndTime -= $Appointment->{TimezoneID} * 3600;
+                $EndTime += $Self->{UserTimeZone} * 3600;
+                $Appointment->{EndTime} = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $EndTime,
+                );
+
+                if ( $Appointment->{RecurrenceUntil} ) {
+                    my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
+                        String => $Appointment->{RecurrenceUntil},
+                    );
+                    $RecurrenceUntil -= $Appointment->{TimezoneID} * 3600;
+                    $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
+                    $Appointment->{RecurrenceUntil} = $TimeObject->SystemTime2TimeStamp(
+                        SystemTime => $RecurrenceUntil,
+                    );
+                }
+            }
+
             # build JSON output
             $JSON = $LayoutObject->JSONEncode(
                 Data => (

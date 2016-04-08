@@ -85,7 +85,7 @@ creates a new appointment.
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => 'Timezone',                              # (required)
+        TimezoneID          => 1,                                       # (required)
         Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)
@@ -275,6 +275,7 @@ Result => 'HASH':
             Title       => 'Webinar',
             StartTime   => '2016-01-01 16:00:00',
             EndTime     => '2016-01-01 17:00:00',
+            TimezoneID  => 1,
             AllDay      => 0,
             Recurring   => 1,                                           # for recurring (parent) appointments only
         },
@@ -286,6 +287,7 @@ Result => 'HASH':
             Title       => 'Webinar',
             StartTime   => '2016-01-02 16:00:00',
             EndTime     => '2016-01-02 17:00:00',
+            TimezoneID  => 1,
             AllDay      => 0,
         },
         ...
@@ -333,23 +335,31 @@ sub AppointmentList {
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    # Check time
+    # check time
     if ( $Param{StartTime} ) {
         my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{StartTime},
         );
         return if !$StartTimeSystem;
+        $StartTimeSystem -= 24 * 60 * 60;    # allow 24h because of timezone differences
+        $Param{StartTime} = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $StartTimeSystem,
+        );
     }
     if ( $Param{EndTime} ) {
         my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{EndTime},
         );
         return if !$EndTimeSystem;
+        $EndTimeSystem += 24 * 60 * 60;      # allow 24h because of timezone differences
+        $Param{EndTime} = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $EndTimeSystem,
+        );
     }
 
     my $SQL = '
-        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, all_day,
-            recurring
+        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, timezone_id,
+            all_day, recurring
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -398,8 +408,9 @@ sub AppointmentList {
             Title      => $Row[4],
             StartTime  => $Row[5],
             EndTime    => $Row[6],
-            AllDay     => $Row[7],
-            Recurring  => $Row[8],
+            TimezoneID => $Row[7],
+            AllDay     => $Row[8],
+            Recurring  => $Row[9],
         );
         push @Result, \%Appointment;
     }
@@ -614,10 +625,10 @@ returns a hash:
         StartTime           => '2016-01-01 16:00:00',
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
-        TimezoneID          => 'Timezone',
+        TimezoneID          => 1,
         Recurring           => 1,                                  # only for recurring (parent) appointments
-        RecurrenceFrequency => '1',
-        RecurrenceCount     => '1',
+        RecurrenceFrequency => 1,
+        RecurrenceCount     => 1,
         RecurrenceInterval  => '',
         RecurrenceUntil     => '',
         RecurrenceByMonth   => '',
@@ -723,7 +734,7 @@ updates an existing appointment.
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => 'Timezone',                              # (required)
+        TimezoneID          => -2,                                      # (required)
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)
