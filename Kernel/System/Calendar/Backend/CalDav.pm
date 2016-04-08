@@ -149,8 +149,11 @@ sub AppointmentList {
 
     return if !$Response{Content};
 
+    $Response{Content} =~ /.*?<!\[CDATA\[(.*?)\]\]>/gsm;
+    my $ICal = $1;
+
     # use Data::Dumper;
-    # my $Data2 = Dumper( \%Response );
+    # my $Data2 = Dumper( \$ICal );
     # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
     # print $fh "\n==========================\n" . $Data2;
     # close $fh;
