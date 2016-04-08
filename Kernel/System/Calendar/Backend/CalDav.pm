@@ -16,6 +16,7 @@ use Kernel::System::WebUserAgent;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Log',
+    'Kernel::System::Calendar::Import::ICal',
 );
 
 =head1 NAME
@@ -149,14 +150,14 @@ sub AppointmentList {
 
     return if !$Response{Content};
 
-    $Response{Content} =~ /.*?<!\[CDATA\[(.*?)\]\]>/gsm;
+    return if ${ $Response{Content} } !~ /<!\[CDATA\[(.*?)\]\]>/gsm;
+
     my $ICal = $1;
 
-    # use Data::Dumper;
-    # my $Data2 = Dumper( \$ICal );
-    # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-    # print $fh "\n==========================\n" . $Data2;
-    # close $fh;
+    my $Success = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal')->Import(
+        ICal   => $ICal,
+        UserID => 1,       # TODO: Update UserID
+        )
 }
 
 1;

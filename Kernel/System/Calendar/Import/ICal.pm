@@ -93,6 +93,14 @@ sub Import {
         }
     }
 
+    my $Calendar = Date::ICal->new( data => $Param{ICal} );
+
+    # use Data::Dumper;
+    # my $Data2 = Dumper( \$Calendar );
+    # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+    # print $fh "\n==========================\n" . $Data2;
+    # close $fh;
+
     # # time zone offset
     # $Param{UserTimeZone} = $Param{UserTimeZone} ? int $Param{UserTimeZone} : 0;
 
