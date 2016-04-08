@@ -68,7 +68,6 @@ export calendar to iCalendar format
     my $ICalString = $ExportObject->Export(
         CalendarID   => 1,    # (required) Valid CalendarID
         UserID       => 1,    # (required) UserID
-        UserTimeZone => 1,    # (optional) Time zone offset
     );
 
 returns iCalendar string if successful
@@ -88,9 +87,6 @@ sub Export {
             return;
         }
     }
-
-    # time zone offset
-    $Param{UserTimeZone} = $Param{UserTimeZone} ? int $Param{UserTimeZone} : 0;
 
     # needed objects
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
@@ -121,12 +117,9 @@ sub Export {
         # get time object
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-        # check end time
-        my $EndTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Appointment{EndTime},
-        );
-        my $ICalEndTime = Date::ICal->new(
-            epoch => $EndTime - ( $Param{UserTimeZone} * 3600 ),
+        # get offset
+        my $Offset = $Self->_GetOffset(
+            TimezoneID => $Appointment{TimezoneID},
         );
 
         # calculate start time
@@ -134,8 +127,18 @@ sub Export {
             String => $Appointment{StartTime},
         );
         my $ICalStartTime = Date::ICal->new(
-            epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
+            epoch => $StartTime,
         );
+        $ICalStartTime->offset($Offset);
+
+        # calculate end time
+        my $EndTime = $TimeObject->TimeStamp2SystemTime(
+            String => $Appointment{EndTime},
+        );
+        my $ICalEndTime = Date::ICal->new(
+            epoch => $EndTime,
+        );
+        $ICalEndTime->offset($Offset);
 
         # recalculate for all day appointment
         if ( $Appointment{AllDay} ) {
@@ -190,8 +193,9 @@ sub Export {
                     String => $Appointment{RecurrenceUntil},
                 );
                 my $ICalRecurrenceUntil = Date::ICal->new(
-                    epoch => $RecurrenceUntil - ( $Param{UserTimeZone} * 3600 ) - 1,    # make it exclusive
+                    epoch => $RecurrenceUntil - 1,    # make it exclusive
                 );
+                $ICalRecurrenceUntil->offset($Offset);
                 $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
             }
             elsif ( $Appointment{RecurrenceCount} ) {
@@ -204,7 +208,7 @@ sub Export {
             String => $Appointment{ChangeTime},
         );
         my $ICalChangeTime = Date::ICal->new(
-            epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
+            epoch => $ChangeTime,
         );
 
         # add both required and optional properties
@@ -222,6 +226,39 @@ sub Export {
     }
 
     return $ICalCalendar->as_string();
+}
+
+sub _GetOffset {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TimezoneID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $Result;
+
+    # make sure it's an integer
+    $Param{TimezoneID} = int $Param{TimezoneID};
+
+    # get sign
+    if ( $Param{TimezoneID} > 0 ) {
+        $Result = '+';
+    }
+    else {
+        $Result = '-';
+    }
+
+    # pad the string
+    $Result .= sprintf( '%02d00', abs $Param{TimezoneID} );
+
+    return $Result;
 }
 
 no warnings 'redefine';

@@ -360,16 +360,16 @@ sub Run {
 
         my $Success;
 
-        # TODO: timezone support
-        $GetParam{TimezoneID} = 'Europe/Belgrade';
-        $GetParam{UserID}     = $Self->{UserID};
-
         # reset empty parameters
         for my $Param ( sort keys %GetParam ) {
             if ( !$GetParam{$Param} ) {
                 $GetParam{$Param} = undef;
             }
         }
+
+        # set required parameters
+        $GetParam{TimezoneID} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+        $GetParam{UserID} = $Self->{UserID};
 
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(

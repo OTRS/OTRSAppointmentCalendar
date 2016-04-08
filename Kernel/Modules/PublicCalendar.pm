@@ -64,9 +64,8 @@ sub Run {
 
     # get iCalendar string
     my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
-        CalendarID   => $Calendar{CalendarID},
-        UserID       => $GetParam{UserID},
-        UserTimeZone => $Self->{UserTimeZone} ? $Self->{UserTimeZone} : undef,
+        CalendarID => $Calendar{CalendarID},
+        UserID     => $GetParam{UserID},
     );
 
     if ( !$ICalString ) {
