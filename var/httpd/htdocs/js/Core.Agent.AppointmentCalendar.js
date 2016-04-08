@@ -758,6 +758,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             return;
         }
 
+        // Check if another dialog is already open
+        if ($("div.Dialog:visible").length > 0) {
+            return;
+        }
+
         this.Initialized = true;
 
         // Itterate through all Appointments
