@@ -273,7 +273,9 @@ $Selenium->RunTest(
         # filter just third calendar
         $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Yet Another Calendar');
 
-        sleep 1;
+        # wait for filter to finish
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && !$("input#FilterCalendars.Filtering").length' );
 
         # verify only one calendar is shown in the list
         $Self->Is(

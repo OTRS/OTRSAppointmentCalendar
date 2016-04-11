@@ -681,6 +681,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         $FilterInput.unbind('keydown.FilterInput').bind('keydown.FilterInput', function () {
 
+            $FilterInput.addClass('Filtering');
             window.clearTimeout(Timeout);
             Timeout = window.setTimeout(function () {
 
@@ -728,6 +729,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
 
                 Core.App.Publish('Event.AppointmentCalendar.CalendarWidget.InitCalendarFilter.Change', [$FilterInput, $Container]);
+                $FilterInput.removeClass('Filtering');
 
             }, 100);
         });
