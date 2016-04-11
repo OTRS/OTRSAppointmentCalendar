@@ -64,7 +64,8 @@ sub new {
 =item Import()
 
 import calendar in iCalendar format
-    my $Success = $ExportObject->Import(
+    my $Success = $ImportObject->Import(
+        CalendarID   => 123,
         ICal         =>                         # (required) iCal string
             '
                 BEGIN:VCALENDAR
@@ -83,7 +84,7 @@ sub Import {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(ICal UserID)) {
+    for my $Needed (qw(CalendarID ICal UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -93,149 +94,136 @@ sub Import {
         }
     }
 
-    my $Calendar = Date::ICal->new( data => $Param{ICal} );
+    my $Calendar = Data::ICal->new( data => $Param{ICal} );
 
-    # use Data::Dumper;
-    # my $Data2 = Dumper( \$Calendar );
-    # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-    # print $fh "\n==========================\n" . $Data2;
-    # close $fh;
+    # my $ICalObject = iCal::Parser->new();
 
-    # # time zone offset
-    # $Param{UserTimeZone} = $Param{UserTimeZone} ? int $Param{UserTimeZone} : 0;
+    # my $Ical = $ICalObject->parse_strings([ $Param{ICal} ]);
+    my @Entries = @{ $Calendar->entries() };
 
-    # # needed objects
-    # my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-    # my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    for my $Entry (@Entries) {
+        my $Properties = $Entry->properties();
 
-    # my %Calendar = $CalendarObject->CalendarGet(
-    #     CalendarID => $Param{CalendarID},
-    # );
-    # return if !$Calendar{CalendarID};
+        my %Parameters;
 
-    # my @AppointmentIDs = $AppointmentObject->AppointmentList(
-    #     CalendarID => $Calendar{CalendarID},
-    #     Result     => 'ARRAY',
-    # );
+        # get title
+        if ( $Properties->{'summary'} && ref $Properties->{'summary'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'summary'} } > 0
+                &&
+                $Properties->{'summary'}->[0]->{'value'}
+                )
+            {
+                $Parameters{Title} = $Properties->{'summary'}->[0]->{'value'};
+            }
+        }
 
-    # my $ICalCalendar = Data::ICal->new(
-    #     calname => $Calendar{CalendarName},
-    # );
+        # get description
+        if ( $Properties->{'description'} && ref $Properties->{'description'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'description'} } > 0
+                &&
+                $Properties->{'description'}->[0]->{'value'}
+                )
+            {
+                $Parameters{Description} = $Properties->{'description'}->[0]->{'value'};
+            }
+        }
 
-    # APPOINTMENT_ID:
-    # for my $AppointmentID (@AppointmentIDs) {
-    #     my %Appointment = $AppointmentObject->AppointmentGet(
-    #         AppointmentID => $AppointmentID,
-    #     );
-    #     return if !$Appointment{ID};
-    #     next APPOINTMENT_ID if $Appointment{ParentID};
+        # get start time
+        if ( $Properties->{'dtstart'} && ref $Properties->{'dtstart'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'dtstart'} } > 0
+                &&
+                $Properties->{'dtstart'}->[0]->{'value'}
+                )
+            {
+                my $StartTime = $Properties->{'dtstart'}->[0]->{'value'};
 
-    #     # get time object
-    #     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+                $Parameters{StartTime} = $Self->_FormatTime(
+                    Time => $StartTime,
+                );
 
-    #     # check end time
-    #     my $EndTime = $TimeObject->TimeStamp2SystemTime(
-    #         String => $Appointment{EndTime},
-    #     );
-    #     my $ICalEndTime = Date::ICal->new(
-    #         epoch => $EndTime - ( $Param{UserTimeZone} * 3600 ),
-    #     );
+            }
+        }
 
-    #     # calculate start time
-    #     my $StartTime = $TimeObject->TimeStamp2SystemTime(
-    #         String => $Appointment{StartTime},
-    #     );
-    #     my $ICalStartTime = Date::ICal->new(
-    #         epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
-    #     );
+        # get end time
+        if ( $Properties->{'dtend'} && ref $Properties->{'dtend'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'dtend'} } > 0
+                &&
+                $Properties->{'dtend'}->[0]->{'value'}
+                )
+            {
+                my $EndTime = $Properties->{'dtend'}->[0]->{'value'};
 
-    #     # recalculate for all day appointment
-    #     if ( $Appointment{AllDay} ) {
-    #         my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-    #             SystemTime => $StartTime,
-    #         );
-    #         $ICalStartTime = Date::ICal->new(
-    #             year  => $Year,
-    #             month => $Month,
-    #             day   => $Day,
-    #         );
-    #         ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
-    #             SystemTime => $EndTime,
-    #         );
-    #         $ICalEndTime = Date::ICal->new(
-    #             year  => $Year,
-    #             month => $Month,
-    #             day   => $Day,
-    #         );
-    #     }
+                $Parameters{EndTime} = $Self->_FormatTime(
+                    Time => $EndTime,
+                );
 
-    #     # create iCalendar event entry
-    #     my $ICalEvent = Data::ICal::Entry::Event->new();
+            }
+        }
 
-    #     # optional properties
-    #     my %ICalEventProperties;
-    #     if ( $Appointment{Description} ) {
-    #         $ICalEventProperties{description} = $Appointment{Description};
-    #     }
-    #     if ( $Appointment{Location} ) {
-    #         $ICalEventProperties{location} = $Appointment{Location};
-    #     }
-    #     if ( $Appointment{Recurring} ) {
-    #         $ICalEventProperties{rrule} = 'FREQ=';
-    #         if ( $Appointment{RecurrenceFrequency} == 1 ) {
-    #             $ICalEventProperties{rrule} .= 'DAILY';
-    #         }
-    #         elsif ( $Appointment{RecurrenceFrequency} == 7 ) {
-    #             $ICalEventProperties{rrule} .= 'WEEKLY';
-    #         }
-    #         elsif ( $Appointment{RecurrenceFrequency} == 30 ) {
-    #             $ICalEventProperties{rrule} .= 'MONTHLY';
-    #         }
-    #         elsif ( $Appointment{RecurrenceFrequency} == 365 ) {
-    #             $ICalEventProperties{rrule} .= 'YEARLY';
-    #         }
-    #         else {
-    #             $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceFrequency};
-    #         }
-    #         if ( $Appointment{RecurrenceUntil} ) {
-    #             my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
-    #                 String => $Appointment{RecurrenceUntil},
-    #             );
-    #             my $ICalRecurrenceUntil = Date::ICal->new(
-    #                 epoch => $RecurrenceUntil - ( $Param{UserTimeZone} * 3600 ) - 1,    # make it exclusive
-    #             );
-    #             $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
-    #         }
-    #         elsif ( $Appointment{RecurrenceCount} ) {
-    #             $ICalEventProperties{rrule} .= ';COUNT=' . $Appointment{RecurrenceCount};
-    #         }
-    #     }
+        # use Data::Dumper;
+        # my $Data2 = Dumper( \$Properties);
+        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+        # print $fh "\n==========================\n" . $Data2;
+        # close $fh;
 
-    #     # calculate last modified time
-    #     my $ChangeTime = $TimeObject->TimeStamp2SystemTime(
-    #         String => $Appointment{ChangeTime},
-    #     );
-    #     my $ICalChangeTime = Date::ICal->new(
-    #         epoch => $StartTime - ( $Param{UserTimeZone} * 3600 ),
-    #     );
+        # use Data::Dumper;
+        # my $Data2 = Dumper( \%Parameters);
+        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+        # print $fh "\n==========================\n" . $Data2;
+        # close $fh;
 
-   #     # add both required and optional properties
-   #     # remove time zone flag for all day appointments
-   #     $ICalEvent->add_properties(
-   #         summary         => $Appointment{Title},
-   #         dtstart         => $Appointment{AllDay} ? substr( $ICalStartTime->ical(), 0, -1 ) : $ICalStartTime->ical(),
-   #         dtend           => $Appointment{AllDay} ? substr( $ICalEndTime->ical(), 0, -1 ) : $ICalEndTime->ical(),
-   #         uid             => $Appointment{UniqueID},
-   #         'last-modified' => $ICalChangeTime->ical(),
-   #         %ICalEventProperties,
-   #     );
+#  my $AppointmentID = $AppointmentObject->AppointmentCreate(
+#     CalendarID          => $Param{CalendarID},
+#     Title               => 'Webinar',                               # (required) Title
+#     Description         => 'How to use Process tickets...',         # (optional) Description
+#     Location            => 'Straubing',                             # (optional) Location
+#     StartTime           => '2016-01-01 16:00:00',                   # (required)
+#     EndTime             => '2016-01-01 17:00:00',                   # (required)
+#     AllDay              => 0,                                       # (optional) Default 0
+#     TimezoneID          => 1,                                       # (required) Timezone - it can be 0 (UTC)
+#     Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
+#     RecurrenceFrequency => 1,                                       # (optional)
+#     RecurrenceCount     => 1,                                       # (optional)
+#     RecurrenceInterval  => 2,                                       # (optional)
+#     RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+#     RecurrenceByMonth   => 2,                                       # (optional)
+#     RecurrenceByDay     => 5,                                       # (optional)
+#     UserID              => 1,                                       # (required) UserID
+# );
 
-    #     $ICalCalendar->add_entry($ICalEvent);
-    # }
-
-    # return $ICalCalendar->as_string();
+    }
 
     return 1;
+}
+
+sub _FormatTime {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Time)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $TimeStamp;
+
+    if ( $Param{Time} =~ /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i ) {
+
+        # format string
+        $TimeStamp = "$1-$2-$3 $4:$5:$6";
+    }
+
+    return $TimeStamp;
+
 }
 
 # no warnings 'redefine';
