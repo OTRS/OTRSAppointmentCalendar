@@ -80,6 +80,12 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
+        # go to previous week in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc .fc-prev-button', 'css' )->click();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
         # verify all three calendars are visible
         $Self->Is(
             $Selenium->execute_script(
