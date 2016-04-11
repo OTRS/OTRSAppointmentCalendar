@@ -302,6 +302,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 EndTime: EndTime.format('YYYY-MM-DD')
             };
 
+        $DatepickerObj.addClass('AJAXLoading');
         AppointmentDaysCacheRefreshed = false;
 
         Core.AJAX.FunctionCall(
@@ -311,6 +312,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (Response) {
                     AppointmentDaysCache = Response;
                     AppointmentDaysCacheRefreshed = true;
+                    $DatepickerObj.removeClass('AJAXLoading');
 
                     // Refresh the date picker because this call is asynchronous
                     $DatepickerObj.datepicker('refresh');

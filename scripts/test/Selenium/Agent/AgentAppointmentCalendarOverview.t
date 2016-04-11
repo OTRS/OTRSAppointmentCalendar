@@ -81,7 +81,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # go to previous week in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc .fc-prev-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -252,12 +252,30 @@ $Selenium->RunTest(
             'First and second appointment visible',
         );
 
+        # open datepicker
+        $Selenium->find_element( '.fc-toolbar .fc-jump-button', 'css' )->click();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoading").length' );
+
+        # verify exactly one day with appointments is highlighted
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.ui-datepicker .ui-datepicker-calendar .Highlight').length;"
+            ),
+            1,
+            'Datepicker properly highlighted',
+        );
+
+        # close datepicker
+        $Selenium->find_element( 'div#DatepickerOverlay', 'css' )->click();
+
         # filter just third calendar
         $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Yet Another Calendar');
 
         sleep 1;
 
-        # verify only one calendar is shown
+        # verify only one calendar is shown in the list
         $Self->Is(
             $Selenium->execute_script(
                 "return \$('.CalendarSwitch:visible').length;"
