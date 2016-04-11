@@ -116,8 +116,8 @@ sub AppointmentList {
             );
             return;
         }
-    }   
-    
+    }
+
     # output array of hashes by default
     $Param{Result} = $Param{Result} || 'HASH';
 
@@ -127,7 +127,7 @@ sub AppointmentList {
         Timeout => $ConfigObject->Get('WebUserAgent::Timeout') || '',
         Proxy   => $ConfigObject->Get('WebUserAgent::Proxy')   || '',
     );
-    my $XMLObject          = $Kernel::OM->Get('Kernel::System::XML');
+    my $XMLObject = $Kernel::OM->Get('Kernel::System::XML');
 
     my %Response = $WebUserAgentObject->Request(
         URL                 => $Param{Url},
@@ -153,24 +153,25 @@ sub AppointmentList {
     return if !$Response{Content};
 
     return if ${ $Response{Content} } !~ /<!\[CDATA\[(.*?)\]\]>/gsm;
-    
-    my @XMLHash = $XMLObject->XMLParse2XMLHash( String => ${ $Response{Content} });
+
+    my @XMLHash = $XMLObject->XMLParse2XMLHash( String => ${ $Response{Content} } );
 
     my $Content = $1;
-    
+
     my $ICal = '';
-        
-    # use Data::Dumper;
-    # my $Data2 = Dumper( \$XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'} );
-    # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-    # print $fh "\n==========================\n" . $Data2;
-    # close $fh;
-    
-    if ( defined $XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'}) {
-        $ICal .= 'VERSION:' . $XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'} . "\n";
+
+# use Data::Dumper;
+# my $Data2 = Dumper( \$XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'} );
+# open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+# print $fh "\n==========================\n" . $Data2;
+# close $fh;
+
+    if ( defined $XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'} ) {
+        $ICal .= 'VERSION:'
+            . $XMLHash[1]->{'D:prop'}[1]->{'C:supported-calendar-data'}[1]->{'C:calendar-data'}[1]->{'version'} . "\n";
     }
     $ICal .= $Content;
-        
+
     # use Data::Dumper;
     # my $Data2 = Dumper( \$ICal );
     # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
