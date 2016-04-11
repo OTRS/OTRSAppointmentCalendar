@@ -275,7 +275,8 @@ $Selenium->RunTest(
 
         # wait for filter to finish
         $Selenium->WaitFor(
-            JavaScript => 'return typeof($) === "function" && !$("input#FilterCalendars.Filtering").length' );
+            JavaScript => 'return typeof($) === "function" && !$("input#FilterCalendars.Filtering").length'
+        );
 
         # verify only one calendar is shown in the list
         $Self->Is(
