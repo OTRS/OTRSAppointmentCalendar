@@ -144,7 +144,7 @@ my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     StartTime           => '2016-01-01 16:00:00',
     EndTime             => '2016-01-01 17:00:00',
     AllDay              => 1,
-    TimezoneID          => 1,
+    TimezoneID          => 0,                        # this must be accepted (UTC)
     RecurrenceFrequency => 1,
     RecurrenceCount     => 1,
     UserID              => $UserID,
@@ -152,7 +152,7 @@ my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
 
 my @Appointments1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 16:00:00',    # Try at this point of time (at this second)
+    StartTime  => '2016-01-01 16:00:00',             # Try at this point of time (at this second)
     EndTime    => '2016-02-01 00:00:00',
 );
 
@@ -428,7 +428,7 @@ $Self->Is(
 );
 $Self->Is(
     $AppointmentGet1{TimezoneID},
-    1,
+    0,
     'AppointmentGet() - TimezoneID ok',
 );
 $Self->Is(
