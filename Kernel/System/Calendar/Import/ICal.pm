@@ -165,6 +165,52 @@ sub Import {
             }
         }
 
+        # get location
+        if ( $Properties->{'location'} && ref $Properties->{'location'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'location'} } > 0
+                &&
+                $Properties->{'location'}->[0]->{'value'}
+                )
+            {
+                $Parameters{Location} = $Properties->{'location'}->[0]->{'value'};
+            }
+        }
+
+        # get rrule
+        if ( $Properties->{'rrule'} && ref $Properties->{'rrule'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'rrule'} } > 0
+                &&
+                $Properties->{'rrule'}->[0]->{'value'}
+                )
+            {
+#     Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
+#     RecurrenceFrequency => 1,                                       # (optional)
+#     RecurrenceCount     => 1,                                       # (optional)
+#     RecurrenceInterval  => 2,                                       # (optional)
+#     RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+#     RecurrenceByMonth   => 2,                                       # (optional)
+#     RecurrenceByDay     => 5,                                       # (optional)
+
+                # this appointment is repeating
+                if ( $Properties->{'rrule'}->[0]->{'value'} eq "FREQ=DAILY" ) {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceFrequency} = 1;    # each day
+
+                }
+            }
+        }
+
+        if ( $Parameters{Recurring} ) {
+
+            # TODO:
+            # check if there is definition when to stop
+
+            # default value
+            $Parameters{RecurrenceUntil} = "2016-05-10 00:00:00";
+        }
+
         next ENTRY if !$Parameters{Title};
 
         my $AppointmentID = $AppointmentObject->AppointmentCreate(
@@ -175,6 +221,16 @@ sub Import {
         );
 
         $AppointmentsImported++ if $AppointmentID;
+
+        my %Appointment = $AppointmentObject->AppointmentGet(
+            AppointmentID => $AppointmentID,
+        );
+
+        # use Data::Dumper;
+        # my $Data2 = Dumper( \%Appointment );
+        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+        # print $fh "\n==========================\n" . $Data2;
+        # close $fh;
 
         # use Data::Dumper;
         # my $Data2 = Dumper( \$Properties);
