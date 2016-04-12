@@ -201,8 +201,13 @@ sub Import {
                     $Parameters{Recurring}           = 1;
                     $Parameters{RecurrenceFrequency} = 7;    # each 7 days
                 }
+                elsif ( $Frequency eq "MONTHLY" ) {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceFrequency} = 30;    # each 30 days
+                }
 
-                #FREQ=WEEKLY;UNTIL=20160609T093000Z
+                #FREQ=MONTHLY;UNTIL=20170302T121500Z',
+
                 if ($Until) {
                     $Parameters{RecurrenceUntil} = $Self->_FormatTime(
                         Time => $Until,
@@ -216,6 +221,12 @@ sub Import {
                 }
             }
         }
+
+        # use Data::Dumper;
+        # my $Data2 = Dumper( \$Properties);
+        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+        # print $fh "\n==========================\n" . $Data2;
+        # close $fh;
 
         next ENTRY if !$Parameters{Title};
 
@@ -234,12 +245,6 @@ sub Import {
 
         # use Data::Dumper;
         # my $Data2 = Dumper( \%Appointment );
-        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-        # print $fh "\n==========================\n" . $Data2;
-        # close $fh;
-
-        # use Data::Dumper;
-        # my $Data2 = Dumper( \$Properties);
         # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
         # print $fh "\n==========================\n" . $Data2;
         # close $fh;
