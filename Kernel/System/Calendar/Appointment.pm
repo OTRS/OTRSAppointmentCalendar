@@ -87,12 +87,14 @@ creates a new appointment.
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
         Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
+                                                                        # if Recurring is set, one of the following parameters must be provided
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)
         RecurrenceInterval  => 2,                                       # (optional)
         RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
         RecurrenceByMonth   => 2,                                       # (optional)
         RecurrenceByDay     => 5,                                       # (optional)
+
         UserID              => 1,                                       # (required) UserID
     );
 
@@ -115,6 +117,28 @@ sub AppointmentCreate {
             );
             return;
         }
+    }
+
+    # if Recurring is provided, additional parameter must be present
+    if (
+        $Param{Recurring}
+        &&
+        (
+            !$Param{RecurrenceFrequency} &&
+            !$Param{RecurrenceCount} &&
+            !$Param{RecurrenceInterval} &&
+            !$Param{RecurrenceUntil} &&
+            !$Param{RecurrenceByMonth} &&
+            !$Param{RecurrenceByDay}
+        )
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Recurring appointment, additional parameter needed"
+                . "(RecurrenceFrequency, RecurrenceCount, RecurrenceInterval, RecurrenceUntil, RecurrenceByMonth or RecurrenceByDay)!",
+        );
+        return;
     }
 
     # needed objects

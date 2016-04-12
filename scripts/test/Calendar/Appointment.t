@@ -149,6 +149,10 @@ my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     RecurrenceCount     => 1,
     UserID              => $UserID,
 );
+$Self->True(
+    $AppointmentID8,
+    'AppointmentCreate #8',
+);
 
 my @Appointments1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
@@ -704,6 +708,21 @@ my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
     AllDay      => 1,
     TimezoneID  => 1,
     UserID      => $UserID,
+);
+
+# recurring appointment without additional recurring parameter
+my $AppointmentID11 = $AppointmentObject->AppointmentCreate(
+    CalendarID  => $Calendar1{CalendarID},
+    Title       => 'Bad recurring',
+    Description => 'How to use Process tickets...',
+    StartTime   => '2016-01-01 15:00:00',
+    EndTime     => '2016-01-01 16:00:00',
+    Recurring   => 1,
+    UserID      => 1,
+);
+$Self->False(
+    $AppointmentID11,
+    "AppointmentCreate #11"
 );
 
 my %AppointmentDays1 = $AppointmentObject->AppointmentDays(
