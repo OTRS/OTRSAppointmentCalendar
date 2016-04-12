@@ -85,7 +85,7 @@ creates a new appointment.
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => 1,                                       # (required) Timezone - it can be 0 (UTC)
+        TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
         Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)

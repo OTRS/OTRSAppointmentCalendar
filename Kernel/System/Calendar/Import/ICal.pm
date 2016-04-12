@@ -94,13 +94,15 @@ sub Import {
         }
     }
 
+    # needed objects
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
     my $Calendar = Data::ICal->new( data => $Param{ICal} );
 
-    # my $ICalObject = iCal::Parser->new();
-
-    # my $Ical = $ICalObject->parse_strings([ $Param{ICal} ]);
     my @Entries = @{ $Calendar->entries() };
 
+    my $AppointmentsImported = 0;
+
+    ENTRY:
     for my $Entry (@Entries) {
         my $Properties = $Entry->properties();
 
@@ -160,9 +162,19 @@ sub Import {
                 $Parameters{EndTime} = $Self->_FormatTime(
                     Time => $EndTime,
                 );
-
             }
         }
+
+        next ENTRY if !$Parameters{Title};
+
+        my $AppointmentID = $AppointmentObject->AppointmentCreate(
+            CalendarID => $Param{CalendarID},
+            UserID     => $Param{UserID},
+            TimezoneID => 0,
+            %Parameters,
+        );
+
+        $AppointmentsImported++ if $AppointmentID;
 
         # use Data::Dumper;
         # my $Data2 = Dumper( \$Properties);
@@ -184,7 +196,7 @@ sub Import {
 #     StartTime           => '2016-01-01 16:00:00',                   # (required)
 #     EndTime             => '2016-01-01 17:00:00',                   # (required)
 #     AllDay              => 0,                                       # (optional) Default 0
-#     TimezoneID          => 1,                                       # (required) Timezone - it can be 0 (UTC)
+#     TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
 #     Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
 #     RecurrenceFrequency => 1,                                       # (optional)
 #     RecurrenceCount     => 1,                                       # (optional)
@@ -197,7 +209,7 @@ sub Import {
 
     }
 
-    return 1;
+    return $AppointmentsImported > 0 ? 1 : 0;
 }
 
 sub _FormatTime {
