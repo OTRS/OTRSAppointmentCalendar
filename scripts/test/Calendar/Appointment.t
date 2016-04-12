@@ -909,6 +909,20 @@ $Self->True(
     "AppointmentUpdate #9",
 );
 
+my $Update10 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $AppointmentID1,
+    CalendarID    => $Calendar1{CalendarID},
+    Title         => 'Webinar title',
+    StartTime     => '2016-01-02 16:00:00',
+    EndTime       => '2016-01-02 16:15:00',
+    Recurring     => 1,
+    UserID        => $UserID,
+);
+$Self->False(
+    $Update10,
+    "AppointmentUpdate #9",
+);
+
 my $Seen3 = $AppointmentObject->AppointmentSeenGet(
     AppointmentID => $AppointmentID1,
     UserID        => $UserID,
