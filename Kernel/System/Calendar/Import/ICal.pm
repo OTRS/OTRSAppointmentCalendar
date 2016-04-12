@@ -185,30 +185,36 @@ sub Import {
                 $Properties->{'rrule'}->[0]->{'value'}
                 )
             {
-#     Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
-#     RecurrenceFrequency => 1,                                       # (optional)
-#     RecurrenceCount     => 1,                                       # (optional)
-#     RecurrenceInterval  => 2,                                       # (optional)
-#     RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
-#     RecurrenceByMonth   => 2,                                       # (optional)
-#     RecurrenceByDay     => 5,                                       # (optional)
+                # extract frequency
+                $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?(UNTIL=(.*?);*?)*?$/i;
+                my $Frequency = $1;
+
+                # extract until if exists
+                my $Until = $3;
 
                 # this appointment is repeating
-                if ( $Properties->{'rrule'}->[0]->{'value'} eq "FREQ=DAILY" ) {
+                if ( $Frequency eq "DAILY" ) {
                     $Parameters{Recurring}           = 1;
                     $Parameters{RecurrenceFrequency} = 1;    # each day
+                }
+                elsif ( $Frequency eq "WEEKLY" ) {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceFrequency} = 7;    # each 7 days
+                }
 
+                #FREQ=WEEKLY;UNTIL=20160609T093000Z
+                if ($Until) {
+                    $Parameters{RecurrenceUntil} = $Self->_FormatTime(
+                        Time => $Until,
+                    );
+                }
+                else {
+
+                    # TODO: update this
+                    # default value
+                    $Parameters{RecurrenceUntil} = "2016-05-10 00:00:00";
                 }
             }
-        }
-
-        if ( $Parameters{Recurring} ) {
-
-            # TODO:
-            # check if there is definition when to stop
-
-            # default value
-            $Parameters{RecurrenceUntil} = "2016-05-10 00:00:00";
         }
 
         next ENTRY if !$Parameters{Title};
