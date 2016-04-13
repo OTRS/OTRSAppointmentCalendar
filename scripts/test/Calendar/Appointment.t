@@ -717,6 +717,7 @@ my $AppointmentID11 = $AppointmentObject->AppointmentCreate(
     Description => 'How to use Process tickets...',
     StartTime   => '2016-01-01 15:00:00',
     EndTime     => '2016-01-01 16:00:00',
+    TimezoneID  => 0,
     Recurring   => 1,
     UserID      => 1,
 );
@@ -725,13 +726,77 @@ $Self->False(
     "AppointmentCreate #11"
 );
 
+# Create new calendar
+my %Calendar3 = $CalendarObject->CalendarCreate(
+    CalendarName => 'Test calendar 3',
+    UserID       => $UserID,
+);
+$Self->True(
+    $Calendar3{CalendarID},
+    'CalendarCreate( CalendarName => "Test calendar 3", UserID => 1 )',
+);
+
+# recurring once per month
+my $AppointmentID12 = $AppointmentObject->AppointmentCreate(
+    CalendarID        => $Calendar3{CalendarID},
+    Title             => 'Monthly recurring',
+    Description       => 'How to use Process tickets...',
+    StartTime         => '2016-01-31 15:00:00',
+    EndTime           => '2016-01-31 16:00:00',
+    Recurring         => 1,
+    RecurrenceByMonth => 1,
+    RecurrenceUntil   => '2017-01-03 16:00:00',
+    TimezoneID        => 0,
+    UserID            => $UserID,
+);
+$Self->True(
+    $AppointmentID12,
+    "AppointmentCreate #12"
+);
+
+# check values
+my @Appointments12 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar3{CalendarID},
+    StartTime  => '2016-01-01 00:00:00',
+    EndTime    => '2017-02-01 00:00:00',
+    Result     => 'HASH',
+);
+$Self->Is(
+    scalar @Appointments12,
+    12,
+    "AppointmentCreate #12 - count"
+);
+
+my @Appointments12StartTimes = (
+    '2016-01-31 15:00:00',
+    '2016-02-29 15:00:00',
+    '2016-03-31 15:00:00',
+    '2016-04-30 15:00:00',
+    '2016-05-31 15:00:00',
+    '2016-06-30 15:00:00',
+    '2016-07-31 15:00:00',
+    '2016-08-31 15:00:00',
+    '2016-09-30 15:00:00',
+    '2016-10-31 15:00:00',
+    '2016-11-30 15:00:00',
+    '2016-12-31 15:00:00',
+);
+
+for ( my $Index = 0; $Index < 12; $Index++ ) {
+    $Self->Is(
+        $Appointments12[$Index]->{StartTime},
+        $Appointments12StartTimes[$Index],
+        "AppointmentCreate #12 - $Index"
+    );
+}
+
 my %AppointmentDays1 = $AppointmentObject->AppointmentDays(
     StartTime => '2016-01-25 00:00:00',
     EndTime   => '2016-02-01 00:00:00',
     UserID    => $UserID,
 );
 
-for my $Date (qw(2016-01-28 2016-01-29 2016-01-30 2016-01-31)) {
+for my $Date (qw(2016-01-28 2016-01-29 2016-01-30 )) {
     $Self->Is(
         $AppointmentDays1{$Date},
         1,
@@ -745,7 +810,7 @@ my %AppointmentDays2 = $AppointmentObject->AppointmentDays(
     UserID    => $UserID,
 );
 
-for my $Date (qw(2016-02-10 2016-02-11)) {
+for my $Date (qw(2016-02-10 2016-02-11 )) {
     $Self->Is(
         $AppointmentDays2{$Date},
         2,
@@ -767,7 +832,7 @@ for my $Date (qw(2016-03-03 2016-03-05 2016-03-06 2016-03-08 2016-03-10)) {
     );
 }
 
-for my $Date (qw(2016-03-01 2016-03-04)) {
+for my $Date (qw(2016-03-04 2016-03-01)) {
     $Self->Is(
         $AppointmentDays3{$Date},
         2,
@@ -775,7 +840,7 @@ for my $Date (qw(2016-03-01 2016-03-04)) {
     );
 }
 
-for my $Date (qw(2016-03-02)) {
+for my $Date (qw( 2016-03-02 )) {
     $Self->Is(
         $AppointmentDays3{$Date},
         3,
@@ -798,7 +863,7 @@ $Self->Is(
 $Self->Is(
     $AppointmentDays4{'2016-01-01'},
     1,
-    "AppointmentDays4 - 1",
+    "AppointmentDays4 - 2",
 );
 
 # edge
@@ -827,7 +892,7 @@ for my $Date (qw(2016-03-03 2016-03-05)) {
 for my $Date (
     qw(2016-02-02 2016-02-03 2016-02-04 2016-02-05 2016-02-06 2016-02-07 2016-02-08 2016-02-09 2016-02-10 2016-02-11 2016-02-12
     2016-02-13 2016-02-14 2016-02-15 2016-02-16 2016-02-17 2016-02-18 2016-02-19 2016-02-20 2016-02-21 2016-02-22 2016-02-23
-    2016-02-24 2016-02-25 2016-02-26 2016-02-27 2016-02-28 2016-02-29 2016-03-01 2016-03-04)
+    2016-02-24 2016-02-25 2016-02-26 2016-02-27 2016-02-28 2016-03-01 2016-03-04)
     )
 {
     $Self->Is(
@@ -836,7 +901,7 @@ for my $Date (
         "AppointmentDays5 - #$Date",
     );
 }
-for my $Date (qw(2016-03-02)) {
+for my $Date (qw(2016-02-29 2016-03-02 )) {
     $Self->Is(
         $AppointmentDays5{$Date},
         3,
