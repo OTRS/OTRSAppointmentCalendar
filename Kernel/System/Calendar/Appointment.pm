@@ -5,7 +5,7 @@
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
-
+## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
 package Kernel::System::Calendar::Appointment;
 
 use strict;
@@ -17,6 +17,7 @@ use vars qw(@ISA);
 
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::EventHandler;
+use Time::Piece;
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -1220,14 +1221,50 @@ sub _AppointmentRecurringCreate {
 
     # until ...
     if ( $Param{Appointment}->{RecurrenceUntil} ) {
+
         my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{Appointment}->{RecurrenceUntil},
         );
-        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
 
-            # calculate recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+        my $OriginalStartTime = $StartTimeSystem;
+        my $OriginalEndTime   = $EndTimeSystem;
+        my $LoopCount         = 0;
+
+        UNTIL_TIME:
+        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+            if ( $Param{Appointment}->{RecurrenceFrequency} ) {
+
+                # calculate recurring times
+                $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+                $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+            }
+            elsif ( $Param{Appointment}->{RecurrenceByMonth} ) {
+
+                $LoopCount++;
+
+                $StartTimeSystem = $Self->_AddMonths(
+                    Time   => $OriginalStartTime,
+                    Months => $LoopCount,
+                );
+
+                $EndTimeSystem = $Self->_AddMonths(
+                    Time   => $OriginalEndTime,
+                    Months => $LoopCount,
+                );
+            }
+            elsif ( $Param{Appointment}->{Recur} ) {
+
+                # my $StartTimePiece = localtime($StartTimeSystem); # no-critic
+                # $StartTimePiece = $StartTimePiece->add_months($Param{Appointment}->{RecurrenceByMonth});
+                # $StartTimeSystem = $StartTimePiece->epoch();
+
+                # my $EndTimePiece = localtime($EndTimeSystem); # no-critic
+                # $EndTimePiece = $EndTimePiece->add_months($Param{Appointment}->{RecurrenceByMonth});
+                # $EndTimeSystem = $EndTimePiece->epoch();
+            }
+            else {
+                last UNTIL_TIME;
+            }
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
 
@@ -1241,7 +1278,7 @@ sub _AppointmentRecurringCreate {
     }
 
     # for ... time(s)
-    else {
+    if ( $Param{Appointment}->{RecurrenceCount} ) {
         for ( 1 .. $Param{Appointment}->{RecurrenceCount} - 1 ) {
 
             # calculate recurring times
@@ -1403,6 +1440,36 @@ sub _AppointmentGetCalendarID {
     return $CalendarID;
 }
 
+sub _AddMonths {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Time Months)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $TimePiece = localtime( $Param{Time} );    ## no critic
+    my $StartDay  = $TimePiece->day_of_month();
+
+    my $NextTimePiece = $TimePiece->add_months( $Param{Months} );
+    my $EndDay        = $NextTimePiece->day_of_month();
+
+    # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
+    if ( $StartDay != $EndDay ) {
+
+        # Substract needed days
+        my $Days = $NextTimePiece->day_of_month();
+        $NextTimePiece -= $Days * 24 * 60 * 60;
+    }
+
+    return $NextTimePiece->epoch();
+}
 1;
 
 =back

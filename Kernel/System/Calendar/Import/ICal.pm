@@ -202,8 +202,8 @@ sub Import {
                     $Parameters{RecurrenceFrequency} = 7;    # each 7 days
                 }
                 elsif ( $Frequency eq "MONTHLY" ) {
-                    $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceFrequency} = 30;    # each 30 days
+                    $Parameters{Recurring}         = 1;
+                    $Parameters{RecurrenceByMonth} = 1;      # each month
                 }
 
                 #FREQ=MONTHLY;UNTIL=20170302T121500Z',
