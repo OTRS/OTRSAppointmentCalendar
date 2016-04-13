@@ -143,6 +143,7 @@
             <Column Name="recur_count" Type="INTEGER"/>
             <Column Name="recur_interval" Type="INTEGER"/>
             <Column Name="recur_until" Type="DATE"/>
+            <Column Name="recur_byyear" Type="SMALLINT"/>
             <Column Name="recur_bymonth" Type="SMALLINT"/>
             <Column Name="recur_byday" Type="SMALLINT"/>
             <Column Name="create_time" Type="DATE"/>

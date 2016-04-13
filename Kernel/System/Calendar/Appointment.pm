@@ -88,14 +88,15 @@ creates a new appointment.
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
         Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
-                                                                        # if Recurring is set, one of the following parameters must be provided
-        RecurrenceFrequency => 1,                                       # (optional)
-        RecurrenceCount     => 1,                                       # (optional)
-        RecurrenceInterval  => 2,                                       # (optional)
-        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+                                                                        # if Recurring is set, one of the following 3 parameters must be provided
+        RecurrenceByYear    => 1,                                       # (optional)
         RecurrenceByMonth   => 2,                                       # (optional)
         RecurrenceByDay     => 5,                                       # (optional)
 
+        RecurrenceFrequency => 1,                                       # (optional) Default 1.
+        RecurrenceCount     => 1,                                       # (optional)
+        RecurrenceInterval  => 2,                                       # (optional)
+        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
         UserID              => 1,                                       # (required) UserID
     );
 
@@ -125,10 +126,7 @@ sub AppointmentCreate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceFrequency} &&
-            !$Param{RecurrenceCount} &&
-            !$Param{RecurrenceInterval} &&
-            !$Param{RecurrenceUntil} &&
+            !$Param{RecurrenceByYear} &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
@@ -137,10 +135,12 @@ sub AppointmentCreate {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Recurring appointment, additional parameter needed"
-                . "(RecurrenceFrequency, RecurrenceCount, RecurrenceInterval, RecurrenceUntil, RecurrenceByMonth or RecurrenceByDay)!",
+                . "(RecurrenceByYear, RecurrenceByMonth or RecurrenceByDay)!",
         );
         return;
     }
+
+    $Param{RecurrenceFrequency} ||= 1;
 
     # needed objects
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
@@ -173,7 +173,7 @@ sub AppointmentCreate {
     return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
 
     # check RecurrenceFrequency
-    return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
+    return if ( !IsInteger( $Param{RecurrenceFrequency} ) );
 
     # check RecurrenceCount
     return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
@@ -189,6 +189,9 @@ sub AppointmentCreate {
         return if !$RecurrenceUntilSystem;
         return if !( $StartTimeSystem < $RecurrenceUntilSystem );
     }
+
+    # check RecurrenceByYear
+    return if ( $Param{RecurrenceByYear} && !IsInteger( $Param{RecurrenceByYear} ) );
 
     # check RecurrenceByMonth
     return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
@@ -211,22 +214,24 @@ sub AppointmentCreate {
         delete $Param{RecurrenceCount};
         delete $Param{RecurrenceInterval};
         delete $Param{RecurrenceUntil};
+        delete $Param{RecurrenceByYear};
         delete $Param{RecurrenceByMonth};
         delete $Param{RecurrenceByDay};
     }
 
     push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
         \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
-        \$Param{TimezoneID},        \$Param{Recurring},          \$Param{RecurrenceFrequency},
-        \$Param{RecurrenceCount},   \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
-        \$Param{RecurrenceByMonth}, \$Param{RecurrenceByDay},    \$Param{UserID}, \$Param{UserID};
+        \$Param{TimezoneID},       \$Param{Recurring},          \$Param{RecurrenceFrequency},
+        \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+        \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
+        \$Param{UserID},           \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
-            recur_until, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?,
+            recur_until, recur_byyear, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?,
             current_timestamp, ?)
     ";
 
@@ -252,6 +257,7 @@ sub AppointmentCreate {
 
     # add recurring appointments
     if ( $Param{Recurring} ) {
+
         return if !$Self->_AppointmentRecurringCreate(
             ParentID    => $AppointmentID,
             Appointment => \%Param,
@@ -657,6 +663,7 @@ returns a hash:
         RecurrenceCount     => 1,
         RecurrenceInterval  => '',
         RecurrenceUntil     => '',
+        RecurrenceByYear    => '',
         RecurrenceByMonth   => '',
         RecurrenceByDay     => '',
         CreateTime          => '2016-01-01 00:00:00',
@@ -698,7 +705,7 @@ sub AppointmentGet {
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
-            recur_until, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by
+            recur_until, recur_byyear, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE id=?
     ';
@@ -728,12 +735,13 @@ sub AppointmentGet {
         $Result{RecurrenceCount}     = $Row[13];
         $Result{RecurrenceInterval}  = $Row[14];
         $Result{RecurrenceUntil}     = $Row[15];
-        $Result{RecurrenceByMonth}   = $Row[16];
-        $Result{RecurrenceByDay}     = $Row[17];
-        $Result{CreateTime}          = $Row[18];
-        $Result{CreateBy}            = $Row[19];
-        $Result{ChangeTime}          = $Row[20];
-        $Result{ChangeBy}            = $Row[21];
+        $Result{RecurrenceByYear}    = $Row[16];
+        $Result{RecurrenceByMonth}   = $Row[17];
+        $Result{RecurrenceByDay}     = $Row[18];
+        $Result{CreateTime}          = $Row[19];
+        $Result{CreateBy}            = $Row[20];
+        $Result{ChangeTime}          = $Row[21];
+        $Result{ChangeBy}            = $Row[22];
     }
 
     # cache
@@ -762,13 +770,15 @@ updates an existing appointment.
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => -2,                                      # (optional) Timezone - it can be 0 (UTC)
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
-                                                                        # if Recurring is set, one of the following parameters must be provided
+                                                                        # if Recurring is set, one of the following 3 parameters must be provided
+        RecurrenceByYear    => 2,                                       # (optional)
+        RecurrenceByMonth   => 2,                                       # (optional)
+        RecurrenceByDay     => 5,                                       # (optional)
+
         RecurrenceFrequency => 1,                                       # (optional)
         RecurrenceCount     => 1,                                       # (optional)
         RecurrenceInterval  => 2,                                       # (optional)
         RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
-        RecurrenceByMonth   => 2,                                       # (optional)
-        RecurrenceByDay     => 5,                                       # (optional)
         UserID              => 1,                                       # (required) UserID
     );
 
@@ -799,10 +809,7 @@ sub AppointmentUpdate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceFrequency} &&
-            !$Param{RecurrenceCount} &&
-            !$Param{RecurrenceInterval} &&
-            !$Param{RecurrenceUntil} &&
+            !$Param{RecurrenceByYear} &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
@@ -811,10 +818,12 @@ sub AppointmentUpdate {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Recurring appointment, additional parameter needed"
-                . "(RecurrenceFrequency, RecurrenceCount, RecurrenceInterval, RecurrenceUntil, RecurrenceByMonth or RecurrenceByDay)!",
+                . "(RecurrenceFrequency, RecurrenceCount, RecurrenceInterval, RecurrenceUntil, RecurrenceByYear, RecurrenceByMonth or RecurrenceByDay)!",
         );
         return;
     }
+
+    $Param{RecurrenceFrequency} ||= 1;
 
     # needed objects
     my $TimeObject  = $Kernel::OM->Get('Kernel::System::Time');
@@ -839,7 +848,7 @@ sub AppointmentUpdate {
     return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
 
     # check RecurrenceFrequency
-    return if ( $Param{RecurrenceFrequency} && !IsInteger( $Param{RecurrenceFrequency} ) );
+    return if ( !IsInteger( $Param{RecurrenceFrequency} ) );
 
     # check RecurrenceCount
     return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
@@ -855,6 +864,9 @@ sub AppointmentUpdate {
         return if !$RecurrenceUntilSystem;
         return if !( $StartTimeSystem < $RecurrenceUntilSystem );
     }
+
+    # check RecurrenceByYear
+    return if ( $Param{RecurrenceByYear} && !IsInteger( $Param{RecurrenceByYear} ) );
 
     # check RecurrenceByMonth
     return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
@@ -878,7 +890,7 @@ sub AppointmentUpdate {
         SET
             parent_id=NULL, calendar_id=?, title=?, description=?, location=?, start_time=?,
             end_time=?, all_day=?, timezone_id=?, recurring=?, recur_freq=?, recur_count=?,
-            recur_interval=?, recur_until=?, recur_bymonth=?, recur_byday=?,
+            recur_interval=?, recur_until=?, recur_byyear=?, recur_bymonth=?, recur_byday=?,
             change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
@@ -890,8 +902,9 @@ sub AppointmentUpdate {
             \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
             \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
             \$Param{Recurring},          \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},
-            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},     \$Param{RecurrenceByMonth},
-            \$Param{RecurrenceByDay},    \$Param{UserID},              \$Param{AppointmentID}
+            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},     \$Param{RecurrenceByYear},
+            \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
+            \$Param{UserID},             \$Param{AppointmentID}
         ],
     );
 
@@ -1232,7 +1245,7 @@ sub _AppointmentRecurringCreate {
 
         UNTIL_TIME:
         while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
-            if ( $Param{Appointment}->{RecurrenceFrequency} ) {
+            if ( $Param{Appointment}->{RecurrenceByDay} ) {
 
                 # calculate recurring times
                 $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
@@ -1240,7 +1253,7 @@ sub _AppointmentRecurringCreate {
             }
             elsif ( $Param{Appointment}->{RecurrenceByMonth} ) {
 
-                $LoopCount++;
+                $LoopCount += $Param{Appointment}->{RecurrenceFrequency};
 
                 $StartTimeSystem = $Self->_AddMonths(
                     Time   => $OriginalStartTime,
@@ -1252,7 +1265,7 @@ sub _AppointmentRecurringCreate {
                     Months => $LoopCount,
                 );
             }
-            elsif ( $Param{Appointment}->{Recur} ) {
+            elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
 
                 # my $StartTimePiece = localtime($StartTimeSystem); # no-critic
                 # $StartTimePiece = $StartTimePiece->add_months($Param{Appointment}->{RecurrenceByMonth});

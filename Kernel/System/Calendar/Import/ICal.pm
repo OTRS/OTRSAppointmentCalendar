@@ -106,6 +106,11 @@ sub Import {
     for my $Entry (@Entries) {
         my $Properties = $Entry->properties();
 
+        # use Data::Dumper;
+        # my $Data2 = Dumper( \$Properties);
+        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+        # print $fh "\n==========================\n" . $Data2;
+        # close $fh;
         my %Parameters;
 
         # get title
@@ -185,28 +190,54 @@ sub Import {
                 $Properties->{'rrule'}->[0]->{'value'}
                 )
             {
-                # extract frequency
-                $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?(UNTIL=(.*?);*?)*?$/i;
-                my $Frequency = $1;
 
-                # extract until if exists
-                my $Until = $3;
+                # extract frequency
+                # $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?(UNTIL=(.*?);*?)*?$/i;
+                $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?
+                                                           (UNTIL=(.*?);*?)*?;*?
+                                                           (INTERVAL=(\d+);*?)*?;*?
+                                                           (BYMONTHDAY=(\d+);*?)*?;*?
+                                                           (BYDAY=(.*?);*?)*?;*?
+                                                           $/xi;
+                my $Frequency = $1;
+                my $Until     = $3;
+                my $Interval  = $5 || 1;    # Default 1
+                my $By        = $6;
+
+                my $ByDay;
+                my $ByMonthDay;
+
+                # Extract BYMONTHDAY
+                if ( $By =~ /BYMONTHDAY=(\d+)/ ) {
+                    $ByMonthDay = $1;
+                }
+
+                # Extract BYDAY
+                if ( $By =~ /BYDAY=(.*?);*?/ ) {
+                    $ByDay = $1;
+                }
 
                 # this appointment is repeating
                 if ( $Frequency eq "DAILY" ) {
                     $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceFrequency} = 1;    # each day
+                    $Parameters{RecurrenceByDay}     = 1;
+                    $Parameters{RecurrenceFrequency} = $Interval;
+
                 }
                 elsif ( $Frequency eq "WEEKLY" ) {
                     $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceFrequency} = 7;    # each 7 days
+                    $Parameters{RecurrenceByDay}     = 1;
+                    $Parameters{RecurrenceFrequency} = 7 * $Interval;
                 }
                 elsif ( $Frequency eq "MONTHLY" ) {
-                    $Parameters{Recurring}         = 1;
-                    $Parameters{RecurrenceByMonth} = 1;      # each month
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceByMonth}   = 1;
+                    $Parameters{RecurrenceFrequency} = $Interval;
                 }
 
-                #FREQ=MONTHLY;UNTIL=20170302T121500Z',
+                # FREQ=MONTHLY;UNTIL=20170302T121500Z'
+                # FREQ=MONTHLY;UNTIL=20170202T090000Z;INTERVAL=2;BYMONTHDAY=31',
+                # FREQ=WEEKLY;INTERVAL=2;BYDAY=TU
 
                 if ($Until) {
                     $Parameters{RecurrenceUntil} = $Self->_FormatTime(
@@ -221,12 +252,6 @@ sub Import {
                 }
             }
         }
-
-        # use Data::Dumper;
-        # my $Data2 = Dumper( \$Properties);
-        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-        # print $fh "\n==========================\n" . $Data2;
-        # close $fh;
 
         next ENTRY if !$Parameters{Title};
 

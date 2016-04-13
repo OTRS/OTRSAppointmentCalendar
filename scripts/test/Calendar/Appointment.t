@@ -307,7 +307,8 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     AllDay              => 1,
     TimezoneID          => 1,
     Recurring           => 1,
-    RecurrenceFrequency => 1,                         # each day
+    RecurrenceByDay     => 1,
+    RecurrenceFrequency => 1,                         # once per day
     RecurrenceUntil     => '2016-03-06 00:00:00',
     UserID              => $UserID,
 );
@@ -341,6 +342,7 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     AllDay              => 1,
     TimezoneID          => 1,
     Recurring           => 1,
+    RecurrenceByDay     => 1,
     RecurrenceFrequency => 2,                          # each 2 days
     RecurrenceUntil     => '2016-03-10 17:00:00',
     UserID              => 1,
@@ -486,6 +488,7 @@ my $Update1 = $AppointmentObject->AppointmentUpdate(
     AllDay              => 0,
     TimezoneID          => 1,
     Recurring           => 1,
+    RecurrenceByDay     => 1,
     RecurrenceFrequency => 2,
     RecurrenceCount     => 2,
     UserID              => 1,
@@ -738,16 +741,17 @@ $Self->True(
 
 # recurring once per month
 my $AppointmentID12 = $AppointmentObject->AppointmentCreate(
-    CalendarID        => $Calendar3{CalendarID},
-    Title             => 'Monthly recurring',
-    Description       => 'How to use Process tickets...',
-    StartTime         => '2016-01-31 15:00:00',
-    EndTime           => '2016-01-31 16:00:00',
-    Recurring         => 1,
-    RecurrenceByMonth => 1,
-    RecurrenceUntil   => '2017-01-03 16:00:00',
-    TimezoneID        => 0,
-    UserID            => $UserID,
+    CalendarID          => $Calendar3{CalendarID},
+    Title               => 'Monthly recurring',
+    Description         => 'How to use Process tickets...',
+    StartTime           => '2016-01-31 15:00:00',
+    EndTime             => '2016-01-31 16:00:00',
+    Recurring           => 1,
+    RecurrenceByMonth   => 1,
+    RecurrenceFrequency => 1,
+    RecurrenceUntil     => '2017-01-03 16:00:00',
+    TimezoneID          => 0,
+    UserID              => $UserID,
 );
 $Self->True(
     $AppointmentID12,
@@ -974,18 +978,20 @@ $Self->True(
     "AppointmentUpdate #9",
 );
 
+# Missing TimezoneID
 my $Update10 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID1,
-    CalendarID    => $Calendar1{CalendarID},
-    Title         => 'Webinar title',
-    StartTime     => '2016-01-02 16:00:00',
-    EndTime       => '2016-01-02 16:15:00',
-    Recurring     => 1,
-    UserID        => $UserID,
+    AppointmentID   => $AppointmentID1,
+    CalendarID      => $Calendar1{CalendarID},
+    Title           => 'Webinar title',
+    StartTime       => '2016-01-02 16:00:00',
+    EndTime         => '2016-01-02 16:15:00',
+    Recurring       => 1,
+    RecurrenceByDay => 1,
+    UserID          => $UserID,
 );
 $Self->False(
     $Update10,
-    "AppointmentUpdate #9",
+    "AppointmentUpdate #10",
 );
 
 my $Seen3 = $AppointmentObject->AppointmentSeenGet(
