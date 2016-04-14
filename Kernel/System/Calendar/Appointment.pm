@@ -1266,14 +1266,13 @@ sub _AppointmentRecurringCreate {
                 );
             }
             elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
+                my $StartTimePiece = localtime($StartTimeSystem);
+                $StartTimePiece  = $StartTimePiece->add_years( $Param{Appoinments}->{RecurrenceFrequency} );
+                $StartTimeSystem = $StartTimePiece->epoch();
 
-                # my $StartTimePiece = localtime($StartTimeSystem); # no-critic
-                # $StartTimePiece = $StartTimePiece->add_months($Param{Appointment}->{RecurrenceByMonth});
-                # $StartTimeSystem = $StartTimePiece->epoch();
-
-                # my $EndTimePiece = localtime($EndTimeSystem); # no-critic
-                # $EndTimePiece = $EndTimePiece->add_months($Param{Appointment}->{RecurrenceByMonth});
-                # $EndTimeSystem = $EndTimePiece->epoch();
+                my $EndTimePiece = localtime($EndTimeSystem);
+                $EndTimePiece  = $EndTimePiece->add_years( $Param{Appoinments}->{RecurrenceFrequency} );
+                $EndTimeSystem = $EndTimePiece->epoch();
             }
             else {
                 last UNTIL_TIME;
@@ -1467,7 +1466,7 @@ sub _AddMonths {
         }
     }
 
-    my $TimePiece = localtime( $Param{Time} );    ## no critic
+    my $TimePiece = localtime( $Param{Time} );
     my $StartDay  = $TimePiece->day_of_month();
 
     my $NextTimePiece = $TimePiece->add_months( $Param{Months} );
