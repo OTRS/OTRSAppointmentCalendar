@@ -469,7 +469,17 @@ $Self->Is(
 my %AppointmentGet2 = $AppointmentObject->AppointmentGet();
 $Self->False(
     $AppointmentGet2{AppointmentID},
-    'AppointmentGet() - Missing AppointmentID',
+    'AppointmentGet() - Missing AppointmentID and UniqueID',
+);
+
+# Get by UndiqueID
+my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
+    UniqueID => $AppointmentGet1{UniqueID},
+);
+$Self->Is(
+    $AppointmentGet1{ID},
+    $AppointmentGet3{ID},
+    'AppointmentGet() - UniqueID',
 );
 
 my %Calendar2 = $CalendarObject->CalendarCreate(
@@ -498,74 +508,74 @@ $Self->True(
     'AppointmentUpdate() - #1',
 );
 
-my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
+my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
 );
 $Self->Is(
-    $AppointmentGet3{ID},
+    $AppointmentGet4{ID},
     $AppointmentID8,
     'AppointmentUpdate() - AppointmentID ok',
 );
 $Self->Is(
-    $AppointmentGet3{CalendarID},
+    $AppointmentGet4{CalendarID},
     $Calendar2{CalendarID},
     'AppointmentUpdate() - CalendarID ok',
 );
 $Self->True(
-    $AppointmentGet3{UniqueID},
+    $AppointmentGet4{UniqueID},
     'AppointmentUpdate() - UniqueID ok',
 );
 $Self->Is(
-    $AppointmentGet3{Title},
+    $AppointmentGet4{Title},
     'Webinar title',
     'AppointmentUpdate() - Title ok',
 );
 $Self->Is(
-    $AppointmentGet3{Description},
+    $AppointmentGet4{Description},
     'Description details',
     'AppointmentUpdate() - Description ok',
 );
 $Self->Is(
-    $AppointmentGet3{Location},
+    $AppointmentGet4{Location},
     'England',
     'AppointmentUpdate() - Location ok',
 );
 $Self->Is(
-    $AppointmentGet3{StartTime},
+    $AppointmentGet4{StartTime},
     '2016-01-02 16:00:00',
     'AppointmentUpdate() - StartTime ok',
 );
 $Self->Is(
-    $AppointmentGet3{EndTime},
+    $AppointmentGet4{EndTime},
     '2016-01-02 17:00:00',
     'AppointmentUpdate() - EndTime ok',
 );
 $Self->False(
-    $AppointmentGet3{AllDay},
+    $AppointmentGet4{AllDay},
     'AppointmentUpdate() - AllDay ok',
 );
 $Self->Is(
-    $AppointmentGet3{TimezoneID},
+    $AppointmentGet4{TimezoneID},
     1,
     'AppointmentUpdate() - TimezoneID ok',
 );
 $Self->Is(
-    $AppointmentGet3{RecurrenceFrequency},
+    $AppointmentGet4{RecurrenceFrequency},
     2,
     'AppointmentUpdate() - RecurrenceFrequency ok',
 );
 $Self->Is(
-    $AppointmentGet3{RecurrenceCount},
+    $AppointmentGet4{RecurrenceCount},
     2,
     'AppointmentUpdate() - RecurrenceCount ok',
 );
 $Self->Is(
-    $AppointmentGet3{CreateBy},
+    $AppointmentGet4{CreateBy},
     $UserID,
     'AppointmentUpdate() - CreateBy ok',
 );
 $Self->Is(
-    $AppointmentGet3{ChangeBy},
+    $AppointmentGet4{ChangeBy},
     $UserID,
     'AppointmentUpdate() - ChangeBy ok',
 );
@@ -679,12 +689,12 @@ $Self->True(
     'AppointmentDelete() - #3 OK',
 );
 
-my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
+my %AppointmentGet5 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
     UserID        => $UserID,
 );
 $Self->False(
-    $AppointmentGet4{ID},
+    $AppointmentGet5{ID},
     'AppointmentDelete() - #4 check if really deleted',
 );
 
@@ -1042,7 +1052,7 @@ $Self->False(
     "AppointmentSeenGet #5",
 );
 
-# missing AppointmentID
+# missing AppointmentIAppointmentCreate #1
 my $Seen6 = $AppointmentObject->AppointmentSeenGet(
     UserID => $UserID,
 );

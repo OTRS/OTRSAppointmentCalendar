@@ -642,7 +642,9 @@ sub AppointmentDays {
 get Appointment.
 
     my %Appointment = $AppointmentObject->AppointmentGet(
-        AppointmentID => 1,                               # (required)
+        AppointmentID => 1,                                  # (required)
+                                                             # or
+        UniqueID      => '20160101T160000-71E386@localhost', # (required)
     );
 
 returns a hash:
@@ -678,14 +680,12 @@ sub AppointmentGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
+    if ( !$Param{AppointmentID} && !$Param{UniqueID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need AppointmentID or UniqueID!"
+        );
+        return;
     }
 
     # check cache
@@ -702,18 +702,28 @@ sub AppointmentGet {
     my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
+    my @Bind;
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
             recur_until, recur_byyear, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by
         FROM calendar_appointment
-        WHERE id=?
+        WHERE
     ';
+
+    if ( $Param{AppointmentID} ) {
+        $SQL .= "id=? ";
+        push @Bind, \$Param{AppointmentID};
+    }
+    else {
+        $SQL .= "unique_id=? ";
+        push @Bind, \$Param{UniqueID};
+    }
 
     # db query
     return if !$DBObject->Prepare(
         SQL  => $SQL,
-        Bind => [ \$Param{AppointmentID} ],
+        Bind => \@Bind,
     );
 
     my %Result;

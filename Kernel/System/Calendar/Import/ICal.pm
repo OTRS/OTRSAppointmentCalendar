@@ -108,6 +108,18 @@ sub Import {
 
         my %Parameters;
 
+        # get uid
+        if ( $Properties->{'uid'} && ref $Properties->{'uid'} eq "ARRAY" ) {
+            if (
+                scalar @{ $Properties->{'uid'} } > 0
+                &&
+                $Properties->{'uid'}->[0]->{'value'}
+                )
+            {
+                $Parameters{UniqueID} = $Properties->{'uid'}->[0]->{'value'};
+            }
+        }
+
         # get title
         if ( $Properties->{'summary'} && ref $Properties->{'summary'} eq "ARRAY" ) {
             if (
