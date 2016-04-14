@@ -111,6 +111,7 @@ sub Import {
         # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
         # print $fh "\n==========================\n" . $Data2;
         # close $fh;
+
         my %Parameters;
 
         # get title
@@ -190,32 +191,56 @@ sub Import {
                 $Properties->{'rrule'}->[0]->{'value'}
                 )
             {
+                my ( $Frequency, $Until, $Interval );
+
+                my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
+
+                # FREQ=YEARLY;UNTIL=20200602T080000Z;INTERVAL=2;BYMONTHDAY=1;BYMONTH=4';
+
+                RULE:
+                for my $Rule (@Rules) {
+
+                    if ( $Rule =~ /FREQ=(.*?)$/i ) {
+                        $Frequency = $1;
+                        next RULE;
+                    }
+                    elsif ( $Rule =~ /UNTIL=(.*?)$/i ) {
+                        $Until = $1;
+                        next RULE;
+                    }
+                    elsif ( $Rule =~ /INTERVAL=(\d+?)$/i ) {
+                        $Interval = $1;
+                        next RULE;
+                    }
+                }
+
+                $Interval ||= 1;    # default value
 
                 # extract frequency
                 # $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?(UNTIL=(.*?);*?)*?$/i;
-                $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?
-                                                           (UNTIL=(.*?);*?)*?;*?
-                                                           (INTERVAL=(\d+);*?)*?;*?
-                                                           (BYMONTHDAY=(\d+);*?)*?;*?
-                                                           (BYDAY=(.*?);*?)*?;*?
-                                                           $/xi;
-                my $Frequency = $1;
-                my $Until     = $3;
-                my $Interval  = $5 || 1;    # Default 1
-                my $By        = $6;
+                # $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?
+                #                                            (UNTIL=(.*?);*?)*?;*?
+                #                                            (INTERVAL=(\d+);*?)*?;*?
+                #                                            (BYMONTHDAY=(\d+);*?)*?;*?
+                #                                            (BYDAY=(.*?);*?)*?;*?
+                #                                            $/xi;
+                # my $Frequency = $1;
+                # my $Until     = $3;
+                # my $Interval  = $5 || 1;    # Default 1
+                # my $By        = $6;
 
-                my $ByDay;
-                my $ByMonthDay;
+                # my $ByDay;
+                # my $ByMonthDay;
 
-                # Extract BYMONTHDAY
-                if ( $By =~ /BYMONTHDAY=(\d+)/ ) {
-                    $ByMonthDay = $1;
-                }
+                # # Extract BYMONTHDAY
+                # if ( $By && $By =~ /BYMONTHDAY=(\d+)/ ) {
+                #     $ByMonthDay = $1;
+                # }
 
-                # Extract BYDAY
-                if ( $By =~ /BYDAY=(.*?);*?/ ) {
-                    $ByDay = $1;
-                }
+                # # Extract BYDAY
+                # if ( $By && $By =~ /BYDAY=(.*?);*?/ ) {
+                #     $ByDay = $1;
+                # }
 
                 # this appointment is repeating
                 if ( $Frequency eq "DAILY" ) {
@@ -234,11 +259,16 @@ sub Import {
                     $Parameters{RecurrenceByMonth}   = 1;
                     $Parameters{RecurrenceFrequency} = $Interval;
                 }
+                elsif ( $Frequency eq "YEARLY" ) {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceByYear}    = 1;
+                    $Parameters{RecurrenceFrequency} = $Interval;
+                }
 
                 # FREQ=MONTHLY;UNTIL=20170302T121500Z'
                 # FREQ=MONTHLY;UNTIL=20170202T090000Z;INTERVAL=2;BYMONTHDAY=31',
                 # FREQ=WEEKLY;INTERVAL=2;BYDAY=TU
-
+                # FREQ=YEARLY;UNTIL=20200602T080000Z;INTERVAL=2;BYMONTHDAY=1;BYMONTH=4';
                 if ($Until) {
                     $Parameters{RecurrenceUntil} = $Self->_FormatTime(
                         Time => $Until,
@@ -248,7 +278,7 @@ sub Import {
 
                     # TODO: update this
                     # default value
-                    $Parameters{RecurrenceUntil} = "2016-05-10 00:00:00";
+                    $Parameters{RecurrenceUntil} = "2017-01-01 00:00:00";
                 }
             }
         }

@@ -1245,6 +1245,7 @@ sub _AppointmentRecurringCreate {
 
         UNTIL_TIME:
         while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+
             if ( $Param{Appointment}->{RecurrenceByDay} ) {
 
                 # calculate recurring times
@@ -1266,12 +1267,13 @@ sub _AppointmentRecurringCreate {
                 );
             }
             elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
+
                 my $StartTimePiece = localtime($StartTimeSystem);
-                $StartTimePiece  = $StartTimePiece->add_years( $Param{Appoinments}->{RecurrenceFrequency} );
+                $StartTimePiece  = $StartTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
                 $StartTimeSystem = $StartTimePiece->epoch();
 
                 my $EndTimePiece = localtime($EndTimeSystem);
-                $EndTimePiece  = $EndTimePiece->add_years( $Param{Appoinments}->{RecurrenceFrequency} );
+                $EndTimePiece  = $EndTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
                 $EndTimeSystem = $EndTimePiece->epoch();
             }
             else {
