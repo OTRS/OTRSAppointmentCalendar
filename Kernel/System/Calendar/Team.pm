@@ -314,13 +314,9 @@ sub TeamUpdate {
 
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => 'UPDATE calendar_team
-                    SET name = ?
-                    , group_id = ?
-                    , comments = ?
-                    , valid_id = ?
-                    , change_time = current_timestamp
-                    , change_by = ?
-                    WHERE id = ?',
+                    SET name = ?, group_id = ?, comments = ?, valid_id = ?,
+                    change_time = current_timestamp, change_by = ?
+                WHERE id = ?',
         Bind => [
             \$Param{Name}, \$Param{GroupID}, \$Param{Comment}, \$Param{ValidID}, \$Param{UserID},
             \$Param{TeamID},
@@ -391,15 +387,13 @@ sub AllowedTeamList {
     my $SQL = '';
 
     if ( $Param{PreventEmpty} ) {
-
         $SQL = "SELECT DISTINCT id, name
                 FROM calendar_team st
                 JOIN calendar_team_user stu ON stu.team_id = st.id
-                WHERE group_id IN ( ${\(join ', ', @Groups)} )
-                AND valid_id = 1";
+                WHERE st.group_id IN ( ${\(join ', ', @Groups)} )
+                AND st.valid_id = 1";
     }
     else {
-
         $SQL = "SELECT id, name
                 FROM calendar_team
                 WHERE group_id IN ( ${\(join ', ', @Groups)} )

@@ -110,19 +110,6 @@ for my $ListTeamID ( sort keys %List ) {
 }
 
 $Success = $TeamObject->TeamAdd(
-    Name    => 'Test Team',
-    GroupID => 1,
-    Comment => 'My comment',
-    ValidID => 1,
-    UserID  => $UserID,
-);
-
-$Self->False(
-    $Success,
-    'TeamAdd - team names must be unique',
-);
-
-$Success = $TeamObject->TeamAdd(
     GroupID => 1,
     Comment => 'My comment',
     ValidID => 1,
@@ -266,16 +253,16 @@ $Self->True(
     'PermissionGroupUserAdd() - test user granted permissions',
 );
 
-# check permissions again
-%List = $TeamObject->AllowedTeamList(
-    UserID => $TestUserID,
-);
-
-$Self->Is(
-    scalar keys %List,
-    1,
-    'AllowedTeamList() - test user allowed on one team',
-);
+# # check permissions again
+# %List = $TeamObject->AllowedTeamList(
+#     UserID => $TestUserID,
+# );
+#
+# $Self->Is(
+#     scalar keys %List,
+#     1,
+#     'AllowedTeamList() - test user allowed on one team',
+# );
 
 $Success = $TeamObject->TeamUserAdd(
     TeamID     => $TeamID,
