@@ -106,12 +106,6 @@ sub Import {
     for my $Entry (@Entries) {
         my $Properties = $Entry->properties();
 
-        # use Data::Dumper;
-        # my $Data2 = Dumper( \$Properties);
-        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-        # print $fh "\n==========================\n" . $Data2;
-        # close $fh;
-
         my %Parameters;
 
         # get title
@@ -195,8 +189,6 @@ sub Import {
 
                 my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
 
-                # FREQ=YEARLY;UNTIL=20200602T080000Z;INTERVAL=2;BYMONTHDAY=1;BYMONTH=4';
-
                 RULE:
                 for my $Rule (@Rules) {
 
@@ -215,32 +207,6 @@ sub Import {
                 }
 
                 $Interval ||= 1;    # default value
-
-                # extract frequency
-                # $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?(UNTIL=(.*?);*?)*?$/i;
-                # $Properties->{'rrule'}->[0]->{'value'} =~ /FREQ=(.*?);*?
-                #                                            (UNTIL=(.*?);*?)*?;*?
-                #                                            (INTERVAL=(\d+);*?)*?;*?
-                #                                            (BYMONTHDAY=(\d+);*?)*?;*?
-                #                                            (BYDAY=(.*?);*?)*?;*?
-                #                                            $/xi;
-                # my $Frequency = $1;
-                # my $Until     = $3;
-                # my $Interval  = $5 || 1;    # Default 1
-                # my $By        = $6;
-
-                # my $ByDay;
-                # my $ByMonthDay;
-
-                # # Extract BYMONTHDAY
-                # if ( $By && $By =~ /BYMONTHDAY=(\d+)/ ) {
-                #     $ByMonthDay = $1;
-                # }
-
-                # # Extract BYDAY
-                # if ( $By && $By =~ /BYDAY=(.*?);*?/ ) {
-                #     $ByDay = $1;
-                # }
 
                 # this appointment is repeating
                 if ( $Frequency eq "DAILY" ) {
@@ -297,38 +263,6 @@ sub Import {
         my %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $AppointmentID,
         );
-
-        # use Data::Dumper;
-        # my $Data2 = Dumper( \%Appointment );
-        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-        # print $fh "\n==========================\n" . $Data2;
-        # close $fh;
-
-        # use Data::Dumper;
-        # my $Data2 = Dumper( \%Parameters);
-        # open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-        # print $fh "\n==========================\n" . $Data2;
-        # close $fh;
-
-#  my $AppointmentID = $AppointmentObject->AppointmentCreate(
-#     CalendarID          => $Param{CalendarID},
-#     Title               => 'Webinar',                               # (required) Title
-#     Description         => 'How to use Process tickets...',         # (optional) Description
-#     Location            => 'Straubing',                             # (optional) Location
-#     StartTime           => '2016-01-01 16:00:00',                   # (required)
-#     EndTime             => '2016-01-01 17:00:00',                   # (required)
-#     AllDay              => 0,                                       # (optional) Default 0
-#     TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
-#     Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
-#     RecurrenceFrequency => 1,                                       # (optional)
-#     RecurrenceCount     => 1,                                       # (optional)
-#     RecurrenceInterval  => 2,                                       # (optional)
-#     RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
-#     RecurrenceByMonth   => 2,                                       # (optional)
-#     RecurrenceByDay     => 5,                                       # (optional)
-#     UserID              => 1,                                       # (required) UserID
-# );
-
     }
 
     return $AppointmentsImported > 0 ? 1 : 0;
@@ -359,12 +293,6 @@ sub _FormatTime {
     return $TimeStamp;
 
 }
-
-# no warnings 'redefine';
-
-# sub Data::ICal::product_id {    ## no critic
-#     return 'OTRS ' . $Kernel::OM->Get('Kernel::Config')->Get('Version');
-# }
 
 1;
 
