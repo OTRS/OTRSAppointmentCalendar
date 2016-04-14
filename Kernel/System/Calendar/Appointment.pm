@@ -80,6 +80,8 @@ creates a new appointment.
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
         ParentID            => 1,                                       # (optional) Valid ParentID for recurring appointments
         CalendarID          => 1,                                       # (required) Valid CalendarID
+        UniqueID            => 'jwioji-fwjio',                          # (optional) Provide desired UniqueID. If there is already existing Appointment with same UniqueID,
+                                                                        #            system will delete it.
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing',                             # (optional) Location
@@ -142,6 +144,28 @@ sub AppointmentCreate {
 
     $Param{RecurrenceFrequency} ||= 1;
 
+    if ( $Param{UniqueID} ) {
+        my %Appointment = $Self->AppointmentGet(
+            UniqueID => $Param{UniqueID},
+        );
+
+        if ( %Appointment && $Appointment{AppointmentID} ) {
+            if ( $Appointment{Recurring} ) {
+
+                # delete existing recurred appointments
+                return if !$Self->_AppointmentRecurringDelete(
+                    ParentID => $Appointment{AppointmentID},
+                );
+            }
+
+            # delete appointment
+            $Self->AppointmentDelete(
+                AppointmentID => $Appointment{AppointmentID},
+                UserID        => $Param{UserID},
+            );
+        }
+    }
+
     # needed objects
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
@@ -154,11 +178,15 @@ sub AppointmentCreate {
     );
     return if !$StartTimeSystem;
 
-    my $UniqueID = $Self->_GetUniqueID(
-        CalendarID => $Param{CalendarID},
-        StartTime  => $StartTimeSystem,
-        UserID     => $Param{UserID},
-    );
+    # UniqueID
+    my $UniqueID = $Param{UniqueID};
+    if ( !$UniqueID ) {
+        $UniqueID = $Self->_GetUniqueID(
+            CalendarID => $Param{CalendarID},
+            StartTime  => $StartTimeSystem,
+            UserID     => $Param{UserID},
+        );
+    }
 
     # check EndTime
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
@@ -258,6 +286,9 @@ sub AppointmentCreate {
     # add recurring appointments
     if ( $Param{Recurring} ) {
 
+        # reset unique_id
+        $Param{UniqueID} = '';
+
         return if !$Self->_AppointmentRecurringCreate(
             ParentID    => $AppointmentID,
             Appointment => \%Param,
@@ -301,26 +332,26 @@ Result => 'HASH':
 
     @Appointments = [
         {
-            ID          => 1,
-            CalendarID  => 1,
-            UniqueID    => '20160101T160000-71E386@localhost',
-            Title       => 'Webinar',
-            StartTime   => '2016-01-01 16:00:00',
-            EndTime     => '2016-01-01 17:00:00',
-            TimezoneID  => 1,
-            AllDay      => 0,
-            Recurring   => 1,                                           # for recurring (parent) appointments only
+            AppointmentID => 1,
+            CalendarID    => 1,
+            UniqueID      => '20160101T160000-71E386@localhost',
+            Title         => 'Webinar',
+            StartTime     => '2016-01-01 16:00:00',
+            EndTime       => '2016-01-01 17:00:00',
+            TimezoneID    => 1,
+            AllDay        => 0,
+            Recurring     => 1,                                           # for recurring (parent) appointments only
         },
         {
-            ID          => 2,
-            ParentID    => 1,                                           # for recurred (child) appointments only
-            CalendarID  => 1,
-            UniqueID    => '20160101T180000-A78B57@localhost',
-            Title       => 'Webinar',
-            StartTime   => '2016-01-02 16:00:00',
-            EndTime     => '2016-01-02 17:00:00',
-            TimezoneID  => 1,
-            AllDay      => 0,
+            AppointmentID => 2,
+            ParentID      => 1,                                           # for recurred (child) appointments only
+            CalendarID    => 1,
+            UniqueID      => '20160101T180000-A78B57@localhost',
+            Title         => 'Webinar',
+            StartTime     => '2016-01-02 16:00:00',
+            EndTime       => '2016-01-02 17:00:00',
+            TimezoneID    => 1,
+            AllDay        => 0,
         },
         ...
     ];
@@ -433,16 +464,16 @@ sub AppointmentList {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
         my %Appointment = (
-            ID         => $Row[0],
-            ParentID   => $Row[1],
-            CalendarID => $Row[2],
-            UniqueID   => $Row[3],
-            Title      => $Row[4],
-            StartTime  => $Row[5],
-            EndTime    => $Row[6],
-            TimezoneID => $Row[7],
-            AllDay     => $Row[8],
-            Recurring  => $Row[9],
+            AppointmentID => $Row[0],
+            ParentID      => $Row[1],
+            CalendarID    => $Row[2],
+            UniqueID      => $Row[3],
+            Title         => $Row[4],
+            StartTime     => $Row[5],
+            EndTime       => $Row[6],
+            TimezoneID    => $Row[7],
+            AllDay        => $Row[8],
+            Recurring     => $Row[9],
         );
         push @Result, \%Appointment;
     }
@@ -451,7 +482,7 @@ sub AppointmentList {
     if ( $Param{Result} eq 'ARRAY' ) {
         my @ResultList;
         for my $Appointment (@Result) {
-            push @ResultList, $Appointment->{ID};
+            push @ResultList, $Appointment->{AppointmentID};
         }
         @Result = @ResultList;
     }
@@ -477,7 +508,7 @@ get a hash of days with Appointments in all user calendars.
         UserID              => 1,                                       # (required) Valid UserID
     );
 
-returns a hash with days as keys and number of Appoinments as values:
+returns a hash with days as keys and number of Appointments as values:
 
     %AppointmentDays = {
         '2016-01-01' => 1,
@@ -649,7 +680,7 @@ get Appointment.
 
 returns a hash:
     %Appointment = (
-        ID                  => 2,
+        AppointmentID       => 2,
         ParentID            => 1,                                  # only for recurred (child) appointments
         CalendarID          => 1,
         UniqueID            => '20160101T160000-71E386@localhost',
@@ -688,11 +719,16 @@ sub AppointmentGet {
         return;
     }
 
-    # check cache
-    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
-        Type => $Self->{CacheType},
-        Key  => $Param{AppointmentID},
-    );
+    my $Data;
+
+    if ( $Param{AppointmentID} ) {
+
+        # check cache
+        $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+            Type => $Self->{CacheType},
+            Key  => $Param{AppointmentID},
+        );
+    }
 
     if ( ref $Data eq 'HASH' ) {
         return %{$Data};
@@ -729,7 +765,7 @@ sub AppointmentGet {
     my %Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Result{ID}                  = $Row[0];
+        $Result{AppointmentID}       = $Row[0];
         $Result{ParentID}            = $Row[1];
         $Result{CalendarID}          = $Row[2];
         $Result{UniqueID}            = $Row[3];
@@ -754,13 +790,16 @@ sub AppointmentGet {
         $Result{ChangeBy}            = $Row[22];
     }
 
-    # cache
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type  => $Self->{CacheType},
-        Key   => $Param{AppointmentID},
-        Value => \%Result,
-        TTL   => $Self->{CacheTTL},
-    );
+    if ( $Param{AppointmentID} ) {
+
+        # cache
+        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+            Type  => $Self->{CacheType},
+            Key   => $Param{AppointmentID},
+            Value => \%Result,
+            TTL   => $Self->{CacheTTL},
+        );
+    }
 
     return %Result;
 }
@@ -1291,6 +1330,9 @@ sub _AppointmentRecurringCreate {
             }
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+
+            # Clear UniqueID
+            $Param{Appointment}->{UniqueID} = '';
 
             $Self->AppointmentCreate(
                 %{ $Param{Appointment} },

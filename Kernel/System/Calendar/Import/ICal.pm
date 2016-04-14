@@ -263,18 +263,35 @@ sub Import {
 
         next ENTRY if !$Parameters{Title};
 
-        my $AppointmentID = $AppointmentObject->AppointmentCreate(
-            CalendarID => $Param{CalendarID},
-            UserID     => $Param{UserID},
-            TimezoneID => 0,
-            %Parameters,
-        );
+        my $Success;
 
-        $AppointmentsImported++ if $AppointmentID;
-
+        # check if appointment exists already (same UniqueID)
         my %Appointment = $AppointmentObject->AppointmentGet(
-            AppointmentID => $AppointmentID,
+            UniqueID => $Parameters{UniqueID},
         );
+
+        if ( %Appointment && $Appointment{AppointmentID} ) {
+
+            # Appointment exists, update it
+            $Success = $AppointmentObject->AppointmentUpdate(
+                CalendarID    => $Param{CalendarID},
+                AppointmentID => $Appointment{AppointmentID},
+                UserID        => $Param{UserID},
+                TimezoneID    => 0,
+                %Parameters,
+            );
+        }
+        else {
+            # There is no Appointment,create new one
+            $Success = $AppointmentObject->AppointmentCreate(
+                CalendarID => $Param{CalendarID},
+                UserID     => $Param{UserID},
+                TimezoneID => 0,
+                %Parameters,
+            );
+        }
+
+        $AppointmentsImported++ if $Success;
     }
 
     return $AppointmentsImported > 0 ? 1 : 0;

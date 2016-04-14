@@ -170,8 +170,8 @@ for my $Appointment (@Appointments1) {
 
     # checks
     $Self->True(
-        $Appointment->{ID},
-        'ID present',
+        $Appointment->{AppointmentID},
+        'AppointmentID present',
     );
     $Self->True(
         $Appointment->{CalendarID},
@@ -389,7 +389,7 @@ my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
 );
 
 $Self->Is(
-    $AppointmentGet1{ID},
+    $AppointmentGet1{AppointmentID},
     $AppointmentID8,
     'AppointmentGet() - ID ok',
 );
@@ -477,8 +477,8 @@ my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
     UniqueID => $AppointmentGet1{UniqueID},
 );
 $Self->Is(
-    $AppointmentGet1{ID},
-    $AppointmentGet3{ID},
+    $AppointmentGet1{AppointmentID},
+    $AppointmentGet3{AppointmentID},
     'AppointmentGet() - UniqueID',
 );
 
@@ -512,7 +512,7 @@ my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
 );
 $Self->Is(
-    $AppointmentGet4{ID},
+    $AppointmentGet4{AppointmentID},
     $AppointmentID8,
     'AppointmentUpdate() - AppointmentID ok',
 );
@@ -694,7 +694,7 @@ my %AppointmentGet5 = $AppointmentObject->AppointmentGet(
     UserID        => $UserID,
 );
 $Self->False(
-    $AppointmentGet5{ID},
+    $AppointmentGet5{AppointmentID},
     'AppointmentDelete() - #4 check if really deleted',
 );
 

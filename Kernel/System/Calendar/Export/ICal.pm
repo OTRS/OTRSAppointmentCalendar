@@ -111,7 +111,7 @@ sub Export {
         my %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $AppointmentID,
         );
-        return if !$Appointment{ID};
+        return if !$Appointment{AppointmentID};
         next APPOINTMENT_ID if $Appointment{ParentID};
 
         # get time object

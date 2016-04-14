@@ -190,7 +190,7 @@ var EventSources = {
         googleCalendarId: [% Data.CalendarID | JSON %],
         eventDataTransform: function(AppointmentData) {
             return {
-                id: AppointmentData.ID,
+                id: AppointmentData.AppointmentID,
                 parentId: AppointmentData.ParentID,
                 start: AppointmentData.StartTime,
                 end: AppointmentData.EndTime,
