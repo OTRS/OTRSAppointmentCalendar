@@ -391,6 +391,9 @@ sub Run {
         $GetParam{TimezoneID} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
         $GetParam{UserID} = $Self->{UserID};
 
+        # temporary set recurring by day (since there is no user interface support for other types)
+        $GetParam{RecurrenceByDay} = 1;
+
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(
                 %Appointment,
