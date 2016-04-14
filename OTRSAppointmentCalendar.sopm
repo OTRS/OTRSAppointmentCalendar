@@ -40,19 +40,25 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeam.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamUser.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeam.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeamUser.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Team.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
@@ -110,11 +116,11 @@
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
             <Column Name="user_id" Required="true" Type="INTEGER"/>
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
+            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
             <Column Name="change_time" Required="true" Type="DATE" />
             <Column Name="change_by" Required="true" Type="INTEGER" />
-            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Unique Name="calendar_id">
                 <UniqueColumn Name="id"/>
             </Unique>
@@ -122,8 +128,13 @@
                 <UniqueColumn Name="user_id"/>
                 <UniqueColumn Name="name"/>
             </Unique>
+            <ForeignKey ForeignTable="valid">
+                <Reference Local="valid_id" Foreign="id"/>
+            </ForeignKey>
             <ForeignKey ForeignTable="users">
                 <Reference Local="user_id" Foreign="id"/>
+                <Reference Local="create_by" Foreign="id"/>
+                <Reference Local="change_by" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment">
@@ -159,6 +170,10 @@
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
             </ForeignKey>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="create_by" Foreign="id"/>
+                <Reference Local="change_by" Foreign="id"/>
+            </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment_seen">
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
@@ -172,10 +187,59 @@
                 <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <TableCreate Name="calendar_team">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
+            <Column Name="group_id" Required="true" Type="INTEGER"/>
+            <Column Name="comments" Required="false" Size="250" Type="VARCHAR"/>
+            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
+            <Column Name="create_time" Required="true" Type="DATE" />
+            <Column Name="create_by" Required="true" Type="INTEGER" />
+            <Column Name="change_time" Required="true" Type="DATE" />
+            <Column Name="change_by" Required="true" Type="INTEGER" />
+            <Unique Name="calendar_team_name">
+                <UniqueColumn Name="name"/>
+            </Unique>
+            <Index Name="calendar_team_group_id">
+                <IndexColumn Name="group_id"/>
+            </Index>
+            <ForeignKey ForeignTable="valid">
+                <Reference Local="valid_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="groups">
+                <Reference Local="group_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="create_by" Foreign="id"/>
+                <Reference Local="change_by" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
+        <TableCreate Name="calendar_team_user">
+            <Column Name="user_id" Required="true" Type="INTEGER"/>
+            <Column Name="team_id" Required="true" Type="INTEGER"/>
+            <Column Name="create_time" Required="true" Type="DATE"/>
+            <Column Name="create_by" Required="true" Type="INTEGER"/>
+            <Column Name="change_time" Required="true" Type="DATE"/>
+            <Column Name="change_by" Required="true" Type="INTEGER"/>
+            <Unique Name="calendar_team_user_unique">
+                <UniqueColumn Name="user_id"/>
+                <UniqueColumn Name="team_id"/>
+            </Unique>
+            <Index Name="calendar_team_team_id">
+                <IndexColumn Name="team_id"/>
+            </Index>
+            <ForeignKey ForeignTable="users">
+                <Reference Local="user_id" Foreign="id"/>
+                <Reference Local="create_by" Foreign="id"/>
+                <Reference Local="change_by" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
     </DatabaseInstall>
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>
+        <TableDrop Name="calendar_team_user"/>
+        <TableDrop Name="calendar_team"/>
     </DatabaseUninstall>
 </otrs_package>

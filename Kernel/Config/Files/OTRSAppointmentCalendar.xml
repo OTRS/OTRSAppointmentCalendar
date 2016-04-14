@@ -12,7 +12,6 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-
     <ConfigItem Name="Frontend::Module###AgentAppointmentCalendarOverview" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
@@ -98,6 +97,54 @@
                     <Block>ItemArea</Block>
                     <AccessKey></AccessKey>
                     <Prio>9000</Prio>
+                </NavBar>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentTeam" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Team management screen.</Description>
+                <Title Translatable="1">Manage Teams</Title>
+                <NavBarName>Calendar</NavBarName>
+                <NavBar>
+                    <Group>admin</Group>
+                    <Description Translatable="1">Team management.</Description>
+                    <Name Translatable="1">Manage Teams</Name>
+                    <Link>Action=AgentAppointmentTeam</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>11000</Prio>
+                </NavBar>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentTeamUser" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Team agents management screen.</Description>
+                <Title Translatable="1">Manage Team Agents</Title>
+                <NavBarName>Calendar</NavBarName>
+                <NavBar>
+                    <Group>admin</Group>
+                    <Description Translatable="1">Manage team agents.</Description>
+                    <Name Translatable="1">Manage Team Agents</Name>
+                    <Link>Action=AgentAppointmentTeamUser</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>13000</Prio>
                 </NavBar>
             </FrontendModuleReg>
         </Setting>
@@ -199,14 +246,13 @@
             </Array>
         </Setting>
     </ConfigItem>
-    
     <ConfigItem Name="AppointmentCalendar::Backend" Required="1" Valid="1">
         <Description Translatable="1">Defines which backend should be used for managing Calendars.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar</SubGroup>
         <Setting>
             <Option SelectedID="CalDav">
-                <Item Key="CalDav" Translatable="1">CalDav</Item>                
+                <Item Key="CalDav" Translatable="1">CalDav</Item>
             </Option>
         </Setting>
     </ConfigItem>
