@@ -163,7 +163,7 @@ $Success = $TeamObject->TeamUpdate(
     Name    => 'New Name',
     GroupID => 2,
     Comment => 'Some comment',
-    ValidID => 2,
+    ValidID => 1,
     UserID  => $UserID,
 );
 
@@ -193,12 +193,6 @@ $Self->Is(
     $Team{Comment},
     'Some comment',
     'TeamGet - team comment changed',
-);
-
-$Self->Is(
-    $Team{ValidID},
-    2,
-    'TeamGet - team valid ID changed',
 );
 
 $ConfigObject->Set(
@@ -253,16 +247,16 @@ $Self->True(
     'PermissionGroupUserAdd() - test user granted permissions',
 );
 
-# # check permissions again
-# %List = $TeamObject->AllowedTeamList(
-#     UserID => $TestUserID,
-# );
-#
-# $Self->Is(
-#     scalar keys %List,
-#     1,
-#     'AllowedTeamList() - test user allowed on one team',
-# );
+# check permissions again
+%List = $TeamObject->AllowedTeamList(
+    UserID => $TestUserID,
+);
+
+$Self->Is(
+    scalar keys %List,
+    1,
+    'AllowedTeamList() - test user allowed on one team',
+);
 
 $Success = $TeamObject->TeamUserAdd(
     TeamID     => $TeamID,
