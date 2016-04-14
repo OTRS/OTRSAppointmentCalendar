@@ -39,7 +39,9 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentDispatchOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamList.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeam.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamUser.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
@@ -47,6 +49,7 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentDispatchOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeam.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeamUser.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>

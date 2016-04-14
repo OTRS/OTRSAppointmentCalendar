@@ -1,0 +1,266 @@
+# --
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+    <h1>[% Translate("Dispatch Overview") | html %]</h1>
+
+    <div class="SidebarColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+                    <li>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-calendar-o"></i>[% Translate("Manage Calendars") | html %]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeam" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-users"></i>[% Translate("Manage Teams") | html %]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+[% RenderBlockStart("CalendarWidget") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Your Calendars") | html %]</h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterCalendars" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterCalendars" value="" title="[% Translate("Filter for calendars") | html %]">
+                <div id="CalendarList" class="SpacingTopSmall">
+                    <div class="FilterMessage Hidden">
+                        [% Translate("No matches found.") | html %]
+                    </div>
+[% RenderBlockStart("CalendarSwitch") %]
+                    <div class="CalendarSwitch">
+                        <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
+                            <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" checked="checked" data-id="[% Data.CalendarID | html %]">
+                        </span>
+                        <label for="Calendar[% Data.CalendarID | html %]">
+                            [% Data.CalendarName | html %]
+                        </label>
+                    </div>
+[% RenderBlockEnd("CalendarSwitch") %]
+                </div>
+            </div>
+        </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.Agent.AppointmentCalendar.InitCalendarFilter($('#FilterCalendars'), $('#CalendarList'));
+//]]></script>
+[% END %]
+[% RenderBlockEnd("CalendarWidget") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Description") | html %]</h2>
+            </div>
+            <div class="Content">
+                <p class="FieldExplanation">
+                    [% Translate("This is a dispatch overview page.") | html %]
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ContentColumn">
+        <div class="WidgetSimple CalendarWidget">
+            <div class="Header">
+                <h2>[% Translate("Calendar") | html %]</h2>
+            </div>
+            <div class="Content ">
+
+[% RenderBlockStart("NoCalendar") %]
+                <p>[% Translate("No calendars found. Please add a calendar first by using Manage Calendars page.") | html %]</p>
+[% RenderBlockEnd("NoCalendar") %]
+
+[% RenderBlockStart("NoTeam") %]
+                <p>[% Translate("No teams found. Please add a team first by using Manage Teams page.") | html %]</p>
+[% RenderBlockEnd("NoTeam") %]
+
+[% RenderBlockStart("CalendarDiv") %]
+                <div class="SpacingBottom">
+                    <form id="ChangeTeamForm">
+                        <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
+                        <label for="TeamID">[% Translate("Team") %]:</label>
+                        [% Data.TeamStrg %]
+                    </form>
+                </div>
+
+                <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
+[% RenderBlockEnd("CalendarDiv") %]
+
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+
+Core.Agent.AppointmentCalendar.Init({
+    AllDayText: [% Translate("All-day") | JSON %],
+    IsRTL: [% Data.IsRTLLanguage %],
+    MonthNames: [
+        [% Translate("January") | JSON %],
+        [% Translate("February") | JSON %],
+        [% Translate("March") | JSON %],
+        [% Translate("April") | JSON %],
+        [% Translate("May_long") | JSON %],
+        [% Translate("June") | JSON %],
+        [% Translate("July") | JSON %],
+        [% Translate("August") | JSON %],
+        [% Translate("September") | JSON %],
+        [% Translate("October") | JSON %],
+        [% Translate("November") | JSON %],
+        [% Translate("December") | JSON %]
+    ],
+    MonthNamesShort: [
+        [% Translate("Jan") | JSON %],
+        [% Translate("Feb") | JSON %],
+        [% Translate("Mar") | JSON %],
+        [% Translate("Apr") | JSON %],
+        [% Translate("May") | JSON %],
+        [% Translate("Jun") | JSON %],
+        [% Translate("Jul") | JSON %],
+        [% Translate("Aug") | JSON %],
+        [% Translate("Sep") | JSON %],
+        [% Translate("Oct") | JSON %],
+        [% Translate("Nov") | JSON %],
+        [% Translate("Dec") | JSON %]
+    ],
+    DayNames: [
+        [% Translate("Sunday") | JSON %],
+        [% Translate("Monday") | JSON %],
+        [% Translate("Tuesday") | JSON %],
+        [% Translate("Wednesday") | JSON %],
+        [% Translate("Thursday") | JSON %],
+        [% Translate("Friday") | JSON %],
+        [% Translate("Saturday") | JSON %]
+    ],
+    DayNamesShort: [
+        [% Translate("Sun") | JSON %],
+        [% Translate("Mon") | JSON %],
+        [% Translate("Tue") | JSON %],
+        [% Translate("Wed") | JSON %],
+        [% Translate("Thu") | JSON %],
+        [% Translate("Fri") | JSON %],
+        [% Translate("Sat") | JSON %]
+    ],
+    DayNamesMin: [
+        [% Translate("Su") | JSON %],
+        [% Translate("Mo") | JSON %],
+        [% Translate("Tu") | JSON %],
+        [% Translate("We") | JSON %],
+        [% Translate("Th") | JSON %],
+        [% Translate("Fr") | JSON %],
+        [% Translate("Sa") | JSON %]
+    ],
+    ButtonText: {
+        today: [% Translate("Today") | JSON %],
+        month: [% Translate("Month") | JSON %],
+        week: [% Translate("Week") | JSON %],
+        day: [% Translate("Day") | JSON %],
+        timeline: [% Translate("Timeline") | JSON %],
+        jump:[% Translate("Jump") | JSON %],
+        prevDatepicker: [% Translate("Previous") | JSON %],
+        nextDatepicker: [% Translate("Next") | JSON %]
+    },
+    FirstDay: [% Data.FirstDay | html %],
+    DialogText: {
+        EditTitle: [% Translate("Appointment") | JSON %],
+        OccurrenceTitle: [% Translate("This is a repeating appointment") | JSON %],
+        OccurrenceText: [% Translate("Would you like to edit just this occurrence or all occurrences?") | JSON %],
+        OccurrenceAll: [% Translate("All occurrences") | JSON %],
+        OccurrenceJustThis: [% Translate("Just this occurrence") | JSON %],
+        Close: [% Translate("Close") | JSON %],
+        Dismiss: [% Translate("Dismiss") | JSON %]
+    },
+    Callbacks: {
+        EditAction: [% Data.EditAction | JSON %],
+        EditMaskSubaction: [% Data.EditMaskSubaction | JSON %],
+        EditSubaction: [% Data.EditSubaction | JSON %],
+        AddSubaction: [% Data.AddSubaction | JSON %],
+        ListAction: [% Data.ListAction | JSON %],
+        DaysSubacton: [% Data.DaysSubaction | JSON %]
+    },
+    Resources: {
+        ResourceText: [% Translate("Resources") | JSON %],
+        ResourceColumns: [
+            {
+                labelText: [% Translate("Name") | JSON %],
+                field: 'UserFullname'
+            },
+            {
+                labelText: [% Translate("Login") | JSON %],
+                field: 'UserLogin'
+            }
+        ],
+[% RenderBlockStart("ResourceJSON") %]
+        ResourceJSON: {
+            url: Core.Config.Get('CGIHandle'),
+            type: 'POST',
+            data: {
+                Action: 'AgentAppointmentTeamList',
+                Subaction: 'ListResources',
+                TeamID: [% Data.TeamID | JSON %],
+            },
+        }
+[% RenderBlockEnd("ResourceJSON") %]
+    }
+});
+
+var EventSources = {
+[% RenderBlockStart("CalendarSource") %]
+    [% Data.CalendarID | JSON %]: {
+        url: Core.Config.Get('CGIHandle'),
+        type: 'POST',
+        data: {
+            Action: 'AgentAppointmentList',
+            Subaction: 'ListAppointments',
+            CalendarID: [% Data.CalendarID | JSON %],
+        },
+        color: [% Data.CalendarColor | JSON %],
+        startParam: 'StartTime',
+        endParam: 'EndTime',
+
+        // workaround for removeEventSource
+        googleCalendarId: [% Data.CalendarID | JSON %],
+        eventDataTransform: function(AppointmentData) {
+            return {
+                id: AppointmentData.AppointmentID,
+                parentId: AppointmentData.ParentID,
+                start: AppointmentData.StartTime,
+                end: AppointmentData.EndTime,
+                title: AppointmentData.Title,
+                allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
+                recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
+            };
+        }
+    }
+[% RenderBlockStart("CalendarSourceComma") %]
+    ,
+[% RenderBlockEnd("CalendarSourceComma") %]
+[% RenderBlockEnd("CalendarSource") %]
+};
+
+$('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
+    Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources);
+});
+
+$('#TeamID').on('change', function() {
+    $('#ChangeTeamForm').submit();
+});
+
+//]]></script>
+[% END %]
+
+            </div>
+        </div>
+    </div>
+    <div class="Clear"></div>
+
+</div>

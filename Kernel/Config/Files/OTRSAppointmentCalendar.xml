@@ -54,6 +54,38 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentDispatchOverview" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Dispatch overview screen.</Description>
+                <Title Translatable="1">Dispatch Overview</Title>
+                <NavBarName>Calendar</NavBarName>
+                <NavBar>
+                    <Description Translatable="1">Dispatch overview page.</Description>
+                    <Name Translatable="1">Dispatch Overview</Name>
+                    <Link>Action=AgentAppointmentDispatchOverview</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>7000</Prio>
+                </NavBar>
+                <Loader>
+                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css</CSS>
+                    <CSS>Core.AppointmentCalendar.css</CSS>
+                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
+                    <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="Frontend::Module###AgentAppointmentEdit" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
@@ -74,6 +106,18 @@
             <FrontendModuleReg>
                 <Description Translatable="1">Appointments list.</Description>
                 <Title Translatable="1">Appointment list</Title>
+                <NavBarName></NavBarName>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentTeamList" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Resources list.</Description>
+                <Title Translatable="1">Team list</Title>
                 <NavBarName></NavBarName>
             </FrontendModuleReg>
         </Setting>

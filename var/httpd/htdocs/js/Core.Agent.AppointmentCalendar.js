@@ -56,6 +56,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.AddSubaction - Name of the add subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
+     * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -65,7 +66,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 .prop('id', 'Datepicker')
                 .addClass('Hidden')
                 .insertAfter($('#calendar')),
-            CurrentAppointment = [];
+            CurrentAppointment = []
+            Params.Resources = Params.Resources || {
+                ResourceColumns: null,
+                ResourceJSON: null,
+                ResourceText: null
+            };
 
         // Initialize calendar
         $CalendarObj.fullCalendar({
@@ -188,7 +194,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventDragStart: function(CalEvent) {
                 CurrentAppointment.start = CalEvent.start;
                 CurrentAppointment.end = CalEvent.end;
-            }
+            },
+            resources: Params.Resources.ResourceJSON,
+            resourceColumns: Params.Resources.ResourceColumns,
+            resourceLabelText: Params.Resources.ResourceText
         });
 
         // Initialize datepicker
