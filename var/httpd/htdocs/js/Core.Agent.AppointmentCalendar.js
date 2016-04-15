@@ -381,7 +381,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndDay: !AppointmentData.CalEvent ? AppointmentData.End.date() : null,
             EndHour: !AppointmentData.CalEvent ? AppointmentData.End.hour() : null,
             EndMinute: !AppointmentData.CalEvent ? AppointmentData.End.minute() : null,
-            AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null
+            AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null,
+            ResourceID: AppointmentData.Resource ? AppointmentData.Resource.id : null
         };
 
         function EditDialog() {
