@@ -1309,6 +1309,13 @@ sub _AppointmentRecurringCreate {
         String => $Param{Appointment}->{EndTime},
     );
 
+    my $OriginalStartTime = $StartTimeSystem;
+    my $OriginalEndTime   = $EndTimeSystem;
+    my $Step              = 0;
+
+    # Clear UniqueID
+    $Param{Appointment}->{UniqueID} = '';
+
     # until ...
     if ( $Param{Appointment}->{RecurrenceUntil} ) {
 
@@ -1316,62 +1323,28 @@ sub _AppointmentRecurringCreate {
             String => $Param{Appointment}->{RecurrenceUntil},
         );
 
-        my $OriginalStartTime = $StartTimeSystem;
-        my $OriginalEndTime   = $EndTimeSystem;
-        my $LoopCount         = 0;
-
         UNTIL_TIME:
         while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+            $Step += $Param{Appointment}->{RecurrenceFrequency};
 
-            if ( $Param{Appointment}->{RecurrenceByDay} ) {
+            # calculate recurring times
+            $StartTimeSystem = $Self->_CalculateRecurenceTime(
+                Appointment  => $Param{Appointment},
+                Step         => $Step,
+                OriginalTime => $OriginalStartTime,
+                CurrentTime  => $StartTimeSystem,
+            );
+            $EndTimeSystem = $Self->_CalculateRecurenceTime(
+                Appointment  => $Param{Appointment},
+                Step         => $Step,
+                OriginalTime => $OriginalEndTime,
+                CurrentTime  => $EndTimeSystem,
+            );
 
-                # calculate recurring times
-                $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
-                $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
-            }
-            elsif ( $Param{Appointment}->{RecurrenceByMonth} ) {
+            last UNTIL_TIME if !$StartTimeSystem;
 
-                $LoopCount += $Param{Appointment}->{RecurrenceFrequency};
-
-                $StartTimeSystem = $Self->_AddPeriod(
-                    Time   => $OriginalStartTime,
-                    Months => $LoopCount,
-                );
-
-                $EndTimeSystem = $Self->_AddPeriod(
-                    Time   => $OriginalEndTime,
-                    Months => $LoopCount,
-                );
-            }
-            elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
-                $LoopCount += $Param{Appointment}->{RecurrenceFrequency};
-
-                $StartTimeSystem = $Self->_AddPeriod(
-                    Time  => $OriginalStartTime,
-                    Years => $LoopCount,
-                );
-
-                $EndTimeSystem = $Self->_AddPeriod(
-                    Time  => $OriginalEndTime,
-                    Years => $LoopCount,
-                );
-
-                # my $StartTimePiece = localtime($StartTimeSystem);
-                # $StartTimePiece  = $StartTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
-                # $StartTimeSystem = $StartTimePiece->epoch();
-
-                # my $EndTimePiece = localtime($EndTimeSystem);
-                # $EndTimePiece  = $EndTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
-                # $EndTimeSystem = $EndTimePiece->epoch();
-            }
-            else {
-                last UNTIL_TIME;
-            }
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
-
-            # Clear UniqueID
-            $Param{Appointment}->{UniqueID} = '';
 
             $Self->AppointmentCreate(
                 %{ $Param{Appointment} },
@@ -1384,11 +1357,26 @@ sub _AppointmentRecurringCreate {
 
     # for ... time(s)
     if ( $Param{Appointment}->{RecurrenceCount} ) {
+        COUNT:
         for ( 1 .. $Param{Appointment}->{RecurrenceCount} - 1 ) {
+            $Step += $Param{Appointment}->{RecurrenceFrequency};
 
             # calculate recurring times
-            $StartTimeSystem = $StartTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
-            $EndTimeSystem   = $EndTimeSystem + $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+            $StartTimeSystem = $Self->_CalculateRecurenceTime(
+                Appointment  => $Param{Appointment},
+                Step         => $Step,
+                OriginalTime => $OriginalStartTime,
+                CurrentTime  => $StartTimeSystem,
+            );
+            $EndTimeSystem = $Self->_CalculateRecurenceTime(
+                Appointment  => $Param{Appointment},
+                Step         => $Step,
+                OriginalTime => $OriginalEndTime,
+                CurrentTime  => $EndTimeSystem,
+            );
+
+            last COUNT if !$StartTimeSystem;
+
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
 
@@ -1579,6 +1567,48 @@ sub _AddPeriod {
     }
 
     return $NextTimePiece->epoch();
+}
+
+sub _CalculateRecurenceTime {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Appointment Step OriginalTime CurrentTime)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $SystemTime = $Param{CurrentTime};
+
+    if ( $Param{Appointment}->{RecurrenceByDay} ) {
+
+        # calculate recurring times
+        $SystemTime += $Param{Appointment}->{RecurrenceFrequency} * 60 * 60 * 24;
+    }
+    elsif ( $Param{Appointment}->{RecurrenceByMonth} ) {
+
+        $SystemTime = $Self->_AddPeriod(
+            Time   => $Param{OriginalTime},
+            Months => $Param{Step},
+        );
+    }
+    elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
+
+        $SystemTime = $Self->_AddPeriod(
+            Time  => $Param{OriginalTime},
+            Years => $Param{Step},
+        );
+    }
+    else {
+        return;
+    }
+
+    return $SystemTime;
 }
 
 1;

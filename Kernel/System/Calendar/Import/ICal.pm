@@ -229,7 +229,7 @@ sub Import {
                 $Properties->{'rrule'}->[0]->{'value'}
                 )
             {
-                my ( $Frequency, $Until, $Interval );
+                my ( $Frequency, $Until, $Interval, $Count );
 
                 my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
 
@@ -246,6 +246,10 @@ sub Import {
                     }
                     elsif ( $Rule =~ /INTERVAL=(\d+?)$/i ) {
                         $Interval = $1;
+                        next RULE;
+                    }
+                    elsif ( $Rule =~ /COUNT=(\d+?)$/i ) {
+                        $Count = $1;
                         next RULE;
                     }
                 }
@@ -279,10 +283,16 @@ sub Import {
                 # FREQ=MONTHLY;UNTIL=20170202T090000Z;INTERVAL=2;BYMONTHDAY=31',
                 # FREQ=WEEKLY;INTERVAL=2;BYDAY=TU
                 # FREQ=YEARLY;UNTIL=20200602T080000Z;INTERVAL=2;BYMONTHDAY=1;BYMONTH=4';
+
+                # FREQ=DAILY;COUNT=3
+
                 if ($Until) {
                     $Parameters{RecurrenceUntil} = $Self->_FormatTime(
                         Time => $Until,
                     );
+                }
+                elsif ($Count) {
+                    $Parameters{RecurrenceCount} = $Count;
                 }
                 else {
 
