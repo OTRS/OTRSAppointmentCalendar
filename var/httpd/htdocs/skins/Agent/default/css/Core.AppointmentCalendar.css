@@ -80,6 +80,15 @@
         margin-top: 10px;
     }
 
+    .fc-widget-header th.fc-resource-cell {
+        color: #4b4b4b;
+        font-size: 11px;
+        text-transform: uppercase;
+        vertical-align: baseline;
+        padding-bottom: 3px;
+        padding-top: 3px;
+    }
+
     .fc-state-default.fc-corner-left {
     	border-top-left-radius: 0;
     	border-bottom-left-radius: 0;

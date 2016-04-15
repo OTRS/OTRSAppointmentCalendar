@@ -196,7 +196,8 @@ Core.Agent.AppointmentCalendar.Init({
             },
             {
                 labelText: [% Translate("Login") | JSON %],
-                field: 'UserLogin'
+                field: 'title',
+                width: '30%',
             }
         ],
 [% RenderBlockStart("ResourceJSON") %]
@@ -238,6 +239,7 @@ var EventSources = {
                 title: AppointmentData.Title,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                 recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
+                resourceId: AppointmentData.ResourceID
             };
         }
     }

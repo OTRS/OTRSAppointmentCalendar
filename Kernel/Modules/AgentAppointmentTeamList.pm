@@ -78,8 +78,8 @@ sub Run {
                     );
                     push @Data, {
                         id           => $User{UserID},
+                        title        => $User{UserLogin},
                         UserFullname => "$User{UserFirstname} $User{UserLastname}",
-                        UserLogin    => $User{UserLogin},
                     };
                 }
 

@@ -76,7 +76,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         // Initialize calendar
         $CalendarObj.fullCalendar({
             header: {
-                left: 'yearly,month,agendaWeek,agendaDay timeline',
+                left: 'month,agendaWeek,agendaDay timeline',
                 center: 'title',
                 right: 'jump,today prev,next'
             },
@@ -121,9 +121,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     columnFormat: 'dddd'
                 },
                 agendaWeek: {
+                    groupByDateAndResource: true,
                     weekends: false
                 },
                 agendaDay: {
+                    groupByDateAndResource: true,
                     titleFormat: 'D MMM YYYY'
                 },
                 timeline: {
@@ -360,6 +362,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Moment} AppointmentData.Start - Moment object with start date/time.
      * @param {Moment} AppointmentData.End - Moment object with end date/time.
      * @param {Object} AppointmentData.CalEvent - Calendar event object (FullCalendar).
+     * @param {Object} AppointmentData.Resource - Calendar resource object (FullCalendar).
      * @description
      *      This method opens the appointment dialog after selecting a time period or an appointment.
      */
@@ -462,7 +465,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndHour: AppointmentData.CalEvent.end.hour(),
             EndMinute: AppointmentData.CalEvent.end.minute(),
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
-            Recurring: AppointmentData.CalEvent.recurring ? '1' : '0'
+            Recurring: AppointmentData.CalEvent.recurring ? '1' : '0',
+            ResourceID: AppointmentData.CalEvent.resourceId ? AppointmentData.CalEvent.resourceId : undefined
         };
 
         function Update() {

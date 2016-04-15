@@ -12,6 +12,9 @@
         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
         <input type="hidden" id="Subaction" name="Subaction" value="[% Env("Subaction") | html %]"/>
         <input type="hidden" id="AppointmentID" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
+[% FOREACH ResourceID IN Data.ResourceID %]
+        <input type="hidden" id="ResourceID" name="ResourceID[]" value="[% ResourceID | html %]"/>
+[% END %]
         <input type="hidden" id="Recurring" name="Recurring" value="[% Data.Recurring | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic info") | html %]</span></legend>

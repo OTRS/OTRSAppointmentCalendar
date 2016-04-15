@@ -88,6 +88,11 @@ sub Run {
                 AppointmentID => $GetParam{AppointmentID},
             );
 
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $Kernel::OM->Get('Kernel::System::Main')->Dump( \%Appointment ),
+            );
+
             $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
 
             # get start time components
@@ -381,6 +386,13 @@ sub Run {
             # for ... time(s)
             elsif ( $GetParam{RecurrenceLimit} eq '2' ) {
                 $GetParam{RecurrenceUntil} = undef;
+            }
+        }
+
+        # resources
+        if ( $GetParam{ResourceID} ) {
+            if ( ref $GetParam{ResourceID} ne 'ARRAY' ) {
+                $GetParam{ResourceID} = [ $GetParam{ResourceID} ];
             }
         }
 

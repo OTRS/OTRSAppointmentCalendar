@@ -78,24 +78,25 @@ sub new {
 creates a new appointment.
 
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
-        ParentID            => 1,                                       # (optional) Valid ParentID for recurring appointments
-        CalendarID          => 1,                                       # (required) Valid CalendarID
-        UniqueID            => 'jwioji-fwjio',                          # (optional) Provide desired UniqueID. If there is already existing Appointment with same UniqueID,
-                                                                        #            system will delete it.
+        ParentID            => 1,                                       # (optional) valid ParentID for recurring appointments
+        CalendarID          => 1,                                       # (required) valid CalendarID
+        UniqueID            => 'jwioji-fwjio',                          # (optional) provide desired UniqueID; if there is already existing Appointment
+                                                                        #            with same UniqueID, system will delete it
         Title               => 'Webinar',                               # (required) Title
         Description         => 'How to use Process tickets...',         # (optional) Description
         Location            => 'Straubing',                             # (optional) Location
         StartTime           => '2016-01-01 16:00:00',                   # (required)
         EndTime             => '2016-01-01 17:00:00',                   # (required)
-        AllDay              => 0,                                       # (optional) Default 0
+        AllDay              => 0,                                       # (optional) default 0
         TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
-        Recurring           => 1,                                       # (optional) Flag the appointment as recurring (parent only!)
+        ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
+        Recurring           => 1,                                       # (optional) flag the appointment as recurring (parent only!)
                                                                         # if Recurring is set, one of the following 3 parameters must be provided
         RecurrenceByYear    => 1,                                       # (optional)
         RecurrenceByMonth   => 2,                                       # (optional)
         RecurrenceByDay     => 5,                                       # (optional)
 
-        RecurrenceFrequency => 1,                                       # (optional) Default 1.
+        RecurrenceFrequency => 1,                                       # (optional) default 1.
         RecurrenceCount     => 1,                                       # (optional)
         RecurrenceInterval  => 2,                                       # (optional)
         RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
@@ -178,7 +179,7 @@ sub AppointmentCreate {
     );
     return if !$StartTimeSystem;
 
-    # UniqueID
+    # check UniqueID
     my $UniqueID = $Param{UniqueID};
     if ( !$UniqueID ) {
         $UniqueID = $Self->_GetUniqueID(
@@ -196,6 +197,12 @@ sub AppointmentCreate {
 
     # check timezone
     return if !defined $Param{TimezoneID};
+
+    # check ResourceID
+    if ( $Param{ResourceID} ) {
+        return if !IsArrayRefWithData( $Param{ResourceID} );
+        $Param{ResourceID} = join( ',', @{ $Param{ResourceID} } );
+    }
 
     # check Recurring
     return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
@@ -248,8 +255,8 @@ sub AppointmentCreate {
     }
 
     push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-        \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
-        \$Param{TimezoneID},       \$Param{Recurring},          \$Param{RecurrenceFrequency},
+        \$Param{Location},   \$Param{StartTime},  \$Param{EndTime},   \$Param{AllDay},
+        \$Param{TimezoneID}, \$Param{ResourceID}, \$Param{Recurring}, \$Param{RecurrenceFrequency},
         \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
         \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
         \$Param{UserID},           \$Param{UserID};
@@ -257,10 +264,11 @@ sub AppointmentCreate {
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
-            recur_until, recur_byyear, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp, ?,
-            current_timestamp, ?)
+            end_time, all_day, timezone_id, resource_id, recurring, recur_freq, recur_count,
+            recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
+            create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            current_timestamp, ?, current_timestamp, ?)
     ";
 
     # create db record
@@ -351,6 +359,7 @@ Result => 'HASH':
             StartTime     => '2016-01-02 16:00:00',
             EndTime       => '2016-01-02 17:00:00',
             TimezoneID    => 1,
+            ResourceID    => [ 1, 3 ],
             AllDay        => 0,
         },
         ...
@@ -422,7 +431,7 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, timezone_id,
-            all_day, recurring
+            resource_id, all_day, recurring
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -472,8 +481,9 @@ sub AppointmentList {
             StartTime     => $Row[5],
             EndTime       => $Row[6],
             TimezoneID    => $Row[7],
-            AllDay        => $Row[8],
-            Recurring     => $Row[9],
+            ResourceID    => $Row[8] =~ /,/ ? split( ',', $Row[8] ) : [ $Row[8] ],
+            AllDay        => $Row[9],
+            Recurring     => $Row[10],
         );
         push @Result, \%Appointment;
     }
@@ -691,6 +701,7 @@ returns a hash:
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
         TimezoneID          => 1,
+        ResourceID          => [ 1, 3 ],
         Recurring           => 1,                                  # only for recurring (parent) appointments
         RecurrenceFrequency => 1,
         RecurrenceCount     => 1,
@@ -741,8 +752,9 @@ sub AppointmentGet {
     my @Bind;
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, recurring, recur_freq, recur_count, recur_interval,
-            recur_until, recur_byyear, recur_bymonth, recur_byday, create_time, create_by, change_time, change_by
+            end_time, all_day, timezone_id, resource_id, recurring, recur_freq, recur_count,
+            recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
+            create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -765,29 +777,30 @@ sub AppointmentGet {
     my %Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Result{AppointmentID}       = $Row[0];
-        $Result{ParentID}            = $Row[1];
-        $Result{CalendarID}          = $Row[2];
-        $Result{UniqueID}            = $Row[3];
-        $Result{Title}               = $Row[4];
-        $Result{Description}         = $Row[5];
-        $Result{Location}            = $Row[6];
-        $Result{StartTime}           = $Row[7];
-        $Result{EndTime}             = $Row[8];
-        $Result{AllDay}              = $Row[9];
-        $Result{TimezoneID}          = $Row[10];
-        $Result{Recurring}           = $Row[11];
-        $Result{RecurrenceFrequency} = $Row[12];
-        $Result{RecurrenceCount}     = $Row[13];
-        $Result{RecurrenceInterval}  = $Row[14];
-        $Result{RecurrenceUntil}     = $Row[15];
-        $Result{RecurrenceByYear}    = $Row[16];
-        $Result{RecurrenceByMonth}   = $Row[17];
-        $Result{RecurrenceByDay}     = $Row[18];
-        $Result{CreateTime}          = $Row[19];
-        $Result{CreateBy}            = $Row[20];
-        $Result{ChangeTime}          = $Row[21];
-        $Result{ChangeBy}            = $Row[22];
+        $Result{AppointmentID} = $Row[0];
+        $Result{ParentID}      = $Row[1];
+        $Result{CalendarID}    = $Row[2];
+        $Result{UniqueID}      = $Row[3];
+        $Result{Title}         = $Row[4];
+        $Result{Description}   = $Row[5];
+        $Result{Location}      = $Row[6];
+        $Result{StartTime}     = $Row[7];
+        $Result{EndTime}       = $Row[8];
+        $Result{AllDay}        = $Row[9];
+        $Result{TimezoneID}    = $Row[10];
+        $Result{ResourceID}    = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : [ $Row[11] ],
+            $Result{Recurring} = $Row[12];
+        $Result{RecurrenceFrequency} = $Row[13];
+        $Result{RecurrenceCount}     = $Row[14];
+        $Result{RecurrenceInterval}  = $Row[15];
+        $Result{RecurrenceUntil}     = $Row[16];
+        $Result{RecurrenceByYear}    = $Row[17];
+        $Result{RecurrenceByMonth}   = $Row[18];
+        $Result{RecurrenceByDay}     = $Row[19];
+        $Result{CreateTime}          = $Row[20];
+        $Result{CreateBy}            = $Row[21];
+        $Result{ChangeTime}          = $Row[22];
+        $Result{ChangeBy}            = $Row[23];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -818,6 +831,7 @@ updates an existing appointment.
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => -2,                                      # (optional) Timezone - it can be 0 (UTC)
+        ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
                                                                         # if Recurring is set, one of the following 3 parameters must be provided
         RecurrenceByYear    => 2,                                       # (optional)
@@ -893,6 +907,12 @@ sub AppointmentUpdate {
     # check timezone
     return if !defined $Param{TimezoneID};
 
+    # check ResourceID
+    if ( $Param{ResourceID} ) {
+        return if !IsArrayRefWithData( $Param{ResourceID} );
+        $Param{ResourceID} = join( ',', @{ $Param{ResourceID} } );
+    }
+
     # check Recurring
     return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
 
@@ -938,9 +958,9 @@ sub AppointmentUpdate {
         UPDATE calendar_appointment
         SET
             parent_id=NULL, calendar_id=?, title=?, description=?, location=?, start_time=?,
-            end_time=?, all_day=?, timezone_id=?, recurring=?, recur_freq=?, recur_count=?,
-            recur_interval=?, recur_until=?, recur_byyear=?, recur_bymonth=?, recur_byday=?,
-            change_time=current_timestamp, change_by=?
+            end_time=?, all_day=?, timezone_id=?, resource_id=?, recurring=?, recur_freq=?,
+            recur_count=?, recur_interval=?, recur_until=?, recur_byyear=?, recur_bymonth=?,
+            recur_byday=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -950,10 +970,10 @@ sub AppointmentUpdate {
         Bind => [
             \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
             \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
-            \$Param{Recurring},          \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},
-            \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},     \$Param{RecurrenceByYear},
-            \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
-            \$Param{UserID},             \$Param{AppointmentID}
+            \$Param{ResourceID},       \$Param{Recurring},          \$Param{RecurrenceFrequency},
+            \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+            \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
+            \$Param{UserID},           \$Param{AppointmentID}
         ],
     );
 
@@ -1536,6 +1556,7 @@ sub _AddMonths {
 
     return $NextTimePiece->epoch();
 }
+
 1;
 
 =back
