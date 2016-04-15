@@ -80,13 +80,15 @@
         margin-top: 10px;
     }
 
-    .fc-widget-header th.fc-resource-cell {
+    .fc-agenda-view th.fc-resource-cell {
         color: #4b4b4b;
         font-size: 11px;
         text-transform: uppercase;
         vertical-align: baseline;
-        padding-bottom: 3px;
-        padding-top: 3px;
+        padding: 3px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     .fc-state-default.fc-corner-left {

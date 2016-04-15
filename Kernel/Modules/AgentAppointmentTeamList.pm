@@ -83,6 +83,12 @@ sub Run {
                     };
                 }
 
+                push @Data, {
+                    id           => 0,
+                    title        => Translatable('N/A'),
+                    UserFullname => Translatable('Unassigned'),
+                };
+
                 # build JSON output
                 $JSON = $LayoutObject->JSONEncode(
                     Data => (

@@ -472,6 +472,10 @@ sub AppointmentList {
     my @Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
+
+        # resource id
+        $Row[8] = $Row[8] ? $Row[8] : 0;
+
         my %Appointment = (
             AppointmentID => $Row[0],
             ParentID      => $Row[1],
@@ -777,19 +781,23 @@ sub AppointmentGet {
     my %Result;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Result{AppointmentID} = $Row[0];
-        $Result{ParentID}      = $Row[1];
-        $Result{CalendarID}    = $Row[2];
-        $Result{UniqueID}      = $Row[3];
-        $Result{Title}         = $Row[4];
-        $Result{Description}   = $Row[5];
-        $Result{Location}      = $Row[6];
-        $Result{StartTime}     = $Row[7];
-        $Result{EndTime}       = $Row[8];
-        $Result{AllDay}        = $Row[9];
-        $Result{TimezoneID}    = $Row[10];
-        $Result{ResourceID}    = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : [ $Row[11] ],
-            $Result{Recurring} = $Row[12];
+
+        # resource id
+        $Row[11] = $Row[11] ? $Row[11] : 0;
+
+        $Result{AppointmentID}       = $Row[0];
+        $Result{ParentID}            = $Row[1];
+        $Result{CalendarID}          = $Row[2];
+        $Result{UniqueID}            = $Row[3];
+        $Result{Title}               = $Row[4];
+        $Result{Description}         = $Row[5];
+        $Result{Location}            = $Row[6];
+        $Result{StartTime}           = $Row[7];
+        $Result{EndTime}             = $Row[8];
+        $Result{AllDay}              = $Row[9];
+        $Result{TimezoneID}          = $Row[10];
+        $Result{ResourceID}          = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : [ $Row[11] ];
+        $Result{Recurring}           = $Row[12];
         $Result{RecurrenceFrequency} = $Row[13];
         $Result{RecurrenceCount}     = $Row[14];
         $Result{RecurrenceInterval}  = $Row[15];
