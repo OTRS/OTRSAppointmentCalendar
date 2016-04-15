@@ -606,7 +606,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Fields - Array with references to recurring fields.
      * @param {jQueryObject} Fields.$Recurring - field with recurring flag.
-     * @param {jQueryObject} Fields.$RecurrenceFrequency - drop down with recurrence frequency.
+     * @param {jQueryObject} Fields.$RecurrenceType - drop down with recurrence type.
      * @param {jQueryObject} Fields.$RecurrenceLimitDiv - layer with recurrence limit fields.
      * @param {jQueryObject} Fields.$RecurrenceLimit - drop down with recurrence limit field.
      * @param {jQueryObject} Fields.$RecurrenceCountDiv - layer with reccurence count field.
@@ -615,7 +615,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method initializes recurrence fields behavior.
      */
     TargetNS.RecurringInit = function (Fields) {
-        Fields.$RecurrenceFrequency.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+        Fields.$RecurrenceType.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
             if ($(this).val() == 0) {
                 Fields.$Recurring.val(0);
                 Fields.$RecurrenceLimitDiv.hide();

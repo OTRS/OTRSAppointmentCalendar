@@ -188,7 +188,7 @@ $Selenium->RunTest(
         );
         $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
         $Selenium->execute_script(
-            "return \$('#RecurrenceFrequency').val(1).trigger('redraw.InputField').trigger('change');"
+            "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
 
         # click on Save

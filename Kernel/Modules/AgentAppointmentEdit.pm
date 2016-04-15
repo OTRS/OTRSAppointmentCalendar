@@ -185,38 +185,69 @@ sub Run {
             $Param{AllDayChecked} = '';
         }
 
-        my $SelectedReccurenceFrequency = 0;
+        my $SelectedRecurrenceType = 0;
 
         if ( $Appointment{Recurring} ) {
-            $SelectedReccurenceFrequency = $Appointment{RecurrenceFrequency} // $GetParam{RecurrenceFrequency};
+
+            # from appointment
+            if ( $Appointment{RecurrenceByDay} ) {
+                if ( $Appointment{RecurrenceFrequency} % 7 ) {
+                    $SelectedRecurrenceType = 'Daily';
+                }
+                else {
+                    $SelectedRecurrenceType = 'Weekly';
+                }
+            }
+            elsif ( $Appointment{RecurrenceByMonth} ) {
+                $SelectedRecurrenceType = 'Monthly';
+            }
+            elsif ( $Appointment{RecurrenceByYear} ) {
+                $SelectedRecurrenceType = 'Yearly';
+            }
+
+            # override from %GetParam
+            if ( $GetParam{RecurrenceByDay} ) {
+                if ( $GetParam{RecurrenceFrequency} % 7 ) {
+                    $SelectedRecurrenceType = 'Daily';
+                }
+                else {
+                    $SelectedRecurrenceType = 'Weekly';
+                }
+            }
+            elsif ( $GetParam{RecurrenceByMonth} ) {
+                $SelectedRecurrenceType = 'Monthly';
+            }
+            elsif ( $GetParam{RecurrenceByYear} ) {
+                $SelectedRecurrenceType = 'Yearly';
+            }
         }
 
         # recurrence frequency selection
-        $Param{RecurrenceFrequencyString} = $LayoutObject->BuildSelection(
+        $Param{RecurrenceTypeString} = $LayoutObject->BuildSelection(
             Data => [
                 {
                     Key   => '0',
                     Value => Translatable('None'),
                 },
                 {
-                    Key   => '1',
+                    Key   => 'Daily',
                     Value => Translatable('Every Day'),
                 },
                 {
-                    Key   => '7',
+                    Key   => 'Weekly',
                     Value => Translatable('Every Week'),
                 },
                 {
-                    Key   => '30',
+                    Key   => 'Monthly',
                     Value => Translatable('Every Month'),
                 },
                 {
-                    Key   => '365',
+                    Key   => 'Yearly',
                     Value => Translatable('Every Year'),
                 },
             ],
-            SelectedID   => $SelectedReccurenceFrequency,
-            Name         => 'RecurrenceFrequency',
+            SelectedID   => $SelectedRecurrenceType,
+            Name         => 'RecurrenceType',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -365,7 +396,24 @@ sub Run {
         }
 
         # recurring appointment
-        if ( $GetParam{Recurring} && $GetParam{RecurrenceFrequency} ) {
+        if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
+
+            if ( $GetParam{RecurrenceType} eq 'Daily' ) {
+                $GetParam{RecurrenceByDay}     = 1;
+                $GetParam{RecurrenceFrequency} = 1;
+            }
+            elsif ( $GetParam{RecurrenceType} eq 'Weekly' ) {
+                $GetParam{RecurrenceByDay}     = 1;
+                $GetParam{RecurrenceFrequency} = 7;
+            }
+            elsif ( $GetParam{RecurrenceType} eq 'Monthly' ) {
+                $GetParam{RecurrenceByMonth}   = 1;
+                $GetParam{RecurrenceFrequency} = 1;
+            }
+            elsif ( $GetParam{RecurrenceType} eq 'Yearly' ) {
+                $GetParam{RecurrenceByYear}    = 1;
+                $GetParam{RecurrenceFrequency} = 1;
+            }
 
             # until ...
             if (
@@ -408,9 +456,6 @@ sub Run {
         # set required parameters
         $GetParam{TimezoneID} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
         $GetParam{UserID} = $Self->{UserID};
-
-        # temporary set recurring by day (since there is no user interface support for other types)
-        $GetParam{RecurrenceByDay} = 1;
 
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(

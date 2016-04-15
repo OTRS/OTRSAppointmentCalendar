@@ -67,9 +67,9 @@
                 <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
             </div>
             <div class="Clear"></div>
-            <label for="RecurrenceFrequency">[% Translate("Repeat") | html %]:</label>
+            <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
             <div class="Field">
-                [% Data.RecurrenceFrequencyString %]
+                [% Data.RecurrenceTypeString %]
             </div>
             <div id="RecurrenceLimitDiv" class="Field Hidden">
                 [% Data.RecurrenceLimitString %]
@@ -101,7 +101,7 @@ Core.Form.Validate.Init();
 Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
 Core.Agent.AppointmentCalendar.RecurringInit({
     $Recurring: $('#Recurring'),
-    $RecurrenceFrequency: $('#RecurrenceFrequency'),
+    $RecurrenceType: $('#RecurrenceType'),
     $RecurrenceLimitDiv: $('#RecurrenceLimitDiv'),
     $RecurrenceLimit: $('#RecurrenceLimit'),
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
