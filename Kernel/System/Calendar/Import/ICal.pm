@@ -152,6 +152,21 @@ sub Import {
                 $Properties->{'dtstart'}->[0]->{'value'}
                 )
             {
+                my $TimezoneID;
+
+                if ( ref $Properties->{'dtstart'}->[0]->{'_parameters'} eq 'HASH' ) {
+
+                    # Check if all day event
+                    if ( $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'} ) {
+                        $Parameters{AllDay} = 1;
+                    }
+
+                    # Check timezone
+                    if ( $Properties->{'dtstart'}->[0]->{'_parameters'}->{'TZID'} ) {
+                        $TimezoneID = $Properties->{'dtstart'}->[0]->{'_parameters'}->{'TZID'};
+                    }
+                }
+
                 my $StartTime = $Properties->{'dtstart'}->[0]->{'value'};
 
                 $Parameters{StartTime} = $Self->_FormatTime(
@@ -169,6 +184,16 @@ sub Import {
                 $Properties->{'dtend'}->[0]->{'value'}
                 )
             {
+                my $TimezoneID;
+
+                if ( ref $Properties->{'dtend'}->[0]->{'_parameters'} eq 'HASH' ) {
+
+                    # Check timezone
+                    if ( $Properties->{'dtend'}->[0]->{'_parameters'}->{'TZID'} ) {
+                        $TimezoneID = $Properties->{'dtend'}->[0]->{'_parameters'}->{'TZID'};
+                    }
+                }
+
                 my $EndTime = $Properties->{'dtend'}->[0]->{'value'};
 
                 $Parameters{EndTime} = $Self->_FormatTime(
@@ -317,6 +342,11 @@ sub _FormatTime {
 
         # format string
         $TimeStamp = "$1-$2-$3 $4:$5:$6";
+    }
+    elsif ( $Param{Time} =~ /(\d{4})(\d{2})(\d{2})/ ) {
+
+        # only date is given (without time)
+        $TimeStamp = "$1-$2-$3 00:00:00";
     }
 
     return $TimeStamp;
