@@ -24,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar::Appointment',
     'Kernel::System::DB',
     'Kernel::System::Log',
+    'Kernel::System::Main',
     'Kernel::System::Time',
 );
 
@@ -173,6 +174,11 @@ sub Import {
                     Time => $StartTime,
                 );
 
+                if ($TimezoneID) {
+                    $Parameters{TimezoneID} = $Self->_GetOffset(
+                        TimezoneID => $TimezoneID,
+                    );
+                }
             }
         }
 
@@ -197,7 +203,8 @@ sub Import {
                 my $EndTime = $Properties->{'dtend'}->[0]->{'value'};
 
                 $Parameters{EndTime} = $Self->_FormatTime(
-                    Time => $EndTime,
+                    Time       => $EndTime,
+                    TimezoneID => $TimezoneID,
                 );
             }
         }
@@ -350,7 +357,41 @@ sub _FormatTime {
     }
 
     return $TimeStamp;
+}
 
+sub _GetOffset {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TimezoneID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # check if DateTime object exists
+    return if !$MainObject->Require(
+        'DateTime',
+    );
+
+    # check if DateTime::TimeZone object exists
+    return if !$MainObject->Require(
+        'DateTime::TimeZone',
+    );
+
+    my $DateTime = DateTime->now();
+
+    my $Timezone = DateTime::TimeZone->new( name => $Param{TimezoneID} );
+    my $Offset = $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+
+    return $Offset;
 }
 
 1;
