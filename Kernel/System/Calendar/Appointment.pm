@@ -1325,25 +1325,36 @@ sub _AppointmentRecurringCreate {
 
                 $LoopCount += $Param{Appointment}->{RecurrenceFrequency};
 
-                $StartTimeSystem = $Self->_AddMonths(
+                $StartTimeSystem = $Self->_AddPeriod(
                     Time   => $OriginalStartTime,
                     Months => $LoopCount,
                 );
 
-                $EndTimeSystem = $Self->_AddMonths(
+                $EndTimeSystem = $Self->_AddPeriod(
                     Time   => $OriginalEndTime,
                     Months => $LoopCount,
                 );
             }
             elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
+                $LoopCount += $Param{Appointment}->{RecurrenceFrequency};
 
-                my $StartTimePiece = localtime($StartTimeSystem);
-                $StartTimePiece  = $StartTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
-                $StartTimeSystem = $StartTimePiece->epoch();
+                $StartTimeSystem = $Self->_AddPeriod(
+                    Time  => $OriginalStartTime,
+                    Years => $LoopCount,
+                );
 
-                my $EndTimePiece = localtime($EndTimeSystem);
-                $EndTimePiece  = $EndTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
-                $EndTimeSystem = $EndTimePiece->epoch();
+                $EndTimeSystem = $Self->_AddPeriod(
+                    Time  => $OriginalEndTime,
+                    Years => $LoopCount,
+                );
+
+                # my $StartTimePiece = localtime($StartTimeSystem);
+                # $StartTimePiece  = $StartTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
+                # $StartTimeSystem = $StartTimePiece->epoch();
+
+                # my $EndTimePiece = localtime($EndTimeSystem);
+                # $EndTimePiece  = $EndTimePiece->add_years( $Param{Appointment}->{RecurrenceFrequency} );
+                # $EndTimeSystem = $EndTimePiece->epoch();
             }
             else {
                 last UNTIL_TIME;
@@ -1526,11 +1537,12 @@ sub _AppointmentGetCalendarID {
     return $CalendarID;
 }
 
-sub _AddMonths {
+# Months, Years
+sub _AddPeriod {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Time Months)) {
+    for (qw(Time)) {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1540,11 +1552,15 @@ sub _AddMonths {
         }
     }
 
+    $Param{Months} //= 0;
+    $Param{Years}  //= 0;
+
     my $TimePiece = localtime( $Param{Time} );
     my $StartDay  = $TimePiece->day_of_month();
 
     my $NextTimePiece = $TimePiece->add_months( $Param{Months} );
-    my $EndDay        = $NextTimePiece->day_of_month();
+    $NextTimePiece = $NextTimePiece->add_years( $Param{Years} );
+    my $EndDay = $NextTimePiece->day_of_month();
 
     # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
     if ( $StartDay != $EndDay ) {
