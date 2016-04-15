@@ -180,6 +180,12 @@ sub Run {
             $Param{AllDayChecked} = '';
         }
 
+        my $SelectedReccurenceFrequency = 0;
+
+        if ( $Appointment{Recurring} ) {
+            $SelectedReccurenceFrequency = $Appointment{RecurrenceFrequency} // $GetParam{RecurrenceFrequency};
+        }
+
         # recurrence frequency selection
         $Param{RecurrenceFrequencyString} = $LayoutObject->BuildSelection(
             Data => [
@@ -204,10 +210,10 @@ sub Run {
                     Value => Translatable('Every Year'),
                 },
             ],
-            SelectedID => $Appointment{RecurrenceFrequency} // $GetParam{RecurrenceFrequency},
-            Name       => 'RecurrenceFrequency',
-            Multiple   => 0,
-            Class      => 'Modernize',
+            SelectedID   => $SelectedReccurenceFrequency,
+            Name         => 'RecurrenceFrequency',
+            Multiple     => 0,
+            Class        => 'Modernize',
             PossibleNone => 0,
         );
 
