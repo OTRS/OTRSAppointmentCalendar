@@ -239,7 +239,7 @@ var EventSources = {
                 title: AppointmentData.Title,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                 recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
-                resourceId: AppointmentData.ResourceID
+                resourceIds: AppointmentData.ResourceID
             };
         }
     }

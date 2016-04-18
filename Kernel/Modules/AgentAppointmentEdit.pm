@@ -88,11 +88,6 @@ sub Run {
                 AppointmentID => $GetParam{AppointmentID},
             );
 
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => $Kernel::OM->Get('Kernel::System::Main')->Dump( \%Appointment ),
-            );
-
             $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
 
             # get start time components
@@ -172,6 +167,87 @@ sub Run {
             # we are calculating this locally
             OverrideTimeZone => 1,
         );
+
+        # get main object
+        my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+        # check if team object is registered
+        if (
+            $MainObject->Require(
+                'Kernel::System::Calendar::Team',
+                Silent => 1,
+            )
+            )
+        {
+
+            my $ResourceIDs = $Appointment{ResourceID};
+            if ( !$ResourceIDs ) {
+                my @ResourceIDs = $ParamObject->GetArray( Param => 'ResourceID[]' );
+                $ResourceIDs = \@ResourceIDs;
+            }
+
+            # get needed objects
+            my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+            my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+            # get allowed team list for current user
+            my %TeamList = $TeamObject->AllowedTeamList(
+                PreventEmpty => 1,
+                UserID       => $Self->{UserID},
+            );
+
+            # itearate through teams
+            my $SelectedTeamID;
+            for my $TeamID ( sort keys %TeamList ) {
+
+                # get list of team members
+                my %TeamUserList = $TeamObject->TeamUserList(
+                    TeamID => $TeamID,
+                    UserID => $Self->{UserID},
+                );
+
+                # get user data
+                for my $UserID ( sort keys %TeamUserList ) {
+                    my %User = $UserObject->GetUserData(
+                        UserID => $UserID,
+                    );
+                    $TeamUserList{$UserID} = "$User{UserFirstname} $User{UserLastname}",
+                }
+
+                # deduce current team id
+                if ( !$SelectedTeamID && IsArrayRefWithData($ResourceIDs) ) {
+
+                    RESOURCEID:
+                    for my $ResourceID ( @{$ResourceIDs} ) {
+
+                        if ( grep { $_ eq $ResourceID } keys %TeamUserList ) {
+                            $SelectedTeamID = $TeamID;
+                            last RESOURCEID;
+                        }
+                    }
+                }
+
+                # team user list string
+                $Param{TeamUserLists}->{$TeamID} = $LayoutObject->BuildSelection(
+                    Data         => \%TeamUserList,
+                    SelectedID   => $ResourceIDs,
+                    Name         => 'TeamUserList' . $TeamID,
+                    Multiple     => 1,
+                    Class        => 'Modernize',
+                    PossibleNone => 1,
+                );
+            }
+
+            # team list string
+            $Param{TeamListStrg} = $LayoutObject->BuildSelection(
+                Data         => \%TeamList,
+                SelectedID   => $SelectedTeamID,
+                Name         => 'TeamList',
+                Multiple     => 0,
+                Class        => 'Modernize',
+                PossibleNone => 1,
+            );
+        }
 
         # all day
         if (

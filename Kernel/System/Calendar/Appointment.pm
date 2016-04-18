@@ -475,6 +475,7 @@ sub AppointmentList {
 
         # resource id
         $Row[8] = $Row[8] ? $Row[8] : 0;
+        my @ResourceID = $Row[8] =~ /,/ ? split( ',', $Row[8] ) : ( $Row[8] );
 
         my %Appointment = (
             AppointmentID => $Row[0],
@@ -485,7 +486,7 @@ sub AppointmentList {
             StartTime     => $Row[5],
             EndTime       => $Row[6],
             TimezoneID    => $Row[7],
-            ResourceID    => $Row[8] =~ /,/ ? split( ',', $Row[8] ) : [ $Row[8] ],
+            ResourceID    => \@ResourceID,
             AllDay        => $Row[9],
             Recurring     => $Row[10],
         );
@@ -784,6 +785,7 @@ sub AppointmentGet {
 
         # resource id
         $Row[11] = $Row[11] ? $Row[11] : 0;
+        my @ResourceID = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : ( $Row[11] );
 
         $Result{AppointmentID}       = $Row[0];
         $Result{ParentID}            = $Row[1];
@@ -796,7 +798,7 @@ sub AppointmentGet {
         $Result{EndTime}             = $Row[8];
         $Result{AllDay}              = $Row[9];
         $Result{TimezoneID}          = $Row[10];
-        $Result{ResourceID}          = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : [ $Row[11] ];
+        $Result{ResourceID}          = \@ResourceID;
         $Result{Recurring}           = $Row[12];
         $Result{RecurrenceFrequency} = $Row[13];
         $Result{RecurrenceCount}     = $Row[14];

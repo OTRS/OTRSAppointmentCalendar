@@ -44,6 +44,22 @@
                 [% Data.CalendarIDStrg %]
             </div>
         </fieldset>
+[% IF Data.TeamListStrg %]
+        <fieldset class="TableLike">
+            <legend><span>[% Translate("Resource") | html %]</span></legend>
+            <label for="TeamList">[% Translate("Team") | html %]:</label>
+            <div class="Field">
+                [% Data.TeamListStrg %]
+            </div>
+            <div class="Clear"></div>
+[% FOREACH TeamID IN Data.TeamUserLists.keys %]
+            <label for="TeamUserList[% TeamID %]" class="TeamUserListLabel">[% Translate("Agent") | html %]:</label>
+            <div class="Field TeamUserList">
+                [% Data.TeamUserLists.$TeamID %]
+            </div>
+[% END %]
+        </fieldset>
+[% END %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
             <label>[% Translate("Start date") | html %]:</label>
@@ -107,6 +123,8 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
 });
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
+
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
     var Data = new Object();
 
