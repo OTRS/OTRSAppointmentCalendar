@@ -67,15 +67,15 @@ sub Run {
 
         if ( scalar keys %TeamList > 0 ) {
 
-            my @TeamIDs = keys %TeamList;
-            $GetParam{TeamID} = $GetParam{TeamID} || $TeamIDs[0];
+            my @TeamIDs = sort keys %TeamList;
+            $Param{TeamID} = $GetParam{TeamID} // $TeamIDs[0];
 
             $Param{TeamStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamList,
                 Name         => 'TeamID',
                 ID           => 'TeamID',
                 Class        => 'Modernize',
-                SelectedID   => $GetParam{TeamID},
+                SelectedID   => $Param{TeamID},
                 PossibleNone => 0,
             );
 
