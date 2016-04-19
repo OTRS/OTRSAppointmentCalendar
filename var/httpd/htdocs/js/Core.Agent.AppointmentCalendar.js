@@ -42,6 +42,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.ButtonText.timeline - Localized string for the word "Timeline".
      * @param {String} Params.ButtonText.jump - Localized string for the word "Jump".
      * @param {String} Params.FirstDay - First day of the week (0: Sunday).
+     * @param {Array} Params.Header - Array containing view buttons in the header.
+     * @param {String} Params.Header.left - String with view names for left side of the header.
+     * @param {String} Params.Header.center - String with view names for header center.
+     * @param {String} Params.Header.right - String with view names for right side of the header.
      * @param {Array} Params.DialogText - Array containing the localized strings for dialogs.
      * @param {String} Params.DialogText.EditTitle - Title of the add/edit dialog.
      * @param {String} Params.DialogText.OccurrenceTitle - Title of the occurrence dialog.
@@ -76,11 +80,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Initialize calendar
         $CalendarObj.fullCalendar({
-            header: {
-                left: 'month,agendaWeek,agendaDay timeline',
-                center: 'title',
-                right: 'jump,today prev,next'
-            },
+            header: Params.Header,
             customButtons: {
                 jump: {
                     text: Params.ButtonText.jump,
@@ -89,7 +89,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     }
                 }
             },
-            defaultView: 'timeline',
+            defaultView: 'timelineWeek',
             allDayText: Params.AllDayText,
             isRTL: Params.IsRTL,
             columnFormat: 'ddd, D MMM',
@@ -122,21 +122,38 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     columnFormat: 'dddd'
                 },
                 agendaWeek: {
-                    groupByDateAndResource: true,
                     weekends: false
                 },
                 agendaDay: {
-                    groupByDateAndResource: true,
                     titleFormat: 'D MMM YYYY'
                 },
-                timeline: {
+                timelineMonth: {
+                    slotDuration: '24:00:00',
+                    duration: {
+                        months: 1
+                    },
+                    slotLabelFormat: [
+                        'D'
+                    ]
+                },
+                timelineWeek: {
                     slotDuration: '02:00:00',
                     duration: {
-                        days: 7
+                        week: 1
                     },
                     slotLabelFormat: [
                         'ddd, D MMM',
                         'HH'
+                    ]
+                },
+                timelineDay: {
+                    slotDuration: '00:30:00',
+                    duration: {
+                        days: 1
+                    },
+                    slotLabelFormat: [
+                        'ddd, D MMM',
+                        'HH:mm'
                     ]
                 }
             },

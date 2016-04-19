@@ -96,7 +96,7 @@ $Selenium->RunTest(
         );
 
         # click on the timeline view for an appointment dialog
-        $Selenium->find_element( '.fc-timeline-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -129,7 +129,7 @@ $Selenium->RunTest(
         );
 
         # click again on the timeline view for an appointment dialog
-        $Selenium->find_element( '.fc-timeline-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -174,7 +174,7 @@ $Selenium->RunTest(
         );
 
         # click again on the timeline view for an appointment dialog
-        $Selenium->find_element( '.fc-timeline-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );

@@ -147,12 +147,17 @@ Core.Agent.AppointmentCalendar.Init({
         month: [% Translate("Month") | JSON %],
         week: [% Translate("Week") | JSON %],
         day: [% Translate("Day") | JSON %],
-        timeline: [% Translate("Timeline") | JSON %],
+        timelineWeek: [% Translate("Timeline") | JSON %],
         jump:[% Translate("Jump") | JSON %],
         prevDatepicker: [% Translate("Previous") | JSON %],
         nextDatepicker: [% Translate("Next") | JSON %]
     },
     FirstDay: [% Data.FirstDay | html %],
+    Header: {
+        left: 'month,agendaWeek,agendaDay timelineWeek',
+        center: 'title',
+        right: 'jump,today prev,next'
+    },
     DialogText: {
         EditTitle: [% Translate("Appointment") | JSON %],
         OccurrenceTitle: [% Translate("This is a repeating appointment") | JSON %],
