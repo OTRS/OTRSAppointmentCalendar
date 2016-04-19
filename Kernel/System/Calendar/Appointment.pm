@@ -58,6 +58,10 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # locally override system timezone
+    # necessary for some time functions on certain old systems
+    $ENV{TZ} = 'UTC';
+
     @ISA = qw(
         Kernel::System::EventHandler
     );
