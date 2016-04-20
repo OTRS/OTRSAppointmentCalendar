@@ -100,6 +100,17 @@
                 <input type="text" id="RecurrenceCount" name="RecurrenceCount" value="[% Data.RecurrenceCount | html %]" size="1" maxlength="2" />
             </div>
         </fieldset>
+[% IF Data.PluginListStrg %]
+        <fieldset class="TableLike">
+            <legend><span>[% Translate("Link") | html %]</span></legend>
+            <label id="PluginListLabel" for="PluginList">[% Translate("Add") | html %]:</label>
+            <div class="Field">
+                [% Data.PluginListStrg %]
+                <a class="AddButton" href="#" title="[% Translate("Add entry") | html %]"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add") | html %]</span></a>
+            </div>
+            <div class="Clear"></div>
+        </fieldset>
+[% END %]
     </form>
 </div>
 
@@ -174,6 +185,42 @@ $('#EditFormDelete').on('click', function() {
 // Close the dialog
 $('#EditFormCancel').on('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+});
+
+// Register add button for plugins
+$('.AddButton').bind('click', function () {
+    var $PluginList = $('#PluginList'),
+        PluginModule = $PluginList.val(),
+        PluginName = $('#PluginList option:selected').text(),
+        PluginID,
+        $LabelObj,
+        $ContainerObj,
+        $PluginObj,
+        $ClearerObj;
+
+    if (PluginModule) {
+        PluginID = 'Plugin_' + Core.App.EscapeSelector(PluginModule);
+        $LabelObj = $('<label />').text(PluginName + ':')
+            .prop('for', PluginID)
+            .insertBefore($('#PluginListLabel'));
+
+        $ContainerObj = $('<div />').addClass('Field')
+            .insertAfter($LabelObj);
+
+        $PluginObj = $('<input />').prop('id', PluginID)
+            .prop('name', PluginID)
+            .prop('type', 'text')
+            .addClass('W75pc')
+            .appendTo($ContainerObj);
+
+        $ClearerObj = $('<div />').addClass('Clear')
+            .insertAfter($ContainerObj);
+
+        $PluginList.find('option:selected').remove();
+        $PluginList.trigger('redraw.InputField');
+    }
+
+    return false;
 });
 
 //]]></script>

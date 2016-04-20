@@ -249,6 +249,16 @@ sub Run {
             );
         }
 
+        # get plugin object
+        my $PluginObject = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+
+        # plugin list string
+        $Param{PluginListStrg} = $LayoutObject->BuildSelection(
+            Data  => $PluginObject->PluginList(),
+            Name  => 'PluginList',
+            Class => 'Modernize',
+        );
+
         # all day
         if (
             $GetParam{AllDay} ||
