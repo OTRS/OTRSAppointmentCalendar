@@ -103,6 +103,13 @@
 [% IF Data.PluginListStrg %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Link") | html %]</span></legend>
+[% FOREACH Key IN Data.PluginData.keys %]
+            <label for="Plugin_[% Key | html %]">[% Translate(Data.PluginData.$Key.Name) | html %]:</label>
+            <div class="Field">
+                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="W75pc" />
+                <a class="RemoveButton" data-plugin="Plugin_[% Key | html %]" href="#" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
+            </div>
+[% END %]
             <label id="PluginListLabel" for="PluginList">[% Translate("Add") | html %]:</label>
             <div class="Field">
                 [% Data.PluginListStrg %]
@@ -135,6 +142,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
 });
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
+Core.Agent.AppointmentCalendar.PluginInit($('#PluginList'), $('.AddButton'));
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
     var Data = new Object();
@@ -185,42 +193,6 @@ $('#EditFormDelete').on('click', function() {
 // Close the dialog
 $('#EditFormCancel').on('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-});
-
-// Register add button for plugins
-$('.AddButton').bind('click', function () {
-    var $PluginList = $('#PluginList'),
-        PluginModule = $PluginList.val(),
-        PluginName = $('#PluginList option:selected').text(),
-        PluginID,
-        $LabelObj,
-        $ContainerObj,
-        $PluginObj,
-        $ClearerObj;
-
-    if (PluginModule) {
-        PluginID = 'Plugin_' + Core.App.EscapeSelector(PluginModule);
-        $LabelObj = $('<label />').text(PluginName + ':')
-            .prop('for', PluginID)
-            .insertBefore($('#PluginListLabel'));
-
-        $ContainerObj = $('<div />').addClass('Field')
-            .insertAfter($LabelObj);
-
-        $PluginObj = $('<input />').prop('id', PluginID)
-            .prop('name', PluginID)
-            .prop('type', 'text')
-            .addClass('W75pc')
-            .appendTo($ContainerObj);
-
-        $ClearerObj = $('<div />').addClass('Clear')
-            .insertAfter($ContainerObj);
-
-        $PluginList.find('option:selected').remove();
-        $PluginList.trigger('redraw.InputField');
-    }
-
-    return false;
 });
 
 //]]></script>

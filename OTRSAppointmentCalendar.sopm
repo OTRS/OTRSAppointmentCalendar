@@ -45,6 +45,7 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeam.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamUser.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
+        <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
@@ -56,9 +57,12 @@
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Team.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Plugin.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Plugin/TicketNumber.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
+        <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
@@ -238,6 +242,9 @@
                 <Reference Local="change_by" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <Insert Table="link_object">
+            <Data Key="name" Type="Quote">Appointment</Data>
+        </Insert>
     </DatabaseInstall>
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>

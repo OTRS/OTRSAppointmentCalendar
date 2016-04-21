@@ -53,6 +53,7 @@ sub Run {
     my $LayoutObject      = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
@@ -172,13 +173,7 @@ sub Run {
         my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
         # check if team object is registered
-        if (
-            $MainObject->Require(
-                'Kernel::System::Calendar::Team',
-                Silent => 1,
-            )
-            )
-        {
+        if ( $MainObject->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
             my $ResourceIDs = $Appointment{ResourceID};
             if ( !$ResourceIDs ) {
@@ -248,16 +243,6 @@ sub Run {
                 PossibleNone => 1,
             );
         }
-
-        # get plugin object
-        my $PluginObject = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
-
-        # plugin list string
-        $Param{PluginListStrg} = $LayoutObject->BuildSelection(
-            Data  => $PluginObject->PluginList(),
-            Name  => 'PluginList',
-            Class => 'Modernize',
-        );
 
         # all day
         if (
@@ -385,6 +370,38 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
+        );
+
+        # get plugin list
+        my $PluginList = $PluginObject->PluginList();
+
+        if ( $GetParam{AppointmentID} ) {
+
+            for my $PluginKey ( sort keys %{$PluginList} ) {
+                my $LinkList = $PluginObject->PluginLinkList(
+                    AppointmentID => $GetParam{AppointmentID},
+                    PluginKey     => $PluginKey,
+                    UserID        => $Self->{UserID},
+                );
+
+                # only one link per plugin supported
+                LINK:
+                for my $LinkID ( sort keys %{$LinkList} ) {
+                    $Param{PluginData}->{$PluginKey}->{Name}  = $PluginList->{$PluginKey};
+                    $Param{PluginData}->{$PluginKey}->{Value} = $LinkList->{$LinkID};
+
+                    delete $PluginList->{$PluginKey};
+
+                    last LINK;
+                }
+            }
+        }
+
+        # plugin list string
+        $Param{PluginListStrg} = $LayoutObject->BuildSelection(
+            Data  => $PluginList,
+            Name  => 'PluginList',
+            Class => 'Modernize',
         );
 
         # html mask output
@@ -555,11 +572,53 @@ sub Run {
             );
         }
 
+        my $AppointmentID = $GetParam{AppointmentID} ? $GetParam{AppointmentID} : $Success;
+
+        # plugins
+        if ($AppointmentID) {
+
+            # remove all existing links
+            if ( $GetParam{AppointmentID} ) {
+                my $Success = $PluginObject->PluginLinkDelete(
+                    AppointmentID => $AppointmentID,
+                    UserID        => $Self->{UserID},
+                );
+
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => Translatable('Links could not be deleted!'),
+                ) if !$Success;
+            }
+
+            # get passed plugin parameters
+            my @PluginParams = grep { $_ =~ /^Plugin_/ } keys %GetParam;
+
+            for my $PluginParam (@PluginParams) {
+                my $PluginKey = $PluginParam;
+                $PluginKey =~ s/^Plugin_//;
+
+                # execute plugin link method
+                if ( $GetParam{$PluginParam} ) {
+                    my $Link = $PluginObject->PluginLinkAdd(
+                        AppointmentID => $AppointmentID,
+                        PluginKey     => $PluginKey,
+                        PluginData    => $GetParam{$PluginParam},
+                        UserID        => $Self->{UserID},
+                    );
+
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => Translatable('Link could not be created!'),
+                    ) if !$Link;
+                }
+            }
+        }
+
         # build JSON output
         $JSON = $LayoutObject->JSONEncode(
             Data => {
                 Success => $Success ? 1 : 0,
-                AppointmentID => $GetParam{AppointmentID} ? $GetParam{AppointmentID} : $Success,
+                AppointmentID => $AppointmentID,
             },
         );
     }
@@ -568,7 +627,17 @@ sub Run {
 
         if ( $GetParam{AppointmentID} ) {
 
-            my $Success = $AppointmentObject->AppointmentDelete(
+            my $Success = $PluginObject->PluginLinkDelete(
+                AppointmentID => $GetParam{AppointmentID},
+                UserID        => $Self->{UserID},
+            );
+
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => Translatable('Links could not be deleted!'),
+            ) if !$Success;
+
+            $Success = $AppointmentObject->AppointmentDelete(
                 %GetParam,
                 UserID => $Self->{UserID},
             );

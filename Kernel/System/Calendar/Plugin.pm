@@ -14,9 +14,10 @@ use warnings;
 use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
+    'Kernel::Config',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::Config',
+    'Kernel::System::LinkObject',
 );
 
 =head1 NAME
@@ -25,7 +26,7 @@ Kernel::System::Calendar::Plugin - Plugin lib
 
 =head1 SYNOPSIS
 
-Abstraction layer for additional fields in appointments.
+Abstraction layer for appointment plugins.
 
 =head1 PUBLIC INTERFACE
 
@@ -55,24 +56,21 @@ sub new {
     my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
 
     # get registered plugin modules
-    my $PluginConfig = $ConfigObject->Get("AppointmentCalendar::Module");
-
-    $Self->{"PluginNames"}   = {};
-    $Self->{"PluginModules"} = {};
+    my $PluginConfig = $ConfigObject->Get("AppointmentCalendar::Plugin");
 
     # load plugin modules
     PLUGIN:
-    for my $PluginModule ( sort keys $PluginConfig ) {
+    for my $PluginKey ( sort keys $PluginConfig ) {
 
-        my $GenericModule = $PluginConfig->{$PluginModule}->{Module};
+        my $GenericModule = $PluginConfig->{$PluginKey}->{Module};
         next PLUGIN if !$GenericModule;
 
         if ( !$MainObject->Require($GenericModule) ) {
             $MainObject->Die("Can't load plugin module $GenericModule! $@");
         }
 
-        $Self->{"PluginNames"}->{$PluginModule} = $PluginConfig->{$PluginModule}->{Name} // $GenericModule;
-        $Self->{"PluginModules"}->{$PluginModule} = $GenericModule->new( %{$Self} );
+        $Self->{Plugins}->{$PluginKey}->{Name} = $PluginConfig->{$PluginKey}->{Name} // $GenericModule;
+        $Self->{Plugins}->{$PluginKey}->{PluginModule} = $GenericModule->new( %{$Self} );
     }
 
     return $Self;
@@ -80,16 +78,117 @@ sub new {
 
 =item PluginList()
 
-list registered plugins
+returns the hash of registered plugins
 
-    my @Plugins = $PluginObject->PluginList();
+    my %PluginList = $PluginObject->PluginList();
 
 =cut
 
 sub PluginList {
     my ( $Self, %Param ) = @_;
 
-    return $Self->{"PluginNames"};
+    my %PluginList = map { $_ => $Self->{Plugins}->{$_}->{Name} } keys %{ $Self->{Plugins} };
+
+    return \%PluginList;
+}
+
+=item PluginLinkAdd()
+
+link appointment by plugin
+
+    my $Success = $PluginObject->PluginLinkAdd(
+        AppointmentID => 1,
+        PluginKey     => '0100-TicketNumber',
+        PluginData    => '20160101540000014',
+        UserID        => 1,
+    );
+
+=cut
+
+sub PluginLinkAdd {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(AppointmentID PluginKey PluginData UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+    my $Success = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkAdd(
+        %Param,
+    );
+
+    return $Success;
+}
+
+=item PluginLinkList()
+
+returns list of links for supplied appointment
+
+    my $Success = $PluginObject->PluginLinkList(
+        AppointmentID => 1,
+        UserID        => 1,
+    );
+
+=cut
+
+sub PluginLinkList {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(AppointmentID PluginKey UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $LinkList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkList(
+        %Param,
+    );
+
+    return $LinkList;
+}
+
+=item PluginLinkDelete()
+
+removes all links for an appointment
+
+    my $Success = $PluginObject->PluginLinkDelete(
+        AppointmentID => 1,
+        UserID        => 1,
+    );
+
+=cut
+
+sub PluginLinkDelete {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(AppointmentID UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $Success = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkDeleteAll(
+        Object => 'Appointment',
+        Key    => $Param{AppointmentID},
+        UserID => $Param{UserID},
+    );
+
+    return $Success;
 }
 
 1;

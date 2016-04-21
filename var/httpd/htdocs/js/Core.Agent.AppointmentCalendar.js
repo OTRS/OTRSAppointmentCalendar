@@ -685,6 +685,88 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @name PluginInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $PluginListObj - field with plugin list (dropdown).
+     * @param {jQueryObject} $AddObj - button for adding plugin fields.
+     * @description
+     *      This method initializes plugin fields behavior.
+     */
+    TargetNS.PluginInit = function ($PluginListObj, $AddObj) {
+        $AddObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+            var PluginKey = $PluginListObj.val(),
+                PluginName = $PluginListObj.find('option:selected').text(),
+                PluginID,
+                $LabelObj,
+                $ContainerObj,
+                $RemoveObj;
+
+            if (PluginKey) {
+                PluginID = 'Plugin_' + Core.App.EscapeSelector(PluginKey);
+                $LabelObj = $('<label />').text(PluginName + ':')
+                    .prop('for', PluginID)
+                    .insertBefore($('#PluginListLabel'));
+
+                $ContainerObj = $('<div />').addClass('Field')
+                    .text(' ')
+                    .insertAfter($LabelObj);
+
+                $('<input />').prop('id', PluginID)
+                    .prop('name', PluginID)
+                    .prop('type', 'text')
+                    .addClass('W75pc')
+                    .prependTo($ContainerObj);
+
+                $RemoveObj = $('<a />').addClass('RemoveButton')
+                    .data('plugin', PluginID)
+                    .prop('href', '#')
+                    .prop('title', 'Remove entry')
+                    .appendTo($ContainerObj);
+
+                $('<i />').addClass('fa fa-minus-square-o')
+                    .appendTo($RemoveObj);
+
+                $('<span />').addClass('InvisibleText')
+                    .text('Remove')
+                    .appendTo($RemoveObj);
+
+                $('<div />').addClass('Clear')
+                    .insertAfter($ContainerObj);
+
+                $PluginListObj.find('option:selected').remove();
+                $PluginListObj.trigger('redraw.InputField');
+
+                InitRemoveButtons();
+            }
+
+            return false;
+        });
+
+        function InitRemoveButtons() {
+            $('.RemoveButton').off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+                var PluginID = $(this).data('plugin'),
+                    PluginKey = PluginID.replace(/^Plugin_/, ''),
+                    $ContainerObj = $(this).parent('div.Field'),
+                    $LabelObj = $ContainerObj.prev('label'),
+                    PluginName = $LabelObj.text().replace(/:$/, '');
+
+                $LabelObj.remove();
+                $ContainerObj.remove();
+
+                $('<option />').prop('value', PluginKey)
+                    .text(PluginName)
+                    .appendTo($PluginListObj);
+
+                $PluginListObj.trigger('redraw.InputField');
+
+                return false;
+            });
+        }
+
+        InitRemoveButtons();
+    }
+
+    /**
      * @name StoreResource
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $TeamUserListObj - field with team list.
