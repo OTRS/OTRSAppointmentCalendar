@@ -60,7 +60,7 @@ sub new {
 
     # load plugin modules
     PLUGIN:
-    for my $PluginKey ( sort keys $PluginConfig ) {
+    for my $PluginKey ( sort keys %{$PluginConfig} ) {
 
         my $GenericModule = $PluginConfig->{$PluginKey}->{Module};
         next PLUGIN if !$GenericModule;
