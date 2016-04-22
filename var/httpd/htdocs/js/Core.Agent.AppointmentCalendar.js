@@ -125,7 +125,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     weekends: false
                 },
                 agendaDay: {
-                    titleFormat: 'D MMM YYYY'
+                    titleFormat: 'D MMM YYYY',
+                    resources: false
                 },
                 timelineMonth: {
                     slotDuration: '24:00:00',
