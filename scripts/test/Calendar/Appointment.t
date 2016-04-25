@@ -24,17 +24,62 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $UserID = 1;    # Use root
+# get needed objects
+my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
+
+# create test user
+my $UserLogin = $Helper->TestUserCreate();
+my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
+
+$Self->True(
+    $UserID,
+    "Test user $UserID created",
+);
+
+# create test group
+my $GroupName = 'test-calendar-group-' . $Helper->GetRandomID();
+my $GroupID   = $GroupObject->GroupAdd(
+    Name    => $GroupName,
+    ValidID => 1,
+    UserID  => 1,
+);
+
+$Self->True(
+    $GroupID,
+    "Test group $UserID created",
+);
+
+# add test user to test group
+my $Success = $GroupObject->PermissionGroupUserAdd(
+    GID        => $GroupID,
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+        owner     => 1,
+        priority  => 1,
+        rw        => 1,
+    },
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    "Test user $UserID added to test group $GroupID",
+);
 
 # this will be ok
 my %Calendar1 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
+    GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
 $Self->True(
     $Calendar1{CalendarID},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - CalendarID',
+    "CalendarCreate( CalendarName => 'Test calendar', GroupID => $GroupID, UserID => $UserID ) - CalendarID",
 );
 
 # only required fields
@@ -345,7 +390,7 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     RecurrenceByDay     => 1,
     RecurrenceFrequency => 2,                          # each 2 days
     RecurrenceUntil     => '2016-03-10 17:00:00',
-    UserID              => 1,
+    UserID              => $UserID,
 );
 $Self->True(
     $SuccessRec1,
@@ -484,6 +529,7 @@ $Self->Is(
 
 my %Calendar2 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar 2',
+    GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
@@ -501,7 +547,7 @@ my $Update1 = $AppointmentObject->AppointmentUpdate(
     RecurrenceByDay     => 1,
     RecurrenceFrequency => 2,
     RecurrenceCount     => 2,
-    UserID              => 1,
+    UserID              => $UserID,
 );
 $Self->True(
     $Update1,
@@ -587,7 +633,7 @@ my $Update2 = $AppointmentObject->AppointmentUpdate(
     StartTime  => '2016-01-02 16:00:00',
     EndTime    => '2016-01-03 17:00:00',
     TimezoneID => 1,
-    UserID     => 1,
+    UserID     => $UserID,
 );
 $Self->False(
     $Update2,
@@ -601,7 +647,7 @@ my $Update3 = $AppointmentObject->AppointmentUpdate(
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 1,
-    UserID        => 1,
+    UserID        => $UserID,
 );
 $Self->False(
     $Update3,
@@ -615,7 +661,7 @@ my $Update4 = $AppointmentObject->AppointmentUpdate(
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 1,
-    UserID        => 1,
+    UserID        => $UserID,
 );
 $Self->False(
     $Update4,
@@ -629,7 +675,7 @@ my $Update5 = $AppointmentObject->AppointmentUpdate(
     Title         => 'Webinar title',
     EndTime       => '2016-01-03 17:00:00',
     TimezoneID    => 1,
-    UserID        => 1,
+    UserID        => $UserID,
 );
 $Self->False(
     $Update5,
@@ -643,7 +689,7 @@ my $Update6 = $AppointmentObject->AppointmentUpdate(
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     TimezoneID    => 1,
-    UserID        => 1,
+    UserID        => $UserID,
 );
 $Self->False(
     $Update6,
@@ -732,7 +778,7 @@ my $AppointmentID11 = $AppointmentObject->AppointmentCreate(
     EndTime     => '2016-01-01 16:00:00',
     TimezoneID  => 0,
     Recurring   => 1,
-    UserID      => 1,
+    UserID      => $UserID,
 );
 $Self->False(
     $AppointmentID11,
@@ -742,11 +788,12 @@ $Self->False(
 # Create new calendar
 my %Calendar3 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar 3',
+    GroupID      => $GroupID,
     UserID       => $UserID,
 );
 $Self->True(
     $Calendar3{CalendarID},
-    'CalendarCreate( CalendarName => "Test calendar 3", UserID => 1 )',
+    "CalendarCreate( CalendarName => 'Test calendar 3', UserID => $UserID )",
 );
 
 # recurring once per month

@@ -26,6 +26,17 @@ $Selenium->RunTest(
         );
         my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
+
+        my $RandomID = $Helper->GetRandomID();
+
+        # create test group
+        my $GroupName = "test-calendar-group-$RandomID";
+        my $GroupID   = $GroupObject->GroupAdd(
+            Name    => $GroupName,
+            ValidID => 1,
+            UserID  => 1,
+        );
 
         # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
@@ -36,12 +47,9 @@ $Selenium->RunTest(
         # create test user
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
-            Groups   => ['users'],
+            Groups   => [$GroupName],
             Language => $Language,
         ) || die 'Did not get test user';
-
-        # create test customer user
-        my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate() || die 'Did not get test customer user';
 
         # start test
         $Selenium->Login(
@@ -57,7 +65,12 @@ $Selenium->RunTest(
         $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->click();
 
         # write calendar name
-        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys('Personal calendar');
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys("Calendar $RandomID");
+
+        # set it to test group
+        $Selenium->execute_script(
+            "return \$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
+        );
 
         # submit
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
@@ -69,7 +82,12 @@ $Selenium->RunTest(
         $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->VerifiedClick();
 
         # write calendar name
-        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys('Personal calendar');
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys("Calendar $RandomID");
+
+        # set it to test group
+        $Selenium->execute_script(
+            "return \$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
+        );
 
         # submit
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
@@ -89,7 +107,7 @@ $Selenium->RunTest(
 
         # update calendar name
         $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->click();
-        $Selenium->send_keys_to_active_element('2');
+        $Selenium->send_keys_to_active_element(' 2');
 
         # set it to invalid
         $Selenium->execute_script(
@@ -109,7 +127,7 @@ $Selenium->RunTest(
         );
 
         # filter just added calendar
-        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Personal calendar2');
+        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys("Calendar $RandomID 2");
 
         sleep 1;
 
@@ -127,7 +145,7 @@ $Selenium->RunTest(
             UserLanguage => $Language,
         );
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid'),
             'Calendar is marked invalid',
@@ -146,7 +164,7 @@ $Selenium->RunTest(
 
         # verify the calendar is invalid temporarily
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(2)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',

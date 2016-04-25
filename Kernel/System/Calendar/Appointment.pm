@@ -22,6 +22,7 @@ use Time::Piece;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
+    'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Time',
@@ -580,16 +581,21 @@ sub AppointmentDays {
         return if !$EndTimeSystem;
     }
 
-    my $SQL = '
+    # get user groups
+    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        UserID => $Param{UserID},
+        Type   => 'ro',
+    );
+    my @GroupIDs = sort keys %GroupList;
+
+    my $SQL = "
         SELECT ca.start_time, ca.end_time
         FROM calendar_appointment ca
         JOIN calendar c ON ca.calendar_id = c.id
-        WHERE c.user_id=?
-    ';
+        WHERE c.group_id IN ( ${\(join ', ', @GroupIDs)} )
+    ";
 
     my @Bind;
-
-    push @Bind, \$Param{UserID};
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 

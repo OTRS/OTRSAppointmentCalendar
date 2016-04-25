@@ -72,6 +72,7 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
+                            <th>[% Translate("Group") | html %]</th>
                             <th>[% Translate("Validity") | html %]</th>
                             <th>[% Translate("Changed") | html %]</th>
                             <th>[% Translate("Created") | html %]</th>
@@ -86,6 +87,7 @@
                                     [% Data.CalendarName | html %]
                                 </a>
                             </td>
+                            <td>[% Data.Group | html %]</td>
                             <td>[% Translate(Data.Valid) | html %]</td>
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
@@ -99,13 +101,13 @@
 [% RenderBlockEnd("Calendar") %]
 [% RenderBlockStart("CalendarNoDataRow") %]
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 [% Translate("No data found.") | html %]
                             </td>
                         </tr>
 [% RenderBlockEnd("CalendarNoDataRow") %]
                         <tr class="FilterMessage Hidden">
-                            <td colspan="5" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
+                            <td colspan="6" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -138,7 +140,19 @@
                         </div>
                         <div class="Clear"></div>
 
-                        <label>[% Translate("Validity") | html %]:</label>
+                        <label for="GroupID" class="Mandatory">
+                            <span class="Marker">*</span>
+                            [% Translate("Permission group") | html %]:
+                        </label>
+                        <div class="Field">
+                            [% Data.GroupID %]
+                        </div>
+                        <div class="Clear"></div>
+
+                        <label for="ValidID" class="Mandatory">
+                            <span class="Marker">*</span>
+                            [% Translate("Validity") | html %]:
+                        </label>
                         <div class="Field">
                             [% Data.ValidID %]
                         </div>

@@ -12,7 +12,7 @@ use utf8;
 
 use vars (qw($Self));
 
-# get Calendar object
+# get calendar object
 my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
 # get helper object
@@ -23,94 +23,121 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $UserID = 1;    # Use root
+# get needed objects
+my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
 
-# This will be ok
+# create test user
+my $UserLogin = $Helper->TestUserCreate();
+my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
+
+$Self->True(
+    $UserID,
+    "Test user $UserID created",
+);
+
+# create test group
+my $GroupName = 'test-calendar-group-' . $Helper->GetRandomID();
+my $GroupID   = $GroupObject->GroupAdd(
+    Name    => $GroupName,
+    ValidID => 1,
+    UserID  => 1,
+);
+
+$Self->True(
+    $GroupID,
+    "Test group $UserID created",
+);
+
+# add test user to test group
+my $Success = $GroupObject->PermissionGroupUserAdd(
+    GID        => $GroupID,
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+        owner     => 1,
+        priority  => 1,
+        rw        => 1,
+    },
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    "Test user $UserID added to test group $GroupID",
+);
+
+# this will be ok
 my %Calendar1 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
+    GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
-$Self->True(
-    $Calendar1{CalendarID},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - CalendarID',
-);
+for my $Key (qw(CalendarID GroupID CalendarName CreateTime CreateBy ChangeTime ChangeBy ValidID)) {
+    $Self->True(
+        $Calendar1{$Key},
+        "CalendarCreate( CalendarName => 'Test calendar', GroupID => $GroupID, UserID => $UserID ) - $Key",
+    );
+}
 
-$Self->True(
-    $Calendar1{UserID},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - UserID',
-);
-
-$Self->True(
-    $Calendar1{CalendarName},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - CalendarName',
-);
-
-$Self->True(
-    $Calendar1{CreateTime},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - CreateTime',
-);
-
-$Self->True(
-    $Calendar1{CreateBy},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - CreateBy',
-);
-
-$Self->True(
-    $Calendar1{ChangeTime},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - ChangeTime',
-);
-
-$Self->True(
-    $Calendar1{ChangeBy},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - ChangeBy',
-);
-
-$Self->True(
-    $Calendar1{ValidID},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) - ValidID',
-);
-
-# Try with same name
+# try with same name
 my %Calendar2 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
+    GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
 $Self->False(
     $Calendar2{CalendarID},
-    'CalendarCreate( CalendarName => "Test calendar", UserID => 1 ) again same name',
+    "CalendarCreate( CalendarName => 'Test calendar', GroupID => $GroupID, UserID => $UserID ) again same name",
 );
 
-# Try without calendar name
+# try without calendar name
 my %Calendar3 = $CalendarObject->CalendarCreate(
-    UserID => $UserID,
+    GroupID => $GroupID,
+    UserID  => $UserID,
 );
 
 $Self->False(
     $Calendar3{CalendarID},
-    'CalendarCreate( UserID => 1 ) without name',
+    "CalendarCreate( GroupID => $GroupID, UserID => $UserID ) without name",
 );
 
-# Try without UserID
+# try without GroupID
 my %Calendar4 = $CalendarObject->CalendarCreate(
     CalendarName => 'Meetings',
+    UserID       => $GroupID,
 );
 
 $Self->False(
     $Calendar4{CalendarID},
-    'CalendarCreate( CalendarName => "Meetings" ) without UserID',
+    "CalendarCreate( CalendarName => 'Meetings', UserID => $UserID ) without GroupID",
 );
 
+# try without UserID
 my %Calendar5 = $CalendarObject->CalendarCreate(
+    CalendarName => 'Meetings',
+    GroupID      => $GroupID,
+);
+
+$Self->False(
+    $Calendar5{CalendarID},
+    "CalendarCreate( CalendarName => 'Meetings', GroupID => $GroupID ) without UserID",
+);
+
+my %Calendar6 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar 2',
+    GroupID      => $GroupID,
     UserID       => $UserID,
     ValidID      => 2,
 );
 
 $Self->True(
-    $Calendar5{CalendarID},
-    'CalendarCreate( CalendarName => "Meetings", UserID => 1, ValidID => 2,) invalid state',
+    $Calendar6{CalendarID},
+    "CalendarCreate( CalendarName => 'Meetings', GroupID => $GroupID, UserID => $UserID, ValidID => 2 ) invalid state",
 );
 
 my %CalendarGet1 = $CalendarObject->CalendarGet(
@@ -120,104 +147,78 @@ my %CalendarGet1 = $CalendarObject->CalendarGet(
 
 $Self->True(
     $CalendarGet1{CalendarID},
-    'CalendarGet( CalendarName => "Test calendar", UserID => 1 )',
+    "CalendarGet( CalendarName => 'Test calendar', UserID => $UserID )",
 );
 
 my %CalendarGet2 = $CalendarObject->CalendarGet(
     CalendarID => $CalendarGet1{CalendarID},
-);
-
-my $Compare = $Self->IsDeeply(
-    \%CalendarGet1,
-    \%CalendarGet2,
-    'Same',
+    UserID     => $UserID,
 );
 
 $Self->True(
-    $Compare,
-    'Compare results',
+    $CalendarGet2{CalendarID},
+    "CalendarGet( CalendarID => $CalendarGet1{CalendarID}, UserID => $UserID )",
 );
 
-# Try without params
+$Self->IsDeeply(
+    \%CalendarGet1,
+    \%CalendarGet2,
+    'Returned data is the same',
+);
+
+# try without params
 my %CalendarGet3 = $CalendarObject->CalendarGet();
+
 $Self->False(
     $CalendarGet3{CalendarID},
     'CalendarGet() without parameters',
 );
 
-# Missing UserID
+# missing UserID
 my %CalendarGet4 = $CalendarObject->CalendarGet(
     CalendarName => 'Test calendar',
 );
+
 $Self->False(
     $CalendarGet4{CalendarID},
-    'CalendarGet( CalendarName => "Test calendar") without UserID',
+    "CalendarGet( CalendarName => 'Test calendar') without UserID",
 );
 
-# Missing CalendarName
+# missing CalendarName or CalendarID
 my %CalendarGet5 = $CalendarObject->CalendarGet(
     UserID => $UserID,
 );
+
 $Self->False(
     $CalendarGet5{CalendarID},
-    'CalendarGet(UserID => 1) without CalendarName',
+    "CalendarGet(UserID => $UserID) without CalendarName or CalendarID",
 );
 
-# Without params
+# without params
 my @CalendarList1 = $CalendarObject->CalendarList();
+
 $Self->True(
     scalar @CalendarList1 > 1,
     'CalendarList() without parameters',
 );
 
 my %CalendarListItem1 = %{ $CalendarList1[0] };
-$Self->True(
-    $CalendarListItem1{CalendarID},
-    'CalendarList() has CalendarID',
-);
 
-$Self->True(
-    $CalendarListItem1{UserID},
-    'CalendarList() has UserID',
-);
+for my $Key (qw(CalendarID GroupID CalendarName CreateTime CreateBy ChangeTime ChangeBy ValidID)) {
+    $Self->True(
+        $CalendarListItem1{$Key},
+        "CalendarList() has $Key",
+    );
+}
 
-$Self->True(
-    $CalendarListItem1{CalendarName},
-    'CalendarList() has CalendarName',
-);
-
-$Self->True(
-    $CalendarListItem1{CreateTime},
-    'CalendarList() has CreateTime',
-);
-
-$Self->True(
-    $CalendarListItem1{CreateBy},
-    'CalendarList() has CreateBy',
-);
-
-$Self->True(
-    $CalendarListItem1{ChangeTime},
-    'CalendarList() has ChangeTime',
-);
-
-$Self->True(
-    $CalendarListItem1{ChangeBy},
-    'CalendarList() has ChangeBy',
-);
-
-$Self->True(
-    $CalendarListItem1{ValidID},
-    'CalendarList() has ValidID',
-);
-
-# With UserID
+# with UserID
 my @CalendarList2 = $CalendarObject->CalendarList(
     UserID => $UserID,
 );
+
 $Self->True(
     scalar @CalendarList2 == 2,
-    'CalendarList( UserID = 1) with UserID',
+    "CalendarList( UserID => $UserID ) with UserID",
 );
 
 # only valid
@@ -225,9 +226,10 @@ my @CalendarList3 = $CalendarObject->CalendarList(
     UserID  => $UserID,
     ValidID => 1,
 );
+
 $Self->True(
     scalar @CalendarList3 == 1,
-    'CalendarList(UserID = 1, ValidID = 1) valid state',
+    "CalendarList(UserID => $UserID, ValidID => 1) valid state",
 );
 
 # only invalid
@@ -235,26 +237,29 @@ my @CalendarList4 = $CalendarObject->CalendarList(
     UserID  => $UserID,
     ValidID => 2,
 );
+
 $Self->True(
     scalar @CalendarList4 == 1,
-    'CalendarList(UserID = 1, ValidID = 2) invalid state',
+    "CalendarList(UserID => $UserID, ValidID => 2) invalid state",
 );
 
-# Try without OwnerID
+# update an already added calendar
 my $Update1 = $CalendarObject->CalendarUpdate(
     CalendarID   => $Calendar1{CalendarID},
-    CalendarName => 'Meetings',            # (required) Personal calendar name
-                                           # OwnerID          => 2,                   # (optional) Calendar owner UserID
-    UserID       => $UserID,               # (required) UserID (who made update)
-    ValidID      => 2,                     # (required) ValidID
+    GroupID      => $GroupID,
+    CalendarName => 'Meetings',
+    UserID       => $UserID,
+    ValidID      => 2,
 );
+
 $Self->True(
     $Update1,
-    "CalendarUpdate(CalendarID => 2, CalendarName => $Calendar1{CalendarID}, UserID => $UserID, ValidID => 2)",
+    "CalendarUpdate( CalendarID => $Calendar1{CalendarID}, CalendarName => 'Meetings', GroupID => $GroupID, UserID => $UserID, ValidID => 2 )",
 );
 
 my %CalendarGet6 = $CalendarObject->CalendarGet(
     CalendarID => $CalendarGet1{CalendarID},
+    UserID     => $UserID,
 );
 
 $Self->Is(

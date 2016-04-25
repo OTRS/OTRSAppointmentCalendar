@@ -37,11 +37,13 @@ sub Run {
 
     if ( $Self->{Subaction} eq 'New' ) {
 
+        my $GroupSelection = $Self->_GroupSelectionGet();
         my $ValidSelection = $Self->_ValidSelectionGet();
 
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
+                GroupID   => $GroupSelection,
                 ValidID   => $ValidSelection,
                 Subaction => 'StoreNew',
             },
@@ -50,18 +52,20 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
-        # Get data
-        $GetParam{CalendarName} = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
-        $GetParam{ValidID}      = $ParamObject->GetParam( Param => 'ValidID' )      || '';
+        # get data
+        for my $Param (qw(CalendarName GroupID ValidID)) {
+            $GetParam{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
+        }
 
         my %Error;
 
-        # Check name
+        # check name
         if ( !$GetParam{CalendarName} ) {
             $Error{'CalendarNameInvalid'} = 'ServerError';
         }
         else {
-            # Check if user has already calendar with same name
+
+            # check if there is a calendar with same name
             my %Calendar = $CalendarObject->CalendarGet(
                 CalendarName => $GetParam{CalendarName},
                 UserID       => $Self->{UserID},
@@ -75,10 +79,11 @@ sub Run {
 
         if (%Error) {
 
-            # Set title
+            # eet title
             $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
 
-            # Get valid selection
+            # get selections
+            my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
             my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
             $LayoutObject->Block(
@@ -86,6 +91,7 @@ sub Run {
                 Data => {
                     %Error,
                     %GetParam,
+                    GroupID   => $GroupSelection,
                     ValidID   => $ValidSelection,
                     Subaction => 'StoreNew',
                 },
@@ -106,14 +112,14 @@ sub Run {
             );
         }
 
-        # Redirect
+        # redirect
         return $LayoutObject->Redirect(
             OP => "Action=AgentAppointmentCalendarManage",
         );
     }
     elsif ( $Self->{Subaction} eq 'Edit' ) {
 
-        # Get data
+        # get data
         my %GetParam;
         $GetParam{CalendarID} = $ParamObject->GetParam( Param => 'CalendarID' ) || '';
 
@@ -124,11 +130,10 @@ sub Run {
             );
         }
 
-        # TODO: Check permissions (who can edit??)
-
         # get calendar data
         my %Calendar = $CalendarObject->CalendarGet(
             CalendarID => $GetParam{CalendarID},
+            UserID     => $Self->{UserID},
         );
 
         if ( !%Calendar ) {
@@ -140,18 +145,15 @@ sub Run {
             );
         }
 
-        # get user data
-        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-            UserID => $Calendar{UserID},
-        );
-
-        # Get valid selection
+        # get selections
+        my $GroupSelection = $Self->_GroupSelectionGet(%Calendar);
         my $ValidSelection = $Self->_ValidSelectionGet(%Calendar);
 
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
                 %Calendar,
+                GroupID   => $GroupSelection,
                 ValidID   => $ValidSelection,
                 Subaction => 'Update',
             },
@@ -162,15 +164,15 @@ sub Run {
     }
     elsif ( $Self->{Subaction} eq 'Update' ) {
 
-        # Get data
-        $GetParam{CalendarID}   = $ParamObject->GetParam( Param => 'CalendarID' )   || '';
-        $GetParam{CalendarName} = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
-        $GetParam{ValidID}      = $ParamObject->GetParam( Param => 'ValidID' )      || '';
+        # get data
+        for my $Param (qw(CalendarID CalendarName GroupID ValidID)) {
+            $GetParam{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
+        }
 
         my %Error;
 
         # check needed stuff
-        for my $Needed (qw(CalendarID CalendarName )) {
+        for my $Needed (qw(CalendarID CalendarName GroupID)) {
             if ( !$GetParam{$Needed} ) {
                 $Error{ $Needed . 'Invalid' } = 'ServerError';
                 $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
@@ -179,7 +181,7 @@ sub Run {
             }
         }
 
-        # Check if user has already calendar with same name
+        # check if there is already a calendar with same name
         my %Calendar = $CalendarObject->CalendarGet(
             CalendarName => $GetParam{CalendarName},
             UserID       => $Self->{UserID},
@@ -192,10 +194,11 @@ sub Run {
 
         if (%Error) {
 
-            # Set title
+            # set title
             $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
 
-            # Get valid selection
+            # get selections
+            my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
             my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
             $LayoutObject->Block(
@@ -203,6 +206,7 @@ sub Run {
                 Data => {
                     %Error,
                     %GetParam,
+                    GroupID   => $GroupSelection,
                     ValidID   => $ValidSelection,
                     Subaction => 'Update',
                 },
@@ -218,7 +222,7 @@ sub Run {
 
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('System was unable to update Calendar!'),
+                Message => Translatable('Error updating the calendar!'),
                 Comment => Translatable('Please contact the admin.'),
             );
         }
@@ -231,9 +235,10 @@ sub Run {
     }
     else {
 
-        # get all user's calendars
+        # get all calendars user has RW access to
         my @Calendars = $CalendarObject->CalendarList(
-            UserID => $Self->{UserID},
+            UserID     => $Self->{UserID},
+            Permission => 'rw',
         );
 
         $LayoutObject->Block(
@@ -249,6 +254,11 @@ sub Run {
         );
 
         for my $Calendar (@Calendars) {
+
+            # group name
+            $Calendar->{Group} = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+                GroupID => $Calendar->{GroupID},
+            );
 
             # valid text
             $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
@@ -293,6 +303,28 @@ sub _Mask {
     return $Output;
 }
 
+sub _GroupSelectionGet {
+    my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # get list of groups where user has RW permissions
+    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        UserID => $Self->{UserID},
+        Type   => 'rw',
+    );
+
+    my $GroupSelection = $LayoutObject->BuildSelection(
+        Data       => \%GroupList,
+        Name       => 'GroupID',
+        SelectedID => $Param{GroupID} || '',
+        Class      => 'Modernize Validate_Required',
+    );
+
+    return $GroupSelection;
+}
+
 sub _ValidSelectionGet {
     my ( $Self, %Param ) = @_;
 
@@ -305,7 +337,7 @@ sub _ValidSelectionGet {
         Data  => \%Valid,
         Name  => 'ValidID',
         ID    => 'ValidID',
-        Class => 'Modernize',
+        Class => 'Modernize Validate_Required',
 
         SelectedID => $Param{ValidID} || 1,
         Title => Translatable("Valid"),

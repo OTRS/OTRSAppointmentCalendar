@@ -26,8 +26,19 @@ $Selenium->RunTest(
         );
         my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
+        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
         my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
+
+        my $RandomID = $Helper->GetRandomID();
+
+        # create test group
+        my $GroupName = "test-calendar-group-$RandomID";
+        my $GroupID   = $GroupObject->GroupAdd(
+            Name    => $GroupName,
+            ValidID => 1,
+            UserID  => 1,
+        );
 
         # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
@@ -38,7 +49,7 @@ $Selenium->RunTest(
         # create test user
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
-            Groups   => ['users'],
+            Groups   => [$GroupName],
             Language => $Language,
         ) || die "Did not get test user";
 
@@ -59,17 +70,20 @@ $Selenium->RunTest(
 
         # create a few test calendars
         my %Calendar1 = $CalendarObject->CalendarCreate(
-            CalendarName => 'My Calendar',
+            CalendarName => "My Calendar $RandomID",
+            GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar2 = $CalendarObject->CalendarCreate(
-            CalendarName => 'Another Calendar',
+            CalendarName => "Another Calendar $RandomID",
+            GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar3 = $CalendarObject->CalendarCreate(
-            CalendarName => 'Yet Another Calendar',
+            CalendarName => "Yet Another Calendar $RandomID",
+            GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
@@ -271,7 +285,7 @@ $Selenium->RunTest(
         $Selenium->find_element( 'div#DatepickerOverlay', 'css' )->click();
 
         # filter just third calendar
-        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Yet Another Calendar');
+        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys("Yet Another Calendar $RandomID");
 
         # wait for filter to finish
         $Selenium->WaitFor(

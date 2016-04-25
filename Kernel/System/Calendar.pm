@@ -18,6 +18,7 @@ use vars qw(@ISA);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
+    'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
@@ -92,6 +93,7 @@ creates a new calendar for given user.
 
     my %Calendar = $CalendarObject->CalendarCreate(
         CalendarName    => 'Meetings',          # (required) Personal calendar name
+        GroupID         => 3,                   # (required) GroupID
         UserID          => 4,                   # (required) UserID
         ValidID         => 1,                   # (optional) Default is 1.
     );
@@ -99,7 +101,7 @@ creates a new calendar for given user.
 returns Calendar hash if successful:
     %Calendar = (
         CalendarID   => 2,
-        UserID       => 4,
+        GroupID      => 3,
         CalendarName => 'Meetings',
         CreateTime   => '2016-01-01 08:00:00',
         CreateBy     => 4,
@@ -117,7 +119,7 @@ sub CalendarCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarName UserID)) {
+    for my $Needed (qw(CalendarName GroupID UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -139,7 +141,7 @@ sub CalendarCreate {
 
     my $SQL = '
         INSERT INTO calendar
-            (user_id, name, create_time, create_by, change_time, change_by, valid_id)
+            (group_id, name, create_time, create_by, change_time, change_by, valid_id)
         VALUES (?, ?, current_timestamp, ?, current_timestamp, ?, ?)
     ';
 
@@ -147,7 +149,7 @@ sub CalendarCreate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{UserID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{UserID}, \$ValidID
+            \$Param{GroupID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{UserID}, \$ValidID
         ],
     );
 
@@ -185,24 +187,25 @@ sub CalendarCreate {
 
 =item CalendarGet()
 
-get calendar by name for given user.
+get calendar by name od id.
 
     my %Calendar = $CalendarObject->CalendarGet(
-        CalendarName    => 'Meetings',          # (required) Personal calendar name
-        UserID          => 4,                   # (required) UserID
-                                                # or
-        CalendarID      => 4,                   # (required) CalendarID
+        CalendarName => 'Meetings',          # (required) Calendar name
+                                             # or
+        CalendarID   => 4,                   # (required) CalendarID
+
+        UserID       => 2,                   # (required)
     );
 
 returns Calendar data:
     %Calendar = (
         CalendarID   => 2,
-        UserID       => 3,
+        GroupID      => 3,
         CalendarName => 'Meetings',
         CreateTime   => '2016-01-01 08:00:00',
-        CreateBy     => 3,
+        CreateBy     => 1,
         ChangeTime   => '2016-01-01 08:00:00',
-        ChangeBy     => 3,
+        ChangeBy     => 1,
         ValidID      => 1,
     );
 
@@ -212,11 +215,19 @@ sub CalendarGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    if ( !$Param{CalendarID} && ( !$Param{CalendarName} || !$Param{UserID} ) ) {
-
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+    if ( !$Param{CalendarID} && !$Param{CalendarName} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need CalendarID or CalendarName and UserID!"
+            Message  => "Need CalendarID or CalendarName!"
         );
         return;
     }
@@ -236,29 +247,33 @@ sub CalendarGet {
         }
     }
 
+    # get user groups
+    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        UserID => $Param{UserID},
+        Type   => 'ro',
+    );
+    my @GroupIDs = sort keys %GroupList;
+
     # create db object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my ( $SQL, @Bind );
+    my $SQL = "
+        SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
+        FROM calendar
+        WHERE group_id IN ( ${\(join ', ', @GroupIDs)} ) ";
 
+    my @Bind;
     if ( $Param{CalendarID} ) {
-        $SQL = '
-            SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
-            FROM calendar
-            WHERE
-                id=?
+        $SQL .= '
+            AND id=?
         ';
         push @Bind, \$Param{CalendarID};
     }
     else {
-        $SQL = '
-            SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
-            FROM calendar
-            WHERE
-                name=? AND
-                user_id=?
+        $SQL .= '
+            AND name=?
         ';
-        push @Bind, ( \$Param{CalendarName}, \$Param{UserID} );
+        push @Bind, \$Param{CalendarName};
     }
 
     # db query
@@ -270,7 +285,7 @@ sub CalendarGet {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
         $Calendar{CalendarID}   = $Row[0];
-        $Calendar{UserID}       = $Row[1];
+        $Calendar{GroupID}      = $Row[1];
         $Calendar{CalendarName} = $Row[2];
         $Calendar{CreateTime}   = $Row[3];
         $Calendar{CreateBy}     = $Row[4];
@@ -298,19 +313,20 @@ sub CalendarGet {
 get calendar list.
 
     my @Result = $CalendarObject->CalendarList(
-        UserID  => 4,               # (optional) Filter by User
+        UserID  => 4,               # (optional) For permission check
         ValidID => 1,               # (optional) Default 0.
                                     # 0 - All states
                                     # 1 - All valid
                                     # 2 - All invalid
                                     # 3 - All temporary invalid
+        Permission => 'rw',         # (optional) Default 'ro'.
     );
 
 returns:
     @Result = [
         {
             CalendarID   => 2,
-            UserID       => 3,
+            GroupID      => 3,
             CalendarName => 'Meetings',
             CreateTime   => '2016-01-01 08:00:00',
             CreateBy     => 3,
@@ -320,7 +336,7 @@ returns:
         },
         {
             CalendarID   => 3,
-            UserID       => 3,
+            GroupID      => 3,
             CalendarName => 'Customer presentations',
             CreateTime   => '2016-01-01 08:00:00',
             CreateBy     => 3,
@@ -355,7 +371,7 @@ sub CalendarList {
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
-        SELECT id, user_id, name, create_time, create_by, change_time, change_by, valid_id
+        SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
         FROM calendar
         WHERE 1=1
     ';
@@ -367,8 +383,15 @@ sub CalendarList {
     }
 
     if ( $Param{UserID} ) {
-        $SQL .= 'AND user_id=? ';
-        push @Bind, \$Param{UserID};
+
+        # get user groups
+        my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Param{UserID},
+            Type   => $Param{Permission} || 'ro',
+        );
+        my @GroupIDs = sort keys %GroupList;
+
+        $SQL .= "AND group_id IN ( ${\(join ', ', @GroupIDs)} ) ";
     }
 
     $SQL .= 'ORDER BY id ASC';
@@ -383,7 +406,7 @@ sub CalendarList {
     while ( my @Row = $DBObject->FetchrowArray() ) {
         my %Calendar;
         $Calendar{CalendarID}   = $Row[0];
-        $Calendar{UserID}       = $Row[1];
+        $Calendar{GroupID}      = $Row[1];
         $Calendar{CalendarName} = $Row[2];
         $Calendar{CreateTime}   = $Row[3];
         $Calendar{CreateBy}     = $Row[4];
@@ -410,8 +433,8 @@ updates an existing calendar.
 
     my $Success = $CalendarObject->CalendarUpdate(
         CalendarID       => 1,                   # (required) CalendarID
+        GroupID          => 2,                   # (required) Calendar group
         CalendarName     => 'Meetings',          # (required) Personal calendar name
-        OwnerID          => 2,                   # (optional) Calendar owner UserID
         UserID           => 4,                   # (required) UserID (who made update)
         ValidID          => 1,                   # (required) ValidID
     );
@@ -427,7 +450,7 @@ sub CalendarUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID CalendarName UserID ValidID)) {
+    for my $Needed (qw(CalendarID GroupID CalendarName UserID ValidID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -442,16 +465,11 @@ sub CalendarUpdate {
 
     my $SQL = '
         UPDATE calendar
-        SET name=?, change_time=current_timestamp, change_by=?, valid_id=?
+        SET group_id=?, name=?, change_time=current_timestamp, change_by=?, valid_id=?
     ';
 
     my @Bind;
-    push @Bind, ( \$Param{CalendarName}, \$Param{UserID}, \$Param{ValidID} );
-
-    if ( $Param{OwnerID} ) {
-        $SQL .= ', user_id ';
-        push @Bind, \$Param{OwnerID};
-    }
+    push @Bind, ( \$Param{GroupID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{ValidID} );
 
     $SQL .= '
             WHERE id=?
@@ -471,7 +489,7 @@ sub CalendarUpdate {
 
     $CacheObject->Delete(
         Type => $Self->{CacheType},
-        Key  => $Param{CalendarID}
+        Key  => $Param{CalendarID},
     );
 
     # fire event
