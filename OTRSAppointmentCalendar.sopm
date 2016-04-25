@@ -44,6 +44,7 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamList.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeam.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamUser.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>

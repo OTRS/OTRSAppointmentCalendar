@@ -15,7 +15,6 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
-    'Kernel::System::Main',
     'Kernel::System::LinkObject',
     'Kernel::System::Ticket',
 );
@@ -135,6 +134,67 @@ sub LinkList {
     my %Result = map { $_ => $LinkKeyList{$_}->{TicketNumber} } keys %LinkKeyList;
 
     return \%Result;
+}
+
+=item Search()
+
+search for supplied ticket number and return a hash of found tickets and their titles
+
+    my $ResultList = $TicketNumberObject->Search(
+        Search => '**',
+        UserID => 1,
+    );
+
+=cut
+
+sub Search {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Search UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # get ticket object
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # search the tickets
+    my @TicketIDs = $TicketObject->TicketSearch(
+        TicketNumber => $Param{Search},
+        Limit        => 100,
+        Result       => 'ARRAY',
+        ArchiveFlags => ['n'],
+        UserID       => $Param{UserID},
+    );
+
+    my %ResultList;
+
+    # clean the results
+    TICKET:
+    for my $TicketID (@TicketIDs) {
+
+        next TICKET if !$TicketID;
+
+        # get ticket data
+        my %Ticket = $TicketObject->TicketGet(
+            TicketID      => $TicketID,
+            DynamicFields => 0,
+            UserID        => $Self->{UserID},
+        );
+
+        next TICKET if !%Ticket;
+
+        # generate the ticket information string
+        $ResultList{ $Ticket{TicketNumber} } = $Ticket{TicketNumber} . ' ' . $Ticket{Title};
+    }
+
+    return \%ResultList;
 }
 
 1;

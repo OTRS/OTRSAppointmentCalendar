@@ -153,6 +153,10 @@
         top: 2px;
     }
 
+    .ui-autocomplete {
+        z-index: 4000 !important;
+    }
+
 } /* end @media */
 
 @media only screen and (min-width: 0px) and (max-width: 1024px) {

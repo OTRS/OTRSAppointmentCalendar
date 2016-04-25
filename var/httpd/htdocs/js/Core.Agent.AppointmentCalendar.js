@@ -22,7 +22,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
     // Appointment days cache and ready flag
     var AppointmentDaysCache,
-        AppointmentDaysCacheRefreshed = false;
+        AppointmentDaysCacheRefreshed = false,
+        AJAXCounter = 0;
 
     /**
      * @name Init
@@ -715,7 +716,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 $('<input />').prop('id', PluginID)
                     .prop('name', PluginID)
                     .prop('type', 'text')
-                    .addClass('W75pc')
+                    .addClass('PluginField W75pc')
                     .prependTo($ContainerObj);
 
                 $RemoveObj = $('<a />').addClass('RemoveButton')
@@ -738,6 +739,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 $PluginListObj.trigger('redraw.InputField');
 
                 InitRemoveButtons();
+                InitAutocomplete();
             }
 
             return false;
@@ -764,7 +766,58 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             });
         }
 
+        function InitAutocomplete() {
+            $('.PluginField').each(function () {
+                var $Element = $(this),
+                    PluginID = $Element.attr('id');
+
+                // Skip already initialized fields
+                if ($Element.hasClass('ui-autocomplete-input')) {
+                    return true;
+                }
+
+                $Element.autocomplete({
+                    minLength: 2,
+                    delay: 500,
+                    source: function (Request, Response) {
+                        var URL = Core.Config.Get('Baselink'),
+                            CurrentAJAXNumber = ++AJAXCounter,
+                            Data = {
+                                Action: 'AgentAppointmentPluginSearch',
+                                PluginKey: PluginID.replace(/^Plugin_/, ''),
+                                Term: Request.term + '*',
+                                MaxResults: 20
+                            };
+
+                        Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                            var Data = [];
+
+                            // Check if the result is from the latest ajax request
+                            if (AJAXCounter !== CurrentAJAXNumber) {
+                                return false;
+                            }
+
+                            $.each(Result, function () {
+                                Data.push({
+                                    label: this.Value,
+                                    key:  this.Key,
+                                    value: this.Value
+                                });
+                            });
+                            Response(Data);
+                        });
+                    },
+                    select: function (Event, UI) {
+                        Event.stopPropagation();
+                        $Element.val(UI.item.key);
+                        return false;
+                    }
+                });
+            });
+        }
+
         InitRemoveButtons();
+        InitAutocomplete();
     }
 
     /**

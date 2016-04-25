@@ -106,7 +106,7 @@
 [% FOREACH Key IN Data.PluginData.keys %]
             <label for="Plugin_[% Key | html %]">[% Translate(Data.PluginData.$Key.Name) | html %]:</label>
             <div class="Field">
-                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="W75pc" />
+                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="PluginField W75pc" />
                 <a class="RemoveButton" data-plugin="Plugin_[% Key | html %]" href="#" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
             </div>
 [% END %]

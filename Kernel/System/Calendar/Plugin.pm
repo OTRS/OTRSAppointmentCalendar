@@ -191,6 +191,39 @@ sub PluginLinkDelete {
     return $Success;
 }
 
+=item PluginSearch()
+
+search for plugin objects
+
+    my %ResultList = $PluginObject->PluginSearch(
+        Search    => $Search,
+        PluginKey => $PluginKey,
+        UserID    => $Self->{UserID},
+    );
+
+=cut
+
+sub PluginSearch {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Search PluginKey UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $ResultList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->Search(
+        %Param,
+    );
+
+    return $ResultList;
+}
+
 1;
 
 =back
