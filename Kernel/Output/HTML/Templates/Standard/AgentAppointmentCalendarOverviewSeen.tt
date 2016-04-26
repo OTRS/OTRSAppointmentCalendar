@@ -7,7 +7,7 @@
 # --
 
 <div class="InnerContent">
-    <h2>[% Translate("Following appointments has started") | html %]:</h2>
+    <h2>[% Translate("Following appointments have been started") | html %]:</h2>
     <form id="SearchForm">
         <table class="DataTable">
             <thead>

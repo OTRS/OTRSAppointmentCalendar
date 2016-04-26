@@ -16,19 +16,48 @@ sub Data {
     my $Self = shift;
 
     # Template: AgentAppointmentCalendarManage
-    $Self->{Translation}->{'Ticket Created'} = 'Ticket erstellt';
+    $Self->{Translation}->{'Calendar Management'} = 'Kalenderverwaltung';
+    $Self->{Translation}->{'Add new calendar'} = 'Neuen Kalender anlegen';
+    $Self->{Translation}->{'Calendars'} = 'Kalender';
+    $Self->{Translation}->{'Filter for calendars'} = 'Filter für Kalender';
+    $Self->{Translation}->{'Add new Calendar'} = 'Neuen Kalender anlegen';
+    $Self->{Translation}->{'Calendar name'} = 'Kalendername';
+    $Self->{Translation}->{'Permission group'} = 'Berechtigungsgruppe';
+    $Self->{Translation}->{'Edit Calendar'} = 'Kalender bearbeiten';
+    $Self->{Translation}->{'Calendar with same name already exists.'} = 'Ein Kalender mit gleichem Namen existiert bereits.';
 
     # Template: AgentAppointmentCalendarOverview
-    $Self->{Translation}->{'Manage Chat Channels'} = 'Chat-Kanäle verwalten';
+    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Dies ist eine Übersicht für die Terminkalender.';
+    $Self->{Translation}->{'No calendars found. Please add a calendar first by using Manage Calendars page.'} = 'Keine Kalender gefunden. Bitte legen Sie zuerst einen Kalender über die Kalenderverwaltung an.';
+    $Self->{Translation}->{'Week'} = 'Woche';
+    $Self->{Translation}->{'Jump'} = 'Springen';
+    $Self->{Translation}->{'Timeline'} = 'Zeitleiste';
+    $Self->{Translation}->{'This is a repeating appointment'} = 'Dieser Termin wiederholt sich';
+    $Self->{Translation}->{'Would you like to edit just this occurrence or all occurrences?'} = 'Möchten Sie nur diesen Termin oder alle Vorkommnisse bearbeiten?';
+    $Self->{Translation}->{'All occurrences'} = 'Alle Vorkommnisse';
+    $Self->{Translation}->{'Just this occurrence'} = 'Nur diesen Termin';
+    $Self->{Translation}->{'Dismiss'} = 'Verwerfen';
 
-    # Template: AgentAppointmentDispatchOverview
-    $Self->{Translation}->{'SMS (Short Message Service)'} = 'SMS (Short Message Service)';
+    # Template: AgentAppointmentCalendarOverviewSeen
+    $Self->{Translation}->{'Ongoing appointments'} = 'Laufende Termine';
+    $Self->{Translation}->{'Following appointments have been started'} = 'Die folgenden Termine haben begonnen';
+    $Self->{Translation}->{'Start time'} = 'Startzeitpunkt';
+    $Self->{Translation}->{'End time'} = 'Endzeitpunkt';
 
     # Template: AgentAppointmentEdit
-    $Self->{Translation}->{'Contact with data management'} = 'Kundenverwaltung';
-    $Self->{Translation}->{'Add contact with data'} = 'Einen Kontakt hinzufügen';
-    $Self->{Translation}->{'Please enter a search term to look for contacts with data.'} = 'Bitte geben Sie einen Suchbegriff ein, um nach Kunden zu suchen.';
-    $Self->{Translation}->{'Edit contact with data'} = 'Einen Kontakt bearbeiten';
+    $Self->{Translation}->{'Basic information'} = 'Grundlegende Informationen';
+    $Self->{Translation}->{'Date/Time'} = 'Datum/Zeit';
+    $Self->{Translation}->{'End date'} = 'Endzeitpunkt';
+    $Self->{Translation}->{'Please set this to a value after start date.'} = 'Bitte setzen Sie hier einen Wert nach dem Startzeitpunkt.';
+    $Self->{Translation}->{'All day'} = 'Ganztägig';
+    $Self->{Translation}->{'Repeat'} = 'Wiederholung';
+    $Self->{Translation}->{'Every Day'} = 'Jeden Tag';
+    $Self->{Translation}->{'Every Week'} = 'Jede Woche';
+    $Self->{Translation}->{'Every Month'} = 'Jeden Monat';
+    $Self->{Translation}->{'Every Year'} = 'Jedes Jahr';
+
+    # Template: AgentAppointmentResourceOverview
+    $Self->{Translation}->{'SMS (Short Message Service)'} = 'SMS (Short Message Service)';
 
     # Template: AgentAppointmentTeam
     $Self->{Translation}->{'These are the possible data attributes for contacts.'} = 'Die folgenden Attribute sind für Kontakte möglich.';
@@ -45,32 +74,32 @@ sub Data {
 
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Terminkalender Übersicht';
-    $Self->{Translation}->{'Calendar Overview'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Dispatch overview screen.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Dispatch Overview'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Dispatch overview page.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Appointment edit screen.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Edit appointment'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Appointments list.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Appointment list'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Plugin search'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Resources list.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Team list'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Calendar manage screen.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Manage Calendars'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Manage different calendars.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Team management screen.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Manage Teams'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Team management.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Team agents management screen.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Manage Team Agents'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Manage team agents.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'List of colors in hexadecimal RGB which will be allocated to different user calendars. Make sure the colors are dark enough so white text can be overlayed on them. If the number of calendars exceeds the number of colors, the list will be reused from the start.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Defines which backend should be used for managing calendars.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Defines the ticket number plugin for calendar appointments.'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Ticket Number'} = 'Kalender Übersicht';
-    $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Kalender Übersicht';
+    $Self->{Translation}->{'Calendar Overview'} = 'Kalenderübersicht';
+    $Self->{Translation}->{'Resource overview screen.'} = 'Resourcenübersichtsseite';
+    $Self->{Translation}->{'Resource Overview'} = 'Resourcenübersicht';
+    $Self->{Translation}->{'Resource overview page.'} = 'Resourcenübersichtsseite';
+    $Self->{Translation}->{'Appointment edit screen.'} = 'Terminbearbeitungsansicht';
+    $Self->{Translation}->{'Edit appointment'} = 'Termin bearbeiten';
+    $Self->{Translation}->{'Appointments list.'} = 'Terminliste.';
+    $Self->{Translation}->{'Appointment list'} = 'Terminliste';
+    $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Module zur Pluginsuche für die Autovervollständigung.';
+    $Self->{Translation}->{'Plugin search'} = 'Pluginsuche';
+    $Self->{Translation}->{'Resources list.'} = 'Resourcenliste';
+    $Self->{Translation}->{'Team list'} = 'Teamliste';
+    $Self->{Translation}->{'Calendar manage screen.'} = 'Kalenderverwaltungsansicht';
+    $Self->{Translation}->{'Manage Calendars'} = 'Kalender verwalten';
+    $Self->{Translation}->{'Manage different calendars.'} = 'Verschiedene Kalender verwalten';
+    $Self->{Translation}->{'Team management screen.'} = 'Teamverwaltungsansicht';
+    $Self->{Translation}->{'Manage Teams'} = 'Teams verwalten';
+    $Self->{Translation}->{'Team management.'} = 'Teamverwaltung';
+    $Self->{Translation}->{'Team agents management screen.'} = 'Team-Agenten Verwaltungsansicht';
+    $Self->{Translation}->{'Manage Team Agents'} = 'Team-Agenten verwalten';
+    $Self->{Translation}->{'Manage team agents.'} = 'Team-Agenten verwalten';
+    $Self->{Translation}->{'List of colors in hexadecimal RGB which will be allocated to different user calendars. Make sure the colors are dark enough so white text can be overlayed on them. If the number of calendars exceeds the number of colors, the list will be reused from the start.'} = 'Liste an Farben in Hexadezimal RGB, welche verschiedenen Benutzerkalendern zugewiesen werden. Stellen Sie sicher, dass die Farben dunkel genug sind, um weißen Text darauf darzustellen. Sofern die Anzahl der Kalender die Anzahl der verfügbaren Farben überschreitet, wird diese Liste erneut von Anfang an genutzt.';
+    $Self->{Translation}->{'Defines which backend should be used for managing calendars.'} = 'Legt fest, welches Backend für die Kalenderverwaltung genutzt wird.';
+    $Self->{Translation}->{'Defines the ticket number plugin for calendar appointments.'} = 'Legt das Plugin für die Ticketnummern innerhalb von Terminkalendern fest.';
+    $Self->{Translation}->{'Ticket Number'} = 'Ticketnummer';
+    $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Verknüpft Termine und Tickets mit dem Typ "Normal".';
 }
 
 1;

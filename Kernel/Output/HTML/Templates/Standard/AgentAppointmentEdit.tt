@@ -17,7 +17,7 @@
 [% END %]
         <input type="hidden" id="Recurring" name="Recurring" value="[% Data.Recurring | html %]"/>
         <fieldset class="TableLike">
-            <legend><span>[% Translate("Basic info") | html %]</span></legend>
+            <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
             <div class="Field">
                 <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required" />
@@ -74,7 +74,7 @@
             <div class="Field">
                 [% Data.EndDateString %]
                 <div id="EndDayError" class="TooltipErrorMessage">
-                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                    <p>[% Translate("Please set this to a value after start date.") | html %]</p>
                 </div>
             </div>
             <div class="Clear"></div>
@@ -93,7 +93,7 @@
             <div id="RecurrenceUntilDiv" class="Field Hidden">
                 [% Data.RecurrenceUntilString %]
                 <div id="RecurrenceUntilDayError" class="TooltipErrorMessage">
-                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                    <p>[% Translate("Please set this to value after start date.") | html %]</p>
                 </div>
             </div>
             <div id="RecurrenceCountDiv" class="Field Hidden">
