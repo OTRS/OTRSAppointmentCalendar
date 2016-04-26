@@ -57,20 +57,22 @@ sub Data {
     $Self->{Translation}->{'Every Year'} = 'Jedes Jahr';
 
     # Template: AgentAppointmentResourceOverview
-    $Self->{Translation}->{'SMS (Short Message Service)'} = 'SMS (Short Message Service)';
+    $Self->{Translation}->{'This is a resource overview page.'} = 'Dies ist eine Resourcenübersicht.';
+    $Self->{Translation}->{'No teams found. Please add a team first by using Manage Teams page.'} = 'Keine Teams gefunden. Bitte legen Sie zuerst ein Team über die Teamverwaltung an.';
+    $Self->{Translation}->{'All-day'} = 'Ganztägig';
+    $Self->{Translation}->{'Timeline Month'} = 'Zeitleiste Monat';
+    $Self->{Translation}->{'Timeline Week'} = 'Zeitleiste Woche';
+    $Self->{Translation}->{'Timeline Day'} = 'Zeitleiste Tag';
+    $Self->{Translation}->{'Resources'} = 'Resourcen';
 
     # Template: AgentAppointmentTeam
-    $Self->{Translation}->{'These are the possible data attributes for contacts.'} = 'Die folgenden Attribute sind für Kontakte möglich.';
+    $Self->{Translation}->{'Add Team'} = 'Team hinzufügen';
+    $Self->{Translation}->{'Team added!'} = 'Team hinzugefügt!';
+    $Self->{Translation}->{'Edit Team'} = 'Team bearbeiten';
 
     # Template: AgentAppointmentTeamUser
-    $Self->{Translation}->{'Datatype'} = 'Datentyp';
-
-    # Template: PublicCalendar
-    $Self->{Translation}->{'Recipient SMS numbers'} = 'Empfänger-SMS-Nummern';
-
-    # Perl Module: Kernel/Modules/AdminChatChannel.pm
-    $Self->{Translation}->{'Chat Channel %s added'} = 'Chat-Kanal %s hinzugefügt';
-    $Self->{Translation}->{'Chat channel %s edited'} = 'Chat-Kanal %s bearbeitet';
+    $Self->{Translation}->{'Manage Team-Agent Relations'} = 'Team-Agenten-Zuordnungen verwalten';
+    $Self->{Translation}->{'Change Agent Relations for Team'} = 'Ändere Agenten-Zuordnungen für Team';
 
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Terminkalender Übersicht';
