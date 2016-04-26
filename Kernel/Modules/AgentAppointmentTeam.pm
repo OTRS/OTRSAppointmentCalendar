@@ -88,6 +88,16 @@ sub Run {
             }
         }
 
+        # check if there is a team with same name
+        my %Team = $TeamObject->TeamGet(
+            Name   => $GetParam{Name},
+            UserID => $Self->{UserID},
+        );
+        if ( %Team && $Team{ID} != $GetParam{TeamID} ) {
+            $Errors{NameInvalid} = "ServerError";
+            $Errors{NameExists}  = 1;
+        }
+
         # if no errors occurred
         if ( !%Errors ) {
 
@@ -168,6 +178,16 @@ sub Run {
             if ( !$GetParam{$Needed} ) {
                 $Errors{ $Needed . 'Invalid' } = 'ServerError';
             }
+        }
+
+        # check if there is a team with same name
+        my %Team = $TeamObject->TeamGet(
+            Name   => $GetParam{Name},
+            UserID => $Self->{UserID},
+        );
+        if (%Team) {
+            $Errors{NameInvalid} = "ServerError";
+            $Errors{NameExists}  = 1;
         }
 
         # if no errors occurred

@@ -26,11 +26,51 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-my $UserID = 1;    # use root user
+# create test user
+my $UserLogin = $Helper->TestUserCreate();
+my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
 
-my $Success = $TeamObject->TeamAdd(
+$Self->True(
+    $UserID,
+    "Test user $UserID created",
+);
+
+# create test group
+my $GroupName = 'test-calendar-group-' . $Helper->GetRandomID();
+my $GroupID   = $GroupObject->GroupAdd(
+    Name    => $GroupName,
+    ValidID => 1,
+    UserID  => 1,
+);
+
+$Self->True(
+    $GroupID,
+    "Test group $GroupID created",
+);
+
+# add test user to test group
+my $Success = $GroupObject->PermissionGroupUserAdd(
+    GID        => $GroupID,
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+        owner     => 1,
+        priority  => 1,
+        rw        => 1,
+    },
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    "Test user $UserID added to test group $GroupID",
+);
+
+$Success = $TeamObject->TeamAdd(
     Name    => 'Test Team',
-    GroupID => 1,
+    GroupID => 1,              # admin
     Comment => 'My comment',
     ValidID => 1,
     UserID  => $UserID,
@@ -110,7 +150,7 @@ for my $ListTeamID ( sort keys %List ) {
 }
 
 $Success = $TeamObject->TeamAdd(
-    GroupID => 1,
+    GroupID => $GroupID,
     Comment => 'My comment',
     ValidID => 1,
     UserID  => $UserID,
@@ -123,7 +163,7 @@ $Self->False(
 
 $Success = $TeamObject->TeamAdd(
     Name    => 'Test Team 2',
-    GroupID => 1,
+    GroupID => $GroupID,
     Comment => 'My comment',
     ValidID => 1,
 );
@@ -148,7 +188,7 @@ $Self->False(
 $Success = $TeamObject->TeamAdd(
     Name    => 'Test Team 2',
     Comment => 'My comment',
-    GroupID => 1,
+    GroupID => $GroupID,
     UserID  => $UserID,
 );
 
@@ -157,11 +197,37 @@ $Self->False(
     'TeamAdd - no valid ID',
 );
 
+$Success = $TeamObject->TeamAdd(
+    Name    => 'The Dream Team',
+    GroupID => -1,
+    Comment => 'Team from dreams',
+    ValidID => 1,
+    UserID  => $UserID,
+);
+
+$Self->False(
+    $Success,
+    'TeamAdd - non-existing group',
+);
+
+$Success = $TeamObject->TeamAdd(
+    Name    => 'Test Team',
+    GroupID => 1,
+    Comment => 'My comment',
+    ValidID => 1,
+    UserID  => $UserID,
+);
+
+$Self->False(
+    $Success,
+    'TeamAdd - same name',
+);
+
 # change the team
 $Success = $TeamObject->TeamUpdate(
     TeamID  => $TeamID,
     Name    => 'New Name',
-    GroupID => 2,
+    GroupID => $GroupID,
     Comment => 'Some comment',
     ValidID => 1,
     UserID  => $UserID,
@@ -185,7 +251,7 @@ $Self->Is(
 
 $Self->Is(
     $Team{GroupID},
-    2,
+    $GroupID,
     'TeamGet - team group ID changed',
 );
 
@@ -201,20 +267,8 @@ $ConfigObject->Set(
 );
 
 # create test user
-my $UserRand   = 'user' . $Helper->GetRandomID();
-my $TestUserID = $UserObject->UserAdd(
-    UserFirstname => 'Test',
-    UserLastname  => 'User',
-    UserLogin     => $UserRand,
-    UserEmail     => $UserRand . '@example.com',
-    ValidID       => 1,
-    ChangeUserID  => $UserID,
-);
-
-$Self->True(
-    $TestUserID,
-    'UserAdd() - test user created',
-);
+my $TestUserLogin = $Helper->TestUserCreate();
+my $TestUserID = $UserObject->UserLookup( UserLogin => $TestUserLogin );
 
 # check permissions
 %List = $TeamObject->AllowedTeamList(
@@ -229,7 +283,7 @@ $Self->Is(
 
 # grant permissions
 $Success = $GroupObject->PermissionGroupUserAdd(
-    GID        => 2,
+    GID        => $GroupID,
     UID        => $TestUserID,
     Permission => {
         ro        => 1,

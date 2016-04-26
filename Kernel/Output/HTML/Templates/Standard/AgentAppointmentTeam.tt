@@ -138,9 +138,15 @@
                             <div id="NameError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
+[% IF Data.NameExists %]
+                            <div id="NameServerError" class="TooltipErrorMessage">
+                                <p>[% Translate("Team with same name already exists.") | html %]</p>
+                            </div>
+[% ELSE %]
                             <div id="NameServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
+[% END %]
                         </div>
                         <div class="Clear"></div>
 

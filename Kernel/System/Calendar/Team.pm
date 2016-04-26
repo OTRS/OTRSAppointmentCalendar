@@ -146,8 +146,11 @@ sub TeamList {
 get a Team
 
     my %Team = $TeamObject->TeamGet(
-        TeamID => 123,
-        UserID => 1,
+        TeamID => 123,              # required
+                                    # or
+        Name => 'Some Team Name',   # required
+
+        UserID => 1,                # required
     );
 
 =cut
@@ -156,22 +159,21 @@ sub TeamGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(TeamID UserID)) {
-        if ( !$Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
+    if ( ( !$Param{TeamID} && !$Param{Name} ) || !$Param{UserID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need TeamID or Name and UserID!',
+        );
+        return;
     }
 
     # get local cache object
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # check cache
+    my $CacheKey = $Param{TeamID} || $Param{Name};
     my $Cache = $CacheObject->Get(
-        Key  => 'TeamGet' . $Param{TeamID},
+        Key  => 'TeamGet' . $CacheKey,
         Type => $Self->{CacheType},
     );
     return %{$Cache} if $Cache;
@@ -179,13 +181,24 @@ sub TeamGet {
     # get local database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
+    my @Bind;
+    my $SQL = 'SELECT id, name, group_id, comments, valid_id, create_time, create_by, change_time, change_by
+        FROM calendar_team
+        WHERE 1=1 ';
+
+    if ( $Param{TeamID} ) {
+        $SQL .= 'AND id = ?';
+        push @Bind, \$Param{TeamID};
+    }
+    elsif ( $Param{Name} ) {
+        $SQL .= 'AND name = ?';
+        push @Bind, \$Param{Name};
+    }
+
     # ask database
     return if !$DBObject->Prepare(
-        SQL =>
-            'SELECT id, name, group_id, comments, valid_id, create_time, create_by, change_time, change_by
-                    FROM calendar_team
-                    WHERE id = ?',
-        Bind  => [ \$Param{TeamID} ],
+        SQL   => $SQL,
+        Bind  => \@Bind,
         Limit => 1,
     );
 
@@ -205,7 +218,7 @@ sub TeamGet {
 
     # set cache
     $CacheObject->Set(
-        Key   => 'TeamGet' . $Param{TeamID},
+        Key   => 'TeamGet' . $CacheKey,
         Value => \%Data,
         Type  => $Self->{CacheType},
         TTL   => $Self->{CacheTTL},
@@ -242,12 +255,19 @@ sub TeamAdd {
         }
     }
 
+    # check if team with same name exists
+    return if $Self->TeamGet(
+        Name   => $Param{Name},
+        UserID => $Param{UserID},
+    );
+
+    # check group
+    return if !$Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+        GroupID => $Param{GroupID},
+    );
+
     # get local database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # TODO
-    # implement Group check (enforced by constraint on DB level)
-    # duplicate name is only enforced on DB level
 
     return if !$DBObject->Do(
         SQL => 'INSERT INTO calendar_team
@@ -311,6 +331,20 @@ sub TeamUpdate {
             return;
         }
     }
+
+    # check if team with same name exists
+    my %Team = $Self->TeamGet(
+        Name   => $Param{Name},
+        UserID => $Param{UserID},
+    );
+    if (%Team) {
+        return if $Team{ID} != $Param{TeamID};
+    }
+
+    # check group
+    return if !$Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+        GroupID => $Param{GroupID},
+    );
 
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL => 'UPDATE calendar_team
