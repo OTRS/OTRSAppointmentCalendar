@@ -123,7 +123,7 @@
     <DatabaseInstall Type="post">
         <TableCreate Name="calendar">
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="group_id" Required="true" Type="INTEGER"/>
+            <Column Name="group_id" Required="true" Type="INTEGER"/>            
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />

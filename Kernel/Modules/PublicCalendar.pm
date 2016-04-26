@@ -8,6 +8,7 @@
 
 package Kernel::Modules::PublicCalendar;
 
+#use CGI::Auth::Basic;
 use strict;
 use warnings;
 
@@ -53,6 +54,7 @@ sub Run {
     # get calendar
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $GetParam{CalendarID},
+        UserID     => $GetParam{UserID},
     );
 
     if ( !%Calendar ) {

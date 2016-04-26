@@ -94,6 +94,7 @@ sub Export {
 
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $Param{CalendarID},
+        UserID     => $Param{UserID},
     );
     return if !$Calendar{CalendarID};
 
