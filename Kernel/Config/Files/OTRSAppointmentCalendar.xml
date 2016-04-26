@@ -54,19 +54,19 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentAppointmentDispatchOverview" Required="0" Valid="1">
+    <ConfigItem Name="Frontend::Module###AgentAppointmentResourceOverview" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Dispatch overview screen.</Description>
-                <Title Translatable="1">Dispatch Overview</Title>
+                <Description Translatable="1">Resource overview screen.</Description>
+                <Title Translatable="1">Resource Overview</Title>
                 <NavBarName>Calendar</NavBarName>
                 <NavBar>
-                    <Description Translatable="1">Dispatch overview page.</Description>
-                    <Name Translatable="1">Dispatch Overview</Name>
-                    <Link>Action=AgentAppointmentDispatchOverview</Link>
+                    <Description Translatable="1">Resource overview page.</Description>
+                    <Name Translatable="1">Resource Overview</Name>
+                    <Link>Action=AgentAppointmentResourceOverview</Link>
                     <LinkOption></LinkOption>
                     <NavBar>Calendar</NavBar>
                     <Type></Type>

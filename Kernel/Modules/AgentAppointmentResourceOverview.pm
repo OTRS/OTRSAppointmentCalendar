@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Modules::AgentAppointmentDispatchOverview;
+package Kernel::Modules::AgentAppointmentResourceOverview;
 
 use strict;
 use warnings;
@@ -160,7 +160,7 @@ sub Run {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AgentAppointmentDispatchOverview',
+        TemplateFile => 'AgentAppointmentResourceOverview',
         Data         => {
             EditAction        => 'AgentAppointmentEdit',
             EditMaskSubaction => 'EditMask',

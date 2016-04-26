@@ -7,7 +7,7 @@
 # --
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
-    <h1>[% Translate("Dispatch Overview") | html %]</h1>
+    <h1>[% Translate("Resource Overview") | html %]</h1>
 
     <div class="SidebarColumn">
         <div class="WidgetSimple">
@@ -32,7 +32,7 @@
 [% RenderBlockStart("CalendarWidget") %]
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Translate("Your Calendars") | html %]</h2>
+                <h2>[% Translate("Calendars") | html %]</h2>
             </div>
             <div class="Content">
                 <input type="text" id="FilterCalendars" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterCalendars" value="" title="[% Translate("Filter for calendars") | html %]">
@@ -65,7 +65,7 @@
             </div>
             <div class="Content">
                 <p class="FieldExplanation">
-                    [% Translate("This is a dispatch overview page.") | html %]
+                    [% Translate("This is a resource overview page.") | html %]
                 </p>
             </div>
         </div>
