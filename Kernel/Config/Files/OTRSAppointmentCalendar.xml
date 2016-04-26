@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_config version="1.0" init="Config">
     <ConfigItem Name="PublicFrontend::Module###PublicCalendar" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the public interface.</Description>
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Frontend::Public::ModuleRegistration</SubGroup>
         <Setting>
@@ -303,7 +303,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::Backend" Required="1" Valid="1">
-        <Description Translatable="1">Defines which backend should be used for managing Calendars.</Description>
+        <Description Translatable="1">Defines which backend should be used for managing calendars.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar</SubGroup>
         <Setting>
