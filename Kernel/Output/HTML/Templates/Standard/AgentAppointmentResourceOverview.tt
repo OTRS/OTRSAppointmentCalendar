@@ -26,6 +26,11 @@
                             <span><i class="fa fa-users"></i>[% Translate("Manage Teams") | html %]</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeamUser" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-user-plus"></i>[% Translate("Manage Team Agents") | html %]</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -86,7 +91,7 @@
                 <p>[% Translate("No teams found. Please add a team first by using Manage Teams page.") | html %]</p>
 [% RenderBlockEnd("NoTeam") %]
 
-[% RenderBlockStart("CalendarDiv") %]
+[% RenderBlockStart("TeamList") %]
                 <div class="SpacingBottom">
                     <form id="ChangeTeamForm">
                         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
@@ -94,7 +99,13 @@
                         [% Data.TeamStrg %]
                     </form>
                 </div>
+[% RenderBlockEnd("TeamList") %]
 
+[% RenderBlockStart("EmptyTeam") %]
+                <p>[% Translate("No team agents found. Please assign agents to a team first by using Manage Team Agents page.") | html %]</p>
+[% RenderBlockEnd("NoTeam") %]
+
+[% RenderBlockStart("CalendarDiv") %]
                 <div style="width: [% Data.CalendarWidth | html %]%; margin: 0 auto; z-index: 10;" id="calendar"></div>
 [% RenderBlockEnd("CalendarDiv") %]
 

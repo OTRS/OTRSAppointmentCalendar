@@ -34,10 +34,23 @@
                             <span><i class="fa fa-plus-square"></i>[% Translate("Add Team") | html %]</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeamUser" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-user-plus"></i>[% Translate("Manage Team Agents") | html %]</span>
+                        </a>
+                    </li>
 [% RenderBlockEnd("ActionAdd") %]
                 </ul>
             </div>
 [% RenderBlockEnd("ActionList") %]
+        </div>
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterTeams">[% Translate("Filter") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterTeams" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterTeams" value=""  title="[% Translate("Filter for teams") | html %]"/>
+            </div>
         </div>
     </div>
 
@@ -50,7 +63,7 @@
             </div>
             <div class="Content">
 
-                <table class="DataTable">
+                <table class="DataTable" id="AppointmentTeams">
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
@@ -89,9 +102,17 @@
                             <td>[% Data.CreateTime | Localize("TimeShort") %]</td>
                         </tr>
 [% RenderBlockEnd("OverviewResultRow") %]
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="3" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    Core.UI.Table.InitTableFilter($('#FilterTeams'), $('#AppointmentTeams'));
+//]]></script>
+[% END %]
 [% RenderBlockEnd("OverviewResult") %]
 
 [% RenderBlockStart("OverviewUpdate") %]

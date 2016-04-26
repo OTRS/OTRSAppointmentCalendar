@@ -80,62 +80,84 @@ sub Run {
             );
 
             $LayoutObject->Block(
-                Name => 'CalendarDiv',
+                Name => 'TeamList',
                 Data => {
                     %Param,
-                    CalendarWidth => 100,
                 },
             );
 
-            $LayoutObject->Block(
-                Name => 'CalendarWidget',
+            my %TeamUserList = $TeamObject->TeamUserList(
+                TeamID => $Param{TeamID},
+                UserID => $Self->{UserID},
             );
 
-            my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
-                [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
+            if ( scalar keys %TeamUserList > 0 ) {
 
-            my $CalendarColorID = 0;
-            my $CurrentCalendar = 1;
-            for my $Calendar (@Calendars) {
-
-                # current calendar color (sequential)
-                $Calendar->{CalendarColor} = $CalendarColors->[$CalendarColorID];
-
-                # calendar checkbox in the widget
                 $LayoutObject->Block(
-                    Name => 'CalendarSwitch',
+                    Name => 'CalendarDiv',
                     Data => {
-                        %{$Calendar},
                         %Param,
+                        CalendarWidth => 100,
                     },
                 );
 
-                # calendar source (JSON)
                 $LayoutObject->Block(
-                    Name => 'CalendarSource',
+                    Name => 'CalendarWidget',
+                );
+
+                my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
+                    [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
+
+                my $CalendarColorID = 0;
+                my $CurrentCalendar = 1;
+                for my $Calendar (@Calendars) {
+
+                    # current calendar color (sequential)
+                    $Calendar->{CalendarColor} = $CalendarColors->[$CalendarColorID];
+
+                    # calendar checkbox in the widget
+                    $LayoutObject->Block(
+                        Name => 'CalendarSwitch',
+                        Data => {
+                            %{$Calendar},
+                            %Param,
+                        },
+                    );
+
+                    # calendar source (JSON)
+                    $LayoutObject->Block(
+                        Name => 'CalendarSource',
+                        Data => {
+                            %{$Calendar},
+                            %Param,
+                        },
+                    );
+                    $LayoutObject->Block(
+                        Name => 'CalendarSourceComma',
+                    ) if $CurrentCalendar < scalar @Calendars;
+
+                    # restart using the color array if needed
+                    $CalendarColorID = $CalendarColors->[ $CalendarColorID + 1 ] ? $CalendarColorID + 1 : 0;
+
+                    $CurrentCalendar++;
+                }
+
+                # resource JSON
+                $LayoutObject->Block(
+                    Name => 'ResourceJSON',
                     Data => {
-                        %{$Calendar},
+                        TeamID => $GetParam{TeamID},
                         %Param,
                     },
                 );
-                $LayoutObject->Block(
-                    Name => 'CalendarSourceComma',
-                ) if $CurrentCalendar < scalar @Calendars;
-
-                # restart using the color array if needed
-                $CalendarColorID = $CalendarColors->[ $CalendarColorID + 1 ] ? $CalendarColorID + 1 : 0;
-
-                $CurrentCalendar++;
             }
 
-            # resource JSON
-            $LayoutObject->Block(
-                Name => 'ResourceJSON',
-                Data => {
-                    TeamID => $GetParam{TeamID},
-                    %Param,
-                },
-            );
+            # show empty team message
+            else {
+                $LayoutObject->Block(
+                    Name => 'EmptyTeam',
+                );
+            }
         }
 
         # show no team found message

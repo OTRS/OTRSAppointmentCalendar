@@ -14,6 +14,20 @@
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+                <ul class="ActionList">
+                    <li>
+                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeam" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-users"></i>[% Translate("Manage Teams") | html %]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="WidgetSimple">
+            <div class="Header">
                 <h2><label for="FilterTeams">[% Translate("Filter") | html %]</label></h2>
             </div>
             <div class="Content">
