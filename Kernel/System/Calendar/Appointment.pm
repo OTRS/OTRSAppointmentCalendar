@@ -130,7 +130,7 @@ sub AppointmentCreate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceByYear} &&
+            !$Param{RecurrenceByYear}  &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
@@ -888,7 +888,7 @@ sub AppointmentUpdate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceByYear} &&
+            !$Param{RecurrenceByYear}  &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
