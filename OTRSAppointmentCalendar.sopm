@@ -36,6 +36,7 @@
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/Leapyear.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal/Duration.pm"/>
+        <File Permission="640" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
