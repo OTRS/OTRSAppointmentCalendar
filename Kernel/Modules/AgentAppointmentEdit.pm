@@ -457,6 +457,7 @@ sub Run {
         $LayoutObject->Block(
             Name => 'EditMask',
             Data => {
+                PermissionLevel => $PermissionLevel{$Permissions},
                 %Param,
                 %GetParam,
                 %Appointment,
