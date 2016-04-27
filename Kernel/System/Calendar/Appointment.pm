@@ -130,7 +130,7 @@ sub AppointmentCreate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceByYear}  &&
+            !$Param{RecurrenceByYear} &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
@@ -726,7 +726,6 @@ returns a hash:
         ChangeTime          => '2016-01-01 00:00:00',
         ChangeBy            => 2,
     );
-
 =cut
 
 sub AppointmentGet {
@@ -888,7 +887,7 @@ sub AppointmentUpdate {
         $Param{Recurring}
         &&
         (
-            !$Param{RecurrenceByYear}  &&
+            !$Param{RecurrenceByYear} &&
             !$Param{RecurrenceByMonth} &&
             !$Param{RecurrenceByDay}
         )
