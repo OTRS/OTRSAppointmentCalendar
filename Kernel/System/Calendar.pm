@@ -319,7 +319,6 @@ get calendar list.
                                     # 1 - All valid
                                     # 2 - All invalid
                                     # 3 - All temporary invalid
-        Permission => 'rw',         # (optional) Default 'ro'.
     );
 
 returns:
@@ -504,6 +503,100 @@ sub CalendarUpdate {
     return 1;
 }
 
+=item CalendarPermissionGet()
+
+get permission level for given CalendarID and UserID.
+
+    my $Permission = $CalendarObject->CalendarPermissionGet(
+        CalendarID  => 1,                   # (required) CalendarID
+        UserID      => 4,                   # (required) UserID
+    );
+
+returns:
+    $Permission = 'rw';    # 'ro', 'rw',...
+
+=cut
+
+sub CalendarPermissionGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # needed object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
+
+    # cache params
+    my $CacheType = 'CalendarPermissionGet';
+    my $CacheKey  = "$Param{CalendarID}-$Param{UserID}";
+
+    # get cached value if exists
+    my $Data = $CacheObject->Get(
+        Type => $CacheType,
+        Key  => $CacheKey,
+    );
+
+    # return cached result if exists
+    return $Data if $Data;
+
+    my $GroupID;
+
+    my $SQL = '
+        SELECT group_id
+        FROM calendar
+        WHERE id=?
+    ';
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => [
+            \$Param{CalendarID},
+        ],
+    );
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $GroupID = $Row[0];
+    }
+    return if !$GroupID;
+
+    TYPE:
+    for my $Type (qw(ro move_into create rw)) {
+
+        my %GroupData = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Param{UserID},
+            Type   => $Type,
+        );
+
+        if ( $GroupData{$GroupID} ) {
+            $Data = $Type;
+        }
+        else {
+            last TYPE;
+        }
+    }
+
+    return if !$Data;
+
+    # cache data
+    $CacheObject->Set(
+        Type  => $CacheType,
+        Key   => $CacheKey,
+        Value => $Data,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return $Data;
+}
 1;
 
 =back

@@ -89,6 +89,12 @@ sub Run {
                 AppointmentID => $GetParam{AppointmentID},
             );
 
+            # check permissions
+            my $Permissions = $CalendarObject->CalendarPermissionGet(
+                CalendarID => $Appointment{CalendarID},
+                UserID     => $Self->{UserID},
+            );
+
             $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
 
             # get start time components
@@ -521,8 +527,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
