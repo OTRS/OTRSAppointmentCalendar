@@ -39,9 +39,15 @@
                 <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
             </div>
             <div class="Clear"></div>
-            <label for="CalendarID">[% Translate("Calendar") | html %]:</label>
+            <label for="CalendarID" class="Mandatory"><span class="Marker">*</span>[% Translate("Calendar") | html %]:</label>
             <div class="Field">
                 [% Data.CalendarIDStrg %]
+                <div id="CalendarIDError" class="TooltipErrorMessage">
+                    <p>[% Translate("This field is required.") | html %]</p>
+                </div>
+                <div id="CalendarIDServerError" class="TooltipErrorMessage">
+                    <p>[% Translate("This field is required.") | html %]</p>
+                </div>
             </div>
         </fieldset>
 [% IF Data.TeamListStrg %]

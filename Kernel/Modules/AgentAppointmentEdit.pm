@@ -60,6 +60,16 @@ sub Run {
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {
 
+        my %PermissionLevel = (
+            'ro'        => 1,
+            'move_into' => 2,
+            'create'    => 3,
+            'note'      => 4,
+            'owner'     => 5,
+            'priority'  => 6,
+            'rw'        => 7,
+        );
+
         # get all user's valid calendars
         my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
             Valid => 'valid',
@@ -77,11 +87,28 @@ sub Run {
             }
         } @Calendars;
 
+        for my $Calendar (@CalendarData) {
+
+            # check permissions
+            my $CalendarPermission = $CalendarObject->CalendarPermissionGet(
+                CalendarID => $Calendar->{Key},
+                UserID     => $Self->{UserID},
+            );
+
+            if ( $PermissionLevel{$CalendarPermission} < 3 ) {
+
+                # permissions < create
+                $Calendar->{Disabled} = 1;
+            }
+        }
+
         # get time object
         my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
         # get user timezone offset
         $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+
+        my $Permissions;
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -90,7 +117,7 @@ sub Run {
             );
 
             # check permissions
-            my $Permissions = $CalendarObject->CalendarPermissionGet(
+            $Permissions = $CalendarObject->CalendarPermissionGet(
                 CalendarID => $Appointment{CalendarID},
                 UserID     => $Self->{UserID},
             );
@@ -141,8 +168,10 @@ sub Run {
             SelectedID   => $Appointment{CalendarID} // $GetParam{CalendarID},
             Name         => 'CalendarID',
             Multiple     => 0,
-            Class        => 'Modernize',
+            Class        => 'Modernize Validate_Required',
             PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 3 ) ? 1 : 0,    # disable if permissions are below create
         );
 
         # start date string
