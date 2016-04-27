@@ -883,6 +883,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     // Close the dialog
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                 }
+                else {
+                    if (Response.Error) {
+                        alert(Response.Error);
+                    }
+                }
             }
         );
     };

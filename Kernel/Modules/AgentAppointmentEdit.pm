@@ -57,18 +57,20 @@ sub Run {
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
+    my %PermissionLevel = (
+        'ro'        => 1,
+        'move_into' => 2,
+        'create'    => 3,
+        'note'      => 4,
+        'owner'     => 5,
+        'priority'  => 6,
+        'rw'        => 7,
+    );
+
+    my $Permissions;
+
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {
-
-        my %PermissionLevel = (
-            'ro'        => 1,
-            'move_into' => 2,
-            'create'    => 3,
-            'note'      => 4,
-            'owner'     => 5,
-            'priority'  => 6,
-            'rw'        => 7,
-        );
 
         # get all user's valid calendars
         my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
@@ -107,8 +109,6 @@ sub Run {
 
         # get user timezone offset
         $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
-
-        my $Permissions;
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -491,6 +491,39 @@ sub Run {
             %Appointment = $AppointmentObject->AppointmentGet(
                 AppointmentID => $GetParam{AppointmentID},
             );
+
+            # check permissions
+            $Permissions = $CalendarObject->CalendarPermissionGet(
+                CalendarID => $Appointment{CalendarID},
+                UserID     => $Self->{UserID},
+            );
+
+            my $RequiredPermission = 2;
+            if ( $GetParam{CalendarID} != $Appointment{CalendarID} ) {
+                $RequiredPermission
+                    = 3;    # in order to move appointment to another calendar, user needs "create" permission
+            }
+
+            if ( $PermissionLevel{$Permissions} < $RequiredPermission ) {
+
+                # no permission
+
+                # build JSON output
+                $JSON = $LayoutObject->JSONEncode(
+                    Data => {
+                        Success => 0,
+                        Error   => Translatable('No permission!'),
+                    },
+                );
+
+                # send JSON response
+                return $LayoutObject->Attachment(
+                    ContentType => 'application/json; charset=' . $LayoutObject->{Charset},
+                    Content     => $JSON,
+                    Type        => 'inline',
+                    NoCache     => 1,
+                );
+            }
         }
 
         if ( $GetParam{AllDay} ) {
