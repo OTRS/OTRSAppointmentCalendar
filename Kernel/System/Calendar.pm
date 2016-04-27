@@ -388,6 +388,7 @@ sub CalendarList {
             UserID => $Param{UserID},
             Type   => $Param{Permission} || 'ro',
         );
+
         my @GroupIDs = sort keys %GroupList;
 
         $SQL .= "AND group_id IN ( ${\(join ', ', @GroupIDs)} ) ";
@@ -484,6 +485,10 @@ sub CalendarUpdate {
     # clear cache
     $CacheObject->CleanUp(
         Type => 'CalendarList',
+    );
+
+    $CacheObject->CleanUp(
+        Type => 'CalendarPermissionGet',
     );
 
     $CacheObject->Delete(

@@ -187,6 +187,8 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
+            Disabled         => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # end date string
@@ -202,6 +204,8 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
+            Disabled         => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # get main object
@@ -265,6 +269,8 @@ sub Run {
                     Multiple     => 1,
                     Class        => 'Modernize',
                     PossibleNone => 1,
+                    Disabled     => $Permissions
+                        && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,  # disable if permissions are below move_into
                 );
             }
 
@@ -276,6 +282,8 @@ sub Run {
                 Multiple     => 0,
                 Class        => 'Modernize',
                 PossibleNone => 1,
+                Disabled     => $Permissions
+                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
             );
         }
 
@@ -357,6 +365,8 @@ sub Run {
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # recurrence limit string
@@ -380,6 +390,8 @@ sub Run {
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # get current and start time for difference
@@ -405,6 +417,8 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
+            Disabled         => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # get plugin list
