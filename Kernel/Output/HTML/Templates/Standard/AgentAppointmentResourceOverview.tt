@@ -210,12 +210,7 @@ Core.Agent.AppointmentCalendar.Init({
         ResourceColumns: [
             {
                 labelText: [% Translate("Name") | JSON %],
-                field: 'UserFullname'
-            },
-            {
-                labelText: [% Translate("Login") | JSON %],
-                field: 'title',
-                width: '30%',
+                field: 'title'
             }
         ],
 [% RenderBlockStart("ResourceJSON") %]

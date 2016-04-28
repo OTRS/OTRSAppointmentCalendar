@@ -117,6 +117,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             slotDuration: '00:30:00',
             forceEventDuration: true,
             nowIndicator: true,
+            resourceAreaWidth: '21%',
             views: {
                 month: {
                     titleFormat: 'MMMM YYYY',

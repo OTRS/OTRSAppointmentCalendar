@@ -78,17 +78,19 @@ sub Run {
                     );
                     push @Data, {
                         id           => $User{UserID},
-                        title        => $User{UserLogin},
+                        title        => $User{UserFullname},
                         TeamID       => $GetParam{TeamID},
-                        UserFullname => "$User{UserFirstname} $User{UserLastname}",
+                        UserLastname => $User{UserLastname},
                     };
                 }
 
+                # sort the list by last name
+                @Data = sort { $a->{UserLastname} cmp $b->{UserLastname} } @Data;
+
                 push @Data, {
-                    id           => 0,
-                    title        => Translatable('N/A'),
-                    TeamID       => $GetParam{TeamID},
-                    UserFullname => Translatable('Unassigned'),
+                    id     => 0,
+                    title  => Translatable('Unassigned'),
+                    TeamID => $GetParam{TeamID},
                 };
 
                 # build JSON output

@@ -315,7 +315,7 @@
     <ConfigItem Name="AppointmentCalendar::Plugin###0100-TicketNumber" Required="0" Valid="1">
         <Description Translatable="1">Defines the ticket number plugin for calendar appointments.</Description>
         <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>AppointmentCalendar::Plugin</SubGroup>
+        <SubGroup>Core::AppointmentCalendar::Plugin</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Plugin::TicketNumber</Item>
