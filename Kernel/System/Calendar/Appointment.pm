@@ -18,7 +18,6 @@ use vars qw(@ISA);
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::EventHandler;
 use Time::Piece;
-use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -177,7 +176,7 @@ sub AppointmentCreate {
     if ( $Param{ParentID} && !IsInteger( $Param{ParentID} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("ParentID must be a number!"),
+            Message  => "ParentID must be a number!",
         );
         return;
     }
@@ -189,7 +188,7 @@ sub AppointmentCreate {
     if ( !$StartTimeSystem ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("Invalid StartTime!"),
+            Message  => "Invalid StartTime!",
         );
         return;
     }
@@ -211,7 +210,7 @@ sub AppointmentCreate {
     if ( !$EndTimeSystem ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("Invalid EndTime!"),
+            Message  => "Invalid EndTime!",
         );
         return;
     }
@@ -220,7 +219,7 @@ sub AppointmentCreate {
     if ( !defined $Param{TimezoneID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("TimezoneID not defined!"),
+            Message  => "TimezoneID not defined!",
         );
         return;
     }
@@ -231,7 +230,7 @@ sub AppointmentCreate {
         if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => Translatable("ResourceID not ARRAYREF!"),
+                Message  => "ResourceID not ARRAYREF!",
             );
             return;
         }
@@ -247,7 +246,7 @@ sub AppointmentCreate {
         if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => $Parameter . Translatable(" must be a number!"),
+                Message  => "$Parameter must be a number!",
             );
             return;
         }
@@ -266,7 +265,7 @@ sub AppointmentCreate {
         {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => Translatable("Invalid RecurrenceUntilSystem!"),
+                Message  => "Invalid RecurrenceUntilSystem!",
             );
             return;
         }
@@ -431,8 +430,8 @@ sub AppointmentList {
     # cache keys
     my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
     my $CacheKeyStart = $Param{StartTime} || 'any';
-    my $CacheKeyEnd   = $Param{EndTime}   || 'any';
-    my $CacheKeyTeam  = $Param{TeamID}    || 'any';
+    my $CacheKeyEnd   = $Param{EndTime} || 'any';
+    my $CacheKeyTeam  = $Param{TeamID} || 'any';
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
@@ -969,7 +968,7 @@ sub AppointmentUpdate {
     if ( !$StartTimeSystem ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("StartTime invalid!"),
+            Message  => "StartTime invalid!",
         );
         return;
     }
@@ -981,7 +980,7 @@ sub AppointmentUpdate {
     if ( !$EndTimeSystem ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("EndTime invalid!"),
+            Message  => "EndTime invalid!",
         );
         return;
     }
@@ -990,7 +989,7 @@ sub AppointmentUpdate {
     if ( !defined $Param{TimezoneID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("TimezoneID not defined!"),
+            Message  => "TimezoneID not defined!",
         );
         return;
     }
@@ -1001,7 +1000,7 @@ sub AppointmentUpdate {
         if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => Translatable("ResourceID not a ARRAYREF!"),
+                Message  => "ResourceID not a ARRAYREF!",
             );
             return;
         }
@@ -1016,7 +1015,7 @@ sub AppointmentUpdate {
         if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => $Parameter . Translatable(" must be a number!"),
+                Message  => "$Parameter must be a number!",
             );
             return;
         }
@@ -1034,7 +1033,7 @@ sub AppointmentUpdate {
         {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => Translatable("RecurrenceUntil invalid!"),
+                Message  => "RecurrenceUntil invalid!",
             );
             return;
         }
@@ -1053,7 +1052,7 @@ sub AppointmentUpdate {
     if ( !$DeleteSuccess ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => Translatable("Unable to delete recurring Appoinment!"),
+            Message  => "Unable to delete recurring Appoinment!",
         );
         return;
     }
