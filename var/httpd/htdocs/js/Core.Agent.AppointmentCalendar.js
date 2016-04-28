@@ -610,6 +610,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method initializes all day checkbox behavior.
      */
     TargetNS.AllDayInit = function ($AllDay) {
+        if ($('#StartMonth:disabled').length > 0) {
+            return;
+        }
 
         // Show/hide the start hour/minute and complete end time
         if ($AllDay.prop('checked')) {
