@@ -52,7 +52,7 @@
 [% END %]
             </div>
             <div class="Clear"></div>
-            <label for="CalendarID" class="Mandatory"><span class="Marker">*</span>[% Translate("Calendar") | html %]:</label>
+            <label for="CalendarID" class="Mandatory"><span class="Marker">*</span> [% Translate("Calendar") | html %]:</label>
             <div class="Field">
                 [% Data.CalendarIDStrg %]
                 <div id="CalendarIDError" class="TooltipErrorMessage">
@@ -66,7 +66,7 @@
 [% IF Data.TeamListStrg %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <label for="TeamList">[% Translate("Team") | html %]:</label>
+            <label for="TeamID">[% Translate("Team") | html %]:</label>
             <div class="Field">
                 [% Data.TeamListStrg %]
             </div>
@@ -172,7 +172,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
 });
-Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('#PluginList'), $('.AddButton'));
 [% END %]

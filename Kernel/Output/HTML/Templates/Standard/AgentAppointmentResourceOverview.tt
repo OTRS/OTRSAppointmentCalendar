@@ -241,6 +241,7 @@ var EventSources = {
             Action: 'AgentAppointmentList',
             Subaction: 'ListAppointments',
             CalendarID: [% Data.CalendarID | JSON %],
+            TeamID: [% Data.TeamID | JSON %]
         },
         color: [% Data.CalendarColor | JSON %],
         startParam: 'StartTime',

@@ -230,8 +230,19 @@ sub Run {
                 UserID       => $Self->{UserID},
             );
 
-            # itearate through teams
-            my $SelectedTeamID;
+            # team list string
+            $Param{TeamListStrg} = $LayoutObject->BuildSelection(
+                Data         => \%TeamList,
+                SelectedID   => $Appointment{TeamID} // undef,
+                Name         => 'TeamID',
+                Multiple     => 0,
+                Class        => 'Modernize',
+                PossibleNone => 1,
+                Disabled     => $Permissions
+                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+            );
+
+            # iterate through teams
             for my $TeamID ( sort keys %TeamList ) {
 
                 # get list of team members
@@ -248,19 +259,6 @@ sub Run {
                     $TeamUserList{$UserID} = "$User{UserFirstname} $User{UserLastname}",
                 }
 
-                # deduce current team id
-                if ( !$SelectedTeamID && IsArrayRefWithData($ResourceIDs) ) {
-
-                    RESOURCEID:
-                    for my $ResourceID ( @{$ResourceIDs} ) {
-
-                        if ( grep { $_ eq $ResourceID } keys %TeamUserList ) {
-                            $SelectedTeamID = $TeamID;
-                            last RESOURCEID;
-                        }
-                    }
-                }
-
                 # team user list string
                 $Param{TeamUserLists}->{$TeamID} = $LayoutObject->BuildSelection(
                     Data         => \%TeamUserList,
@@ -273,18 +271,6 @@ sub Run {
                         && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,  # disable if permissions are below move_into
                 );
             }
-
-            # team list string
-            $Param{TeamListStrg} = $LayoutObject->BuildSelection(
-                Data         => \%TeamList,
-                SelectedID   => $SelectedTeamID,
-                Name         => 'TeamList',
-                Multiple     => 0,
-                Class        => 'Modernize',
-                PossibleNone => 1,
-                Disabled     => $Permissions
-                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
-            );
         }
 
         # all day

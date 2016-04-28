@@ -338,6 +338,7 @@ get a hash of Appointments.
         CalendarID          => 1,                                       # (required) Valid CalendarID
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
+        TeamID              => 1,                                       # (optional) Filter by team
         Result              => 'HASH',                                  # (optional), HASH|ARRAY
     );
 
@@ -399,12 +400,13 @@ sub AppointmentList {
     # cache keys
     my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
     my $CacheKeyStart = $Param{StartTime} || 'any';
-    my $CacheKeyEnd   = $Param{EndTime} || 'any';
+    my $CacheKeyEnd   = $Param{EndTime}   || 'any';
+    my $CacheKeyTeam  = $Param{TeamID}    || 'any';
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$CacheKeyStart-$CacheKeyEnd-$Param{Result}",
+        Key  => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$Param{Result}",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -437,6 +439,11 @@ sub AppointmentList {
         );
     }
 
+    # check TeamID
+    if ( $Param{TeamID} ) {
+        return if !IsInteger( $Param{TeamID} );
+    }
+
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, timezone_id,
             team_id, resource_id, all_day, recurring
@@ -467,6 +474,12 @@ sub AppointmentList {
 
         $SQL .= 'AND start_time <= ? ';
         push @Bind, \$Param{EndTime};
+    }
+
+    if ( $Param{TeamID} ) {
+
+        $SQL .= 'AND team_id = ? ';
+        push @Bind, \$Param{TeamID};
     }
 
     $SQL .= 'ORDER BY id ASC';
@@ -514,7 +527,7 @@ sub AppointmentList {
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $CacheType,
-        Key   => "$CacheKeyStart-$CacheKeyEnd-$Param{Result}",
+        Key   => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$Param{Result}",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );
