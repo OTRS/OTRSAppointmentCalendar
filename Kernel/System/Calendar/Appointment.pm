@@ -90,6 +90,7 @@ creates a new appointment.
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) default 0
         TimezoneID          => 1,                                       # (optional) Timezone - it can be 0 (UTC)
+        TeamID              => 1,                                       # (optional)
         ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring           => 1,                                       # (optional) flag the appointment as recurring (parent only!)
                                                                         # if Recurring is set, one of the following 3 parameters must be provided
@@ -125,7 +126,7 @@ sub AppointmentCreate {
         }
     }
 
-    # if Recurring is provided, additional parameter must be present
+    # if Recurring is provided, additional parameters must be present
     if (
         $Param{Recurring}
         &&
@@ -199,6 +200,11 @@ sub AppointmentCreate {
     # check timezone
     return if !defined $Param{TimezoneID};
 
+    # check TeamID
+    if ( $Param{TeamID} ) {
+        return if !IsInteger( $Param{TeamID} );
+    }
+
     # check ResourceID
     if ( $Param{ResourceID} ) {
         return if !IsArrayRefWithData( $Param{ResourceID} );
@@ -256,19 +262,19 @@ sub AppointmentCreate {
     }
 
     push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-        \$Param{Location},   \$Param{StartTime},  \$Param{EndTime},   \$Param{AllDay},
-        \$Param{TimezoneID}, \$Param{ResourceID}, \$Param{Recurring}, \$Param{RecurrenceFrequency},
-        \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
-        \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
-        \$Param{UserID},           \$Param{UserID};
+        \$Param{Location},   \$Param{StartTime}, \$Param{EndTime},    \$Param{AllDay},
+        \$Param{TimezoneID}, \$Param{TeamID},    \$Param{ResourceID}, \$Param{Recurring},
+        \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},  \$Param{RecurrenceInterval},
+        \$Param{RecurrenceUntil},     \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},
+        \$Param{RecurrenceByDay},     \$Param{UserID},           \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, resource_id, recurring, recur_freq, recur_count,
-            recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
+            end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_freq,
+            recur_count, recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
             create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             current_timestamp, ?, current_timestamp, ?)
     ";
 
@@ -360,6 +366,7 @@ Result => 'HASH':
             StartTime     => '2016-01-02 16:00:00',
             EndTime       => '2016-01-02 17:00:00',
             TimezoneID    => 1,
+            TeamID        => 1,
             ResourceID    => [ 1, 3 ],
             AllDay        => 0,
         },
@@ -432,7 +439,7 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, timezone_id,
-            resource_id, all_day, recurring
+            team_id, resource_id, all_day, recurring
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -475,8 +482,8 @@ sub AppointmentList {
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         # resource id
-        $Row[8] = $Row[8] ? $Row[8] : 0;
-        my @ResourceID = $Row[8] =~ /,/ ? split( ',', $Row[8] ) : ( $Row[8] );
+        $Row[9] = $Row[9] ? $Row[9] : 0;
+        my @ResourceID = $Row[9] =~ /,/ ? split( ',', $Row[9] ) : ( $Row[9] );
 
         my %Appointment = (
             AppointmentID => $Row[0],
@@ -487,9 +494,10 @@ sub AppointmentList {
             StartTime     => $Row[5],
             EndTime       => $Row[6],
             TimezoneID    => $Row[7],
+            TeamID        => $Row[8],
             ResourceID    => \@ResourceID,
-            AllDay        => $Row[9],
-            Recurring     => $Row[10],
+            AllDay        => $Row[10],
+            Recurring     => $Row[11],
         );
         push @Result, \%Appointment;
     }
@@ -712,6 +720,7 @@ returns a hash:
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
         TimezoneID          => 1,
+        TeamID              => 1,
         ResourceID          => [ 1, 3 ],
         Recurring           => 1,                                  # only for recurring (parent) appointments
         RecurrenceFrequency => 1,
@@ -762,8 +771,8 @@ sub AppointmentGet {
     my @Bind;
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, resource_id, recurring, recur_freq, recur_count,
-            recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
+            end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_freq,
+            recur_count, recur_interval, recur_until, recur_byyear, recur_bymonth, recur_byday,
             create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
@@ -789,8 +798,8 @@ sub AppointmentGet {
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         # resource id
-        $Row[11] = $Row[11] ? $Row[11] : 0;
-        my @ResourceID = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : ( $Row[11] );
+        $Row[12] = $Row[12] ? $Row[12] : 0;
+        my @ResourceID = $Row[12] =~ /,/ ? split( ',', $Row[12] ) : ( $Row[12] );
 
         $Result{AppointmentID}       = $Row[0];
         $Result{ParentID}            = $Row[1];
@@ -803,19 +812,20 @@ sub AppointmentGet {
         $Result{EndTime}             = $Row[8];
         $Result{AllDay}              = $Row[9];
         $Result{TimezoneID}          = $Row[10];
+        $Result{TeamID}              = $Row[11];
         $Result{ResourceID}          = \@ResourceID;
-        $Result{Recurring}           = $Row[12];
-        $Result{RecurrenceFrequency} = $Row[13];
-        $Result{RecurrenceCount}     = $Row[14];
-        $Result{RecurrenceInterval}  = $Row[15];
-        $Result{RecurrenceUntil}     = $Row[16];
-        $Result{RecurrenceByYear}    = $Row[17];
-        $Result{RecurrenceByMonth}   = $Row[18];
-        $Result{RecurrenceByDay}     = $Row[19];
-        $Result{CreateTime}          = $Row[20];
-        $Result{CreateBy}            = $Row[21];
-        $Result{ChangeTime}          = $Row[22];
-        $Result{ChangeBy}            = $Row[23];
+        $Result{Recurring}           = $Row[13];
+        $Result{RecurrenceFrequency} = $Row[14];
+        $Result{RecurrenceCount}     = $Row[15];
+        $Result{RecurrenceInterval}  = $Row[16];
+        $Result{RecurrenceUntil}     = $Row[17];
+        $Result{RecurrenceByYear}    = $Row[18];
+        $Result{RecurrenceByMonth}   = $Row[19];
+        $Result{RecurrenceByDay}     = $Row[20];
+        $Result{CreateTime}          = $Row[21];
+        $Result{CreateBy}            = $Row[22];
+        $Result{ChangeTime}          = $Row[23];
+        $Result{ChangeBy}            = $Row[24];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -846,6 +856,7 @@ updates an existing appointment.
         EndTime             => '2016-01-01 17:00:00',                   # (required)
         AllDay              => 0,                                       # (optional) Default 0
         TimezoneID          => -2,                                      # (optional) Timezone - it can be 0 (UTC)
+        Team                => 1,                                       # (optional)
         ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring           => 1,                                       # (optional) only for recurring (parent) appointments
                                                                         # if Recurring is set, one of the following 3 parameters must be provided
@@ -922,6 +933,11 @@ sub AppointmentUpdate {
     # check timezone
     return if !defined $Param{TimezoneID};
 
+    # check TeamID
+    if ( $Param{TeamID} ) {
+        return if !IsInteger( $Param{TeamID} );
+    }
+
     # check ResourceID
     if ( $Param{ResourceID} ) {
         return if !IsArrayRefWithData( $Param{ResourceID} );
@@ -973,9 +989,9 @@ sub AppointmentUpdate {
         UPDATE calendar_appointment
         SET
             parent_id=NULL, calendar_id=?, title=?, description=?, location=?, start_time=?,
-            end_time=?, all_day=?, timezone_id=?, resource_id=?, recurring=?, recur_freq=?,
-            recur_count=?, recur_interval=?, recur_until=?, recur_byyear=?, recur_bymonth=?,
-            recur_byday=?, change_time=current_timestamp, change_by=?
+            end_time=?, all_day=?, timezone_id=?, team_id=?, resource_id=?, recurring=?,
+            recur_freq=?, recur_count=?, recur_interval=?, recur_until=?, recur_byyear=?,
+            recur_bymonth=?, recur_byday=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -983,9 +999,9 @@ sub AppointmentUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
-            \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
-            \$Param{ResourceID},       \$Param{Recurring},          \$Param{RecurrenceFrequency},
+            \$Param{CalendarID}, \$Param{Title},      \$Param{Description}, \$Param{Location},
+            \$Param{StartTime},  \$Param{EndTime},    \$Param{AllDay},      \$Param{TimezoneID},
+            \$Param{TeamID},     \$Param{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceFrequency},
             \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
             \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
             \$Param{UserID},           \$Param{AppointmentID}

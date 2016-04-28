@@ -159,7 +159,8 @@
             <Column Name="end_time" Required="true" Type="DATE"/>
             <Column Name="all_day" Type="SMALLINT"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
-            <Column Name="resource_id" Required="false" Size="255" Type="VARCHAR"/>
+            <Column Name="team_id" Type="BIGINT"/>
+            <Column Name="resource_id" Size="255" Type="VARCHAR"/>
             <Column Name="recurring" Type="SMALLINT"/>
             <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
             <Column Name="recur_count" Type="INTEGER"/>
@@ -180,6 +181,9 @@
             </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="calendar_team">
+                <Reference Local="team_id" Foreign="id"/>
             </ForeignKey>
             <ForeignKey ForeignTable="users">
                 <Reference Local="create_by" Foreign="id"/>
@@ -202,7 +206,7 @@
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
             <Column Name="group_id" Required="true" Type="INTEGER"/>
-            <Column Name="comments" Required="false" Size="250" Type="VARCHAR"/>
+            <Column Name="comments" Size="250" Type="VARCHAR"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
@@ -249,6 +253,17 @@
             <Data Key="name" Type="Quote">Appointment</Data>
         </Insert>
     </DatabaseInstall>
+
+    <!-- TODO: Remove after VO testing -->
+    <DatabaseUpgrade>
+        <TableAlter Name="chat" Version="1.0.0.3">
+            <ColumnAdd Name="team_id" Type="BIGINT"/>
+            <ForeignKeyCreate ForeignTable="calendar_team">
+                <Reference Local="team_id" Foreign="id"/>
+            </ForeignKeyCreate>
+        </TableAlter>
+    </DatabaseUpgrade>
+
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
