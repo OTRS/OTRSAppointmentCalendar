@@ -67,7 +67,7 @@ sub Run {
         'rw'        => 7,
     );
 
-    my $Permissions;
+    my $Permissions = '';
 
     # check request
     if ( $Self->{Subaction} eq 'EditMask' ) {

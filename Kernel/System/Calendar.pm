@@ -12,7 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::System::EventHandler;
-
+use Kernel::Language qw(Translatable);
 use vars qw(@ISA);
 
 our @ObjectDependencies = (
@@ -592,13 +592,14 @@ sub CalendarPermissionGet {
 
     return if !$Data;
 
+    # TODO: Check how to delete this cache in the framework!
     # cache data
-    $CacheObject->Set(
-        Type  => $CacheType,
-        Key   => $CacheKey,
-        Value => $Data,
-        TTL   => $Self->{CacheTTL},
-    );
+    # $CacheObject->Set(
+    #     Type  => $CacheType,
+    #     Key   => $CacheKey,
+    #     Value => $Data,
+    #     TTL   => $Self->{CacheTTL},
+    # );
 
     return $Data;
 }

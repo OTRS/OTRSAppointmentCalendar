@@ -18,6 +18,7 @@ use vars qw(@ISA);
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::EventHandler;
 use Time::Piece;
+use Kernel::Language qw(Translatable);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -173,13 +174,25 @@ sub AppointmentCreate {
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     # check ParentID
-    return if ( $Param{ParentID} && !IsInteger( $Param{ParentID} ) );
+    if ( $Param{ParentID} && !IsInteger( $Param{ParentID} ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("ParentID must be a number!"),
+        );
+        return;
+    }
 
     # check StartTime
     my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{StartTime},
     );
-    return if !$StartTimeSystem;
+    if ( !$StartTimeSystem ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("Invalid StartTime!"),
+        );
+        return;
+    }
 
     # check UniqueID
     my $UniqueID = $Param{UniqueID};
@@ -195,51 +208,69 @@ sub AppointmentCreate {
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{EndTime},
     );
-    return if !$EndTimeSystem;
+    if ( !$EndTimeSystem ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("Invalid EndTime!"),
+        );
+        return;
+    }
 
     # check timezone
-    return if !defined $Param{TimezoneID};
-
-    # check TeamID
-    if ( $Param{TeamID} ) {
-        return if !IsInteger( $Param{TeamID} );
+    if ( !defined $Param{TimezoneID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("TimezoneID not defined!"),
+        );
+        return;
     }
 
     # check ResourceID
+    my $ResourceID;
     if ( $Param{ResourceID} ) {
-        return if !IsArrayRefWithData( $Param{ResourceID} );
-        $Param{ResourceID} = join( ',', @{ $Param{ResourceID} } );
+        if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => Translatable("ResourceID not ARRAYREF!"),
+            );
+            return;
+        }
+
+        $ResourceID = join( ',', @{ $Param{ResourceID} } );
     }
 
-    # check Recurring
-    return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
-
-    # check RecurrenceFrequency
-    return if ( !IsInteger( $Param{RecurrenceFrequency} ) );
-
-    # check RecurrenceCount
-    return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
-
-    # check RecurrenceInterval
-    return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
+    # check if numbers
+    for my $Parameter (
+        qw(Recurring RecurrenceFrequency RecurrenceCount RecurrenceInterval RecurrenceByYear RecurrenceByMonth RecurrenceByDay TeamID)
+        )
+    {
+        if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $Parameter . Translatable(" must be a number!"),
+            );
+            return;
+        }
+    }
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
         my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
-        return if !$RecurrenceUntilSystem;
-        return if !( $StartTimeSystem < $RecurrenceUntilSystem );
+
+        if (
+            !$RecurrenceUntilSystem
+            || $StartTimeSystem > $RecurrenceUntilSystem
+            )
+        {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => Translatable("Invalid RecurrenceUntilSystem!"),
+            );
+            return;
+        }
     }
-
-    # check RecurrenceByYear
-    return if ( $Param{RecurrenceByYear} && !IsInteger( $Param{RecurrenceByYear} ) );
-
-    # check RecurrenceByMonth
-    return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
-
-    # check RecurrenceByDay
-    return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
     my @Bind;
 
@@ -262,11 +293,11 @@ sub AppointmentCreate {
     }
 
     push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-        \$Param{Location},   \$Param{StartTime}, \$Param{EndTime},    \$Param{AllDay},
-        \$Param{TimezoneID}, \$Param{TeamID},    \$Param{ResourceID}, \$Param{Recurring},
-        \$Param{RecurrenceFrequency}, \$Param{RecurrenceCount},  \$Param{RecurrenceInterval},
-        \$Param{RecurrenceUntil},     \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},
-        \$Param{RecurrenceByDay},     \$Param{UserID},           \$Param{UserID};
+        \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
+        \$Param{TimezoneID}, \$Param{TeamID}, \$ResourceID, \$Param{Recurring}, \$Param{RecurrenceFrequency},
+        \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
+        \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
+        \$Param{UserID},           \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
@@ -935,57 +966,79 @@ sub AppointmentUpdate {
     my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{StartTime},
     );
-    return if !$StartTimeSystem;
+    if ( !$StartTimeSystem ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("StartTime invalid!"),
+        );
+        return;
+    }
 
     # check EndTime
     my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
         String => $Param{EndTime},
     );
-    return if !$EndTimeSystem;
+    if ( !$EndTimeSystem ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("EndTime invalid!"),
+        );
+        return;
+    }
 
     # check timezone
-    return if !defined $Param{TimezoneID};
-
-    # check TeamID
-    if ( $Param{TeamID} ) {
-        return if !IsInteger( $Param{TeamID} );
+    if ( !defined $Param{TimezoneID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("TimezoneID not defined!"),
+        );
+        return;
     }
 
     # check ResourceID
+    my $ResourceID;
     if ( $Param{ResourceID} ) {
-        return if !IsArrayRefWithData( $Param{ResourceID} );
-        $Param{ResourceID} = join( ',', @{ $Param{ResourceID} } );
+        if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => Translatable("ResourceID not a ARRAYREF!"),
+            );
+            return;
+        }
+        $ResourceID = join( ',', @{ $Param{ResourceID} } );
     }
 
-    # check Recurring
-    return if ( $Param{Recurring} && !IsInteger( $Param{Recurring} ) );
-
-    # check RecurrenceFrequency
-    return if ( !IsInteger( $Param{RecurrenceFrequency} ) );
-
-    # check RecurrenceCount
-    return if ( $Param{RecurrenceCount} && !IsInteger( $Param{RecurrenceCount} ) );
-
-    # check RecurrenceInterval
-    return if ( $Param{RecurrenceInterval} && !IsInteger( $Param{RecurrenceInterval} ) );
+    # check if numbers
+    for my $Parameter (
+        qw(Recurring RecurrenceFrequency RecurrenceCount RecurrenceInterval RecurrenceByYear RecurrenceByMonth RecurrenceByDay TeamID)
+        )
+    {
+        if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => $Parameter . Translatable(" must be a number!"),
+            );
+            return;
+        }
+    }
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
         my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
             String => $Param{RecurrenceUntil},
         );
-        return if !$RecurrenceUntilSystem;
-        return if !( $StartTimeSystem < $RecurrenceUntilSystem );
+        if (
+            !$RecurrenceUntilSystem
+            || $StartTimeSystem > $RecurrenceUntilSystem
+            )
+        {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => Translatable("RecurrenceUntil invalid!"),
+            );
+            return;
+        }
     }
-
-    # check RecurrenceByYear
-    return if ( $Param{RecurrenceByYear} && !IsInteger( $Param{RecurrenceByYear} ) );
-
-    # check RecurrenceByMonth
-    return if ( $Param{RecurrenceByMonth} && !IsInteger( $Param{RecurrenceByMonth} ) );
-
-    # check RecurrenceByDay
-    return if ( $Param{RecurrenceByDay} && !IsInteger( $Param{RecurrenceByDay} ) );
 
     # get previous CalendarID
     my $PreviousCalendarID = $Self->_AppointmentGetCalendarID(
@@ -993,9 +1046,17 @@ sub AppointmentUpdate {
     );
 
     # delete existing recurred appointments
-    return if !$Self->_AppointmentRecurringDelete(
+    my $DeleteSuccess = $Self->_AppointmentRecurringDelete(
         ParentID => $Param{AppointmentID},
     );
+
+    if ( !$DeleteSuccess ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => Translatable("Unable to delete recurring Appoinment!"),
+        );
+        return;
+    }
 
     # update parent appointment
     my $SQL = '
@@ -1012,9 +1073,9 @@ sub AppointmentUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title},      \$Param{Description}, \$Param{Location},
-            \$Param{StartTime},  \$Param{EndTime},    \$Param{AllDay},      \$Param{TimezoneID},
-            \$Param{TeamID},     \$Param{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceFrequency},
+            \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
+            \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
+            \$Param{TeamID}, \$ResourceID, \$Param{Recurring}, \$Param{RecurrenceFrequency},
             \$Param{RecurrenceCount},  \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},
             \$Param{RecurrenceByYear}, \$Param{RecurrenceByMonth},  \$Param{RecurrenceByDay},
             \$Param{UserID},           \$Param{AppointmentID}
