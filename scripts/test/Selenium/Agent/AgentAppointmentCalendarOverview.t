@@ -28,6 +28,7 @@ $Selenium->RunTest(
         my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
         my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
+        my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
         my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
@@ -38,6 +39,29 @@ $Selenium->RunTest(
             Name    => $GroupName,
             ValidID => 1,
             UserID  => 1,
+        );
+
+        # create test group
+        my $GroupName2 = "test-calendar-group2-$RandomID";
+        my $GroupID2   = $GroupObject->GroupAdd(
+            Name    => $GroupName2,
+            ValidID => 1,
+            UserID  => 1,
+        );
+
+        # add root to the created group
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => 1,
+            Permission => {
+                ro        => 1,
+                move_into => 1,
+                create    => 1,
+                owner     => 1,
+                priority  => 1,
+                rw        => 1,
+            },
+            UserID => 1,
         );
 
         # get script alias
@@ -85,6 +109,12 @@ $Selenium->RunTest(
             CalendarName => "Yet Another Calendar $RandomID",
             GroupID      => $GroupID,
             UserID       => $UserID,
+            ValidID      => 1,
+        );
+        my %Calendar4 = $CalendarObject->CalendarCreate(
+            CalendarName => "Calendar for permissions check $RandomID",
+            GroupID      => $GroupID2,
+            UserID       => 1,
             ValidID      => 1,
         );
 
@@ -300,6 +330,86 @@ $Selenium->RunTest(
             1,
             'Calendars are filtered correctly',
         );
+
+        # create new Appointment (with as root)
+        my $StartTime       = $TimeObject->CurrentTimestamp();
+        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $StartTime,
+        );
+        $StartTime = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $StartTimeSystem + 24 * 60 * 60,    # next day
+        );
+
+        my $EndTime = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $StartTimeSystem + 26 * 60 * 60,    # 2 hours after start time
+        );
+
+        my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
+            CalendarID  => $Calendar4{CalendarID},
+            Title       => 'Permissions check appointment',
+            Description => 'How to use Process tickets...',
+            Location    => 'Straubing',
+            StartTime   => $StartTime,
+            EndTime     => $EndTime,
+            UserID      => 1,
+            TimezoneID  => 0,
+        );
+
+        $Self->True(
+            $AppointmentID,
+            "Permission Appointment created.",
+        );
+
+        # add ro permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro => 1,
+
+                #move_into => 1,
+                #create    => 1,
+                #owner     => 1,
+                #priority  => 1,
+                #rw        => 1,
+            },
+            UserID => 1,
+        );
+
+# TODO: Remove this block (delete cache), since Selenium test must pass without it. This is only temporary, until we solve caching issues.
+# Delete cache
+        $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+            Type => 'CalendarList',
+        );
+        sleep(1);
+
+        # reload page
+        # go to calendar overview page
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        sleep(20);
+
+       # # Add another appointment
+       # # click on the timeline view for an appointment dialog
+       # $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+
+        # # wait until form and overlay has loaded, if neccessary
+        # $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # # enter some data
+        # $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 4');
+        # $Selenium->execute_script(
+        #     "return \$('#CalendarID').val("
+        #         . $Calendar1{CalendarID}
+        #         . ").trigger('redraw.InputField').trigger('change');"
+        #     ),
+        #     $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
+
+        # # click on Save
+        # $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
 
         }
 );

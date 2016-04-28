@@ -157,7 +157,6 @@ sub CalendarCreate {
         CalendarName => $Param{CalendarName},
         UserID       => $Param{UserID},
     );
-
     return if !%Calendar;
 
     # cache value

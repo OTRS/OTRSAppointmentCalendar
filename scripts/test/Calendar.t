@@ -274,4 +274,33 @@ $Self->Is(
     "Check ValidID",
 );
 
+# without CalendarID
+my $CalendarPermission1 = $CalendarObject->CalendarPermissionGet(
+    UserID => $UserID,
+);
+$Self->False(
+    $CalendarPermission1,
+    "CalendarPermissionGet #1",
+);
+
+# without UserID
+my $CalendarPermission2 = $CalendarObject->CalendarPermissionGet(
+    CalendarID => $CalendarGet1{CalendarID},
+);
+$Self->False(
+    $CalendarPermission2,
+    "CalendarPermissionGet #2",
+);
+
+# Ok
+my $CalendarPermission3 = $CalendarObject->CalendarPermissionGet(
+    CalendarID => $CalendarGet1{CalendarID},
+    UserID     => $UserID,
+);
+$Self->Is(
+    $CalendarPermission3,
+    'rw',
+    "CalendarPermissionGet #3",
+);
+
 1;
