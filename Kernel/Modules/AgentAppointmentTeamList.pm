@@ -79,6 +79,7 @@ sub Run {
                     push @Data, {
                         id           => $User{UserID},
                         title        => $User{UserLogin},
+                        TeamID       => $GetParam{TeamID},
                         UserFullname => "$User{UserFirstname} $User{UserLastname}",
                     };
                 }
@@ -86,6 +87,7 @@ sub Run {
                 push @Data, {
                     id           => 0,
                     title        => Translatable('N/A'),
+                    TeamID       => $GetParam{TeamID},
                     UserFullname => Translatable('Unassigned'),
                 };
 

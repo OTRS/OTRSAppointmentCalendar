@@ -402,6 +402,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndHour: !AppointmentData.CalEvent ? AppointmentData.End.hour() : null,
             EndMinute: !AppointmentData.CalEvent ? AppointmentData.End.minute() : null,
             AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null,
+            TeamList: AppointmentData.Resource ? AppointmentData.Resource.TeamID : null,
             ResourceID: AppointmentData.Resource ? [ AppointmentData.Resource.id ] : null
         };
 
@@ -487,6 +488,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndMinute: AppointmentData.CalEvent.end.minute(),
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
             Recurring: AppointmentData.CalEvent.recurring ? '1' : '0',
+            TeamList: AppointmentData.CalEvent.teamId ? AppointmentData.CalEvent.teamId : undefined,
             ResourceID: AppointmentData.CalEvent.resourceId ? AppointmentData.CalEvent.resourceId : undefined
         };
 

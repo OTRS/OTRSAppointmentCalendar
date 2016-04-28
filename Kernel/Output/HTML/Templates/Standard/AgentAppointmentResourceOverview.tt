@@ -258,6 +258,7 @@ var EventSources = {
                 title: AppointmentData.Title,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                 recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
+                teamId: AppointmentData.TeamID,
                 resourceIds: AppointmentData.ResourceID
             };
         }

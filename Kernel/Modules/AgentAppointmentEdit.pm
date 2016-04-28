@@ -233,8 +233,8 @@ sub Run {
             # team list string
             $Param{TeamListStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamList,
-                SelectedID   => $Appointment{TeamID} // undef,
-                Name         => 'TeamID',
+                SelectedID   => $Appointment{TeamID} // $GetParam{TeamList},
+                Name         => 'TeamList',
                 Multiple     => 0,
                 Class        => 'Modernize',
                 PossibleNone => 1,
@@ -485,7 +485,7 @@ sub Run {
             );
 
             my $RequiredPermission = 2;
-            if ( $GetParam{CalendarID} != $Appointment{CalendarID} ) {
+            if ( $GetParam{CalendarID} && $GetParam{CalendarID} != $Appointment{CalendarID} ) {
                 $RequiredPermission
                     = 3;    # in order to move appointment to another calendar, user needs "create" permission
             }
@@ -607,6 +607,14 @@ sub Run {
             elsif ( $GetParam{RecurrenceLimit} eq '2' ) {
                 $GetParam{RecurrenceUntil} = undef;
             }
+        }
+
+        # team
+        if ( $GetParam{TeamList} ) {
+            $GetParam{TeamID} = $GetParam{TeamList};
+        }
+        else {
+            $GetParam{TeamID} = undef;
         }
 
         # resources

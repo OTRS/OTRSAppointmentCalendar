@@ -66,7 +66,7 @@
 [% IF Data.TeamListStrg %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <label for="TeamID">[% Translate("Team") | html %]:</label>
+            <label for="TeamList">[% Translate("Team") | html %]:</label>
             <div class="Field">
                 [% Data.TeamListStrg %]
             </div>
@@ -172,7 +172,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
 });
-Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'));
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('#PluginList'), $('.AddButton'));
 [% END %]
