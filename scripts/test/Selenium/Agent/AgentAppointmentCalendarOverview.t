@@ -15,6 +15,18 @@ use vars (qw($Self));
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
+# my $IsDisabled = sub {
+#     my (%Param) = @_;
+
+#     $Selenium->Is(
+#         $Selenium->execute_script(
+#             "return \$('#EndMinute:disabled').length;"
+#         ),
+#         1,
+#         'EndMinute disabled',
+#     );
+# }
+
 $Selenium->RunTest(
     sub {
 
@@ -396,33 +408,129 @@ $Selenium->RunTest(
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
 
-        # $Selenium->find_element( '.fc-scrollpane-inner a' )->click();
+        # click on appointment
         $Selenium->execute_script(
             "return \$('.fc-scrollpane-inner a:first').click();",
         );
 
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
         # check if fields are disabled
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#Title:disabled').length;"
+            ),
+            1,
+            'Title disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#Description:disabled').length;"
+            ),
+            1,
+            'Description disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#Location:disabled').length;"
+            ),
+            1,
+            'Location disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#CalendarID:disabled').length;"
+            ),
+            1,
+            'CalendarID disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#TeamList:disabled').length;"
+            ),
+            1,
+            'TeamList disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#TeamList:disabled').length;"
+            ),
+            1,
+            'TeamList disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#StartMonth:disabled').length;"
+            ),
+            1,
+            'StartMonth disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#StartDay:disabled').length;"
+            ),
+            1,
+            'StartDay disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#StartYear:disabled').length;"
+            ),
+            1,
+            'StartYear disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#StartHour:disabled').length;"
+            ),
+            1,
+            'StartHour disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#StartMinute:disabled').length;"
+            ),
+            1,
+            'StartMinute disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndMonth:disabled').length;"
+            ),
+            1,
+            'EndMonth disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndDay:disabled').length;"
+            ),
+            1,
+            'EndDay disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndYear:disabled').length;"
+            ),
+            1,
+            'EndYear disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndHour:disabled').length;"
+            ),
+            1,
+            'EndHour disabled',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndMinute:disabled').length;"
+            ),
+            1,
+            'EndMinute disabled',
+        );
 
-        sleep(20);
-
-       # # Add another appointment
-       # # click on the timeline view for an appointment dialog
-       # $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
-
-        # # wait until form and overlay has loaded, if neccessary
-        # $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-
-        # # enter some data
-        # $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 4');
-        # $Selenium->execute_script(
-        #     "return \$('#CalendarID').val("
-        #         . $Calendar1{CalendarID}
-        #         . ").trigger('redraw.InputField').trigger('change');"
-        #     ),
-        #     $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
-
-        # # click on Save
-        # $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # sleep(20);
 
         }
 );

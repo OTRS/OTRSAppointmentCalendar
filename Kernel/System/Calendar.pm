@@ -13,6 +13,7 @@ use warnings;
 
 use Kernel::System::EventHandler;
 use Kernel::Language qw(Translatable);
+use Kernel::System::VariableCheck qw(:all);
 use vars qw(@ISA);
 
 our @ObjectDependencies = (
@@ -361,23 +362,53 @@ sub CalendarList {
         Key  => "$CacheKeyUser-$CacheKeyValid",
     );
 
-    if ( ref $Data eq 'ARRAY' ) {
-        return @{$Data};
-    }
+    if ( !IsArrayRefWithData($Data) ) {
 
-    # create needed objects
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+        # create needed objects
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my $SQL = '
-        SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
-        FROM calendar
-        WHERE 1=1
-    ';
-    my @Bind;
+        my $SQL = '
+            SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
+            FROM calendar
+            WHERE 1=1
+        ';
+        my @Bind;
 
-    if ( $Param{ValidID} ) {
-        $SQL .= ' AND valid_id=? ';
-        push @Bind, \$Param{ValidID};
+        if ( $Param{ValidID} ) {
+            $SQL .= ' AND valid_id=? ';
+            push @Bind, \$Param{ValidID};
+        }
+        $SQL .= 'ORDER BY id ASC';
+
+        # db query
+        return if !$DBObject->Prepare(
+            SQL  => $SQL,
+            Bind => \@Bind,
+        );
+
+        my @Result;
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            my %Calendar;
+            $Calendar{CalendarID}   = $Row[0];
+            $Calendar{GroupID}      = $Row[1];
+            $Calendar{CalendarName} = $Row[2];
+            $Calendar{CreateTime}   = $Row[3];
+            $Calendar{CreateBy}     = $Row[4];
+            $Calendar{ChangeTime}   = $Row[5];
+            $Calendar{ChangeBy}     = $Row[6];
+            $Calendar{ValidID}      = $Row[7];
+            push @Result, \%Calendar;
+        }
+
+        # cache data
+        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+            Type  => $CacheType,
+            Key   => "$CacheKeyUser-$CacheKeyValid",
+            Value => \@Result,
+            TTL   => $Self->{CacheTTL},
+        );
+
+        $Data = \@Result;
     }
 
     if ( $Param{UserID} ) {
@@ -388,42 +419,18 @@ sub CalendarList {
             Type   => $Param{Permission} || 'ro',
         );
 
-        my @GroupIDs = sort keys %GroupList;
+        my @Result;
 
-        $SQL .= "AND group_id IN ( ${\(join ', ', @GroupIDs)} ) ";
+        for my $Item ( @{$Data} ) {
+            if ( grep { $Item->{GroupID} == $_ } keys %GroupList ) {
+                push @Result, $Item;
+            }
+        }
+
+        $Data = \@Result;
     }
 
-    $SQL .= 'ORDER BY id ASC';
-
-    # db query
-    return if !$DBObject->Prepare(
-        SQL  => $SQL,
-        Bind => \@Bind,
-    );
-
-    my @Result;
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        my %Calendar;
-        $Calendar{CalendarID}   = $Row[0];
-        $Calendar{GroupID}      = $Row[1];
-        $Calendar{CalendarName} = $Row[2];
-        $Calendar{CreateTime}   = $Row[3];
-        $Calendar{CreateBy}     = $Row[4];
-        $Calendar{ChangeTime}   = $Row[5];
-        $Calendar{ChangeBy}     = $Row[6];
-        $Calendar{ValidID}      = $Row[7];
-        push @Result, \%Calendar;
-    }
-
-    # cache data
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type  => $CacheType,
-        Key   => "$CacheKeyUser-$CacheKeyValid",
-        Value => \@Result,
-        TTL   => $Self->{CacheTTL},
-    );
-
-    return @Result;
+    return @{$Data};
 }
 
 =item CalendarUpdate()
