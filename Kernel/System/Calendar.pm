@@ -494,10 +494,6 @@ sub CalendarUpdate {
         Type => 'CalendarList',
     );
 
-    $CacheObject->CleanUp(
-        Type => 'CalendarPermissionGet',
-    );
-
     $CacheObject->Delete(
         Type => $Self->{CacheType},
         Key  => $Param{CalendarID},
@@ -543,43 +539,11 @@ sub CalendarPermissionGet {
         }
     }
 
-    # needed object
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-    my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
-
-    # cache params
-    my $CacheType = 'CalendarPermissionGet';
-    my $CacheKey  = "$Param{CalendarID}-$Param{UserID}";
-
-    # get cached value if exists
-    my $Data = $CacheObject->Get(
-        Type => $CacheType,
-        Key  => $CacheKey,
+    my %Calendar = $Self->CalendarGet(
+        CalendarID => $Param{CalendarID},
     );
 
-    # return cached result if exists
-    return $Data if $Data;
-
-    my $GroupID;
-
-    my $SQL = '
-        SELECT group_id
-        FROM calendar
-        WHERE id=?
-    ';
-
-    # db query
-    return if !$DBObject->Prepare(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{CalendarID},
-        ],
-    );
-
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $GroupID = $Row[0];
-    }
-    return if !$GroupID;
+    my $Result = '';
 
     TYPE:
     for my $Type (qw(ro move_into create rw)) {
@@ -589,26 +553,15 @@ sub CalendarPermissionGet {
             Type   => $Type,
         );
 
-        if ( $GroupData{$GroupID} ) {
-            $Data = $Type;
+        if ( $GroupData{ $Calendar{GroupID} } ) {
+            $Result = $Type;
         }
         else {
             last TYPE;
         }
     }
 
-    return if !$Data;
-
-    # TODO: Check how to delete this cache in the framework!
-    # cache data
-    # $CacheObject->Set(
-    #     Type  => $CacheType,
-    #     Key   => $CacheKey,
-    #     Value => $Data,
-    #     TTL   => $Self->{CacheTTL},
-    # );
-
-    return $Data;
+    return $Result;
 }
 1;
 
