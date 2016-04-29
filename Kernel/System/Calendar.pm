@@ -194,7 +194,7 @@ get calendar by name od id.
                                              # or
         CalendarID   => 4,                   # (required) CalendarID
 
-        UserID       => 2,                   # (required)
+        UserID       => 2,                   # (optional) UserID - System will check if user has access to calendar if provided
     );
 
 returns Calendar data:
@@ -215,15 +215,6 @@ sub CalendarGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
     if ( !$Param{CalendarID} && !$Param{CalendarName} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
@@ -242,67 +233,77 @@ sub CalendarGet {
             Key  => $Param{CalendarID},
         );
 
-        if ( ref $Data eq 'HASH' ) {
-            return %{$Data};
+        if ( IsHashRefWithData($Data) ) {
+            %Calendar = %{$Data};
         }
     }
 
-    # get user groups
-    my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-        UserID => $Param{UserID},
-        Type   => 'ro',
-    );
-    my @GroupIDs = sort keys %GroupList;
+    if ( !%Calendar ) {
 
-    # create db object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+        # create db object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    my $SQL = "
-        SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
-        FROM calendar
-        WHERE group_id IN ( ${\(join ', ', @GroupIDs)} ) ";
+        my $SQL = "
+            SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
+            FROM calendar
+            WHERE
+        ";
 
-    my @Bind;
-    if ( $Param{CalendarID} ) {
-        $SQL .= '
-            AND id=?
-        ';
-        push @Bind, \$Param{CalendarID};
-    }
-    else {
-        $SQL .= '
-            AND name=?
-        ';
-        push @Bind, \$Param{CalendarName};
-    }
+        my @Bind;
+        if ( $Param{CalendarID} ) {
+            $SQL .= '
+                id=?
+            ';
+            push @Bind, \$Param{CalendarID};
+        }
+        else {
+            $SQL .= '
+                name=?
+            ';
+            push @Bind, \$Param{CalendarName};
+        }
 
-    # db query
-    return if !$DBObject->Prepare(
-        SQL   => $SQL,
-        Bind  => \@Bind,
-        Limit => 1,
-    );
-
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Calendar{CalendarID}   = $Row[0];
-        $Calendar{GroupID}      = $Row[1];
-        $Calendar{CalendarName} = $Row[2];
-        $Calendar{CreateTime}   = $Row[3];
-        $Calendar{CreateBy}     = $Row[4];
-        $Calendar{ChangeTime}   = $Row[5];
-        $Calendar{ChangeBy}     = $Row[6];
-        $Calendar{ValidID}      = $Row[7];
-    }
-
-    if ( $Param{CalendarID} ) {
-
-        # cache
-        $Kernel::OM->Get('Kernel::System::Cache')->Set(
-            Type  => $Self->{CacheType},
-            Key   => $Param{CalendarID},
-            Value => \%Calendar,
-            TTL   => $Self->{CacheTTL},
+        # db query
+        return if !$DBObject->Prepare(
+            SQL   => $SQL,
+            Bind  => \@Bind,
+            Limit => 1,
         );
+
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            $Calendar{CalendarID}   = $Row[0];
+            $Calendar{GroupID}      = $Row[1];
+            $Calendar{CalendarName} = $Row[2];
+            $Calendar{CreateTime}   = $Row[3];
+            $Calendar{CreateBy}     = $Row[4];
+            $Calendar{ChangeTime}   = $Row[5];
+            $Calendar{ChangeBy}     = $Row[6];
+            $Calendar{ValidID}      = $Row[7];
+        }
+
+        if ( $Param{CalendarID} ) {
+
+            # cache
+            $Kernel::OM->Get('Kernel::System::Cache')->Set(
+                Type  => $Self->{CacheType},
+                Key   => $Param{CalendarID},
+                Value => \%Calendar,
+                TTL   => $Self->{CacheTTL},
+            );
+        }
+    }
+
+    if ( $Param{UserID} ) {
+
+        # get user groups
+        my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Param{UserID},
+            Type   => 'ro',
+        );
+
+        if ( !grep { $Calendar{GroupID} == $_ } keys %GroupList ) {
+            %Calendar = ();
+        }
     }
 
     return %Calendar;

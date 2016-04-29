@@ -179,7 +179,7 @@ my %CalendarGet4 = $CalendarObject->CalendarGet(
     CalendarName => 'Test calendar',
 );
 
-$Self->False(
+$Self->True(
     $CalendarGet4{CalendarID},
     "CalendarGet( CalendarName => 'Test calendar') without UserID",
 );
