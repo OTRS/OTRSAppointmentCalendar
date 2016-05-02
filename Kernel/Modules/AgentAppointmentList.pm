@@ -159,6 +159,10 @@ sub Run {
 
         my @AppointmentIDs = $ParamObject->GetArray( Param => 'AppointmentIDs[]' );
 
+        # check if team object is registered
+        my $ShowResources
+            = $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 );
+
         for my $AppointmentID (@AppointmentIDs) {
             my $Seen = $AppointmentObject->AppointmentSeenGet(
                 AppointmentID => $AppointmentID,
@@ -170,10 +174,22 @@ sub Run {
                     AppointmentID => $AppointmentID,
                 );
 
+                my @Resources = ();
+                if ($ShowResources) {
+                    for my $UserID ( @{ $Appointment{ResourceID} } ) {
+                        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+                            UserID => $UserID,
+                        );
+                        push @Resources, $User{UserFullname};
+                    }
+                }
+
                 $LayoutObject->Block(
                     Name => 'Appointment',
                     Data => {
                         %Appointment,
+                        ShowResources => $ShowResources,
+                        Resource      => join( ', ', @Resources ),
                     },
                 );
 
@@ -190,6 +206,7 @@ sub Run {
         my $HTML = $LayoutObject->Output(
             TemplateFile => 'AgentAppointmentCalendarOverviewSeen',
             Data         => {
+                ShowResources => $ShowResources,
             },
         );
 

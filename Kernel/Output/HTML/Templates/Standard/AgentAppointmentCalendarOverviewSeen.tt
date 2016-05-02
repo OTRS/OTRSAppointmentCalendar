@@ -15,6 +15,9 @@
                     <th>[% Translate("Title") | html %]</th>
                     <th>[% Translate("Start time") | html %]</th>
                     <th>[% Translate("End time") | html %]</th>
+[% IF Data.ShowResources %]
+                    <th>[% Translate("Resource") | html %]</th>
+[% END %]
                 </tr>
             </thead>
             <tbody>
@@ -23,6 +26,11 @@
                     <td>[% Data.Title | html %]</td>
                     <td>[% Data.StartTime | html %]</td>
                     <td>[% Data.EndTime | html %]</td>
+[% IF Data.ShowResources %]
+                    <td title="[% Data.Resource | html %]">
+                        [% Data.Resource | truncate(30) %]
+                    </td>
+[% END %]
                 </tr>
 [% RenderBlockEnd("Appointment") %]
             </tbody>
