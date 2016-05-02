@@ -726,13 +726,61 @@ $Self->False(
     'AppointmentDelete() - #2 without UserID',
 );
 
+# add create permissions to the user
+$GroupObject->PermissionGroupUserAdd(
+    GID        => $Calendar2{GroupID},
+    UID        => $UserID,
+    Permission => {
+        ro => 1,
+    },
+    UserID => 1,
+);
 my $Delete3 = $AppointmentObject->AppointmentDelete(
     AppointmentID => $AppointmentID8,
     UserID        => $UserID,
 );
-$Self->True(
+$Self->False(
     $Delete3,
-    'AppointmentDelete() - #3 OK',
+    'AppointmentDelete() - #3 ro permissions',
+);
+
+# add create permissions to the user
+$GroupObject->PermissionGroupUserAdd(
+    GID        => $Calendar2{GroupID},
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+    },
+    UserID => 1,
+);
+my $Delete4 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $AppointmentID8,
+    UserID        => $UserID,
+);
+$Self->False(
+    $Delete4,
+    'AppointmentDelete() - #4 move_into permissions',
+);
+
+# add create permissions to the user
+$GroupObject->PermissionGroupUserAdd(
+    GID        => $Calendar2{GroupID},
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+    },
+    UserID => 1,
+);
+my $Delete5 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $AppointmentID8,
+    UserID        => $UserID,
+);
+$Self->True(
+    $Delete5,
+    'AppointmentDelete() - #5 create permissions',
 );
 
 my %AppointmentGet5 = $AppointmentObject->AppointmentGet(
@@ -1081,14 +1129,14 @@ $Self->True(
 );
 
 # delete appointment
-my $Delete4 = $AppointmentObject->AppointmentDelete(
+my $Delete6 = $AppointmentObject->AppointmentDelete(
     AppointmentID => $AppointmentID1,
     UserID        => $UserID,
 );
 
 $Self->True(
-    $Delete4,
-    "Delete #4",
+    $Delete6,
+    "Delete #6 - rw permissions",
 );
 
 my $Seen5 = $AppointmentObject->AppointmentSeenGet(
