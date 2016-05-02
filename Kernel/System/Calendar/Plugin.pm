@@ -188,6 +188,13 @@ sub PluginLinkDelete {
         UserID => $Param{UserID},
     );
 
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Unable to delete plugin links!"
+        );
+    }
+
     return $Success;
 }
 

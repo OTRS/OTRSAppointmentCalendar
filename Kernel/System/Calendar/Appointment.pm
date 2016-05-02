@@ -22,6 +22,7 @@ use Time::Piece;
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
+    'Kernel::System::Calendar',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
@@ -1165,17 +1166,39 @@ sub AppointmentDelete {
     # needed objects
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    # TODO: Check who is able to delete appointment
-
     # get CalendarID
     my $CalendarID = $Self->_AppointmentGetCalendarID(
         AppointmentID => $Param{AppointmentID},
     );
 
+    # check user's permissions for this calendar
+    my $Permission = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarPermissionGet(
+        CalendarID => $CalendarID,
+        UserID     => $Param{UserID},
+    );
+
+    my @RequiredPermissions = ( 'create', 'rw' );
+
+    if ( !grep { $Permission eq $_ } @RequiredPermissions ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "User($Param{UserID}) has no permission to delete Appointment($Param{AppointmentID})!"
+        );
+        return;
+    }
+
     # delete recurring appointments
-    return if !$Self->_AppointmentRecurringDelete(
+    my $DeleteRecurringSuccess = $Self->_AppointmentRecurringDelete(
         ParentID => $Param{AppointmentID},
     );
+
+    if ( !$DeleteRecurringSuccess ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Recurring appointment couldn\'t be deleted!',
+        );
+        return;
+    }
 
     # delete parent appointment
     my $SQL = '

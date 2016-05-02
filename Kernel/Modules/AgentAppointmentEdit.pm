@@ -707,22 +707,25 @@ sub Run {
             my $Success = $PluginObject->PluginLinkDelete(
                 AppointmentID => $GetParam{AppointmentID},
                 UserID        => $Self->{UserID},
-            );
+            ) || 0;
 
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => Translatable('Links could not be deleted!'),
-            ) if !$Success;
+            my $Error = "";
+            if ($Success) {
+                $Success = $AppointmentObject->AppointmentDelete(
+                    %GetParam,
+                    UserID => $Self->{UserID},
+                );
+            }
 
-            $Success = $AppointmentObject->AppointmentDelete(
-                %GetParam,
-                UserID => $Self->{UserID},
-            );
+            if ( !$Success ) {
+                $Error = Translatable("No permissions!");
+            }
 
             # build JSON output
             $JSON = $LayoutObject->JSONEncode(
                 Data => {
                     Success       => $Success,
+                    Error         => $Error,
                     AppointmentID => $GetParam{AppointmentID},
                 },
             );
