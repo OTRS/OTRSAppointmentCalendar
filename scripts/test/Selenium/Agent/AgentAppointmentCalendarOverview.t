@@ -200,6 +200,15 @@ $Selenium->RunTest(
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
+        # elements that are not allowed in dialog
+        for my $Element (qw( EditFormDelete EditFormCopy)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
         $Selenium->execute_script(
@@ -460,7 +469,7 @@ $Selenium->RunTest(
         }
 
         # elements that are not allowed on page
-        for my $Element (qw( EditFormSubmit EditFormDelete )) {
+        for my $Element (qw( EditFormSubmit EditFormDelete EditFormCopy )) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -523,7 +532,7 @@ $Selenium->RunTest(
         }
 
         # elements that are not allowed on page
-        for my $Element (qw( EditFormDelete )) {
+        for my $Element (qw( EditFormDelete EditFormCopy)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -578,7 +587,7 @@ $Selenium->RunTest(
         }
 
         # elements that should be on page
-        for my $Element (qw( EditFormSubmit EditFormDelete EditFormCancel )) {
+        for my $Element (qw( EditFormCopy EditFormSubmit EditFormDelete EditFormCancel )) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
