@@ -100,9 +100,9 @@ creates a new appointment.
         RecurrenceByDay     => 5,                                       # (optional)
 
         RecurrenceFrequency => 1,                                       # (optional) default 1.
-        RecurrenceCount     => 1,                                       # (optional)
+        RecurrenceCount     => 1,                                       # (optional) How many Appointments to create
         RecurrenceInterval  => 2,                                       # (optional)
-        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional)
+        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional) Until date
         UserID              => 1,                                       # (required) UserID
     );
 
