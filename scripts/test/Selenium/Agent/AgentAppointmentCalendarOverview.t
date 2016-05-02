@@ -421,12 +421,6 @@ $Selenium->RunTest(
             UID        => $UserID,
             Permission => {
                 ro => 1,
-
-                #move_into => 1,
-                #create    => 1,
-                #owner     => 1,
-                #priority  => 1,
-                #rw        => 1,
             },
             UserID => 1,
         );
@@ -452,7 +446,6 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # check if fields are disabled
-
         for my $Element (
             qw(Title Description Location CalendarID TeamList StartMonth StartDay StartYear StartHour StartMinute
             EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
@@ -477,6 +470,115 @@ $Selenium->RunTest(
 
         # elements that should be on page
         for my $Element (qw( EditFormCancel )) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # click on cancel
+        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+
+        # add move_into permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro        => 1,
+                move_into => 1,
+            },
+            UserID => 1,
+        );
+
+        # click on appointment
+        $Selenium->execute_script(
+            "return \$('.fc-scrollpane-inner a:first').click();",
+        );
+
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check if fields are disabled
+        for my $Element (qw( CalendarID )) {
+            $ElementDisabled->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # check if fields are enabled
+        for my $Element (
+            qw( Title Description Location TeamList StartMonth StartDay StartYear StartHour StartMinute
+            EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            )
+            )
+        {
+            $ElementDisabled->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that are not allowed on page
+        for my $Element (qw( EditFormDelete )) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that should be on page
+        for my $Element (qw( EditFormSubmit EditFormCancel )) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # click on cancel
+        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+
+        # add create permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro        => 1,
+                move_into => 1,
+                create    => 1,
+            },
+            UserID => 1,
+        );
+
+        # click on appointment
+        $Selenium->execute_script(
+            "return \$('.fc-scrollpane-inner a:first').click();",
+        );
+
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check if fields are enabled
+        for my $Element (
+            qw( Title Description Location CalendarID TeamList StartMonth StartDay StartYear StartHour StartMinute
+            EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            )
+            )
+        {
+            $ElementDisabled->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that should be on page
+        for my $Element (qw( EditFormSubmit EditFormDelete EditFormCancel )) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
