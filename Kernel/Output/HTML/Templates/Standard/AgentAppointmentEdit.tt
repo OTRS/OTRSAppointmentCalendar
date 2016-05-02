@@ -151,6 +151,9 @@
 </div>
 
 <div class="ContentFooter Center">
+[% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
+    <button id="EditFormCopy" class="Primary CallForAction" value="[% Translate("Copy") | html %]"><span><i class="fa fa-files-o"></i> [% Translate("Copy") | html %]</span></button>
+[% END %]
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
     <button id="EditFormSubmit" class="Primary CallForAction" value="[% Translate("Save") | html %]"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
 [% END %]
@@ -202,6 +205,20 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
 
 [% END %]
 
+});
+
+// Duplicate appointment
+$('#EditFormCopy').on('click', function() {
+    var Title = $(".Dialog:visible h1").html();
+
+    // Update title
+    Title += " " + Core.Language.Translate('Copy');
+    $(".Dialog:visible h1").html(Title);
+
+    // Reset AppointmentID, remove Copy & Delete buttons
+    $("#EditAppointmentForm input#AppointmentID").val("");
+    $("#EditFormCopy").remove();
+    $("#EditFormDelete").remove();
 });
 
 // Save the appointment
