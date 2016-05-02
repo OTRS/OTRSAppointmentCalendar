@@ -67,8 +67,8 @@ sub new {
     else {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'Error',
-            Message  => 'Unknown database type! Set option Database::Type in '
-                . 'Kernel/Config.pm to (mysql|postgresql|oracle|db2|mssql).',
+            Message  => 'Unknown AppointmentCalendar::Backend! Set option AppointmentCalendar::Backend in '
+                . 'Kernel/Config.pm to (CalDav).',
         );
         return;
     }

@@ -1052,7 +1052,7 @@ sub AppointmentUpdate {
     if ( !$DeleteSuccess ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Unable to delete recurring Appoinment!",
+            Message  => "Unable to delete recurring Appointment!",
         );
         return;
     }
@@ -1442,6 +1442,16 @@ sub _AppointmentRecurringCreate {
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
 
+            # bugfix: On some systems with older perl version system might calculate timezone difference
+            $StartTime = $Self->_TimeCheck(
+                OriginalTime => $Param{Appointment}->{StartTime},
+                Time         => $StartTime,
+            );
+            $EndTime = $Self->_TimeCheck(
+                OriginalTime => $Param{Appointment}->{EndTime},
+                Time         => $EndTime,
+            );
+
             $Self->AppointmentCreate(
                 %{ $Param{Appointment} },
                 ParentID  => $Param{ParentID},
@@ -1475,6 +1485,16 @@ sub _AppointmentRecurringCreate {
 
             my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
             my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+
+            # bugfix: On some systems with older perl version system might calculate timezone difference
+            $StartTime = $Self->_TimeCheck(
+                OriginalTime => $Param{Appointment}->{StartTime},
+                Time         => $StartTime,
+            );
+            $EndTime = $Self->_TimeCheck(
+                OriginalTime => $Param{Appointment}->{EndTime},
+                Time         => $EndTime,
+            );
 
             $Self->AppointmentCreate(
                 %{ $Param{Appointment} },
@@ -1705,6 +1725,33 @@ sub _CalculateRecurenceTime {
     }
 
     return $SystemTime;
+}
+
+sub _TimeCheck {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(OriginalTime Time)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $Result = '';
+
+    $Param{OriginalTime} =~ /(.*?)\s(.*?)$/;
+    my $OriginalDate = $1;
+    my $OriginalTime = $2;
+
+    $Param{Time} =~ /(.*?)\s(.*?)$/;
+    my $Date = $1;
+
+    $Result = "$Date $OriginalTime";
+    return $Result;
 }
 
 1;
