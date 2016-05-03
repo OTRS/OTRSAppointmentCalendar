@@ -74,6 +74,29 @@ sub Data {
     $Self->{Translation}->{'Manage Team-Agent Relations'} = 'Team-Agenten-Zuordnungen verwalten';
     $Self->{Translation}->{'Change Agent Relations for Team'} = 'Ändere Agenten-Zuordnungen für Team';
 
+    # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+    $Self->{Translation}->{'System was unable to create Calendar!'} = 'Das System konnten den Kalender nicht erstellen!';
+    $Self->{Translation}->{'Please contact the admin.'} = 'Bitte kontaktieren Sie den Administrator.';
+    $Self->{Translation}->{'No CalendarID!'} = 'Keine CalenderID!';
+    $Self->{Translation}->{'You have no access to this calendar!'} = 'Sie haben keine Zugriffsberechtigung auf diesen Kalender!';
+    $Self->{Translation}->{'Error updating the calendar!'} = 'Fehler beim Aktualisieren des Kalenders!';
+
+    # Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+    $Self->{Translation}->{'until ...'} = 'bis ...';
+    $Self->{Translation}->{'for ... time(s)'} = 'für ... Wiederholungen';
+    $Self->{Translation}->{'Links could not be deleted!'} = 'Links konnten nicht gelöscht werden!';
+    $Self->{Translation}->{'Link could not be created!'} = 'Links konnten nicht erstellt werden!';
+    $Self->{Translation}->{'No permissions!'} = 'Keine Berechtigung!';
+    $Self->{Translation}->{'No permission!'} = 'Keine Berechtigung!';
+
+    # Perl Module: Kernel/Modules/AgentAppointmentTeamList.pm
+    $Self->{Translation}->{'Unassigned'} = 'Nicht zugeordnet';
+
+    # Perl Module: Kernel/Modules/PublicCalendar.pm
+    $Self->{Translation}->{'No CalendarID !'} = 'Keine CalenderID!';
+    $Self->{Translation}->{'No UserID !'} = 'Keine UserID!';
+    $Self->{Translation}->{'There was an error exporting the calendar!'} = 'Es ist ein Fehler beim Exportieren des Kalenders aufgetreten!';
+
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Terminkalender Übersicht';
     $Self->{Translation}->{'Calendar Overview'} = 'Kalenderübersicht';
