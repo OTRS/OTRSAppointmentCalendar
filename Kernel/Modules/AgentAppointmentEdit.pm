@@ -69,7 +69,9 @@ sub Run {
 
     my $Permissions = '';
 
-    # check request
+    # ------------------------------------------------------------ #
+    # edit mask
+    # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'EditMask' ) {
 
         # get all user's valid calendars
@@ -467,6 +469,9 @@ sub Run {
         );
     }
 
+    # ------------------------------------------------------------ #
+    # add/edit appointment
+    # ------------------------------------------------------------ #
     elsif (
         $Self->{Subaction} eq 'AddAppointment'
         || $Self->{Subaction} eq 'EditAppointment'
@@ -700,6 +705,9 @@ sub Run {
         );
     }
 
+    # ------------------------------------------------------------ #
+    # delete mask
+    # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'DeleteAppointment' ) {
 
         if ( $GetParam{AppointmentID} ) {
@@ -727,6 +735,29 @@ sub Run {
                     Success       => $Success,
                     Error         => $Error,
                     AppointmentID => $GetParam{AppointmentID},
+                },
+            );
+        }
+    }
+
+    # ------------------------------------------------------------ #
+    # update preferences
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'UpdatePreferences' ) {
+
+        if ( $GetParam{OverviewScreen} && $GetParam{CurrentView} ) {
+
+            # set user preferences
+            my $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+                Key    => 'User' . $GetParam{OverviewScreen} . 'DefaultView',
+                Value  => $GetParam{CurrentView},
+                UserID => $Self->{UserID},
+            );
+
+            # build JSON output
+            $JSON = $LayoutObject->JSONEncode(
+                Data => {
+                    Success => $Success,
                 },
             );
         }

@@ -23,7 +23,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     // Appointment days cache and ready flag
     var AppointmentDaysCache,
         AppointmentDaysCacheRefreshed = false,
-        AJAXCounter = 0;
+        AJAXCounter = 0,
+        CurrentView;
 
     /**
      * @name Init
@@ -43,6 +44,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.ButtonText.timeline - Localized string for the word "Timeline".
      * @param {String} Params.ButtonText.jump - Localized string for the word "Jump".
      * @param {String} Params.FirstDay - First day of the week (0: Sunday).
+     * @param {String} Params.DefaultView - Default view to display (month|agendaWeek|agendaDay|timelineMonth|timelineWeek|timelineDay).
      * @param {Array} Params.Header - Array containing view buttons in the header.
      * @param {String} Params.Header.left - String with view names for left side of the header.
      * @param {String} Params.Header.center - String with view names for header center.
@@ -54,11 +56,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.DialogText.OccurrenceAll - Text of 'all' button in occurrence dialog.
      * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
      * @param {String} Params.DialogText.Dismiss - Text of 'Dismiss' button in dialog.
+     * @param {Array} Params.OverviewScreen - Name of the screen (CalendarOverview|ResourceOverview).
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
      * @param {Array} Params.Callbacks.EditSubaction - Name of the edit subaction.
      * @param {Array} Params.Callbacks.AddSubaction - Name of the add subaction.
+     * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
@@ -90,7 +94,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     }
                 }
             },
-            defaultView: 'timelineWeek',
+            defaultView: Params.DefaultView,
             allDayText: Params.AllDayText,
             isRTL: Params.IsRTL,
             columnFormat: 'ddd, D MMM',
@@ -166,6 +170,25 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 } else {
                     $('.CalendarWidget').removeClass('Loading');
                 }
+            },
+            viewRender: function(View) {
+                if (CurrentView !== undefined && CurrentView !== View.name) {
+                    Core.AJAX.FunctionCall(
+                        Core.Config.Get('CGIHandle'),
+                        {
+                            Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+                            Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
+                            OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
+                            CurrentView: View.name
+                        },
+                        function (Response) {
+                            if (!Response.Success) {
+                                Core.Debug.Log('Error updating user preferences!');
+                            }
+                        }
+                    );
+                }
+                CurrentView = View.name;
             },
             select: function(Start, End, JSEvent, View, Resource) {
                 var Data = {

@@ -153,6 +153,7 @@ Core.Agent.AppointmentCalendar.Init({
         nextDatepicker: [% Translate("Next") | JSON %]
     },
     FirstDay: [% Data.FirstDay | html %],
+    DefaultView: [% Data.DefaultView | JSON %],
     Header: {
         left: 'month,agendaWeek,agendaDay timelineWeek',
         center: 'title',
@@ -167,11 +168,13 @@ Core.Agent.AppointmentCalendar.Init({
         Close: [% Translate("Close") | JSON %],
         Dismiss: [% Translate("Dismiss") | JSON %]
     },
+    OverviewScreen: 'CalendarOverview',
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
         EditMaskSubaction: [% Data.EditMaskSubaction | JSON %],
         EditSubaction: [% Data.EditSubaction | JSON %],
         AddSubaction: [% Data.AddSubaction | JSON %],
+        PrefSubaction: [% Data.PrefSubaction | JSON %],
         ListAction: [% Data.ListAction | JSON %],
         DaysSubacton: [% Data.DaysSubaction | JSON %]
     },

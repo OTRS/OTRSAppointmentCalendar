@@ -33,8 +33,6 @@ sub Run {
     my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
-    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get all user's valid calendars
     my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
@@ -96,6 +94,14 @@ sub Run {
 
             $CurrentCalendar++;
         }
+
+        # get user preferences
+        my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+            UserID => $Self->{UserID},
+        );
+
+        # set initial view
+        $Param{DefaultView} = $Preferences{UserCalendarOverviewDefaultView} // 'timelineWeek';
     }
 
     # show no calendar found message
@@ -118,6 +124,7 @@ sub Run {
             EditMaskSubaction => 'EditMask',
             EditSubaction     => 'EditAppointment',
             AddSubaction      => 'AddAppointment',
+            PrefSubaction     => 'UpdatePreferences',
             ListAction        => 'AgentAppointmentList',
             DaysSubaction     => 'AppointmentDays',
             FirstDay          => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,

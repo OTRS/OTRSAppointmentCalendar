@@ -150,6 +150,14 @@ sub Run {
                         %Param,
                     },
                 );
+
+                # get user preferences
+                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                    UserID => $Self->{UserID},
+                );
+
+                # set initial view
+                $Param{DefaultView} = $Preferences{UserResourceOverviewDefaultView} // 'timelineWeek';
             }
 
             # show empty team message
