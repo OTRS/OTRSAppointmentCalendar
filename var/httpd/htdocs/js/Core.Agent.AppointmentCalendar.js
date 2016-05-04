@@ -241,6 +241,66 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 CurrentAppointment.start = CalEvent.start;
                 CurrentAppointment.end = CalEvent.end;
             },
+            eventMouseover: function(CalEvent, JSEvent) {
+                var $TooltipObj,
+                    PosX = 0,
+                    PosY = 0,
+                    TooltipHTML = $('#AppointmentTooltipTemplate').html() || '',
+                    DocumentVisibleLeft = $(document).scrollLeft() + $(window).width(),
+                    DocumentVisibleTop = $(document).scrollTop() + $(window).height(),
+                    LastXPosition,
+                    LastYPosition;
+
+                if (!JSEvent) {
+                    JSEvent = window.event;
+                }
+                if (JSEvent.pageX || JSEvent.pageY) {
+                    PosX = JSEvent.pageX;
+                    PosY = JSEvent.pageY;
+                } else if (JSEvent.clientX || JSEvent.clientY) {
+                    PosX = JSEvent.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                    PosY = JSEvent.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+                }
+
+                // Increase X position so the tooltip do not overlap with mouse pointer
+                PosX += 15;
+
+                // Replace placeholders with appointment information
+                TooltipHTML = ReplaceAppointmentInformation(TooltipHTML, CalEvent);
+
+                if (TooltipHTML.length > 0) {
+
+                    // Create tooltip object
+                    $TooltipObj = $('<div/>').attr('id', 'AppointmentTooltip')
+                        .addClass('Hidden')
+                        .offset({
+                            top: PosY,
+                            left: PosX
+                        })
+                        .html(TooltipHTML)
+                        .appendTo('body');
+
+                    // Re-calculate top position if needed
+                    LastYPosition = PosY + $TooltipObj.height();
+                    if (LastYPosition > DocumentVisibleTop) {
+                        PosY = PosY - (LastYPosition - DocumentVisibleTop) - 10;
+                        $TooltipObj.css('top', PosY + 'px');
+                    }
+
+                    // Re-calculate left position if needed
+                    LastXPosition = PosX + $TooltipObj.width();
+                    if (LastXPosition > DocumentVisibleLeft) {
+                        PosX = PosX - (LastXPosition - DocumentVisibleLeft) - 10;
+                        $TooltipObj.css('left', PosX + 'px');
+                    }
+
+                    // Show the tooltip
+                    $TooltipObj.fadeIn("fast");
+                }
+            },
+            eventMouseout: function() {
+                $('#AppointmentTooltip').fadeOut("fast").remove();
+            },
             resources: Params.Resources.ResourceJSON,
             resourceColumns: Params.Resources.ResourceColumns,
             resourceLabelText: Params.Resources.ResourceText
@@ -380,12 +440,56 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @private
      * @name ShowWaitingDialog
      * @memberof Core.Agent.AppointmentCalendar
-     * @function
      * @description
      *      Shows waiting dialog until dialog screen is ready.
      */
     function ShowWaitingDialog() {
         Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
+    }
+
+    /**
+     * @private
+     * @name ReplaceAppointmentInformation
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {String} ReplaceHTML - String containing %placeholders%.
+     * @param {Object} CalEvent - Calendar appointment object.
+     * @function
+     * @returns {String} String with replaced placeholders.
+     * @description
+     *      Replaces placeholders in supplied string with calendar appointment information.
+     */
+    function ReplaceAppointmentInformation(ReplaceHTML, CalEvent) {
+        var Placeholder,
+            SearchPlaceholder,
+            ReplaceValue;
+
+        // Loop through all properties
+        for (Placeholder in CalEvent) {
+            SearchPlaceholder = new RegExp('%' + Placeholder + '%', 'g');
+            ReplaceValue = CalEvent[Placeholder];
+
+            // Special properties
+            if (Placeholder === 'calendarId') {
+                ReplaceValue = $('label[for="Calendar' + Core.App.EscapeSelector(ReplaceValue) + '"]').text();
+            } else if (Placeholder === 'recurring') {
+                if (CalEvent.parentId) {
+                    ReplaceValue = true;
+                }
+            }
+
+            // Default JSON values
+            if (ReplaceValue === null) {
+                ReplaceValue = '';
+            } else if (ReplaceValue === false) {
+                ReplaceValue = Core.Config.Get('AppointmentCalendarTranslationsNo');
+            } else if (ReplaceValue === true) {
+                ReplaceValue = Core.Config.Get('AppointmentCalendarTranslationsYes');
+            }
+
+            ReplaceHTML = ReplaceHTML.replace(SearchPlaceholder, ReplaceValue);
+        }
+
+        return ReplaceHTML;
     }
 
     /**
@@ -809,7 +913,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     minLength: 2,
                     delay: 500,
                     source: function (Request, Response) {
-                        var URL = Core.Config.Get('Baselink'),
+                        var URL = Core.Config.Get('CGIHandle'),
                             CurrentAJAXNumber = ++AJAXCounter,
                             Data = {
                                 Action: 'AgentAppointmentPluginSearch',

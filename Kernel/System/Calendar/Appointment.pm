@@ -386,6 +386,8 @@ Result => 'HASH':
             CalendarID    => 1,
             UniqueID      => '20160101T160000-71E386@localhost',
             Title         => 'Webinar',
+            Description   => 'How to use Process tickets...',
+            Location      => 'Straubing',
             StartTime     => '2016-01-01 16:00:00',
             EndTime       => '2016-01-01 17:00:00',
             TimezoneID    => 1,
@@ -398,6 +400,8 @@ Result => 'HASH':
             CalendarID    => 1,
             UniqueID      => '20160101T180000-A78B57@localhost',
             Title         => 'Webinar',
+            Description   => 'How to use Process tickets...',
+            Location      => 'Straubing',
             StartTime     => '2016-01-02 16:00:00',
             EndTime       => '2016-01-02 17:00:00',
             TimezoneID    => 1,
@@ -479,8 +483,8 @@ sub AppointmentList {
     }
 
     my $SQL = '
-        SELECT id, parent_id, calendar_id, unique_id, title, start_time, end_time, timezone_id,
-            team_id, resource_id, all_day, recurring
+        SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
+            end_time, timezone_id, team_id, resource_id, all_day, recurring
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -529,8 +533,8 @@ sub AppointmentList {
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         # resource id
-        $Row[9] = $Row[9] ? $Row[9] : 0;
-        my @ResourceID = $Row[9] =~ /,/ ? split( ',', $Row[9] ) : ( $Row[9] );
+        $Row[11] = $Row[11] ? $Row[11] : 0;
+        my @ResourceID = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : ( $Row[11] );
 
         my %Appointment = (
             AppointmentID => $Row[0],
@@ -538,13 +542,15 @@ sub AppointmentList {
             CalendarID    => $Row[2],
             UniqueID      => $Row[3],
             Title         => $Row[4],
-            StartTime     => $Row[5],
-            EndTime       => $Row[6],
-            TimezoneID    => $Row[7],
-            TeamID        => $Row[8],
+            Description   => $Row[5],
+            Location      => $Row[6],
+            StartTime     => $Row[7],
+            EndTime       => $Row[8],
+            TimezoneID    => $Row[9],
+            TeamID        => $Row[10],
             ResourceID    => \@ResourceID,
-            AllDay        => $Row[10],
-            Recurring     => $Row[11],
+            AllDay        => $Row[12],
+            Recurring     => $Row[13],
         );
         push @Result, \%Appointment;
     }

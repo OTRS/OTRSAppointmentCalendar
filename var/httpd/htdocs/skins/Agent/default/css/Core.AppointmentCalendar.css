@@ -76,6 +76,28 @@
         height: 100%;
     }
 
+    #AppointmentTooltip {
+        position: absolute;
+        z-index: 1000;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        min-width: 350px;
+        padding: 5px;
+    }
+
+    #AppointmentTooltip > fieldset.TableLike {
+        margin-bottom: 15px;
+    }
+
+    #AppointmentTooltip > fieldset.TableLike > label,
+    #AppointmentTooltip > fieldset.TableLike > .Value {
+        line-height: 1em;
+    }
+
+    #AppointmentTooltip > fieldset.TableLike > .Value {
+        padding-top: 0.3em;
+    }
+
     .CalendarWidget .ui-datepicker-trigger {
         margin-top: 10px;
     }
