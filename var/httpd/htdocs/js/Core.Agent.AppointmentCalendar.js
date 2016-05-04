@@ -176,6 +176,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Core.AJAX.FunctionCall(
                         Core.Config.Get('CGIHandle'),
                         {
+                            ChallengeToken: $("#ChallengeToken").val(),
                             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
                             Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
                             OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
@@ -411,6 +412,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         var StartTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').startOf('month'),
             EndTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').add(1, 'months').startOf('month'),
             Data = {
+                ChallengeToken: $("#ChallengeToken").val(),
                 Action: Params.Callbacks.ListAction,
                 Subaction: Params.Callbacks.DaysSubacton,
                 StartTime: StartTime.format('YYYY-MM-DD'),
@@ -516,6 +518,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function OpenEditDialog(Params, AppointmentData) {
         var Data = {
+            ChallengeToken: $("#ChallengeToken").val(),
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditMaskSubaction ? Params.Callbacks.EditMaskSubaction : 'EditMask',
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
@@ -601,6 +604,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function UpdateAppointment(Params, AppointmentData) {
         var Data = {
+            ChallengeToken: $("#ChallengeToken").val(),
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditSubaction ? Params.Callbacks.EditSubaction : 'EditAppointment',
             AppointmentID: AppointmentData.CalEvent.id,
@@ -916,6 +920,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         var URL = Core.Config.Get('CGIHandle'),
                             CurrentAJAXNumber = ++AJAXCounter,
                             Data = {
+                                ChallengeToken: $("#ChallengeToken").val(),
                                 Action: 'AgentAppointmentPluginSearch',
                                 PluginKey: PluginID.replace(/^Plugin_/, ''),
                                 Term: Request.term + '*',
@@ -1144,6 +1149,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         Data = {
+            ChallengeToken: $("#ChallengeToken").val(),
             Action: "AgentAppointmentList",
             Subaction: "AppointmentsStarted",
             AppointmentIDs: AppointmentIDs

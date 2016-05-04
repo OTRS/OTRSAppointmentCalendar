@@ -33,7 +33,6 @@ sub Run {
     my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $JSONObject     = $Kernel::OM->Get('Kernel::System::JSON');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get names of all parameters

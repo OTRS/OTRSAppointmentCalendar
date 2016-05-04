@@ -8,7 +8,7 @@
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Calendar Overview") | html %]</h1>
-
+    <input type="hidden" value="[% Env("UserChallengeToken") %]" name="ChallengeToken" id="ChallengeToken" />
     <div class="SidebarColumn">
         <div class="WidgetSimple">
             <div class="Header">
@@ -189,6 +189,7 @@ var EventSources = {
         url: Core.Config.Get('CGIHandle'),
         type: 'POST',
         data: {
+            ChallengeToken: $("#ChallengeToken").val(),
             Action: 'AgentAppointmentList',
             Subaction: 'ListAppointments',
             CalendarID: [% Data.CalendarID | JSON %],

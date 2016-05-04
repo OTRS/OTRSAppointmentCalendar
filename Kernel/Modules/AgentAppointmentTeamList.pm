@@ -51,6 +51,8 @@ sub Run {
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
+    $LayoutObject->ChallengeTokenCheck();
+
     # check request
     if ( $Self->{Subaction} eq 'ListResources' ) {
 

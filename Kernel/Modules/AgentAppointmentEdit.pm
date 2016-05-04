@@ -71,6 +71,9 @@ sub Run {
 
     my $Permissions = '';
 
+    # challenge token check
+    $LayoutObject->ChallengeTokenCheck();
+
     # ------------------------------------------------------------ #
     # edit mask
     # ------------------------------------------------------------ #
