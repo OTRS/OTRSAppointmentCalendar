@@ -194,8 +194,6 @@ sub Run {
         Data         => {
             EditAction        => 'AgentAppointmentEdit',
             EditMaskSubaction => 'EditMask',
-            EditSubaction     => 'EditAppointment',
-            AddSubaction      => 'AddAppointment',
             ListAction        => 'AgentAppointmentList',
             DaysSubaction     => 'AppointmentDays',
             FirstDay          => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,

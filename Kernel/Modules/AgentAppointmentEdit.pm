@@ -474,11 +474,7 @@ sub Run {
     # ------------------------------------------------------------ #
     # add/edit appointment
     # ------------------------------------------------------------ #
-    elsif (
-        $Self->{Subaction} eq 'AddAppointment'
-        || $Self->{Subaction} eq 'EditAppointment'
-        )
-    {
+    elsif ( $Self->{Subaction} eq 'EditAppointment' ) {
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
             %Appointment = $AppointmentObject->AppointmentGet(

@@ -122,8 +122,6 @@ sub Run {
         Data         => {
             EditAction        => 'AgentAppointmentEdit',
             EditMaskSubaction => 'EditMask',
-            EditSubaction     => 'EditAppointment',
-            AddSubaction      => 'AddAppointment',
             PrefSubaction     => 'UpdatePreferences',
             ListAction        => 'AgentAppointmentList',
             DaysSubaction     => 'AppointmentDays',

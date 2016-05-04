@@ -10,7 +10,7 @@
 <div class="InnerContent">
     <form id="EditAppointmentForm" class="Validate">
         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
-        <input type="hidden" id="Subaction" name="Subaction" value="[% Env("Subaction") | html %]"/>
+        <input type="hidden" id="Subaction" name="Subaction" value="EditAppointment"/>
         <input type="hidden" id="AppointmentID" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
 [% FOREACH ResourceID IN Data.ResourceID %]
         <input type="hidden" id="ResourceID" name="ResourceID[]" value="[% ResourceID | html %]"/>
@@ -151,11 +151,11 @@
 </div>
 
 <div class="ContentFooter Center">
-[% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
-    <button id="EditFormCopy" class="Primary CallForAction" value="[% Translate("Copy") | html %]"><span><i class="fa fa-files-o"></i> [% Translate("Copy") | html %]</span></button>
-[% END %]
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
     <button id="EditFormSubmit" class="Primary CallForAction" value="[% Translate("Save") | html %]"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
+[% END %]
+[% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
+    <button id="EditFormCopy" class="CallForAction" value="[% Translate("Copy") | html %]"><span><i class="fa fa-files-o"></i> [% Translate("Copy") | html %]</span></button>
 [% END %]
 [% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
     <button id="EditFormDelete" class="CallForAction"><span>[% Translate("Delete") | html %]</span></button>
@@ -191,34 +191,14 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         }
     });
 
-[% IF Data.AppointmentID %]
-
-    // Edit the appointment
-    Data.Subaction = 'EditAppointment';
     Core.Agent.AppointmentCalendar.EditAppointment(Data);
-
-[% ELSE %]
-
-    // Add the appointment
-    Data.Subaction = 'AddAppointment';
-    Core.Agent.AppointmentCalendar.EditAppointment(Data);
-
-[% END %]
-
 });
 
 // Duplicate appointment
 $('#EditFormCopy').on('click', function() {
-    var Title = $(".Dialog:visible h1").html();
-
-    // Update title
-    Title += " " + Core.Language.Translate('Copy');
-    $(".Dialog:visible h1").html(Title);
-
     // Reset AppointmentID, remove Copy & Delete buttons
     $("#EditAppointmentForm input#AppointmentID").val("");
-    $("#EditFormCopy").remove();
-    $("#EditFormDelete").remove();
+    $('#EditAppointmentForm').submit();
 });
 
 // Save the appointment
