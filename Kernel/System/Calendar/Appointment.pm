@@ -5,19 +5,22 @@
 # the enclosed file COPYING for license information (AGPL). If you
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
+
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
+
 package Kernel::System::Calendar::Appointment;
 
 use strict;
 use warnings;
 
 use Digest::MD5;
+use Time::Piece;
 
 use vars qw(@ISA);
 
 use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::EventHandler;
-use Time::Piece;
 
 our @ObjectDependencies = (
     'Kernel::Config',
