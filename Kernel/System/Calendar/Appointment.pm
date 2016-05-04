@@ -173,9 +173,6 @@ sub AppointmentCreate {
         }
     }
 
-    # needed objects
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
     # check ParentID
     if ( $Param{ParentID} && !IsInteger( $Param{ParentID} ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -186,7 +183,7 @@ sub AppointmentCreate {
     }
 
     # check StartTime
-    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $StartTimeSystem = $Self->_SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -208,10 +205,10 @@ sub AppointmentCreate {
     }
 
     # check EndTime
-    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $EndTimeValid = $Self->_SystemTimeGet(
         String => $Param{EndTime},
     );
-    if ( !$EndTimeSystem ) {
+    if ( !$EndTimeValid ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "Invalid EndTime!",
@@ -258,7 +255,7 @@ sub AppointmentCreate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
 
@@ -269,7 +266,7 @@ sub AppointmentCreate {
         {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Invalid RecurrenceUntilSystem!",
+                Message  => "Invalid RecurrenceUntil!",
             );
             return;
         }
@@ -452,34 +449,51 @@ sub AppointmentList {
     }
 
     # needed objects
-    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # check time
     if ( $Param{StartTime} ) {
-        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        my $StartTimeSystem = $Self->_SystemTimeGet(
             String => $Param{StartTime},
         );
-        return if !$StartTimeSystem;
+        if ( !$StartTimeSystem ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "StartTime invalid!"
+            );
+            return;
+        }
         $StartTimeSystem -= 24 * 60 * 60;    # allow 24h because of timezone differences
-        $Param{StartTime} = $TimeObject->SystemTime2TimeStamp(
+        $Param{StartTime} = $Self->_TimestampGet(
             SystemTime => $StartTimeSystem,
         );
     }
     if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        my $EndTimeSystem = $Self->_SystemTimeGet(
             String => $Param{EndTime},
         );
-        return if !$EndTimeSystem;
-        $EndTimeSystem += 24 * 60 * 60;      # allow 24h because of timezone differences
-        $Param{EndTime} = $TimeObject->SystemTime2TimeStamp(
+        if ( !$EndTimeSystem ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "EndTime invalid!"
+            );
+            return;
+        }
+        $EndTimeSystem += 24 * 60 * 60;    # allow 24h because of timezone differences
+        $Param{EndTime} = $Self->_TimestampGet(
             SystemTime => $EndTimeSystem,
         );
     }
 
     # check TeamID
     if ( $Param{TeamID} ) {
-        return if !IsInteger( $Param{TeamID} );
+        if ( !IsInteger( $Param{TeamID} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "TeamID must be a number!"
+            );
+            return;
+        }
     }
 
     my $SQL = '
@@ -614,6 +628,34 @@ sub AppointmentDays {
     my $CacheKeyStart = $Param{StartTime} || 'any';
     my $CacheKeyEnd   = $Param{EndTime} || 'any';
 
+    # check time
+    if ( $Param{StartTime} ) {
+        my $StartTimeValid = $Self->_SystemTimeGet(
+            String => $Param{StartTime},
+        );
+
+        if ( !$StartTimeValid ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "StartTime invalid!"
+            );
+            return;
+        }
+    }
+    if ( $Param{EndTime} ) {
+        my $EndTimeValid = $Self->_SystemTimeGet(
+            String => $Param{EndTime},
+        );
+
+        if ( !$EndTimeValid ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "EndTime invalid!"
+            );
+            return;
+        }
+    }
+
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
@@ -625,22 +667,7 @@ sub AppointmentDays {
     }
 
     # needed objects
-    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-    # check time
-    if ( $Param{StartTime} ) {
-        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{StartTime},
-        );
-        return if !$StartTimeSystem;
-    }
-    if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
-            String => $Param{EndTime},
-        );
-        return if !$EndTimeSystem;
-    }
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # get user groups
     my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
@@ -710,11 +737,11 @@ sub AppointmentDays {
         }
 
         # Get system times
-        $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        $StartTimeSystem = $Self->_SystemTimeGet(
             String => $StartTime,
         );
 
-        $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+        $EndTimeSystem = $Self->_SystemTimeGet(
             String => $EndTime,
         );
 
@@ -724,7 +751,7 @@ sub AppointmentDays {
             $LoopSystemTime += 60 * 60 * 24
             )
         {
-            my $LoopTime = $TimeObject->SystemTime2TimeStamp(
+            my $LoopTime = $Self->_TimestampGet(
                 SystemTime => $LoopSystemTime,
             );
 
@@ -818,8 +845,7 @@ sub AppointmentGet {
     }
 
     # needed objects
-    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my @Bind;
     my $SQL = '
@@ -967,12 +993,8 @@ sub AppointmentUpdate {
 
     $Param{RecurrenceFrequency} ||= 1;
 
-    # needed objects
-    my $TimeObject  = $Kernel::OM->Get('Kernel::System::Time');
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-
     # check StartTime
-    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $StartTimeSystem = $Self->_SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -984,7 +1006,7 @@ sub AppointmentUpdate {
     }
 
     # check EndTime
-    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $EndTimeSystem = $Self->_SystemTimeGet(
         String => $Param{EndTime},
     );
     if ( !$EndTimeSystem ) {
@@ -994,6 +1016,9 @@ sub AppointmentUpdate {
         );
         return;
     }
+
+    # needed objects
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # check timezone
     if ( !defined $Param{TimezoneID} ) {
@@ -1033,7 +1058,7 @@ sub AppointmentUpdate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
         if (
@@ -1427,13 +1452,10 @@ sub _AppointmentRecurringCreate {
         }
     }
 
-    # get needed objects
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-    my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $StartTimeSystem = $Self->_SystemTimeGet(
         String => $Param{Appointment}->{StartTime},
     );
-    my $EndTimeSystem = $TimeObject->TimeStamp2SystemTime(
+    my $EndTimeSystem = $Self->_SystemTimeGet(
         String => $Param{Appointment}->{EndTime},
     );
 
@@ -1447,7 +1469,7 @@ sub _AppointmentRecurringCreate {
     # until ...
     if ( $Param{Appointment}->{RecurrenceUntil} ) {
 
-        my $RecurrenceUntilSystem = $TimeObject->TimeStamp2SystemTime(
+        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
             String => $Param{Appointment}->{RecurrenceUntil},
         );
 
@@ -1471,8 +1493,12 @@ sub _AppointmentRecurringCreate {
 
             last UNTIL_TIME if !$StartTimeSystem;
 
-            my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
-            my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+            my $StartTime = $Self->_TimestampGet(
+                SystemTime => $StartTimeSystem
+            );
+            my $EndTime = $Self->_TimestampGet(
+                SystemTime => $EndTimeSystem
+            );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
             $StartTime = $Self->_TimeCheck(
@@ -1515,8 +1541,12 @@ sub _AppointmentRecurringCreate {
 
             last COUNT if !$StartTimeSystem;
 
-            my $StartTime = $TimeObject->SystemTime2TimeStamp( SystemTime => $StartTimeSystem );
-            my $EndTime   = $TimeObject->SystemTime2TimeStamp( SystemTime => $EndTimeSystem );
+            my $StartTime = $Self->_TimestampGet(
+                SystemTime => $StartTimeSystem
+            );
+            my $EndTime = $Self->_TimestampGet(
+                SystemTime => $EndTimeSystem
+            );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
             $StartTime = $Self->_TimeCheck(
@@ -1585,18 +1615,15 @@ sub _GetUniqueID {
         }
     }
 
-    # get time object
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
     # calculate a hash
-    my $CurrentTimestamp = $TimeObject->CurrentTimestamp();
+    my $CurrentTimestamp = $Self->_CurrentTimestampGet();
     my $String           = "$Param{CalendarID}-$CurrentTimestamp-$Param{UserID}";
     my $Digest           = unpack( 'N', Digest::MD5->new()->add($String)->digest() );
     my $DigestHex        = sprintf( '%x', $Digest );
     my $Hash             = uc( sprintf( "%.6s", $DigestHex ) );
 
     # prepare start timestamp for UniqueID
-    my $StartTimeStrg = $TimeObject->SystemTime2TimeStamp(
+    my $StartTimeStrg = $Self->_TimestampGet(
         SystemTime => $Param{StartTime},
     );
     $StartTimeStrg =~ s/[-:]//g;
@@ -1784,6 +1811,56 @@ sub _TimeCheck {
 
     $Result = "$Date $OriginalTime";
     return $Result;
+}
+
+sub _SystemTimeGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw( String )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # check system time
+    my $TimeSystem = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
+        String => $Param{String},
+    );
+
+    return $TimeSystem;
+}
+
+sub _TimestampGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw( SystemTime )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # get timestamp
+    my $TimeStamp = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
+        SystemTime => $Param{SystemTime},
+    );
+
+    return $TimeStamp;
+}
+
+sub _CurrentTimestampGet {
+    my ( $Self, %Param ) = @_;
+
+    return $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
 }
 
 1;
