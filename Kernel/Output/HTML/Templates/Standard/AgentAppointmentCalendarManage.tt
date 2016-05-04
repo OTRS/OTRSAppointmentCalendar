@@ -58,6 +58,28 @@
             </div>
         </div>
 [% RenderBlockEnd("CalendarFilter") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Description") | html %]</h2>
+            </div>
+            <div class="Content">
+                <p class="FieldExplanation">
+                    [% Translate("Depending on the group field, the system will allow users the access to the calendar according to their permission level.") | html %]
+                </p>
+                <p class="FieldExplanation">
+                    [% Translate("Read only: users can see and export all appointments in the calendar.") | html %]
+                </p>
+                <p class="FieldExplanation">
+                    [% Translate("Move into: users can modify appointments in the calendar, but without changing the calendar selection.") | html %]
+                </p>
+                <p class="FieldExplanation">
+                    [% Translate("Create: users can create and delete appointments in the calendar.") | html %]
+                </p>
+                <p class="FieldExplanation">
+                    [% Translate("Read/write: users can manage the calendar itself.") | html %]
+                </p>
+            </div>
+        </div>
     </div>
 
     <div class="ContentColumn">
