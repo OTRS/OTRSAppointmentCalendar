@@ -1828,11 +1828,9 @@ sub _SystemTimeGet {
     }
 
     # check system time
-    my $TimeSystem = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
+    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
         String => $Param{String},
     );
-
-    return $TimeSystem;
 }
 
 sub _TimestampGet {
@@ -1850,11 +1848,9 @@ sub _TimestampGet {
     }
 
     # get timestamp
-    my $TimeStamp = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
+    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
         SystemTime => $Param{SystemTime},
     );
-
-    return $TimeStamp;
 }
 
 sub _CurrentTimestampGet {

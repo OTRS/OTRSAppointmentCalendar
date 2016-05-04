@@ -115,16 +115,13 @@ sub Export {
         return if !$Appointment{AppointmentID};
         next APPOINTMENT_ID if $Appointment{ParentID};
 
-        # get time object
-        my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
         # get offset
         my $Offset = $Self->_GetOffset(
             TimezoneID => $Appointment{TimezoneID},
         );
 
         # calculate start time
-        my $StartTime = $TimeObject->TimeStamp2SystemTime(
+        my $StartTime = $Self->_SystemTimeGet(
             String => $Appointment{StartTime},
         );
         my $ICalStartTime = Date::ICal->new(
@@ -133,7 +130,7 @@ sub Export {
         $ICalStartTime->offset($Offset);
 
         # calculate end time
-        my $EndTime = $TimeObject->TimeStamp2SystemTime(
+        my $EndTime = $Self->_SystemTimeGet(
             String => $Appointment{EndTime},
         );
         my $ICalEndTime = Date::ICal->new(
@@ -143,7 +140,7 @@ sub Export {
 
         # recalculate for all day appointment
         if ( $Appointment{AllDay} ) {
-            my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
+            my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Self->_DateGet(
                 SystemTime => $StartTime,
             );
             $ICalStartTime = Date::ICal->new(
@@ -151,7 +148,7 @@ sub Export {
                 month => $Month,
                 day   => $Day,
             );
-            ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $TimeObject->SystemTime2Date(
+            ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Self->_DateGet(
                 SystemTime => $EndTime,
             );
             $ICalEndTime = Date::ICal->new(
@@ -190,7 +187,7 @@ sub Export {
                 $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceFrequency};
             }
             if ( $Appointment{RecurrenceUntil} ) {
-                my $RecurrenceUntil = $TimeObject->TimeStamp2SystemTime(
+                my $RecurrenceUntil = $Self->_SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
                 );
                 my $ICalRecurrenceUntil = Date::ICal->new(
@@ -205,7 +202,7 @@ sub Export {
         }
 
         # calculate last modified time
-        my $ChangeTime = $TimeObject->TimeStamp2SystemTime(
+        my $ChangeTime = $Self->_SystemTimeGet(
             String => $Appointment{ChangeTime},
         );
         my $ICalChangeTime = Date::ICal->new(
@@ -260,6 +257,65 @@ sub _GetOffset {
     $Result .= sprintf( '%02d00', abs $Param{TimezoneID} );
 
     return $Result;
+}
+
+sub _SystemTimeGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw( String )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # check system time
+    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
+        String => $Param{String},
+    );
+}
+
+sub _TimestampGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw( SystemTime )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # get timestamp
+    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
+        SystemTime => $Param{SystemTime},
+    );
+}
+
+sub _DateGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw( SystemTime )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
+        SystemTime => $Param{SystemTime},
+    );
 }
 
 no warnings 'redefine';

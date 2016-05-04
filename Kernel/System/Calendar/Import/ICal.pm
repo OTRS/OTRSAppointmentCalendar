@@ -27,7 +27,6 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::Time',
 );
 
 =head1 NAME
@@ -386,7 +385,6 @@ sub _GetOffset {
     }
 
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     # check if DateTime object exists
     return if !$MainObject->Require(
