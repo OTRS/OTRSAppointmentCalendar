@@ -6,16 +6,12 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
-
 package Kernel::System::Calendar::Appointment;
 
 use strict;
 use warnings;
 
 use Digest::MD5;
-use Time::Piece;
 
 use vars qw(@ISA);
 
@@ -1726,22 +1722,32 @@ sub _AddPeriod {
     $Param{Months} //= 0;
     $Param{Years}  //= 0;
 
-    my $TimePiece = localtime( $Param{Time} );
-    my $StartDay  = $TimePiece->day_of_month();
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{Time},
+            }
+    );
 
-    my $NextTimePiece = $TimePiece->add_months( $Param{Months} );
-    $NextTimePiece = $NextTimePiece->add_years( $Param{Years} );
-    my $EndDay = $NextTimePiece->day_of_month();
+    # remember start day
+    my $StartDay = $DateTimeObject->Get()->{Day};
+
+    $DateTimeObject->Add(
+        Months => $Param{Months},
+        Years  => $Param{Years},
+    );
+
+    # get end day
+    my $EndDay = $DateTimeObject->Get()->{Day};
 
     # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
     if ( $StartDay != $EndDay ) {
-
-        # Substract needed days
-        my $Days = $NextTimePiece->day_of_month();
-        $NextTimePiece -= $Days * 24 * 60 * 60;
+        $DateTimeObject->Subtract(
+            Days => $EndDay,
+        );
     }
 
-    return $NextTimePiece->epoch();
+    return $DateTimeObject->ToEpoch();
 }
 
 sub _CalculateRecurenceTime {
@@ -1827,10 +1833,30 @@ sub _SystemTimeGet {
         }
     }
 
-    # check system time
-    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-        String => $Param{String},
+    # extract data
+    $Param{String} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/;
+
+    my %Data = (
+        Year   => $1,
+        Month  => $2,
+        Day    => $3,
+        Hour   => $4,
+        Minute => $5,
+        Second => $6,
     );
+
+    # Create an object with a specific date and time:
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            %Data,
+
+            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+            }
+    );
+
+    # check system time
+    return $DateTimeObject->ToEpoch();
 }
 
 sub _TimestampGet {
@@ -1847,16 +1873,27 @@ sub _TimestampGet {
         }
     }
 
-    # get timestamp
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-        SystemTime => $Param{SystemTime},
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{SystemTime},
+            }
     );
+
+    # get timestamp
+    return $DateTimeObject->ToString();
 }
 
 sub _CurrentTimestampGet {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
+    # Create an object with current date and time
+    # within time zone set in SysConfig OTRSTimeZone:
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime'
+    );
+
+    return $DateTimeObject->ToString();
 }
 
 1;
