@@ -6,8 +6,6 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 package Kernel::Modules::AgentAppointmentEdit;
 
 use strict;
