@@ -8,6 +8,8 @@
 
 package Kernel::Modules::AgentAppointmentEdit;
 
+# nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
+
 use strict;
 use warnings;
 
@@ -919,11 +921,14 @@ sub _TimezoneOffsetGet {
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     my $Offset           = 0;
 
-    OFFSET:
-    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
-        if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
-            $Offset = $OffsetValue;
-            last OFFSET;
+    if ( $User{UserTimeZone} ) {
+
+        OFFSET:
+        for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+            if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+                $Offset = $OffsetValue;
+                last OFFSET;
+            }
         }
     }
 

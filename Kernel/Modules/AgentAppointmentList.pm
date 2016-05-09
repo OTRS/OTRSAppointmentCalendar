@@ -311,11 +311,14 @@ sub _TimezoneOffsetGet {
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     my $Offset           = 0;
 
-    OFFSET:
-    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
-        if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
-            $Offset = $OffsetValue;
-            last OFFSET;
+    if ( $User{UserTimeZone} ) {
+
+        OFFSET:
+        for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+            if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+                $Offset = $OffsetValue;
+                last OFFSET;
+            }
         }
     }
 
