@@ -477,6 +477,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.parentId) {
                     ReplaceValue = true;
                 }
+            } else if (Placeholder === 'start' || Placeholder === 'end') {
+                ReplaceValue = $.fullCalendar.moment(ReplaceValue).format('YYYY-MM-DD HH:mm');
             }
 
             // Default JSON values
