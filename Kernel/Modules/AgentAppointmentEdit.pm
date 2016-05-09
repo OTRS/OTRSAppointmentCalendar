@@ -6,9 +6,9 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Modules::AgentAppointmentEdit;
-
 ## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
+
+package Kernel::Modules::AgentAppointmentEdit;
 
 use strict;
 use warnings;
@@ -112,7 +112,7 @@ sub Run {
         }
 
         # get user timezone offset
-        $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+        my $Offset = $Self->_TimezoneOffsetGet();
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -133,7 +133,8 @@ sub Run {
                 String => $Appointment{StartTime},
             );
             $StartTime -= $Appointment{TimezoneID} * 3600;
-            $StartTime += $Self->{UserTimeZone} * 3600;
+
+            $StartTime += $Offset * 3600;
             (
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
@@ -145,7 +146,7 @@ sub Run {
                 String => $Appointment{EndTime},
             );
             $EndTime -= $Appointment{TimezoneID} * 3600;
-            $EndTime += $Self->{UserTimeZone} * 3600;
+            $EndTime += $Offset * 3600;
             (
                 $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
@@ -157,7 +158,7 @@ sub Run {
                     String => $Appointment{RecurrenceUntil},
                 );
                 $RecurrenceUntil -= $Appointment{TimezoneID} * 3600;
-                $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
+                $RecurrenceUntil += $Offset * 3600;
                 (
                     $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
@@ -390,7 +391,8 @@ sub Run {
 
         # get current and start time for difference
         my $SystemTime = $Self->_CurrentSystemTime();
-        my $StartTime  = $Self->_Date2SystemTime(
+
+        my $StartTime = $Self->_Date2SystemTime(
             Year   => $Appointment{StartYear}   // $GetParam{StartYear},
             Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
             Day    => $Appointment{StartDay}    // $GetParam{StartDay},
@@ -640,8 +642,8 @@ sub Run {
         }
 
         # set required parameters
-        $GetParam{TimezoneID} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
-        $GetParam{UserID} = $Self->{UserID};
+        $GetParam{TimezoneID} = $Self->_TimezoneOffsetGet();
+        $GetParam{UserID}     = $Self->{UserID};
 
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(
@@ -787,10 +789,30 @@ sub _SystemTimeGet {
         }
     }
 
-    # check system time
-    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-        String => $Param{String},
+    # extract data
+    $Param{String} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/;
+
+    my %Data = (
+        Year   => $1,
+        Month  => $2,
+        Day    => $3,
+        Hour   => $4,
+        Minute => $5,
+        Second => $6,
     );
+
+    # Create an object with a specific date and time:
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            %Data,
+
+            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+            }
+    );
+
+    # check system time
+    return $DateTimeObject->ToEpoch();
 }
 
 sub _TimestampGet {
@@ -807,16 +829,27 @@ sub _TimestampGet {
         }
     }
 
-    # get timestamp
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-        SystemTime => $Param{SystemTime},
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{SystemTime},
+            }
     );
+
+    # get timestamp
+    return $DateTimeObject->ToString();
 }
 
 sub _CurrentSystemTime {
     my ( $Self, %Param ) = @_;
 
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    # Create an object with current date and time
+    # within time zone set in SysConfig OTRSTimeZone:
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+
+    return $DateTimeObject->ToEpoch();
 }
 
 sub _DateGet {
@@ -833,9 +866,21 @@ sub _DateGet {
         }
     }
 
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
-        SystemTime => $Param{SystemTime},
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{SystemTime},
+            }
     );
+
+    my $Date = $DateTimeObject->Get();
+
+    my @Result = (
+        $Date->{Second}, $Date->{Minute}, $Date->{Hour},
+        $Date->{Day}, $Date->{Month}, $Date->{Year}, $Date->{DayOfWeek}
+    );
+
+    return @Result;
 }
 
 sub _Date2SystemTime {
@@ -852,9 +897,39 @@ sub _Date2SystemTime {
         }
     }
 
-    return $Kernel::OM->Get('Kernel::System::Time')->Date2SystemTime(
-        %Param,
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            %Param,
+            }
     );
+
+    return $DateTimeObject->ToEpoch();
+}
+
+sub _TimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    # get user data
+    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+        UserID => $Self->{UserID},
+    );
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
+    my $Offset           = 0;
+
+    OFFSET:
+    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+        if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+            $Offset = $OffsetValue;
+            last OFFSET;
+        }
+    }
+
+    return $Offset;
 }
 
 1;

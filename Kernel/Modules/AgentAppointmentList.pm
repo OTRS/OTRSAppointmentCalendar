@@ -245,10 +245,30 @@ sub _SystemTimeGet {
         }
     }
 
-    # check system time
-    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-        String => $Param{String},
+    # extract data
+    $Param{String} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/;
+
+    my %Data = (
+        Year   => $1,
+        Month  => $2,
+        Day    => $3,
+        Hour   => $4,
+        Minute => $5,
+        Second => $6,
     );
+
+    # Create an object with a specific date and time:
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            %Data,
+
+            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
+            }
+    );
+
+    # check system time
+    return $DateTimeObject->ToEpoch();
 }
 
 sub _TimestampGet {
@@ -265,9 +285,14 @@ sub _TimestampGet {
         }
     }
 
-    # get timestamp
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-        SystemTime => $Param{SystemTime},
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{SystemTime},
+            }
     );
+
+    # get timestamp
+    return $DateTimeObject->ToString();
 }
 1;

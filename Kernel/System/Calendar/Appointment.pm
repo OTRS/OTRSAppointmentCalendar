@@ -25,7 +25,6 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
-    'Kernel::System::Time',
 );
 
 =head1 NAME
