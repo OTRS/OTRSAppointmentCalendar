@@ -8,8 +8,6 @@
 
 package Kernel::Modules::AgentAppointmentList;
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 use strict;
 use warnings;
 

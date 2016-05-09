@@ -7,7 +7,6 @@
 # --
 
 ## nofilter(TidyAll::Plugin::OTRS::Perl::Time)
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::DateTime)
 
 package Kernel::System::Calendar::Appointment;
 

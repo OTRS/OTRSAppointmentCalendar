@@ -3,7 +3,7 @@
     <Name>OTRSAppointmentCalendar</Name>
 <!-- nofilter(TidyAll::Plugin::OTRS::SOPM::DocumentationPresent) -->
     <Version>0.0.0</Version>
-    <Framework>6.0.x</Framework>
+    <Framework>5.0.x</Framework>
     <Vendor>OTRS AG</Vendor>
     <URL>http://otrs.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
@@ -68,12 +68,17 @@
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
         <File Permission="640" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.6.1/fullcalendar.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.6.1/fullcalendar.min.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.6.1/fullcalendar.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.6.1/fullcalendar.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>

@@ -8,8 +8,6 @@
 
 package Kernel::System::Calendar::Import::ICal;
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 use strict;
 use warnings;
 
