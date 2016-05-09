@@ -469,8 +469,10 @@ sub SearchOptionList {
 
             my $DateStrg = $Self->{LayoutObject}->BuildDateSelection(
                 %FormData,
-                Prefix => $Row->{Prefix},
-                Format => 'DateInputFormatLong',
+                Prefix           => $Row->{Prefix},
+                Format           => 'DateInputFormatLong',
+                YearPeriodPast   => 5,
+                YearPeriodFuture => 5,
 
                 # add checkbox
                 "$Row->{Prefix}Optional" => 1,

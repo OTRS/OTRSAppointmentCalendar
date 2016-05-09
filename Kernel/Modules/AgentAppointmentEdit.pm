@@ -188,6 +188,8 @@ sub Run {
             Format             => 'DateInputFormatLong',
             ValidateDateBefore => 'End',
             Validate           => 1,
+            YearPeriodPast     => 5,
+            YearPeriodFuture   => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -205,6 +207,8 @@ sub Run {
             Format            => 'DateInputFormatLong',
             ValidateDateAfter => 'Start',
             Validate          => 1,
+            YearPeriodPast    => 5,
+            YearPeriodFuture  => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -404,6 +408,8 @@ sub Run {
             DiffTime          => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
             ValidateDateAfter => 'Start',
             Validate          => 1,
+            YearPeriodPast    => 5,
+            YearPeriodFuture  => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
