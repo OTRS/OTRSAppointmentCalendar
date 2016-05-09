@@ -8,8 +8,6 @@
 
 package Kernel::System::Calendar::Import::ICal;
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 use strict;
 use warnings;
 
@@ -384,22 +382,23 @@ sub _GetOffset {
         }
     }
 
-    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
-
-    # check if DateTime object exists
-    return if !$MainObject->Require(
-        'DateTime',
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            TimeZone => 'UTC',
+            }
     );
 
-    # check if DateTime::TimeZone object exists
-    return if !$MainObject->Require(
-        'DateTime::TimeZone',
-    );
+    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
+    my $Offset           = 0;
 
-    my $DateTime = DateTime->now();
-
-    my $Timezone = DateTime::TimeZone->new( name => $Param{TimezoneID} );
-    my $Offset = $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+    OFFSET:
+    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+        if ( grep { $_ eq $Param{TimezoneID} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+            $Offset = $OffsetValue;
+            last OFFSET;
+        }
+    }
 
     return $Offset;
 }

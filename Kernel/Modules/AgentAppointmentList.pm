@@ -82,7 +82,7 @@ sub Run {
             );
 
             # get user timezone offset
-            $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+            $Self->{UserTimeZone} = $Self->_TimezoneOffsetGet();
 
             # calculate local times
             for my $Appointment (@Appointments) {
@@ -295,4 +295,31 @@ sub _TimestampGet {
     # get timestamp
     return $DateTimeObject->ToString();
 }
+
+sub _TimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    # get user data
+    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+        UserID => $Self->{UserID},
+    );
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+
+    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
+    my $Offset           = 0;
+
+    OFFSET:
+    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+        if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+            $Offset = $OffsetValue;
+            last OFFSET;
+        }
+    }
+
+    return $Offset;
+}
+
 1;
