@@ -80,39 +80,40 @@ sub Run {
             );
 
             # get user timezone offset
-            $Self->{UserTimeZone} = $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
+            $Self->{UserTimeZone} = $Self->_TimezoneOffsetGet();
 
             # calculate local times
             for my $Appointment (@Appointments) {
                 $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? int $Appointment->{TimezoneID} : 0;
 
-                my $StartTime = $Self->_SystemTimeGet(
+                my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment->{StartTime},
                 );
                 $StartTime -= $Appointment->{TimezoneID} * 3600;
                 $StartTime += $Self->{UserTimeZone} * 3600;
-                $Appointment->{StartTime} = $Self->_TimestampGet(
+                $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $StartTime,
                 );
 
-                my $EndTime = $Self->_SystemTimeGet(
+                my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment->{EndTime},
                 );
                 $EndTime -= $Appointment->{TimezoneID} * 3600;
                 $EndTime += $Self->{UserTimeZone} * 3600;
-                $Appointment->{EndTime} = $Self->_TimestampGet(
+                $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $EndTime,
                 );
 
                 if ( $Appointment->{RecurrenceUntil} ) {
-                    my $RecurrenceUntil = $Self->_SystemTimeGet(
+                    my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                         String => $Appointment->{RecurrenceUntil},
                     );
                     $RecurrenceUntil -= $Appointment->{TimezoneID} * 3600;
                     $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
-                    $Appointment->{RecurrenceUntil} = $Self->_TimestampGet(
+                    $Appointment->{RecurrenceUntil}
+                        = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $RecurrenceUntil,
-                    );
+                        );
                 }
             }
 
@@ -229,43 +230,10 @@ sub Run {
     return;
 }
 
-sub _SystemTimeGet {
+sub _TimezoneOffsetGet {
     my ( $Self, %Param ) = @_;
 
-    # check needed stuff
-    for (qw( String )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    # check system time
-    return $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
-        String => $Param{String},
-    );
+    return $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
 }
 
-sub _TimestampGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    # get timestamp
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
-        SystemTime => $Param{SystemTime},
-    );
-}
 1;
