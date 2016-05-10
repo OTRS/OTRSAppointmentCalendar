@@ -323,6 +323,65 @@ sub Date2SystemTime {
     return $DateTimeObject->ToEpoch();
 }
 
+=item AddPeriod()
+
+adds time period (years and months) to the time given in Unix format.
+
+    my $Result = $CalendarHelperObject->AddPeriod(
+        Time       => '1462871162',     # (required) time in Unix format
+        Years      => '1',              # (optional) years to add
+        Months     => '1',              # (optional) months to add
+    );
+
+returns:
+    $Result = '1462880778';
+=cut
+
+sub AddPeriod {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Time)) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    $Param{Months} //= 0;
+    $Param{Years}  //= 0;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{Time},
+            }
+    );
+
+    # remember start day
+    my $StartDay = $DateTimeObject->Get()->{Day};
+
+    $DateTimeObject->Add(
+        Months => $Param{Months},
+        Years  => $Param{Years},
+    );
+
+    # get end day
+    my $EndDay = $DateTimeObject->Get()->{Day};
+
+    # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
+    if ( $StartDay != $EndDay ) {
+        $DateTimeObject->Subtract(
+            Days => $EndDay,
+        );
+    }
+
+    return $DateTimeObject->ToEpoch();
+}
+
 1;
 
 =back

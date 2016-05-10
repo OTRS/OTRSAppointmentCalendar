@@ -1704,52 +1704,6 @@ sub _AppointmentGetCalendarID {
     return $CalendarID;
 }
 
-# Months, Years
-sub _AddPeriod {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw(Time)) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    $Param{Months} //= 0;
-    $Param{Years}  //= 0;
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{Time},
-            }
-    );
-
-    # remember start day
-    my $StartDay = $DateTimeObject->Get()->{Day};
-
-    $DateTimeObject->Add(
-        Months => $Param{Months},
-        Years  => $Param{Years},
-    );
-
-    # get end day
-    my $EndDay = $DateTimeObject->Get()->{Day};
-
-    # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
-    if ( $StartDay != $EndDay ) {
-        $DateTimeObject->Subtract(
-            Days => $EndDay,
-        );
-    }
-
-    return $DateTimeObject->ToEpoch();
-}
-
 sub _CalculateRecurenceTime {
     my ( $Self, %Param ) = @_;
 
@@ -1773,14 +1727,14 @@ sub _CalculateRecurenceTime {
     }
     elsif ( $Param{Appointment}->{RecurrenceByMonth} ) {
 
-        $SystemTime = $Self->_AddPeriod(
+        $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->AddPeriod(
             Time   => $Param{OriginalTime},
             Months => $Param{Step},
         );
     }
     elsif ( $Param{Appointment}->{RecurrenceByYear} ) {
 
-        $SystemTime = $Self->_AddPeriod(
+        $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->AddPeriod(
             Time  => $Param{OriginalTime},
             Years => $Param{Step},
         );
