@@ -110,7 +110,9 @@ sub Run {
         }
 
         # get user timezone offset
-        my $Offset = $Self->_TimezoneOffsetGet();
+        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+            UserID => $Self->{UserID},
+        );
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -771,12 +773,6 @@ sub Run {
         Type        => 'inline',
         NoCache     => 1,
     );
-}
-
-sub _TimezoneOffsetGet {
-    my ( $Self, %Param ) = @_;
-
-    return $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
 }
 
 1;

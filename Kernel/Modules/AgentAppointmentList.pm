@@ -80,7 +80,9 @@ sub Run {
             );
 
             # get user timezone offset
-            $Self->{UserTimeZone} = $Self->_TimezoneOffsetGet();
+            $Self->{UserTimeZone} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                UserID => $Self->{UserID},
+            );
 
             # calculate local times
             for my $Appointment (@Appointments) {
@@ -228,12 +230,6 @@ sub Run {
     );
 
     return;
-}
-
-sub _TimezoneOffsetGet {
-    my ( $Self, %Param ) = @_;
-
-    return $Self->{UserTimeZone} ? int $Self->{UserTimeZone} : 0;
 }
 
 1;

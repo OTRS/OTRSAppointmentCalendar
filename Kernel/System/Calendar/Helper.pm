@@ -20,8 +20,11 @@ use Kernel::System::VariableCheck qw(:all);
 use Kernel::System::EventHandler;
 
 our @ObjectDependencies = (
+    'Kernel::System::Main',
     'Kernel::System::Log',
     'Kernel::System::Time',
+    'Kernel::System::User',
+
 );
 
 =head1 NAME
@@ -320,6 +323,59 @@ sub AddPeriod {
     }
 
     return $NextTimePiece->epoch();
+}
+
+=item TimezoneOffsetGet()
+
+adds time period (years and months) to the time given in Unix format.
+
+    my $Result = $CalendarHelperObject->TimezoneOffsetGet(
+        UserID      => 2,                   # (optional)
+                                            # or
+        TimezoneID  => 'Europe/Berlin'      # (optional) Timezone name
+    );
+
+returns:
+    $Result = 2;
+=cut
+
+sub TimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{UserID} && !$Param{TimezoneID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need UserID or TimezoneID!"
+        );
+        return;
+    }
+
+    if ( $Param{UserID} ) {
+        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+            UserID => $Param{UserID},
+        );
+
+        return $User{UserTimeZone} ? int $User{UserTimeZone} : 0;
+    }
+
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
+    # check if DateTime object exists
+    return if !$MainObject->Require(
+        'DateTime',
+    );
+
+    # check if DateTime::TimeZone object exists
+    return if !$MainObject->Require(
+        'DateTime::TimeZone',
+    );
+
+    my $DateTime = DateTime->now();
+
+    my $Timezone = DateTime::TimeZone->new( name => $Param{TimezoneID} );
+    my $Offset = $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+
+    return $Offset;
 }
 
 1;
