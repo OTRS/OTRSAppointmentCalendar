@@ -129,7 +129,7 @@ sub Run {
             $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
 
             # get start time components
-            my $StartTime = $Self->_SystemTimeGet(
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
             $StartTime -= $Appointment{TimezoneID} * 3600;
@@ -139,10 +139,10 @@ sub Run {
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
                 $Appointment{StartYear}
-            ) = $Self->_DateGet( SystemTime => $StartTime );
+            ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $StartTime );
 
             # get end time components
-            my $EndTime = $Self->_SystemTimeGet(
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{EndTime},
             );
             $EndTime -= $Appointment{TimezoneID} * 3600;
@@ -150,11 +150,11 @@ sub Run {
             (
                 $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
-            ) = $Self->_DateGet( SystemTime => $EndTime );
+            ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $EndTime );
 
             # get recurrence until components
             if ( $Appointment{RecurrenceUntil} ) {
-                my $RecurrenceUntil = $Self->_SystemTimeGet(
+                my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
                 );
                 $RecurrenceUntil -= $Appointment{TimezoneID} * 3600;
@@ -163,7 +163,7 @@ sub Run {
                     $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
                     $Appointment{RecurrenceUntilYear}
-                ) = $Self->_DateGet( SystemTime => $RecurrenceUntil );
+                ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $RecurrenceUntil );
             }
         }
 
@@ -390,9 +390,9 @@ sub Run {
         );
 
         # get current and start time for difference
-        my $SystemTime = $Self->_CurrentSystemTime();
+        my $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime();
 
-        my $StartTime = $Self->_Date2SystemTime(
+        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->Date2SystemTime(
             Year   => $Appointment{StartYear}   // $GetParam{StartYear},
             Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
             Day    => $Appointment{StartDay}    // $GetParam{StartDay},
@@ -535,29 +535,29 @@ sub Run {
         }
         elsif ( $GetParam{Recurring} && $GetParam{UpdateType} && $GetParam{UpdateDelta} ) {
 
-            my $StartTime = $Self->_SystemTimeGet(
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
-            my $EndTime = $Self->_SystemTimeGet(
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{EndTime},
             );
 
             # calculate new start/end times
             if ( $GetParam{UpdateType} eq 'StartTime' ) {
-                $GetParam{StartTime} = $Self->_TimestampGet(
+                $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $StartTime + $GetParam{UpdateDelta},
                 );
             }
             elsif ( $GetParam{UpdateType} eq 'EndTime' ) {
-                $GetParam{EndTime} = $Self->_TimestampGet(
+                $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $EndTime + $GetParam{UpdateDelta},
                 );
             }
             else {
-                $GetParam{StartTime} = $Self->_TimestampGet(
+                $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $StartTime + $GetParam{UpdateDelta},
                 );
-                $GetParam{EndTime} = $Self->_TimestampGet(
+                $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                     SystemTime => $EndTime + $GetParam{UpdateDelta},
                 );
             }
@@ -773,138 +773,6 @@ sub Run {
         Type        => 'inline',
         NoCache     => 1,
     );
-}
-
-sub _SystemTimeGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( String )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    # extract data
-    $Param{String} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/;
-
-    my %Data = (
-        Year   => $1,
-        Month  => $2,
-        Day    => $3,
-        Hour   => $4,
-        Minute => $5,
-        Second => $6,
-    );
-
-    # Create an object with a specific date and time:
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            %Data,
-
-            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
-            }
-    );
-
-    # check system time
-    return $DateTimeObject->ToEpoch();
-}
-
-sub _TimestampGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
-    );
-
-    # get timestamp
-    return $DateTimeObject->ToString();
-}
-
-sub _CurrentSystemTime {
-    my ( $Self, %Param ) = @_;
-
-    # Create an object with current date and time
-    # within time zone set in SysConfig OTRSTimeZone:
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-    );
-
-    return $DateTimeObject->ToEpoch();
-}
-
-sub _DateGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
-    );
-
-    my $Date = $DateTimeObject->Get();
-
-    my @Result = (
-        $Date->{Second}, $Date->{Minute}, $Date->{Hour},
-        $Date->{Day}, $Date->{Month}, $Date->{Year}, $Date->{DayOfWeek}
-    );
-
-    return @Result;
-}
-
-sub _Date2SystemTime {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( Year Month Day Hour Minute )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            %Param,
-            }
-    );
-
-    return $DateTimeObject->ToEpoch();
 }
 
 sub _TimezoneOffsetGet {

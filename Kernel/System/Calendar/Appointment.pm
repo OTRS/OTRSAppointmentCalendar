@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
     'Kernel::System::Calendar',
+    'Kernel::System::Calendar::Helper',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
@@ -178,7 +179,7 @@ sub AppointmentCreate {
     }
 
     # check StartTime
-    my $StartTimeSystem = $Self->_SystemTimeGet(
+    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -200,7 +201,7 @@ sub AppointmentCreate {
     }
 
     # check EndTime
-    my $EndTimeValid = $Self->_SystemTimeGet(
+    my $EndTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{EndTime},
     );
     if ( !$EndTimeValid ) {
@@ -250,7 +251,7 @@ sub AppointmentCreate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
+        my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
 
@@ -448,7 +449,7 @@ sub AppointmentList {
 
     # check time
     if ( $Param{StartTime} ) {
-        my $StartTimeSystem = $Self->_SystemTimeGet(
+        my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{StartTime},
         );
         if ( !$StartTimeSystem ) {
@@ -459,12 +460,12 @@ sub AppointmentList {
             return;
         }
         $StartTimeSystem -= 24 * 60 * 60;    # allow 24h because of timezone differences
-        $Param{StartTime} = $Self->_TimestampGet(
+        $Param{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
             SystemTime => $StartTimeSystem,
         );
     }
     if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $Self->_SystemTimeGet(
+        my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{EndTime},
         );
         if ( !$EndTimeSystem ) {
@@ -475,7 +476,7 @@ sub AppointmentList {
             return;
         }
         $EndTimeSystem += 24 * 60 * 60;    # allow 24h because of timezone differences
-        $Param{EndTime} = $Self->_TimestampGet(
+        $Param{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
             SystemTime => $EndTimeSystem,
         );
     }
@@ -625,7 +626,7 @@ sub AppointmentDays {
 
     # check time
     if ( $Param{StartTime} ) {
-        my $StartTimeValid = $Self->_SystemTimeGet(
+        my $StartTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{StartTime},
         );
 
@@ -638,7 +639,7 @@ sub AppointmentDays {
         }
     }
     if ( $Param{EndTime} ) {
-        my $EndTimeValid = $Self->_SystemTimeGet(
+        my $EndTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{EndTime},
         );
 
@@ -732,11 +733,11 @@ sub AppointmentDays {
         }
 
         # Get system times
-        $StartTimeSystem = $Self->_SystemTimeGet(
+        $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $StartTime,
         );
 
-        $EndTimeSystem = $Self->_SystemTimeGet(
+        $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $EndTime,
         );
 
@@ -746,7 +747,7 @@ sub AppointmentDays {
             $LoopSystemTime += 60 * 60 * 24
             )
         {
-            my $LoopTime = $Self->_TimestampGet(
+            my $LoopTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                 SystemTime => $LoopSystemTime,
             );
 
@@ -989,7 +990,7 @@ sub AppointmentUpdate {
     $Param{RecurrenceFrequency} ||= 1;
 
     # check StartTime
-    my $StartTimeSystem = $Self->_SystemTimeGet(
+    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -1001,7 +1002,7 @@ sub AppointmentUpdate {
     }
 
     # check EndTime
-    my $EndTimeSystem = $Self->_SystemTimeGet(
+    my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{EndTime},
     );
     if ( !$EndTimeSystem ) {
@@ -1053,7 +1054,7 @@ sub AppointmentUpdate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
+        my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
         if (
@@ -1447,10 +1448,10 @@ sub _AppointmentRecurringCreate {
         }
     }
 
-    my $StartTimeSystem = $Self->_SystemTimeGet(
+    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{Appointment}->{StartTime},
     );
-    my $EndTimeSystem = $Self->_SystemTimeGet(
+    my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
         String => $Param{Appointment}->{EndTime},
     );
 
@@ -1464,7 +1465,7 @@ sub _AppointmentRecurringCreate {
     # until ...
     if ( $Param{Appointment}->{RecurrenceUntil} ) {
 
-        my $RecurrenceUntilSystem = $Self->_SystemTimeGet(
+        my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{Appointment}->{RecurrenceUntil},
         );
 
@@ -1488,19 +1489,19 @@ sub _AppointmentRecurringCreate {
 
             last UNTIL_TIME if !$StartTimeSystem;
 
-            my $StartTime = $Self->_TimestampGet(
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                 SystemTime => $StartTimeSystem
             );
-            my $EndTime = $Self->_TimestampGet(
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                 SystemTime => $EndTimeSystem
             );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
-            $StartTime = $Self->_TimeCheck(
+            $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
                 OriginalTime => $Param{Appointment}->{StartTime},
                 Time         => $StartTime,
             );
-            $EndTime = $Self->_TimeCheck(
+            $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
                 OriginalTime => $Param{Appointment}->{EndTime},
                 Time         => $EndTime,
             );
@@ -1536,19 +1537,19 @@ sub _AppointmentRecurringCreate {
 
             last COUNT if !$StartTimeSystem;
 
-            my $StartTime = $Self->_TimestampGet(
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                 SystemTime => $StartTimeSystem
             );
-            my $EndTime = $Self->_TimestampGet(
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                 SystemTime => $EndTimeSystem
             );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
-            $StartTime = $Self->_TimeCheck(
+            $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
                 OriginalTime => $Param{Appointment}->{StartTime},
                 Time         => $StartTime,
             );
-            $EndTime = $Self->_TimeCheck(
+            $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
                 OriginalTime => $Param{Appointment}->{EndTime},
                 Time         => $EndTime,
             );
@@ -1611,14 +1612,14 @@ sub _GetUniqueID {
     }
 
     # calculate a hash
-    my $CurrentTimestamp = $Self->_CurrentTimestampGet();
+    my $CurrentTimestamp = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentTimestampGet();
     my $String           = "$Param{CalendarID}-$CurrentTimestamp-$Param{UserID}";
     my $Digest           = unpack( 'N', Digest::MD5->new()->add($String)->digest() );
     my $DigestHex        = sprintf( '%x', $Digest );
     my $Hash             = uc( sprintf( "%.6s", $DigestHex ) );
 
     # prepare start timestamp for UniqueID
-    my $StartTimeStrg = $Self->_TimestampGet(
+    my $StartTimeStrg = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
         SystemTime => $Param{StartTime},
     );
     $StartTimeStrg =~ s/[-:]//g;
@@ -1790,111 +1791,6 @@ sub _CalculateRecurenceTime {
 
     return $SystemTime;
 }
-
-sub _TimeCheck {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw(OriginalTime Time)) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my $Result = '';
-
-    $Param{OriginalTime} =~ /(.*?)\s(.*?)$/;
-    my $OriginalDate = $1;
-    my $OriginalTime = $2;
-
-    $Param{Time} =~ /(.*?)\s(.*?)$/;
-    my $Date = $1;
-
-    $Result = "$Date $OriginalTime";
-    return $Result;
-}
-
-sub _SystemTimeGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( String )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    # extract data
-    $Param{String} =~ /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})$/;
-
-    my %Data = (
-        Year   => $1,
-        Month  => $2,
-        Day    => $3,
-        Hour   => $4,
-        Minute => $5,
-        Second => $6,
-    );
-
-    # Create an object with a specific date and time:
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            %Data,
-
-            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
-            }
-    );
-
-    # check system time
-    return $DateTimeObject->ToEpoch();
-}
-
-sub _TimestampGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $_!"
-            );
-            return;
-        }
-    }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
-    );
-
-    # get timestamp
-    return $DateTimeObject->ToString();
-}
-
-sub _CurrentTimestampGet {
-    my ( $Self, %Param ) = @_;
-
-    # Create an object with current date and time
-    # within time zone set in SysConfig OTRSTimeZone:
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime'
-    );
-
-    return $DateTimeObject->ToString();
-}
-
 1;
 
 =back
