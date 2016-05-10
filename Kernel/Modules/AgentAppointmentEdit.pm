@@ -642,8 +642,10 @@ sub Run {
         }
 
         # set required parameters
-        $GetParam{TimezoneID} = $Self->_TimezoneOffsetGet();
-        $GetParam{UserID}     = $Self->{UserID};
+        $GetParam{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+            UserID => $Self->{UserID},
+        );
+        $GetParam{UserID} = $Self->{UserID};
 
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(
