@@ -174,7 +174,7 @@ sub Import {
                 );
 
                 if ($TimezoneID) {
-                    $Parameters{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->GetOffset(
+                    $Parameters{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
                         TimezoneID => $TimezoneID,
                     );
                 }
