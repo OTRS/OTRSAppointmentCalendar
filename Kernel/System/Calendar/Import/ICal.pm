@@ -22,6 +22,7 @@ our @ObjectDependencies = (
     'Kernel::System::Cache',
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Appointment',
+    'Kernel::System::Calendar::Helper',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
@@ -174,7 +175,7 @@ sub Import {
                 );
 
                 if ($TimezoneID) {
-                    $Parameters{TimezoneID} = $Self->_GetOffset(
+                    $Parameters{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
                         TimezoneID => $TimezoneID,
                     );
                 }
@@ -366,41 +367,6 @@ sub _FormatTime {
     }
 
     return $TimeStamp;
-}
-
-sub _GetOffset {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(TimezoneID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            TimeZone => 'UTC',
-            }
-    );
-
-    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
-    my $Offset           = 0;
-
-    OFFSET:
-    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
-        if ( grep { $_ eq $Param{TimezoneID} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
-            $Offset = $OffsetValue;
-            last OFFSET;
-        }
-    }
-
-    return $Offset;
 }
 
 1;

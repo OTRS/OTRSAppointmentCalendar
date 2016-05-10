@@ -8,7 +8,7 @@
 
 package Kernel::Modules::AgentAppointmentEdit;
 
-# nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
 
 use strict;
 use warnings;
@@ -112,7 +112,9 @@ sub Run {
         }
 
         # get user timezone offset
-        my $Offset = $Self->_TimezoneOffsetGet();
+        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+            UserID => $Self->{UserID},
+        );
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -642,8 +644,10 @@ sub Run {
         }
 
         # set required parameters
-        $GetParam{TimezoneID} = $Self->_TimezoneOffsetGet();
-        $GetParam{UserID}     = $Self->{UserID};
+        $GetParam{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+            UserID => $Self->{UserID},
+        );
+        $GetParam{UserID} = $Self->{UserID};
 
         if (%Appointment) {
             $Success = $AppointmentObject->AppointmentUpdate(
@@ -773,34 +777,6 @@ sub Run {
         Type        => 'inline',
         NoCache     => 1,
     );
-}
-
-sub _TimezoneOffsetGet {
-    my ( $Self, %Param ) = @_;
-
-    # get user data
-    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-        UserID => $Self->{UserID},
-    );
-
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-    );
-    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
-    my $Offset           = 0;
-
-    if ( $User{UserTimeZone} ) {
-
-        OFFSET:
-        for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
-            if ( grep { $_ eq $User{UserTimeZone} } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
-                $Offset = $OffsetValue;
-                last OFFSET;
-            }
-        }
-    }
-
-    return $Offset;
 }
 
 1;

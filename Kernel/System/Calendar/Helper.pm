@@ -18,6 +18,7 @@ use Kernel::System::EventHandler;
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -380,6 +381,62 @@ sub AddPeriod {
     }
 
     return $DateTimeObject->ToEpoch();
+}
+
+=item TimezoneOffsetGet()
+
+adds time period (years and months) to the time given in Unix format.
+
+    my $Result = $CalendarHelperObject->TimezoneOffsetGet(
+        UserID      => 2,                   # (optional)
+                                            # or
+        TimezoneID  => 'Europe/Berlin'      # (optional) Timezone name
+    );
+
+returns:
+    $Result = 2;
+=cut
+
+sub TimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{UserID} && !$Param{TimezoneID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Need UserID or TimezoneID!"
+        );
+        return;
+    }
+
+    my $TimezoneID = $Param{TimezoneID} || '';
+
+    if ( $Param{UserID} ) {
+
+        # get user data
+        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+            UserID => $Self->{UserID},
+        );
+
+        $TimezoneID = $User{UserTimeZone} || '';
+    }
+
+    return 0 if !$TimezoneID;
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+    );
+    my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
+    my $Offset           = 0;
+
+    OFFSET:
+    for my $OffsetValue ( sort keys %{$TimeZoneByOffset} ) {
+        if ( grep { $_ eq $TimezoneID } @{ $TimeZoneByOffset->{$OffsetValue} } ) {
+            $Offset = $OffsetValue;
+            last OFFSET;
+        }
+    }
+
+    return $Offset;
 }
 
 1;
