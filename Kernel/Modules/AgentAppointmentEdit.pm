@@ -462,6 +462,35 @@ sub Run {
             },
         );
 
+        # get text direction
+        my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
+
+        # get vacation days
+        my $VacationDaysJSON = $LayoutObject->JSONEncode(
+            Data => $LayoutObject->DatepickerGetVacationDays(),
+        );
+
+        # get first day of the week
+        my $WeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 1;
+
+        # datepicker initialization
+        $LayoutObject->Block(
+            Name => 'DatepickerData',
+            Data => {
+                VacationDays  => $VacationDaysJSON,
+                IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 1 : 0,
+            },
+        );
+        for my $Prefix (qw(Start End RecurrenceUntil)) {
+            $LayoutObject->Block(
+                Name => 'DatepickerInit',
+                Data => {
+                    Prefix       => $Prefix,
+                    WeekDayStart => $WeekDayStart,
+                },
+            );
+        }
+
         my $Output .= $LayoutObject->Output(
             TemplateFile => 'AgentAppointmentEdit',
             Data         => {
