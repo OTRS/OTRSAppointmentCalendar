@@ -183,14 +183,13 @@ sub Run {
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix             => 'Start',
-            StartHour          => $Appointment{StartHour} // $GetParam{StartHour},
-            StartMinute        => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Format             => 'DateInputFormatLong',
-            ValidateDateBefore => 'End',
-            Validate           => 1,
-            YearPeriodPast     => 5,
-            YearPeriodFuture   => 5,
+            Prefix           => 'Start',
+            StartHour        => $Appointment{StartHour} // $GetParam{StartHour},
+            StartMinute      => $Appointment{StartMinute} // $GetParam{StartMinute},
+            Format           => 'DateInputFormatLong',
+            Validate         => 1,
+            YearPeriodPast   => 5,
+            YearPeriodFuture => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -202,14 +201,13 @@ sub Run {
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix            => 'End',
-            EndHour           => $Appointment{EndHour} // $GetParam{EndHour},
-            EndMinute         => $Appointment{EndMinute} // $GetParam{EndMinute},
-            Format            => 'DateInputFormatLong',
-            ValidateDateAfter => 'Start',
-            Validate          => 1,
-            YearPeriodPast    => 5,
-            YearPeriodFuture  => 5,
+            Prefix           => 'End',
+            EndHour          => $Appointment{EndHour} // $GetParam{EndHour},
+            EndMinute        => $Appointment{EndMinute} // $GetParam{EndMinute},
+            Format           => 'DateInputFormatLong',
+            Validate         => 1,
+            YearPeriodPast   => 5,
+            YearPeriodFuture => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -405,13 +403,12 @@ sub Run {
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
             %Appointment,
             %GetParam,
-            Prefix            => 'RecurrenceUntil',
-            Format            => 'DateInputFormat',
-            DiffTime          => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
-            ValidateDateAfter => 'Start',
-            Validate          => 1,
-            YearPeriodPast    => 5,
-            YearPeriodFuture  => 5,
+            Prefix           => 'RecurrenceUntil',
+            Format           => 'DateInputFormat',
+            DiffTime         => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
+            Validate         => 1,
+            YearPeriodPast   => 5,
+            YearPeriodFuture => 5,
 
             # we are calculating this locally
             OverrideTimeZone => 1,
