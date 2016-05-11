@@ -414,7 +414,7 @@ sub TimezoneOffsetGet {
 
         # get user data
         my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-            UserID => $Self->{UserID},
+            UserID => $Param{UserID},
         );
 
         $TimezoneID = $User{UserTimeZone} || '';
