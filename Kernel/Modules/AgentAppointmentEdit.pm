@@ -464,33 +464,40 @@ sub Run {
             },
         );
 
-        # get text direction
-        my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
-
-        # get vacation days
-        my $VacationDaysJSON = $LayoutObject->JSONEncode(
-            Data => $LayoutObject->DatepickerGetVacationDays(),
-        );
-
-        # get first day of the week
-        my $WeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 1;
-
         # datepicker initialization
-        $LayoutObject->Block(
-            Name => 'DatepickerData',
-            Data => {
-                VacationDays  => $VacationDaysJSON,
-                IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 1 : 0,
-            },
-        );
-        for my $Prefix (qw(Start End RecurrenceUntil)) {
+        # only if user has permissions move_into and above
+        if ( $Permissions && ( $PermissionLevel{$Permissions} < 2 ) ? 0 : 1 ) {
+
+            # get text direction
+            my $TextDirection = $LayoutObject->{LanguageObject}->{TextDirection} || '';
+
+            # get vacation days
+            my $VacationDaysJSON = $LayoutObject->JSONEncode(
+                Data => $LayoutObject->DatepickerGetVacationDays(),
+            );
+
+            # get first day of the week
+            my $WeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 1;
+
+            # some general datepicker code
             $LayoutObject->Block(
-                Name => 'DatepickerInit',
+                Name => 'DatepickerData',
                 Data => {
-                    Prefix       => $Prefix,
-                    WeekDayStart => $WeekDayStart,
+                    VacationDays  => $VacationDaysJSON,
+                    IsRTLLanguage => ( $TextDirection eq 'rtl' ) ? 1 : 0,
                 },
             );
+
+            # initialize datepickers for different date fields
+            for my $Prefix (qw(Start End RecurrenceUntil)) {
+                $LayoutObject->Block(
+                    Name => 'DatepickerInit',
+                    Data => {
+                        Prefix       => $Prefix,
+                        WeekDayStart => $WeekDayStart,
+                    },
+                );
+            }
         }
 
         my $Output .= $LayoutObject->Output(
