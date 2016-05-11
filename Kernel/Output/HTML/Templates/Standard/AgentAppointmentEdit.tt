@@ -226,5 +226,18 @@ $('#EditFormCancel').on('click', function() {
     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
 });
 
+[% InsertTemplate("Datepicker.tt") %]
+
+[% RenderBlockStart("DatepickerInit") %]
+Core.UI.Datepicker.Init({
+    Day: $("#" + Core.App.EscapeSelector([% Data.Prefix | JSON %]) + "Day"),
+    Month: $("#" + Core.App.EscapeSelector([% Data.Prefix | JSON %]) + "Month"),
+    Year: $("#" + Core.App.EscapeSelector([% Data.Prefix | JSON %]) + "Year"),
+    Hour: $("#" + Core.App.EscapeSelector([% Data.Prefix | JSON %]) + "Hour"),
+    Minute: $("#" + Core.App.EscapeSelector([% Data.Prefix | JSON %]) + "Minute"),
+    WeekDayStart: [% Data.WeekDayStart | JSON %]
+});
+[% RenderBlockEnd("DatepickerInit") %]
+
 //]]></script>
 [% RenderBlockEnd("EditMask") %]
