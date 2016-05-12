@@ -439,6 +439,45 @@ sub TimezoneOffsetGet {
     return $Offset;
 }
 
+=item WeekDetailsGet()
+
+get week details for a given unix time.
+
+    my ($WeekDay, $CW) = $CalendarHelperObject->WeekDetailsGet(
+        SystemTime => '1462880778',
+    );
+
+returns:
+    $WeekDay = 4;
+    $CW = 19;
+=cut
+
+sub WeekDetailsGet {
+    my ( $Self, %Param ) = @_;
+
+    for (qw( SystemTime )) {
+        if ( !defined $Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    my $DateTimeObject = $Kernel::OM->Create(
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            Epoch => $Param{SystemTime},
+            }
+    );
+
+    my $WeekDay = $DateTimeObject->Get()->{DayOfWeek};
+    my $CW      = $DateTimeObject->{CPANDateTimeObject}->week_number();
+
+    return ( $WeekDay, $CW );
+}
+
 1;
 
 =back

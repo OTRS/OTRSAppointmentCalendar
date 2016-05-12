@@ -233,6 +233,137 @@ sub Run {
         );
 
     }
+    elsif ( $Self->{Subaction} eq 'Import' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        my $FormID      = "UploadForm";
+        my %UploadStuff = $ParamObject->GetUploadAll(
+            Param => 'FileUpload',
+        );
+
+        my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
+        my %Errors;
+
+        # save file in upload cache
+        if (%UploadStuff) {
+            my $Added = $UploadCacheObject->FormIDAddFile(
+                FormID => $FormID,
+                %UploadStuff,
+            );
+
+            # if file got not added to storage
+            # (e. g. because of 1 MB max_allowed_packet MySQL problem)
+            if ( !$Added ) {
+                return $LayoutObject->FatalError();
+            }
+        }
+
+        # get content from upload cache
+        else {
+            my @AttachmentData = $UploadCacheObject->FormIDGetAllFilesData(
+                FormID => $FormID,
+            );
+            if ( !@AttachmentData || ( $AttachmentData[0] && !%{ $AttachmentData[0] } ) ) {
+                $Errors{FileUploadInvalid} = 'ServerError';
+            }
+            else {
+                %UploadStuff = %{ $AttachmentData[0] };
+            }
+        }
+
+        # check if empty
+        if ( !$UploadStuff{Content} ) {
+            $Errors{FileUploadInvalid} = "ServerError";
+        }
+
+        if ( !%Errors ) {
+            my $CalendarName = $UploadStuff{Filename};
+
+            # remove extension
+            $CalendarName = substr( $CalendarName, 0, rindex( $CalendarName, "." ) );
+
+            my %Calendar = $CalendarObject->CalendarGet(
+                CalendarName => $CalendarName,
+            );
+
+            # check if calendar exists
+            if (%Calendar) {
+
+                # Calendar with same name already exists  
+                my $Permission = $CalendarObject->CalendarPermissionGet(
+                    CalendarID => $Calendar{CalendarID},
+                    UserID     => $Self->{UserID},
+                );
+
+                if ( $Permission ne 'create' && $Permission ne 'rw' ) {
+
+                    # no permissions to import to the existing calendar
+                    return $LayoutObject->FatalError(
+                        Message =>
+                            $LayoutObject->{LanguageObject}->Translate('No permissions'),
+                    );
+                }
+            }
+            else {
+                my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGroupGet(
+                    UserID => $Self->{UserID},
+                    Type   => 'rw',
+                );
+
+                if ( !%GroupList ) {
+
+                    # no permissions to create a new calendar
+                    return $LayoutObject->FatalError(
+                        Message =>
+                            $LayoutObject->{LanguageObject}->Translate('No permissions to create a new calendar!'),
+                    );
+                }
+                my $GroupID = ( keys %GroupList )[0];
+
+                # create a new Calendar
+                %Calendar = $CalendarObject->CalendarCreate(
+                    CalendarName => $CalendarName,
+                    GroupID      => $GroupID,
+                    UserID       => $Self->{UserID},
+                    ValidID      => 1,
+                );
+
+                if ( !%Calendar ) {
+                    return $LayoutObject->FatalError(
+                        Message =>
+                            $LayoutObject->{LanguageObject}->Translate('System was unable to create a new calendar!'),
+                    );
+                }
+            }
+
+            my $Success = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal')->Import(
+                CalendarID => $Calendar{CalendarID},
+                ICal       => $UploadStuff{Content},
+                UserID     => $Self->{UserID},
+            );
+
+            if ( !$Success ) {
+                return $LayoutObject->FatalError(
+                    Message =>
+                        $LayoutObject->{LanguageObject}->Translate('System was unable to import file!'),
+                );
+            }
+
+            # Import ok
+            return $LayoutObject->Redirect(
+                OP => "Action=AgentAppointmentCalendarManage;Subaction=ImportSucess",
+            );
+
+        }
+    }
+    elsif ( $Self->{Subaction} eq 'ImportSucess' ) {
+        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import");
+        $LayoutObject->Block(
+            Name => 'ImportSuccess',
+        );
+    }
     else {
 
         # get all calendars user has RW access to
@@ -243,6 +374,10 @@ sub Run {
 
         $LayoutObject->Block(
             Name => 'AddLink',
+        );
+
+        $LayoutObject->Block(
+            Name => 'Import',
         );
 
         $LayoutObject->Block(

@@ -172,6 +172,9 @@
             <Column Name="recur_byyear" Type="SMALLINT"/>
             <Column Name="recur_bymonth" Type="SMALLINT"/>
             <Column Name="recur_byday" Type="SMALLINT"/>
+            <Column Name="recur_days" Type="VARCHAR" Size="20"/>
+            <Column Name="recur_months" Type="VARCHAR" Size="30"/>
+            <Column Name="recur_month_days" Type="VARCHAR" Size="70"/>
             <Column Name="create_time" Type="DATE"/>
             <Column Name="create_by" Type="INTEGER"/>
             <Column Name="change_time" Type="DATE"/>

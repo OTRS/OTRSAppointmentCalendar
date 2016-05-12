@@ -24,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar::Appointment',
     'Kernel::System::Calendar::Helper',
     'Kernel::System::DB',
+    'Kernel::System::LinkObject',
     'Kernel::System::Log',
 );
 
@@ -91,6 +92,7 @@ sub Export {
     # needed objects
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $LinkObject        = $Kernel::OM->Get('Kernel::System::LinkObject');
 
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $Param{CalendarID},
@@ -116,7 +118,7 @@ sub Export {
         next APPOINTMENT_ID if $Appointment{ParentID};
 
         # get offset
-        my $Offset = $Self->_GetOffset(
+        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->GetOffset(
             TimezoneID => $Appointment{TimezoneID},
         );
 
@@ -209,6 +211,29 @@ sub Export {
         my $ICalChangeTime = Date::ICal->new(
             epoch => $ChangeTime,
         );
+
+        my %PossibleObjectsList = $LinkObject->PossibleObjectsList(
+            Object => 'Appointment',
+        );
+
+        # check links
+        for my $Object ( sort keys %PossibleObjectsList ) {
+            my %LinkKeyList = $LinkObject->LinkKeyList(
+                Object1 => 'Appointment',
+                Key1    => $AppointmentID,
+                Object2 => $Object,
+                State   => 'Valid',
+                UserID  => 1,
+            );
+
+            my $IDs = join( ",", keys %LinkKeyList );
+
+            if ($IDs) {
+                $ICalEvent->add_properties(
+                    "x-otrs-$Object" => $IDs,
+                );
+            }
+        }
 
         # add both required and optional properties
         # remove time zone flag for all day appointments

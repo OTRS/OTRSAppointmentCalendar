@@ -362,6 +362,72 @@ $Self->True(
     'Recurring appointment #1 created',
 );
 
+# add recurring appointment on Wednesday - recurring Monday and Friday
+my $AppointmentIDRec2 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Recurring appointment 2',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-05-04 16:00:00',       # wednesday
+    EndTime             => '2016-05-04 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 1,
+    Recurring           => 1,
+    RecurrenceByDay     => 1,
+    RecurrenceFrequency => 2,                           # each 2nd
+    RecurrenceDays      => [ 1, 5 ],                    # Monday and Friday
+    RecurrenceUntil     => '2016-06-05 00:00:00',       # cca 1 month
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec2,
+    'Recurring appointment #2 created',
+);
+
+# add recurring appointment each 3 years, in January and May
+my $AppointmentIDRec3 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Recurring appointment 3',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-07-05 16:00:00',       # wednesday
+    EndTime             => '2016-07-05 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 1,
+    Recurring           => 1,
+    RecurrenceByDay     => 1,
+    RecurrenceFrequency => 3,                           # each 3th year
+    RecurrenceMonths    => [ 1, 5 ],                    # January and May
+    RecurrenceUntil     => '2020-07-05 00:00:00',       # cca 4 years
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec3,
+    'Recurring appointment #3 created',
+);
+
+# add recurring appointment each 2nd month on 5th, 10th and 15th day
+my $AppointmentIDRec4 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Recurring appointment 4',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-07-05 16:00:00',
+    EndTime             => '2016-07-05 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 1,
+    Recurring           => 1,
+    RecurrenceByDay     => 1,
+    RecurrenceFrequency => 2,                           # each 2 months
+    RecurrenceMonthDays => [ 5, 10, 15 ],               # Days in month
+    RecurrenceUntil     => '2017-07-05 00:00:00',       # cca 1 year
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec4,
+    'Recurring appointment #4 created',
+);
+
 # list recurring appointments
 my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
