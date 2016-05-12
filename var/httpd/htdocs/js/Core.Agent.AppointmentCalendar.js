@@ -781,6 +781,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Fields.$RecurrenceLimitDiv.hide();
                 Fields.$RecurrenceCountDiv.hide();
                 Fields.$RecurrenceUntilDiv.hide();
+
+                // Skip validation of RecurrenceUntil fields
+                $('#RecurrenceUntilDay').addClass('ValidationIgnore');
             } else {
                 Fields.$Recurring.val(1);
                 Fields.$RecurrenceLimitDiv.show();
@@ -788,9 +791,15 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if ($(this).val() == 1) {
                         Fields.$RecurrenceCountDiv.hide();
                         Fields.$RecurrenceUntilDiv.show();
+
+                        // Resume validation of RecurrenceUntil fields
+                        $('#RecurrenceUntilDay').removeClass('ValidationIgnore');
                     } else {
                         Fields.$RecurrenceUntilDiv.hide();
                         Fields.$RecurrenceCountDiv.show();
+
+                        // Skip validation of RecurrenceUntil fields
+                        $('#RecurrenceUntilDay').addClass('ValidationIgnore');
                     }
                 }).trigger('change.AppointmentCalendar');
                 Core.UI.InputFields.Activate(Fields.$RecurrenceLimitDiv);
