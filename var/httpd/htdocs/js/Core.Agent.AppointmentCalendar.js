@@ -263,17 +263,17 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     PosY = JSEvent.clientY + document.body.scrollTop + document.documentElement.scrollTop;
                 }
 
-                // Increase X position so the tooltip do not overlap with mouse pointer
+                // Increase positions so the tooltip do not overlap with mouse pointer
                 PosX += 15;
-
-                // Replace placeholders with appointment information
-                TooltipHTML = ReplaceAppointmentInformation(TooltipHTML, CalEvent);
+                PosY += 15;
 
                 if (TooltipHTML.length > 0) {
 
+                    // Replace placeholders with appointment information
+                    TooltipHTML = ReplaceAppointmentInformation(TooltipHTML, CalEvent);
+
                     // Create tooltip object
-                    $TooltipObj = $('<div/>').attr('id', 'AppointmentTooltip')
-                        .addClass('Hidden')
+                    $TooltipObj = $('<div/>').addClass('AppointmentTooltip Hidden')
                         .offset({
                             top: PosY,
                             left: PosX
@@ -300,7 +300,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             },
             eventMouseout: function() {
-                $('#AppointmentTooltip').fadeOut("fast").remove();
+                $('.AppointmentTooltip').fadeOut("fast").remove();
             },
             resources: Params.Resources.ResourceJSON,
             resourceColumns: Params.Resources.ResourceColumns,
