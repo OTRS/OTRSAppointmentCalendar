@@ -118,8 +118,11 @@ sub Export {
         next APPOINTMENT_ID if $Appointment{ParentID};
 
         # get offset
-        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->GetOffset(
+        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
             TimezoneID => $Appointment{TimezoneID},
+        );
+        my $PaddedOffset = $Self->_GetPaddedOffset(
+            Offset => $Offset,
         );
 
         # calculate start time
@@ -129,7 +132,7 @@ sub Export {
         my $ICalStartTime = Date::ICal->new(
             epoch => $StartTime,
         );
-        $ICalStartTime->offset($Offset);
+        $ICalStartTime->offset($PaddedOffset);
 
         # calculate end time
         my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
@@ -138,7 +141,7 @@ sub Export {
         my $ICalEndTime = Date::ICal->new(
             epoch => $EndTime,
         );
-        $ICalEndTime->offset($Offset);
+        $ICalEndTime->offset($PaddedOffset);
 
         # recalculate for all day appointment
         if ( $Appointment{AllDay} ) {
@@ -196,7 +199,7 @@ sub Export {
                 my $ICalRecurrenceUntil = Date::ICal->new(
                     epoch => $RecurrenceUntil - 1,    # make it exclusive
                 );
-                $ICalRecurrenceUntil->offset($Offset);
+                $ICalRecurrenceUntil->offset($PaddedOffset);
                 $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
             }
             elsif ( $Appointment{RecurrenceCount} ) {
@@ -252,11 +255,11 @@ sub Export {
     return $ICalCalendar->as_string();
 }
 
-sub _GetOffset {
+sub _GetPaddedOffset {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(TimezoneID)) {
+    for my $Needed (qw(Offset)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -269,10 +272,10 @@ sub _GetOffset {
     my $Result;
 
     # make sure it's an integer
-    $Param{TimezoneID} = int $Param{TimezoneID};
+    $Param{Offset} = int $Param{Offset};
 
     # get sign
-    if ( $Param{TimezoneID} > 0 ) {
+    if ( $Param{Offset} > 0 ) {
         $Result = '+';
     }
     else {
@@ -280,7 +283,7 @@ sub _GetOffset {
     }
 
     # pad the string
-    $Result .= sprintf( '%02d00', abs $Param{TimezoneID} );
+    $Result .= sprintf( '%02d00', abs $Param{Offset} );
 
     return $Result;
 }
