@@ -228,7 +228,7 @@ sub Import {
                 $Properties->{'rrule'}->[0]->{'value'}
                 )
             {
-                my ( $Frequency, $Until, $Interval, $Count );
+                my ( $Frequency, $Until, $Interval, $Count, $DayNames );
 
                 my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
 
@@ -251,6 +251,10 @@ sub Import {
                         $Count = $1;
                         next RULE;
                     }
+                    elsif ( $Rule =~ /BYDAY=(.*?)$/i ) {
+                        $DayNames = $1;
+                        next RULE;
+                    }
                 }
 
                 $Interval ||= 1;    # default value
@@ -263,9 +267,48 @@ sub Import {
 
                 }
                 elsif ( $Frequency eq "WEEKLY" ) {
-                    $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceByDay}     = 1;
-                    $Parameters{RecurrenceFrequency} = 7 * $Interval;
+                    if ($DayNames) {
+                        my @Days;
+
+                        # SU,MO,TU,WE,TH,FR,SA
+                        for my $DayName ( split( ',', $DayNames ) ) {
+                            if ( uc $DayName eq 'SU' ) {
+                                push @Days, 0;
+                            }
+                            elsif ( uc $DayName eq 'MO' ) {
+                                push @Days, 1;
+                            }
+                            elsif ( uc $DayName eq 'TU' ) {
+                                push @Days, 2;
+                            }
+                            elsif ( uc $DayName eq 'WE' ) {
+                                push @Days, 3;
+                            }
+                            elsif ( uc $DayName eq 'TH' ) {
+                                push @Days, 4;
+                            }
+                            elsif ( uc $DayName eq 'FR' ) {
+                                push @Days, 5;
+                            }
+                            elsif ( uc $DayName eq 'SA' ) {
+                                push @Days, 6;
+                            }
+                        }
+
+                        if ( scalar @Days > 0 ) {
+
+                            $Parameters{Recurring}           = 1;
+                            $Parameters{RecurrenceByDay}     = 1;           # TODO: check if needed
+                            $Parameters{RecurrenceFrequency} = $Interval;
+                            $Parameters{RecurrenceMonthDays} = \@Days;
+                        }
+                    }
+                    else {
+
+                        $Parameters{Recurring}           = 1;
+                        $Parameters{RecurrenceByDay}     = 1;
+                        $Parameters{RecurrenceFrequency} = 7 * $Interval;
+                    }
                 }
                 elsif ( $Frequency eq "MONTHLY" ) {
                     $Parameters{Recurring}           = 1;
@@ -323,7 +366,7 @@ sub Import {
             );
         }
         else {
-            # There is no Appointment,create new one
+            # There is no Appointment, create new one
             $Success = $AppointmentObject->AppointmentCreate(
                 CalendarID => $Param{CalendarID},
                 UserID     => $Param{UserID},
