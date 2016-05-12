@@ -404,17 +404,10 @@ sub WeekDetailsGet {
         }
     }
 
-    my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime',
-        ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
-    );
+    # create Time::Piece object
+    my $Time = localtime( $Param{SystemTime} );
 
-    my $WeekDay = $DateTimeObject->Get()->{DayOfWeek};
-    my $CW      = $DateTimeObject->{CPANDateTimeObject}->week_number();
-
-    return ( $WeekDay, $CW );
+    return ( $Time->day_of_week(), $Time->week() );
 }
 
 1;
