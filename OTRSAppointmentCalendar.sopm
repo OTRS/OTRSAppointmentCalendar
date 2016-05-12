@@ -68,6 +68,7 @@
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/CalendarHelper.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
