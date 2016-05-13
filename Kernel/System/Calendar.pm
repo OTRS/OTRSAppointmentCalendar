@@ -134,10 +134,9 @@ sub CalendarCreate {
 
     my %Calendar = $Self->CalendarGet(
         CalendarName => $Param{CalendarName},
-        UserID       => $Param{UserID},
     );
 
-    # If user already has Calendar with same name, return
+    # return if calendar with same name already exists
     return if %Calendar;
 
     my $SQL = '
