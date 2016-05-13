@@ -173,6 +173,45 @@ $Self->Is(
     "DateGet OK (DayOfWeek)",
 );
 
+my ( $Second3, $Minute3, $Hour3, $Day3, $Month3, $Year3, $DayOfWeek3 ) = $CalendarHelperObject->DateGet(
+    SystemTime => '1462672984',
+);
+$Self->Is(
+    $Year3,
+    2016,
+    "DateGet OK (Year)",
+);
+$Self->Is(
+    $Month3,
+    5,
+    "DateGet OK (Month)",
+);
+$Self->Is(
+    $Day3,
+    8,
+    "DateGet OK (Day)",
+);
+$Self->Is(
+    $Hour3,
+    2,
+    "DateGet OK (Hour)",
+);
+$Self->Is(
+    $Minute3,
+    3,
+    "DateGet OK (Minute)",
+);
+$Self->Is(
+    $Second3,
+    4,
+    "DateGet OK (Second)",
+);
+$Self->Is(
+    $DayOfWeek3,
+    7,
+    "DateGet OK (DayOfWeek)",
+);
+
 # missing year
 my $Date2SystemTime1 = $CalendarHelperObject->Date2SystemTime(
     Month  => '1',
