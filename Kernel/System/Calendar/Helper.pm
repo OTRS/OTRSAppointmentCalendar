@@ -111,7 +111,7 @@ returns the number of non-leap seconds since what ever time the system considers
     );
 
 returns:
-    $Result = '1462871162';
+    $Result = '1451606460';
 =cut
 
 sub SystemTimeGet {
@@ -139,7 +139,7 @@ sub SystemTimeGet {
 returns a time stamp for a given system time in "yyyy-mm-dd 23:59:59" format.
 
     my $Result = $CalendarHelperObject->TimestampGet(
-        SystemTime     => '1462871162',                   # (required)
+        SystemTime     => '1451606460',                   # (required)
     );
 
 returns:
@@ -170,9 +170,7 @@ sub TimestampGet {
 
 returns a current time stamp for a given system time in "yyyy-mm-dd 23:59:59" format.
 
-    my $Result = $CalendarHelperObject->CurrentTimestampGet(
-        SystemTime     => '1462871162',                   # (required)
-    );
+    my $Result = $CalendarHelperObject->CurrentTimestampGet();
 
 returns:
     $Result = '2016-01-01 00:01:00';
@@ -205,20 +203,19 @@ sub CurrentSystemTime {
 
 returns date/time information in a hash for given unix time.
 
-    my $Result = $CalendarHelperObject->DateGet(
+    my ($Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek) = $CalendarHelperObject->DateGet(
         SystemTime => '1462871162'
     );
 
 returns:
-    $Result = (
-        Year      => '2016',
-        Month     => '1',
-        Day       => '1',
-        Hour      => '1',
-        Minute    => '0',
-        Second    => '0',
-        DayOfWeek => '2',   # 0-sunday, 1-monday,...
-    );
+    $Second    = '0';
+    $Minute    = '0';
+    $Hour      = '1';
+    $Day       = '1';
+    $Month     = '1';
+    $Year      = '2016';
+    $DayOfWeek = '2';   # 1-monday,..., 7-sunday
+
 =cut
 
 sub DateGet {
@@ -235,9 +232,24 @@ sub DateGet {
         }
     }
 
-    return $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
+    my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek )
+        = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
         SystemTime => $Param{SystemTime},
-    );
+        );
+    $Second    = int $Second;
+    $Minute    = int $Minute;
+    $Hour      = int $Hour;
+    $Day       = int $Day;
+    $Month     = int $Month;
+    $Year      = int $Year;
+    $DayOfWeek = int $DayOfWeek;
+
+    # Kernel::System::Time object returns 0 for sunday - we need to change this to 7 (like on other places)
+    if ( !$DayOfWeek ) {
+        $DayOfWeek = 7;
+    }
+
+    return ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek );
 }
 
 =item Date2SystemTime()
@@ -254,14 +266,14 @@ returns the number of non-leap seconds since what ever time the system considers
     );
 
 returns:
-    $Result = '1462871162';
+    $Result = '1451610000';
 =cut
 
 sub Date2SystemTime {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw( Year Month Day Hour Minute )) {
+    for (qw( Year Month Day )) {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -270,6 +282,9 @@ sub Date2SystemTime {
             return;
         }
     }
+    $Param{Hour}   //= 0;
+    $Param{Minute} //= 0;
+    $Param{Second} //= 0;
 
     return $Kernel::OM->Get('Kernel::System::Time')->Date2SystemTime(
         %Param,
@@ -287,7 +302,7 @@ adds time period (years and months) to the time given in Unix format.
     );
 
 returns:
-    $Result = '1462880778';
+    $Result = '1497085562';
 =cut
 
 sub AddPeriod {
@@ -387,7 +402,7 @@ get week details for a given unix time.
     );
 
 returns:
-    $WeekDay = 4;
+    $WeekDay = 4; # 7-sun, 1-mon
     $CW = 19;
 =cut
 
@@ -407,7 +422,13 @@ sub WeekDetailsGet {
     # create Time::Piece object
     my $Time = localtime( $Param{SystemTime} );
 
-    return ( $Time->day_of_week(), $Time->week() );
+    # Time::Piece object returns 0 for sunday - we need to change this to 7 (like on other places)
+    my $DayOfWeek = $Time->day_of_week();
+    if ( !$DayOfWeek ) {
+        $DayOfWeek = 7;
+    }
+
+    return ( $DayOfWeek, $Time->week() );
 }
 
 1;
