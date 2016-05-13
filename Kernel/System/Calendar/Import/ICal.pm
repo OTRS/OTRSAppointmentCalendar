@@ -218,7 +218,7 @@ sub Import {
             && $Properties->{'rrule'}->[0]->{'value'}
             )
         {
-            my ( $Frequency, $Until, $Interval, $Count, $DayNames );
+            my ( $Frequency, $Until, $Interval, $Count, $DayNames, $MonthDays );
 
             my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
 
@@ -245,6 +245,10 @@ sub Import {
                     $DayNames = $1;
                     next RULE;
                 }
+                elsif ( $Rule =~ /BYMONTHDAY=(.*?)$/i ) {
+                    $MonthDays = $1;
+                    next RULE;
+                }
             }
 
             $Interval ||= 1;    # default value
@@ -258,14 +262,15 @@ sub Import {
             }
             elsif ( $Frequency eq "WEEKLY" ) {
                 if ($DayNames) {
+
+                    # custom
+
                     my @Days;
 
                     # SU,MO,TU,WE,TH,FR,SA
                     for my $DayName ( split( ',', $DayNames ) ) {
-                        if ( uc $DayName eq 'SU' ) {
-                            push @Days, 0;
-                        }
-                        elsif ( uc $DayName eq 'MO' ) {
+
+                        if ( uc $DayName eq 'MO' ) {
                             push @Days, 1;
                         }
                         elsif ( uc $DayName eq 'TU' ) {
@@ -283,6 +288,9 @@ sub Import {
                         elsif ( uc $DayName eq 'SA' ) {
                             push @Days, 6;
                         }
+                        elsif ( uc $DayName eq 'SU' ) {
+                            push @Days, 7;
+                        }
                     }
 
                     if ( scalar @Days > 0 ) {
@@ -290,20 +298,32 @@ sub Import {
                         $Parameters{Recurring}           = 1;
                         $Parameters{RecurrenceByDay}     = 1;           # TODO: check if needed
                         $Parameters{RecurrenceFrequency} = $Interval;
-                        $Parameters{RecurrenceMonthDays} = \@Days;
+                        $Parameters{RecurrenceDays}      = \@Days;
                     }
                 }
                 else {
-
+                    # each n days
                     $Parameters{Recurring}           = 1;
                     $Parameters{RecurrenceByDay}     = 1;
                     $Parameters{RecurrenceFrequency} = 7 * $Interval;
                 }
             }
             elsif ( $Frequency eq "MONTHLY" ) {
-                $Parameters{Recurring}           = 1;
-                $Parameters{RecurrenceByMonth}   = 1;
-                $Parameters{RecurrenceFrequency} = $Interval;
+                if ($MonthDays) {
+
+                    # Custom
+                    # FREQ=MONTHLY;UNTIL=20170101T080000Z;BYMONTHDAY=16,31'
+                    my @Days = split( ',', $MonthDays );
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceByMonth}   = 1;
+                    $Parameters{RecurrenceMonthDays} = \@Days;
+                    $Parameters{RecurrenceFrequency} = $Interval;
+                }
+                else {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceByMonth}   = 1;
+                    $Parameters{RecurrenceFrequency} = $Interval;
+                }
             }
             elsif ( $Frequency eq "YEARLY" ) {
                 $Parameters{Recurring}           = 1;
