@@ -68,7 +68,6 @@ sub Run {
             # check if there is a calendar with same name
             my %Calendar = $CalendarObject->CalendarGet(
                 CalendarName => $GetParam{CalendarName},
-                UserID       => $Self->{UserID},
             );
 
             if (%Calendar) {
