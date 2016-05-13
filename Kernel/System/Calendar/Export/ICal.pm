@@ -118,12 +118,9 @@ sub Export {
         return if !$Appointment{AppointmentID};
         next APPOINTMENT_ID if $Appointment{ParentID};
 
-        # get offset
-        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-            TimezoneID => $Appointment{TimezoneID},
-        );
-        my $PaddedOffset = $Self->_GetPaddedOffset(
-            Offset => $Offset,
+        # get padded offset
+        my $Offset = $Self->_GetPaddedOffset(
+            Offset => $Appointment{TimezoneID},
         );
 
         # calculate start time
@@ -133,7 +130,7 @@ sub Export {
         my $ICalStartTime = Date::ICal->new(
             epoch => $StartTime,
         );
-        $ICalStartTime->offset($PaddedOffset);
+        $ICalStartTime->offset($Offset);
 
         # calculate end time
         my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
@@ -142,7 +139,7 @@ sub Export {
         my $ICalEndTime = Date::ICal->new(
             epoch => $EndTime,
         );
-        $ICalEndTime->offset($PaddedOffset);
+        $ICalEndTime->offset($Offset);
 
         # recalculate for all day appointment
         if ( $Appointment{AllDay} ) {
@@ -155,6 +152,7 @@ sub Export {
                 month => $Month,
                 day   => $Day,
             );
+            $ICalStartTime->offset($Offset);
             ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
                 SystemTime => $EndTime,
             );
@@ -163,6 +161,7 @@ sub Export {
                 month => $Month,
                 day   => $Day,
             );
+            $ICalEndTime->offset($Offset);
         }
 
         # create iCalendar event entry
@@ -200,7 +199,7 @@ sub Export {
                 my $ICalRecurrenceUntil = Date::ICal->new(
                     epoch => $RecurrenceUntil - 1,    # make it exclusive
                 );
-                $ICalRecurrenceUntil->offset($PaddedOffset);
+                $ICalRecurrenceUntil->offset($Offset);
                 $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
             }
             elsif ( $Appointment{RecurrenceCount} ) {
@@ -261,7 +260,7 @@ sub _GetPaddedOffset {
 
     # check needed stuff
     for my $Needed (qw(Offset)) {
-        if ( !$Param{$Needed} ) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "Need $Needed!"
