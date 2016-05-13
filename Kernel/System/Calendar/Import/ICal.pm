@@ -99,8 +99,7 @@ sub Import {
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
     my $Calendar = Data::ICal->new( data => $Param{ICal} );
 
-    my @Entries = @{ $Calendar->entries() };
-
+    my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
 
     ENTRY:
