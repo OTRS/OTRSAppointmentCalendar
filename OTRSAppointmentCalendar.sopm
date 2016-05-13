@@ -70,6 +70,7 @@
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/CalendarHelper.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
