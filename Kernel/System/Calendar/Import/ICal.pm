@@ -66,8 +66,8 @@ sub new {
 
 import calendar in iCalendar format
     my $Success = $ImportObject->Import(
-        CalendarID   => 123,
-        ICal         =>                         # (required) iCal string
+        CalendarID     => 123,
+        ICal           =>                         # (required) iCal string
             '
                 BEGIN:VCALENDAR
                 PRODID:Zimbra-Calendar-Provider
@@ -75,7 +75,8 @@ import calendar in iCalendar format
                 METHOD:REQUEST
                 ...
             ',
-        UserID       => 1,                      # (required) UserID
+        UserID         => 1,                      # (required) UserID
+        UpdateExisting => 0,                      # (optional)
     );
 returns 1 if successful
 
@@ -111,7 +112,8 @@ sub Import {
 
         # get uid
         if (
-            IsArrayRefWithData( $Properties->{'uid'} )
+            $Param{UpdateExisting}
+            && IsArrayRefWithData( $Properties->{'uid'} )
             && ref $Properties->{'uid'}->[0] eq 'Data::ICal::Property'
             && $Properties->{'uid'}->[0]->{'value'}
             )
@@ -361,6 +363,13 @@ sub Import {
         my %Appointment = $AppointmentObject->AppointmentGet(
             UniqueID => $Parameters{UniqueID},
         );
+
+        # check if Appointment match currect Calendar
+        if ( $Appointment{CalendarID} != $Param{CalendarID} ) {
+
+            # create new appointment (don't update Appointment in different Calendar)
+            %Appointment = ();
+        }
 
         if ( %Appointment && $Appointment{AppointmentID} ) {
 

@@ -154,6 +154,9 @@
                     <AccessKey></AccessKey>
                     <Prio>9000</Prio>
                 </NavBar>
+                <Loader>
+                    <CSS>Core.AppointmentCalendar.Manage.css</CSS>
+                </Loader>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
