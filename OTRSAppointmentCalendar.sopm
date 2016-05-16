@@ -273,7 +273,7 @@
                 <Reference Local="team_id" Foreign="id"/>
             </ForeignKeyCreate>
         </TableAlter>
-        <TableAlter Name="calendar_appointment" Version="1.0.0.9">
+        <TableAlter Name="calendar_appointment" Version="1.1.0.10">
             <ColumnAdd Name="recur_days" Type="VARCHAR" Size="20"/>
             <ColumnAdd Name="recur_months" Type="VARCHAR" Size="30"/>
             <ColumnAdd Name="recur_month_days" Type="VARCHAR" Size="70"/>
