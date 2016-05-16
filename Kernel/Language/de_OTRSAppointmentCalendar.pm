@@ -17,7 +17,6 @@ sub Data {
 
     # Template: AgentAppointmentCalendarManage
     $Self->{Translation}->{'Calendar Management'} = 'Kalenderverwaltung';
-    $Self->{Translation}->{'Add new calendar'} = 'Neuen Kalender anlegen';
     $Self->{Translation}->{'Calendars'} = 'Kalender';
     $Self->{Translation}->{'Filter for calendars'} = 'Filter für Kalender';
     $Self->{Translation}->{'Add new Calendar'} = 'Neuen Kalender anlegen';
@@ -49,7 +48,7 @@ sub Data {
     $Self->{Translation}->{'Date/Time'} = 'Datum/Zeit';
     $Self->{Translation}->{'End date'} = 'Endzeitpunkt';
     $Self->{Translation}->{'Please set this to a value after start date.'} = 'Bitte setzen Sie hier einen Wert nach dem Startzeitpunkt.';
-    $Self->{Translation}->{'All day'} = 'Ganztägig';
+    $Self->{Translation}->{'All-day'} = 'Ganztägig';
     $Self->{Translation}->{'Repeat'} = 'Wiederholung';
     $Self->{Translation}->{'Every Day'} = 'Jeden Tag';
     $Self->{Translation}->{'Every Week'} = 'Jede Woche';
@@ -59,7 +58,6 @@ sub Data {
     # Template: AgentAppointmentResourceOverview
     $Self->{Translation}->{'This is a resource overview page.'} = 'Dies ist eine Resourcenübersicht.';
     $Self->{Translation}->{'No teams found. Please add a team first by using Manage Teams page.'} = 'Keine Teams gefunden. Bitte legen Sie zuerst ein Team über die Teamverwaltung an.';
-    $Self->{Translation}->{'All-day'} = 'Ganztägig';
     $Self->{Translation}->{'Timeline Month'} = 'Zeitleiste Monat';
     $Self->{Translation}->{'Timeline Week'} = 'Zeitleiste Woche';
     $Self->{Translation}->{'Timeline Day'} = 'Zeitleiste Tag';
