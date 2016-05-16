@@ -155,7 +155,7 @@
                     <Prio>9000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>Core.Agent.AppointmentCalendarManage.css</CSS>
+                    <CSS>Core.AppointmentCalendar.Manage.css</CSS>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
