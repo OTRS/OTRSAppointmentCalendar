@@ -81,7 +81,7 @@
         z-index: 1000;
         background-color: #fff;
         border: 1px solid #ccc;
-        width: 350px;
+        width: 375px;
         padding: 5px;
     }
 
@@ -99,6 +99,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        width: 250px;
     }
 
     .CalendarWidget .ui-datepicker-trigger {
