@@ -269,21 +269,6 @@
         </Insert>
     </DatabaseInstall>
 
-    <!-- TODO: Remove after VO testing -->
-    <DatabaseUpgrade>
-        <TableAlter Name="calendar_appointment" Version="1.0.0.5">
-            <ColumnAdd Name="team_id" Type="BIGINT"/>
-            <ForeignKeyCreate ForeignTable="calendar_team">
-                <Reference Local="team_id" Foreign="id"/>
-            </ForeignKeyCreate>
-        </TableAlter>
-        <TableAlter Name="calendar_appointment" Version="1.0.0.9">
-            <ColumnAdd Name="recur_days" Type="VARCHAR" Size="20"/>
-            <ColumnAdd Name="recur_months" Type="VARCHAR" Size="30"/>
-            <ColumnAdd Name="recur_month_days" Type="VARCHAR" Size="70"/>
-        </TableAlter>
-    </DatabaseUpgrade>
-
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
