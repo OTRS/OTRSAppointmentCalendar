@@ -84,8 +84,10 @@ sub Run {
                 UserID => $Self->{UserID},
             );
 
-            # calculate local times
+            # go through all appointments
             for my $Appointment (@Appointments) {
+
+                # calculate local times
                 $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? int $Appointment->{TimezoneID} : 0;
 
                 my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
@@ -116,6 +118,39 @@ sub Run {
                         = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $RecurrenceUntil,
                         );
+                }
+
+                # include resource data
+                $Appointment->{TeamName}      = '';
+                $Appointment->{ResourceNames} = '';
+
+                if (
+                    $Kernel::OM->Get('Kernel::System::Main')->Require(
+                        'Kernel::System::Calendar::Team',
+                        Silent => 1,
+                    )
+                    )
+                {
+                    if ( $Appointment->{TeamID} ) {
+                        my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
+                            TeamID => $Appointment->{TeamID},
+                            UserID => $Self->{UserID},
+                        );
+                        $Appointment->{TeamName} = $Team{Name} if %Team;
+                    }
+                    if ( $Appointment->{ResourceID} ) {
+                        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+                        my @ResourceNames;
+                        RESOURCE:
+                        for my $ResourceID ( @{ $Appointment->{ResourceID} } ) {
+                            next RESOURCE if !$ResourceID;
+                            my %User = $UserObject->GetUserData(
+                                UserID => $ResourceID,
+                            );
+                            push @ResourceNames, $User{UserFullname};
+                        }
+                        $Appointment->{ResourceNames} = join( '; ', @ResourceNames );
+                    }
                 }
             }
 
