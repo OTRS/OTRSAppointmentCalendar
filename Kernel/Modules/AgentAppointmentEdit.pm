@@ -147,6 +147,15 @@ sub Run {
             );
             $EndTime -= $Appointment{TimezoneID} * 3600;
             $EndTime += $Offset * 3600;
+
+            # end times for all day appointments are inclusive, subtract whole day
+            if ( $Appointment{AllDay} ) {
+                $EndTime -= 86400;
+                if ( $EndTime < $StartTime ) {
+                    $EndTime = $StartTime;
+                }
+            }
+
             (
                 $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
@@ -564,6 +573,14 @@ sub Run {
             $GetParam{EndTime} = sprintf(
                 "%04d-%02d-%02d 00:00:00",
                 $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay}
+            );
+
+            # make end time inclusive, add whole day
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{EndTime},
+            );
+            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $EndTime + 86400,
             );
         }
         elsif ( $GetParam{Recurring} && $GetParam{UpdateType} && $GetParam{UpdateDelta} ) {
