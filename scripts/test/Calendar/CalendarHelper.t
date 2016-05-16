@@ -212,8 +212,6 @@ $Self->Is(
     "DateGet OK (DayOfWeek)",
 );
 
-# 1462699805
-
 # missing year
 my $Date2SystemTime1 = $CalendarHelperObject->Date2SystemTime(
     Month  => '1',
