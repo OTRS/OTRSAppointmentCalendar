@@ -78,6 +78,7 @@
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
