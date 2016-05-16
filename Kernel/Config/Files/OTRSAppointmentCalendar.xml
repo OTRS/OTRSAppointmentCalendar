@@ -104,7 +104,7 @@
         <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description Translatable="1">Appointments list.</Description>
+                <Description Translatable="1">Appointment list.</Description>
                 <Title Translatable="1">Appointment list</Title>
                 <NavBarName></NavBarName>
             </FrontendModuleReg>

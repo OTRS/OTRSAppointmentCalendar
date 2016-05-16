@@ -211,11 +211,11 @@ sub TableCreateComplex {
                 Content => Translatable('Description'),
             },
             {
-                Content => Translatable('Start Time'),
+                Content => Translatable('Start time'),
                 Width   => 150,
             },
             {
-                Content => Translatable('End Time'),
+                Content => Translatable('End time'),
                 Width   => 150,
             },
         ],

@@ -315,7 +315,7 @@ $('#TeamID').on('change', function() {
             <label>[% Translate("End date") | html %]:</label>
             <p class="Value">%end%</p>
             <div class="Clear"></div>
-            <label>[% Translate("All day") | html %]:</label>
+            <label>[% Translate("All-day") | html %]:</label>
             <p class="Value">%allDay%</p>
             <div class="Clear"></div>
             <label>[% Translate("Repeat") | html %]:</label>
