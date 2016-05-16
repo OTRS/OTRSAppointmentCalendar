@@ -354,7 +354,7 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     Recurring           => 1,
     RecurrenceByDay     => 1,
     RecurrenceFrequency => 1,                         # once per day
-    RecurrenceUntil     => '2016-03-06 00:00:00',
+    RecurrenceUntil     => '2016-03-06 00:00:00',     # included last day
     UserID              => $UserID,
 );
 $Self->True(
@@ -437,7 +437,7 @@ my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
 
 $Self->Is(
     scalar @AppointmentsRec1,
-    5,
+    6,
     'AppointmentList() - # rec1 ok',
 );
 
