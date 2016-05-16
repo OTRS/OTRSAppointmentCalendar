@@ -284,8 +284,13 @@ sub Run {
             my $CalendarName;
 
             # take name from .ics if available
-            if ( $UploadStuff{Content} =~ /^NAME:(.*?)\s*?$/m ) {
+            if ( $UploadStuff{Content} =~ /^X-WR-CALNAME:(.*?)\s*?$/m ) {
                 $CalendarName = $1;
+                chomp $CalendarName;
+            }
+            elsif ( $UploadStuff{Content} =~ /^NAME:(.*?)\s*?$/m ) {
+                $CalendarName = $1;
+                chomp $CalendarName;
             }
 
             # take name from file name
@@ -306,6 +311,7 @@ sub Run {
 
                 # loop until Calendar name is not already used
                 while (%Calendar) {
+
                     $CalendarName = $Self->_GenerateName(
                         Name => $CalendarName,
                     );
@@ -367,9 +373,10 @@ sub Run {
             }
 
             my $Success = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal')->Import(
-                CalendarID => $Calendar{CalendarID},
-                ICal       => $UploadStuff{Content},
-                UserID     => $Self->{UserID},
+                CalendarID     => $Calendar{CalendarID},
+                ICal           => $UploadStuff{Content},
+                UserID         => $Self->{UserID},
+                UpdateExisting => $UpdateExisting,
             );
 
             if ( !$Success ) {
