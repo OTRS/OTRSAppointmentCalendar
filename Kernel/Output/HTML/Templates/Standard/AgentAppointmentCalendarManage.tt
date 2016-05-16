@@ -121,7 +121,7 @@
 
             <div class="Content">
 [% RenderBlockStart("ImportSuccess") %]
-                <p>[% Translate("Calendar imported successfully.") | html %]</p>
+                <p>[% Translate("Calendar imported successfully (%s).", Data.CalendarName ) | html %]</p>
 [% RenderBlockEnd("ImportSuccess") %]
 [% RenderBlockStart("Overview") %]
                 <table class="DataTable" id="User">

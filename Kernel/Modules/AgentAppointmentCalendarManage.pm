@@ -243,6 +243,9 @@ sub Run {
         );
 
         my $UploadCacheObject = $Kernel::OM->Get('Kernel::System::Web::UploadCache');
+
+        my $UpdateExisting = $ParamObject->GetParam( Param => 'UpdateExistingCalendar' ) || '';
+
         my %Errors;
 
         # save file in upload cache
@@ -278,14 +281,40 @@ sub Run {
         }
 
         if ( !%Errors ) {
-            my $CalendarName = $UploadStuff{Filename};
+            my $CalendarName;
 
-            # remove extension
-            $CalendarName = substr( $CalendarName, 0, rindex( $CalendarName, "." ) );
+            # take name from .ics if available
+            if ( $UploadStuff{Content} =~ /^NAME:(.*?)\s*?$/m ) {
+                $CalendarName = $1;
+            }
 
-            my %Calendar = $CalendarObject->CalendarGet(
+            # take name from file name
+            else {
+                $CalendarName = $UploadStuff{Filename};
+
+                # remove extension
+                $CalendarName = substr( $CalendarName, 0, rindex( $CalendarName, "." ) );
+            }
+
+            my %Calendar;
+
+            %Calendar = $CalendarObject->CalendarGet(
                 CalendarName => $CalendarName,
             );
+
+            if ( !$UpdateExisting && %Calendar ) {
+
+                # loop until Calendar name is not already used
+                while (%Calendar) {
+                    $CalendarName = $Self->_GenerateName(
+                        Name => $CalendarName,
+                    );
+
+                    %Calendar = $CalendarObject->CalendarGet(
+                        CalendarName => $CalendarName,
+                    );
+                }
+            }
 
             # check if calendar exists
             if (%Calendar) {
@@ -352,15 +381,21 @@ sub Run {
 
             # Import ok
             return $LayoutObject->Redirect(
-                OP => "Action=AgentAppointmentCalendarManage;Subaction=ImportSucess",
+                OP => "Action=AgentAppointmentCalendarManage;Subaction=ImportSucess;CalendarName=$CalendarName",
             );
 
         }
     }
     elsif ( $Self->{Subaction} eq 'ImportSucess' ) {
         $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import");
+
+        my $CalendarName = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
+
         $LayoutObject->Block(
             Name => 'ImportSuccess',
+            Data => {
+                CalendarName => $CalendarName,
+                }
         );
     }
     else {
@@ -478,6 +513,38 @@ sub _ValidSelectionGet {
     );
 
     return $ValidSelection;
+}
+
+sub _GenerateName {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Name)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my $Result;
+
+    # generate new name
+    if ( $Param{Name} =~ /(\d+?)$/m ) {
+
+        # name ends with number
+        my $ID = int $1 + 1;
+
+        $Result = $Param{Name};
+        $Result =~ s{\d+$}{$ID};
+    }
+    else {
+        $Result = $Param{Name} . " 1";
+    }
+
+    return $Result;
 }
 
 1;
