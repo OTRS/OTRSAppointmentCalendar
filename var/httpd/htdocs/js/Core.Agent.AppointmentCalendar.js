@@ -110,7 +110,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             height: 600,
             editable: true,
             selectable: true,
-            selectHelper: true,
             firstDay: Params.FirstDay,
             monthNames: Params.MonthNames,
             monthNamesShort: Params.MonthNamesShort,
