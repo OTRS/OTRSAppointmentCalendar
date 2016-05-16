@@ -478,7 +478,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     ReplaceValue = true;
                 }
             } else if (Placeholder === 'start' || Placeholder === 'end') {
-                ReplaceValue = $.fullCalendar.moment(ReplaceValue).format('YYYY-MM-DD HH:mm');
+                if (CalEvent.allDay) {
+                    if (Placeholder === 'end') {
+                        ReplaceValue = $.fullCalendar.moment(ReplaceValue).subtract(1, 'day');
+                    }
+                    ReplaceValue = $.fullCalendar.moment(ReplaceValue).format('YYYY-MM-DD');
+                } else {
+                    ReplaceValue = $.fullCalendar.moment(ReplaceValue).format('YYYY-MM-DD HH:mm');
+                }
             }
 
             // Default JSON values
@@ -538,6 +545,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             TeamList: AppointmentData.Resource ? AppointmentData.Resource.TeamID : null,
             ResourceID: AppointmentData.Resource ? [ AppointmentData.Resource.id ] : null
         };
+
+        // Make end time for all day appointments inclusive
+        if (Data.AllDay && Data.AllDay === '1') {
+            AppointmentData.End.subtract(1, 'day');
+            Data.EndYear = AppointmentData.End.year();
+            Data.EndMonth = AppointmentData.End.month() + 1;
+            Data.EndDay = AppointmentData.End.date();
+            Data.EndHour = AppointmentData.End.hour();
+            Data.EndMinute = AppointmentData.End.minute();
+        }
 
         function EditDialog() {
             ShowWaitingDialog();
