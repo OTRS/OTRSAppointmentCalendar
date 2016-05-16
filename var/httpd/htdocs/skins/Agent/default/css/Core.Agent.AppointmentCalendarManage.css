@@ -1,0 +1,21 @@
+/**
+ * @project     OTRS (http://www.otrs.org) - Agent Frontend
+ * @copyright   OTRS AG
+ * @license     AGPL (http://www.gnu.org/licenses/agpl.txt)
+ */
+
+/**
+ * @package     Skin "Default"
+ * @section     Appointment Calendar Manage
+ */
+
+@media screen,projection,tv,handheld {
+    
+.WidgetSimple fieldset.Separated {
+    background-color: #e9e9e9;
+    border: 1px solid #cccccc;
+    margin: 9px 0;
+    padding: 4px;
+}
+
+} /* end @media */

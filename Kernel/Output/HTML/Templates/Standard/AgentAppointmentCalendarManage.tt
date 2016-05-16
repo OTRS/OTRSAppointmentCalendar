@@ -66,6 +66,10 @@
                             <input name="FileUpload" id="FileUpload" type="file" size="18" class="Fixed W100pc Validate_Required [% Data.FileUploadInvalid | html %]"/>
                             <div id="FileUploadError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                             <div id="FileUploadServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <fieldset class="Separated">
+                                <input type="checkbox" value="1" name="UpdateExistingCalendar" id="UpdateExistingCalendar">
+                                <label for="UpdateExistingCalendar">[% Translate("Update existing Calendar?") | html %]</label>
+                            </fieldset>
                             <button class="CallForAction Fullsize Center" type="submit" value="[% Translate("Upload calendar") | html %]">
                                 <span><i class="fa fa-upload"></i>[% Translate("Import calendar") | html %]</span>
                             </button>
