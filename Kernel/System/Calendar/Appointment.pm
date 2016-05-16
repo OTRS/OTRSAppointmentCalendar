@@ -1889,8 +1889,9 @@ sub _CalculateRecurenceTime {
             SystemTime => $Param{OriginalTime},
             );
 
+        # loop through each day (max one year), and check if day matches.
         DAY:
-        for ( my $Counter = 0; $Counter < 31 * $Param{Appointment}->{RecurrenceFrequency}; $Counter++ ) {
+        for ( my $Counter = 0; $Counter < 31 * 366; $Counter++ ) {
 
             # Add one day
             $SystemTime += 24 * 60 * 60;
@@ -1900,7 +1901,7 @@ sub _CalculateRecurenceTime {
                 SystemTime => $SystemTime,
                 );
 
-            # check if month is OK
+            # Skip month if needed
             next DAY if ( $Month - $OriginalMonth ) % $Param{Appointment}->{RecurrenceFrequency};
 
             # next day if this day should be skipped
