@@ -85,21 +85,35 @@
         padding: 5px;
     }
 
-    .AppointmentTooltip > fieldset.TableLike {
+    .AppointmentTooltip > fieldset {
         margin-bottom: 15px;
     }
 
-    .AppointmentTooltip > fieldset.TableLike > label,
-    .AppointmentTooltip > fieldset.TableLike > .Value {
-        line-height: 1em;
+    .AppointmentTooltip > fieldset > label {
+        line-height: 1.2em;
+        color: #929292;
+        display: block;
+        float: left;
+        min-height: 17px;
+        padding-bottom: 1px;
+        padding-top: 0.3em;
+        text-align: right;
+        width: 30%;
     }
 
-    .AppointmentTooltip > fieldset.TableLike > .Value {
+    .AppointmentTooltip > fieldset > .Value {
+        float: right;
+        line-height: 1.2em;
         padding-top: 0.3em;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         width: 250px;
+    }
+
+    .AppointmentTooltip > fieldset > .Value:empty,
+    .AppointmentTooltip > fieldset > .Value:empty + label {
+        display: none;
     }
 
     .CalendarWidget .ui-datepicker-trigger {
