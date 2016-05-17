@@ -294,43 +294,43 @@ $('#TeamID').on('change', function() {
     <div class="Clear"></div>
 
     <div id="AppointmentTooltipTemplate" class="Hidden">
-        <fieldset class="TableLike">
+        <fieldset>
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
-            <label>[% Translate("Title") | html %]:</label>
             <p class="Value">%title%</p>
+            <label>[% Translate("Title") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("Description") | html %]:</label>
             <p class="Value">%description%</p>
+            <label>[% Translate("Description") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("Location") | html %]:</label>
             <p class="Value">%location%</p>
+            <label>[% Translate("Location") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("Calendar") | html %]:</label>
             <p class="Value">%calendarId%</p>
+            <label>[% Translate("Calendar") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
-        <fieldset class="TableLike">
+        <fieldset>
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <label>[% Translate("Team") | html %]:</label>
             <p class="Value">%teamName%</p>
+            <label>[% Translate("Team") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("Agent") | html %]:</label>
             <p class="Value">%resourceNames%</p>
+            <label>[% Translate("Agent") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
-        <fieldset class="TableLike">
+        <fieldset>
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
-            <label>[% Translate("Start date") | html %]:</label>
             <p class="Value">%start%</p>
+            <label>[% Translate("Start date") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("End date") | html %]:</label>
             <p class="Value">%end%</p>
+            <label>[% Translate("End date") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("All-day") | html %]:</label>
             <p class="Value">%allDay%</p>
+            <label>[% Translate("All-day") | html %]:</label>
             <div class="Clear"></div>
-            <label>[% Translate("Repeat") | html %]:</label>
             <p class="Value">%recurring%</p>
+            <label>[% Translate("Repeat") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
     </div>
