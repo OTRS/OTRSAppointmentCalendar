@@ -157,6 +157,9 @@ sub Run {
 
                 # set initial view
                 $Param{DefaultView} = $Preferences{UserResourceOverviewDefaultView} // 'timelineWeek';
+
+                # auto open appointment
+                $Param{AppointmentID} = $ParamObject->GetParam( Param => 'AppointmentID' ) // undef;
             }
 
             # show empty team message
@@ -197,6 +200,8 @@ sub Run {
             DaysSubaction     => 'AppointmentDays',
             FirstDay          => $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 0,
             IsRTLLanguage     => ( $TextDirection eq 'rtl' ) ? 'true' : 'false',
+            AppointmentID => $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'AppointmentID' )
+                // undef,
             %Param,
         },
     );

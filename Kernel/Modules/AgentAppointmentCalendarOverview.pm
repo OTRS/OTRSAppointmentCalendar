@@ -102,6 +102,11 @@ sub Run {
 
         # set initial view
         $Param{DefaultView} = $Preferences{UserCalendarOverviewDefaultView} // 'timelineWeek';
+
+        # auto open appointment
+        $Param{AppointmentID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
+            Param => 'AppointmentID',
+        ) // undef;
     }
 
     # show no calendar found message

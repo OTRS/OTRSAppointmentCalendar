@@ -66,6 +66,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
+     * @param {Integer} Params.AppointmentID - Auto open appointment edit screen with specified appointment.
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -337,6 +338,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 AppointmentDays($DatepickerObj, Year, Month, Params);
             }
         });
+
+        // Auto open appointment edit screen
+        if (Params.AppointmentID) {
+            OpenEditDialog(Params, { CalEvent: { id: Params.AppointmentID } });
+        }
 
         // Check each 5 seconds
         setInterval(function () {

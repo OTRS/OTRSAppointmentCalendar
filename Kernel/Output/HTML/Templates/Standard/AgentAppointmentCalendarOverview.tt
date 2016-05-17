@@ -181,6 +181,7 @@ Core.Agent.AppointmentCalendar.Init({
         ListAction: [% Data.ListAction | JSON %],
         DaysSubacton: [% Data.DaysSubaction | JSON %]
     },
+    AppointmentID: [% Data.AppointmentID | JSON %]
 });
 
 var EventSources = {
