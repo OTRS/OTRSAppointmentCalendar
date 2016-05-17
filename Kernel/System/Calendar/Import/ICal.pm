@@ -113,8 +113,7 @@ sub Import {
 
         # get uid
         if (
-            $Param{UpdateExisting}
-            && IsArrayRefWithData( $Properties->{'uid'} )
+            IsArrayRefWithData( $Properties->{'uid'} )
             && ref $Properties->{'uid'}->[0] eq 'Data::ICal::Property'
             && $Properties->{'uid'}->[0]->{'value'}
             )
@@ -385,11 +384,14 @@ sub Import {
             UniqueID => $Parameters{UniqueID},
         );
 
-        # check if Appointment match currect Calendar
-        if ( $Appointment{CalendarID} != $Param{CalendarID} ) {
+        # check if old Appointment should be updated
+        if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
 
             # create new appointment (don't update Appointment in different Calendar)
+            delete $Parameters{UniqueID}
+                if %Appointment;    # use original UniqueID (from ics) instead of generating new one
             %Appointment = ();
+
         }
 
         if ( %Appointment && $Appointment{AppointmentID} ) {

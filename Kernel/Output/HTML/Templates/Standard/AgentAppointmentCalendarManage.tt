@@ -54,26 +54,11 @@
                 <h2>[% Translate("Calendar Import") | html %]</h2>
             </div>
             <div class="Content">
-                <p class="FieldExplanation">
-                    [% Translate("Here you can upload a file to import calendar to your system. The file needs to be in .ics format.") | html %]
-                </p>
                 <ul class="ActionList">
                     <li>
-                        <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
-                            <input type="hidden" name="Action" value="[% Env("Action") %]"/>
-                            <input type="hidden" name="Subaction" value="Import"/>
-                            <input type="hidden" name="FormID" value="UploadForm"/>
-                            <input name="FileUpload" id="FileUpload" type="file" size="18" class="Fixed W100pc Validate_Required [% Data.FileUploadInvalid | html %]"/>
-                            <div id="FileUploadError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
-                            <div id="FileUploadServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
-                            <fieldset class="Separated">
-                                <input type="checkbox" value="1" name="UpdateExistingCalendar" id="UpdateExistingCalendar">
-                                <label for="UpdateExistingCalendar">[% Translate("Update existing Calendar?") | html %]</label>
-                            </fieldset>
-                            <button class="CallForAction Fullsize Center" type="submit" value="[% Translate("Upload calendar") | html %]">
-                                <span><i class="fa fa-upload"></i>[% Translate("Import calendar") | html %]</span>
-                            </button>
-                        </form>
+                        <a id="Import" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarImport" class="CallForAction Fullsize Center">
+                            <span><i class="fa fa-plus-square"></i>[% Translate("Import Calendar") | html %]</span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -120,9 +105,6 @@
             </div>
 
             <div class="Content">
-[% RenderBlockStart("ImportSuccess") %]
-                <p>[% Translate("Calendar imported successfully (%s).", Data.CalendarName ) | html %]</p>
-[% RenderBlockEnd("ImportSuccess") %]
 [% RenderBlockStart("Overview") %]
                 <table class="DataTable" id="User">
                     <thead>

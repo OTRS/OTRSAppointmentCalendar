@@ -313,8 +313,9 @@ sub CalendarGet {
 get calendar list.
 
     my @Result = $CalendarObject->CalendarList(
-        UserID  => 4,               # (optional) For permission check
-        ValidID => 1,               # (optional) Default 0.
+        UserID     => 4,            # (optional) For permission check
+        Permission => 'rw',         # (optional) Required permission (default ro)
+        ValidID    => 1,            # (optional) Default 0.
                                     # 0 - All states
                                     # 1 - All valid
                                     # 2 - All invalid
