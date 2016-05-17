@@ -39,9 +39,10 @@
         <File Permission="640" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarImport.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentResourceOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamList.pm"/>
@@ -50,10 +51,11 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarImport.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentResourceOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeam.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeamUser.tt"/>

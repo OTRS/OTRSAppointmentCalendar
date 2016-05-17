@@ -208,6 +208,18 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="Frontend::Module###AgentAppointmentCalendarImport" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Description Translatable="1">Import Calendar screen.</Description>
+                <Title Translatable="1">Import Calendar</Title>
+                <NavBarName>Calendar</NavBarName>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::CalendarColors" Required="0" Valid="1">
         <Description Translatable="1">List of colors in hexadecimal RGB which will be allocated to different user calendars. Make sure the colors are dark enough so white text can be overlayed on them. If the number of calendars exceeds the number of colors, the list will be reused from the start.</Description>
         <Group>OTRSAppointmentCalendar</Group>

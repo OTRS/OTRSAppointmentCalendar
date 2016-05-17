@@ -1,0 +1,95 @@
+# --
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
+
+    <h1 class="Header">[% Translate("Calendar Import") | html %]</h1>
+
+    <div class="SidebarColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Actions") | html %]</h2>
+            </div>
+            <div class="Content">
+
+                <ul class="ActionList">
+                    <li>
+                        <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
+                            <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Description") | html %]</h2>
+            </div>
+            <div class="Content">
+                <p class="FieldExplanation">
+                    [% Translate("Uploaded file must be in valid iCal format(.ics).") | html %]
+                </p>
+                <p class="FieldExplanation">
+                    [% Translate("If desired Calendar is not listed here, please make sure that you have at least 'create' permissions.") | html %]
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ContentColumn">
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Data.Title | html %]</h2>
+            </div>
+
+            <div class="Content">
+[% RenderBlockStart("Import") %]
+                <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
+                    <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+                    <input type="hidden" name="Subaction" value="Import"/>
+                    <input type="hidden" name="FormID" value="[% Data.FormID | html %]"/>
+                    <fieldset class="TableLike">
+                        <label for="FileUpload" class="Mandatory"><span class="Marker">*</span>[% Translate("Upload") | html %]:</label>
+                        <div class="Field">
+                            <input name="FileUpload" id="FileUpload" type="file" size="18" class="Fixed W100pc Validate_Required [% Data.FileUploadInvalid | html %]"/>
+                            <div id="FileUploadError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="FileUploadServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+
+                        <label for="CalendarID" class="Mandatory"><span class="Marker">*</span>[% Translate("Calendar") | html %]:</label>
+                        <div class="Field">
+                            [% Data.Calendar %]
+                            <div id="CalendarIDError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="CalendarIDServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+
+                        <label for="UpdateExistingCalendar">[% Translate("Update existing Calendar?") | html %]</label>
+                        <div class="Field">
+                            <input type="checkbox" value="1" name="UpdateExistingCalendar" id="UpdateExistingCalendar">
+                        </div>
+                        <div class="Field SpacingTop">
+                            <button class="Primary CallForAction" type="submit" value="[% Translate("Upload calendar") | html %]">
+                                <span><i class="fa fa-upload"></i>[% Translate("Import calendar") | html %]</span>
+                            </button>
+                            [% Translate("or") | html %]
+                            <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" title="[% Translate("Cancel") | html %]">
+                                <span>[% Translate("Cancel") | html %]</span>
+                            </a>
+                        </div>
+                        <div class="Clear"></div>
+                    </fieldset>
+                </form>
+[% RenderBlockEnd("Import") %]
+[% RenderBlockStart("ImportSuccess") %]
+                <p>[% Translate("Calendar imported successfully (%s).", Data.CalendarName ) | html %]</p>
+[% RenderBlockEnd("ImportSuccess") %]
+
+            </div>
+        </div>
+    </div>
+</div>
