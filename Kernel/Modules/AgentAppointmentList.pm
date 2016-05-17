@@ -88,7 +88,7 @@ sub Run {
             for my $Appointment (@Appointments) {
 
                 # calculate local times
-                $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? int $Appointment->{TimezoneID} : 0;
+                $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? $Appointment->{TimezoneID} : 0;
 
                 my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment->{StartTime},
