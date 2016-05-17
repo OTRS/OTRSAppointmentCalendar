@@ -270,19 +270,23 @@ sub _GetPaddedOffset {
 
     my $Result;
 
-    # make sure it's an integer
-    $Param{Offset} = int $Param{Offset};
+    # get integer and remainder parts
+    my ( $OffsetInt, $OffsetRem ) = ( int $Param{Offset}, $Param{Offset} - int $Param{Offset} );
 
     # get sign
-    if ( $Param{Offset} > 0 ) {
+    if ( $Param{Offset} >= 0 ) {
         $Result = '+';
     }
     else {
         $Result = '-';
     }
 
+    # prepare for padding
+    $OffsetInt = abs($OffsetInt);
+    $OffsetRem = abs( int( $OffsetRem * 60 ) );
+
     # pad the string
-    $Result .= sprintf( '%02d00', abs $Param{Offset} );
+    $Result .= sprintf( '%02d%02d', $OffsetInt, $OffsetRem );
 
     return $Result;
 }
