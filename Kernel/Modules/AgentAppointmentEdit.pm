@@ -128,7 +128,7 @@ sub Run {
                 UserID     => $Self->{UserID},
             );
 
-            $Appointment{TimezoneID} = $Appointment{TimezoneID} ? int $Appointment{TimezoneID} : 0;
+            $Appointment{TimezoneID} = $Appointment{TimezoneID} ? $Appointment{TimezoneID} : 0;
 
             # get start time components
             my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
