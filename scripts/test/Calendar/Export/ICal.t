@@ -164,8 +164,6 @@ $Self->True(
     'Export() - Calendar exported to iCal format',
 );
 
-$Kernel::OM->Get('Kernel::System::Log')->Dumper($ICalString);
-
 # create a test calendar for import
 my $ImportCalendarName = 'Import ' . $Helper->GetRandomID();
 my %ImportCalendar     = $CalendarObject->CalendarCreate(
