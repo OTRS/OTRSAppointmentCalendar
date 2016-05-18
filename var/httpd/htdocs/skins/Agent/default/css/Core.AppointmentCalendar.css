@@ -24,6 +24,15 @@
         margin-bottom: 5px;
     }
 
+    .CalendarSwitch label {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 220px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
     #CalendarList .CalendarSwitch:last-child {
         margin-bottom: 0;
     }
