@@ -98,8 +98,22 @@ sub Import {
     }
 
     # needed objects
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $Calendar = Data::ICal->new( data => $Param{ICal} );
+    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $Calendar             = Data::ICal->new( data => $Param{ICal} );
+
+    # calculate until time which will be used if there is any recurring Appointment without end time defined.
+    my $CurrentSystemTime = $CalendarHelperObject->CurrentSystemTime();
+    my $RecurringMonthsLimit
+        = $Kernel::OM->Get('Kernel::Config')->Get("AppointmentCalendar::Import::RecurringMonthsLimit")
+        || '12';    # default 12 months
+    my $UntilLimitedSystem = $CalendarHelperObject->AddPeriod(
+        Time   => $CurrentSystemTime,
+        Months => $RecurringMonthsLimit,
+    );
+    my $UntilLimitedTimestamp = $CalendarHelperObject->TimestampGet(
+        SystemTime => $UntilLimitedSystem,
+    );
 
     my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
@@ -348,10 +362,8 @@ sub Import {
                 $Parameters{RecurrenceCount} = $Count;
             }
             else {
-
-                # TODO: update this
                 # default value
-                $Parameters{RecurrenceUntil} = "2017-01-01 00:00:00";
+                $Parameters{RecurrenceUntil} = $UntilLimitedTimestamp;
             }
         }
 
