@@ -21,12 +21,7 @@
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
             <div class="Field">
-# check if permissions below move_into
-[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %]
-                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required" disabled="disabled" />
-[% ELSE %]
-                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required" />
-[% END %]
+                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
                 <div id="TitleError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
@@ -37,20 +32,12 @@
             <div class="Clear"></div>
             <label for="Description">[% Translate("Description") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %]
-                <textarea id="Description" name="Description" class="W75pc" rows="4" disabled="disabled" >[% Data.Description | html %]</textarea>
-[% ELSE %]
-                <textarea id="Description" name="Description" class="W75pc" rows="4">[% Data.Description | html %]</textarea>
-[% END %]
+                <textarea id="Description" name="Description" class="W75pc" rows="4"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %]>[% Data.Description | html %]</textarea>
             </div>
             <div class="Clear"></div>
             <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %]
-                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" disabled="disabled" />
-[% ELSE %]
-                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
-[% END %]
+                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
             </div>
             <div class="Clear"></div>
             <label for="CalendarID" class="Mandatory"><span class="Marker">*</span> [% Translate("Calendar") | html %]:</label>
@@ -94,11 +81,7 @@
             <div class="Clear"></div>
             <label for="AllDay">[% Translate("All-day") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %]
-                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] disabled="disabled" />
-[% ELSE %]
-                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
-[% END %]
+                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %][% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
             </div>
             <div class="Clear"></div>
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
@@ -121,10 +104,8 @@
 [% FOREACH Key IN Data.PluginData.keys %]
             <label for="Plugin_[% Key | html %]">[% Translate(Data.PluginData.$Key.Name) | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %]
-                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="PluginField W75pc" disabled="disabled" />
-[% ELSE %]
-                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="PluginField W75pc" />
+                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="PluginField W75pc"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+[% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
                 <a class="RemoveButton" data-plugin="Plugin_[% Key | html %]" href="#" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
 [% END %]
             </div>
