@@ -77,7 +77,10 @@ import calendar in iCalendar format
                 ...
             ',
         UserID         => 1,                      # (required) UserID
-        UpdateExisting => 0,                      # (optional)
+        UpdateExisting => 0,                      # (optional) Delete existing Appointments within same Calendar if UniqueID matches
+        UntilLimit     => '2017-01-01 00:00:00',  # (optional) If provided, system will use this value for limiting recurring Appointments without defined end date
+                                                  # instead of AppointmentCalendar::Import::RecurringMonthsLimit to do the calculation
+                                                  # NOTE: PLEASE USE THIS PARAMETER FOR UNIT TESTS ONLY
     );
 returns 1 if successful
 
@@ -102,18 +105,24 @@ sub Import {
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
     my $Calendar             = Data::ICal->new( data => $Param{ICal} );
 
-    # calculate until time which will be used if there is any recurring Appointment without end time defined.
-    my $CurrentSystemTime = $CalendarHelperObject->CurrentSystemTime();
-    my $RecurringMonthsLimit
-        = $Kernel::OM->Get('Kernel::Config')->Get("AppointmentCalendar::Import::RecurringMonthsLimit")
-        || '12';    # default 12 months
-    my $UntilLimitedSystem = $CalendarHelperObject->AddPeriod(
-        Time   => $CurrentSystemTime,
-        Months => $RecurringMonthsLimit,
-    );
-    my $UntilLimitedTimestamp = $CalendarHelperObject->TimestampGet(
-        SystemTime => $UntilLimitedSystem,
-    );
+    my $UntilLimitedTimestamp = $Param{UntilLimit} || '';
+
+    if ( !$UntilLimitedTimestamp ) {
+
+        # calculate until time which will be used if there is any recurring Appointment without end time defined.
+        my $CurrentSystemTime = $CalendarHelperObject->CurrentSystemTime();
+        my $RecurringMonthsLimit
+            = $Kernel::OM->Get('Kernel::Config')->Get("AppointmentCalendar::Import::RecurringMonthsLimit")
+            || '12';    # default 12 months
+
+        my $UntilLimitedSystem = $CalendarHelperObject->AddPeriod(
+            Time   => $CurrentSystemTime,
+            Months => $RecurringMonthsLimit,
+        );
+        $UntilLimitedTimestamp = $CalendarHelperObject->TimestampGet(
+            SystemTime => $UntilLimitedSystem,
+        );
+    }
 
     my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
