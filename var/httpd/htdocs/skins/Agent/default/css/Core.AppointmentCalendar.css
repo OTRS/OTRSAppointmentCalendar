@@ -98,6 +98,10 @@
         margin-bottom: 15px;
     }
 
+    .AppointmentTooltip > fieldset:last-child {
+        margin-bottom: 5px;
+    }
+
     .AppointmentTooltip > fieldset > label {
         line-height: 1.2em;
         color: #929292;
@@ -112,16 +116,18 @@
 
     .AppointmentTooltip > fieldset > .Value {
         float: right;
-        line-height: 1.2em;
-        padding-top: 0.3em;
+        line-height: 1.4em;
+        padding-top: 0.2em;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         width: 250px;
+        max-height: 4.2em;
     }
 
     .AppointmentTooltip > fieldset > .Value:empty,
-    .AppointmentTooltip > fieldset > .Value:empty + label {
+    .AppointmentTooltip > fieldset > .Value:empty + label,
+    .AppointmentTooltip > fieldset > .Value:empty ~ div.Clear {
         display: none;
     }
 

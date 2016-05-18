@@ -284,19 +284,26 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     // Re-calculate top position if needed
                     LastYPosition = PosY + $TooltipObj.height();
                     if (LastYPosition > DocumentVisibleTop) {
-                        PosY = PosY - (LastYPosition - DocumentVisibleTop) - 10;
+                        PosY = PosY - (LastYPosition - DocumentVisibleTop) - 15;
                         $TooltipObj.css('top', PosY + 'px');
                     }
 
                     // Re-calculate left position if needed
                     LastXPosition = PosX + $TooltipObj.width();
                     if (LastXPosition > DocumentVisibleLeft) {
-                        PosX = PosX - (LastXPosition - DocumentVisibleLeft) - 10;
+                        PosX = PosX - (LastXPosition - DocumentVisibleLeft) - 15;
                         $TooltipObj.css('left', PosX + 'px');
                     }
 
                     // Show the tooltip
                     $TooltipObj.fadeIn("fast");
+
+                    // Collapse fieldset legend elements
+                    $TooltipObj.find('fieldset').each(function (Index, Fieldset) {
+                        if ($(Fieldset).find(':visible').length <= 2) {
+                            $(Fieldset).hide();
+                        }
+                    });
                 }
             },
             eventMouseout: function() {
@@ -494,14 +501,18 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
 
             // Default JSON values
-            if (ReplaceValue === null) {
+            if (ReplaceValue === null || ReplaceValue === false) {
                 ReplaceValue = '';
-            } else if (ReplaceValue === false) {
-                ReplaceValue = Core.Config.Get('AppointmentCalendarTranslationsNo');
             } else if (ReplaceValue === true) {
                 ReplaceValue = Core.Config.Get('AppointmentCalendarTranslationsYes');
             }
 
+            // Replace newlines
+            if (ReplaceValue.replace) {
+                ReplaceValue = ReplaceValue.replace(/\\n/g, '<br>');
+            }
+
+            // Replace placeholders
             ReplaceHTML = ReplaceHTML.replace(SearchPlaceholder, ReplaceValue);
         }
 

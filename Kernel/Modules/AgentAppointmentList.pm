@@ -51,6 +51,7 @@ sub Run {
     my $LayoutObject      = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
@@ -149,7 +150,14 @@ sub Run {
                             );
                             push @ResourceNames, $User{UserFullname};
                         }
-                        $Appointment->{ResourceNames} = join( '; ', @ResourceNames );
+
+                        # truncate more than three elements
+                        if ( scalar @ResourceNames > 3 ) {
+                            splice @ResourceNames, 3;
+                            $ResourceNames[2] .= '...';
+                        }
+
+                        $Appointment->{ResourceNames} = join( '\n', @ResourceNames );
                     }
                 }
             }
