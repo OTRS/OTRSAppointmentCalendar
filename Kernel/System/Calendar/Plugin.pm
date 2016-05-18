@@ -69,8 +69,12 @@ sub new {
             $MainObject->Die("Can't load plugin module $GenericModule! $@");
         }
 
-        $Self->{Plugins}->{$PluginKey}->{Name} = $PluginConfig->{$PluginKey}->{Name} // $GenericModule;
+        $Self->{Plugins}->{$PluginKey}->{PluginName} = $PluginConfig->{$PluginKey}->{Name} // $GenericModule;
         $Self->{Plugins}->{$PluginKey}->{PluginModule} = $GenericModule->new( %{$Self} );
+
+        my $PluginURL = $PluginConfig->{$PluginKey}->{URL};
+        $PluginURL =~ s{<OTRS_CONFIG_(.+?)>}{$Kernel::OM->Get('Kernel::Config')->Get($1)}egx;
+        $Self->{Plugins}->{$PluginKey}->{PluginURL} = $PluginURL;
     }
 
     return $Self;
@@ -87,7 +91,12 @@ returns the hash of registered plugins
 sub PluginList {
     my ( $Self, %Param ) = @_;
 
-    my %PluginList = map { $_ => $Self->{Plugins}->{$_}->{Name} } keys %{ $Self->{Plugins} };
+    my %PluginList = map {
+        $_ => {
+            PluginName => $Self->{Plugins}->{$_}->{PluginName},
+            PluginURL  => $Self->{Plugins}->{$_}->{PluginURL},
+            },
+    } keys %{ $Self->{Plugins} };
 
     return \%PluginList;
 }
@@ -150,9 +159,11 @@ sub PluginLinkList {
         }
     }
 
-    my $LinkList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkList(
+    $Param{PluginURL} = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginURL},
+
+        my $LinkList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkList(
         %Param,
-    );
+        );
 
     return $LinkList;
 }

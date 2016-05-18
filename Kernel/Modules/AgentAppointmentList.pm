@@ -162,6 +162,28 @@ sub Run {
                         $Appointment->{ResourceNames} = join( '\n', @ResourceNames );
                     }
                 }
+
+                # include plugin (link) data
+                my $PluginList = $PluginObject->PluginList();
+                for my $PluginKey ( sort keys %{$PluginList} ) {
+                    my $LinkList = $PluginObject->PluginLinkList(
+                        AppointmentID => $Appointment->{AppointmentID},
+                        PluginKey     => $PluginKey,
+                        UserID        => $Self->{UserID},
+                    );
+                    my @LinkArray;
+                    for my $LinkID ( sort keys %{$LinkList} ) {
+                        push @LinkArray, $LinkList->{$LinkID}->{LinkName};
+                    }
+
+                    # truncate more than three elements
+                    if ( scalar @LinkArray > 3 ) {
+                        splice @LinkArray, 3;
+                        $LinkArray[2] .= '...';
+                    }
+
+                    $Appointment->{PluginData}->{$PluginKey} = join( '\n', @LinkArray );
+                }
             }
 
             # build JSON output

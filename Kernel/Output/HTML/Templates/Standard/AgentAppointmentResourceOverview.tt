@@ -267,7 +267,8 @@ var EventSources = {
                 teamId: AppointmentData.TeamID,
                 teamName: AppointmentData.TeamName,
                 resourceIds: AppointmentData.ResourceID,
-                resourceNames: AppointmentData.ResourceNames
+                resourceNames: AppointmentData.ResourceNames,
+                pluginData: AppointmentData.PluginData
             };
         }
     }
@@ -333,6 +334,16 @@ $('#TeamID').on('change', function() {
             <label>[% Translate("Repeat") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
+[% IF Data.PluginList %]
+        <fieldset>
+            <legend><span>[% Translate("Link") | html %]</span></legend>
+[% FOREACH PluginKey IN Data.PluginList.keys %]
+            <p class="Value">%[% PluginKey %]%</p>
+            <label>[% Translate(Data.PluginList.$PluginKey.PluginName) | html %]:</label>
+            <div class="Clear"></div>
+[% END %]
+        </fieldset>
+[% END %]
     </div>
 
 </div>

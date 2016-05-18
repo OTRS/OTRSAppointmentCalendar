@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::System::Calendar::Plugin::TicketNumber;
+package Kernel::System::Calendar::Plugin::Ticket;
 
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::Calendar::Plugin::TicketNumber - TicketNumber plugin
+Kernel::System::Calendar::Plugin::Ticket - Ticket plugin
 
 =head1 SYNOPSIS
 
@@ -39,7 +39,7 @@ create an object. Do not use it directly, instead use:
 
     use Kernel::System::ObjectManager;
     local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $TicketNumberObject = $Kernel::OM->Get('Kernel::System::Calendar::Plugin::TicketNumber');
+    my $TicketPluginObject = $Kernel::OM->Get('Kernel::System::Calendar::Plugin::Ticket');
 
 =cut
 
@@ -57,7 +57,7 @@ sub new {
 
 adds a link from an appointment to the ticket
 
-    my $Success = $TicketNumberObject->LinkAdd(
+    my $Success = $TicketPluginObject->LinkAdd(
         AppointmentID => 123,
         PluginData    => $TicketID,
         UserID        => 1,
@@ -79,17 +79,18 @@ sub LinkAdd {
         }
     }
 
-    # get ticket id
-    my $TicketID = $Kernel::OM->Get('Kernel::System::Ticket')->TicketCheckNumber(
-        Tn => $Param{PluginData},
+    # check ticket id
+    my %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+        TicketID => $Param{PluginData},
+        UserID   => $Param{UserID},
     );
-    return if !$TicketID;
+    return if !%Ticket;
 
     my $Success = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkAdd(
         SourceObject => 'Appointment',
         SourceKey    => $Param{AppointmentID},
         TargetObject => 'Ticket',
-        TargetKey    => $TicketID,
+        TargetKey    => $Param{PluginData},
         Type         => 'Normal',
         State        => 'Valid',
         UserID       => $Param{UserID},
@@ -102,7 +103,7 @@ sub LinkAdd {
 
 returns a hash of linked tickets to an appointment
 
-    my $Success = $TicketNumberObject->LinkList(
+    my $Success = $TicketPluginObject->LinkList(
         AppointmentID => 123,
         UserID        => 1,
     );
@@ -113,7 +114,7 @@ sub LinkList {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID UserID)) {
+    for (qw(AppointmentID UserID PluginURL)) {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -131,16 +132,22 @@ sub LinkList {
         UserID  => $Param{UserID},
     );
 
-    my %Result = map { $_ => $LinkKeyList{$_}->{TicketNumber} } keys %LinkKeyList;
+    my %Result = map {
+        $_ => {
+            LinkID   => $LinkKeyList{$_}->{TicketID},
+            LinkName => $LinkKeyList{$_}->{TicketNumber} . ' ' . $LinkKeyList{$_}->{Title},
+            LinkURL  => sprintf( $Param{PluginURL}, $LinkKeyList{$_}->{TicketID} ),
+            },
+    } keys %LinkKeyList;
 
     return \%Result;
 }
 
 =item Search()
 
-search for supplied ticket number and return a hash of found tickets and their titles
+search for supplied ticket number or title and return a hash of found tickets
 
-    my $ResultList = $TicketNumberObject->Search(
+    my $ResultList = $TicketPluginObject->Search(
         Search => '**',
         UserID => 1,
     );
@@ -164,7 +171,7 @@ sub Search {
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    # search the tickets
+    # search the tickets by ticket number
     my @TicketIDs = $TicketObject->TicketSearch(
         TicketNumber => $Param{Search},
         Limit        => 100,
@@ -172,6 +179,17 @@ sub Search {
         ArchiveFlags => ['n'],
         UserID       => $Param{UserID},
     );
+
+    # try the title search if no results were found
+    if ( !@TicketIDs ) {
+        @TicketIDs = $TicketObject->TicketSearch(
+            Title        => '%' . $Param{Search},
+            Limit        => 100,
+            Result       => 'ARRAY',
+            ArchiveFlags => ['n'],
+            UserID       => $Param{UserID},
+        );
+    }
 
     my %ResultList;
 
@@ -191,7 +209,7 @@ sub Search {
         next TICKET if !%Ticket;
 
         # generate the ticket information string
-        $ResultList{ $Ticket{TicketNumber} } = $Ticket{TicketNumber} . ' ' . $Ticket{Title};
+        $ResultList{ $Ticket{TicketID} } = $Ticket{TicketNumber} . ' ' . $Ticket{Title};
     }
 
     return \%ResultList;

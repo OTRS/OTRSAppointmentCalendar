@@ -458,36 +458,29 @@ sub Run {
         );
 
         # get plugin list
-        my $PluginList = $PluginObject->PluginList();
+        $Param{PluginList} = $PluginObject->PluginList();
 
         if ( $GetParam{AppointmentID} ) {
 
-            for my $PluginKey ( sort keys %{$PluginList} ) {
+            for my $PluginKey ( sort keys %{ $Param{PluginList} } ) {
                 my $LinkList = $PluginObject->PluginLinkList(
                     AppointmentID => $GetParam{AppointmentID},
                     PluginKey     => $PluginKey,
                     UserID        => $Self->{UserID},
                 );
+                my @LinkArray;
 
-                # only one link per plugin supported
-                LINK:
+                $Param{PluginData}->{$PluginKey} = [];
                 for my $LinkID ( sort keys %{$LinkList} ) {
-                    $Param{PluginData}->{$PluginKey}->{Name}  = $PluginList->{$PluginKey};
-                    $Param{PluginData}->{$PluginKey}->{Value} = $LinkList->{$LinkID};
-
-                    delete $PluginList->{$PluginKey};
-
-                    last LINK;
+                    push @{ $Param{PluginData}->{$PluginKey} }, $LinkList->{$LinkID};
+                    push @LinkArray, $LinkList->{$LinkID}->{LinkID};
                 }
+
+                $Param{PluginList}->{$PluginKey}->{LinkList} = $LayoutObject->JSONEncode(
+                    Data => \@LinkArray,
+                );
             }
         }
-
-        # plugin list string
-        $Param{PluginListStrg} = $LayoutObject->BuildSelection(
-            Data  => $PluginList,
-            Name  => 'PluginList',
-            Class => 'Modernize',
-        );
 
         # html mask output
         $LayoutObject->Block(
@@ -763,22 +756,27 @@ sub Run {
             my @PluginParams = grep { $_ =~ /^Plugin_/ } keys %GetParam;
 
             for my $PluginParam (@PluginParams) {
+                my $PluginData = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                    Data => $GetParam{$PluginParam},
+                );
                 my $PluginKey = $PluginParam;
                 $PluginKey =~ s/^Plugin_//;
 
                 # execute plugin link method
-                if ( $GetParam{$PluginParam} ) {
-                    my $Link = $PluginObject->PluginLinkAdd(
-                        AppointmentID => $AppointmentID,
-                        PluginKey     => $PluginKey,
-                        PluginData    => $GetParam{$PluginParam},
-                        UserID        => $Self->{UserID},
-                    );
+                if ( IsArrayRefWithData($PluginData) ) {
+                    for my $LinkID ( @{$PluginData} ) {
+                        my $Link = $PluginObject->PluginLinkAdd(
+                            AppointmentID => $AppointmentID,
+                            PluginKey     => $PluginKey,
+                            PluginData    => $LinkID,
+                            UserID        => $Self->{UserID},
+                        );
 
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message  => Translatable('Link could not be created!'),
-                    ) if !$Link;
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => Translatable('Link could not be created!'),
+                        ) if !$Link;
+                    }
                 }
             }
         }

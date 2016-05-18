@@ -498,6 +498,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 } else {
                     ReplaceValue = $.fullCalendar.moment(ReplaceValue).format('YYYY-MM-DD HH:mm');
                 }
+            } else if (Placeholder === 'pluginData') {
+                $.each(CalEvent.pluginData, function (Key, Value) {
+                    Value = Value.replace(/\\n/g, '<br>');
+                    ReplaceHTML = ReplaceHTML.replace('%' + Key + '%', Value);
+                });
+                continue;
             }
 
             // Default JSON values
@@ -870,136 +876,120 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     /**
      * @name PluginInit
      * @memberof Core.Agent.AppointmentCalendar
-     * @param {jQueryObject} $PluginListObj - field with plugin list (dropdown).
-     * @param {jQueryObject} $AddObj - button for adding plugin fields.
+     * @param {jQueryObject} $PluginFields - fields with different plugin searches.
      * @description
      *      This method initializes plugin fields behavior.
      */
-    TargetNS.PluginInit = function ($PluginListObj, $AddObj) {
-        $AddObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-            var PluginKey = $PluginListObj.val(),
-                PluginName = $PluginListObj.find('option:selected').text(),
-                PluginID,
-                $LabelObj,
-                $ContainerObj,
-                $RemoveObj;
-
-            if (PluginKey) {
-                PluginID = 'Plugin_' + Core.App.EscapeSelector(PluginKey);
-                $LabelObj = $('<label />').text(PluginName + ':')
-                    .prop('for', PluginID)
-                    .insertBefore($('#PluginListLabel'));
-
-                $ContainerObj = $('<div />').addClass('Field')
-                    .text(' ')
-                    .insertAfter($LabelObj);
-
-                $('<input />').prop('id', PluginID)
-                    .prop('name', PluginID)
-                    .prop('type', 'text')
-                    .addClass('PluginField W75pc')
-                    .prependTo($ContainerObj);
-
-                $RemoveObj = $('<a />').addClass('RemoveButton')
-                    .data('plugin', PluginID)
-                    .prop('href', '#')
-                    .prop('title', 'Remove entry')
-                    .appendTo($ContainerObj);
-
-                $('<i />').addClass('fa fa-minus-square-o')
-                    .appendTo($RemoveObj);
-
-                $('<span />').addClass('InvisibleText')
-                    .text('Remove')
-                    .appendTo($RemoveObj);
-
-                $('<div />').addClass('Clear')
-                    .insertAfter($ContainerObj);
-
-                $PluginListObj.find('option:selected').remove();
-                $PluginListObj.trigger('redraw.InputField');
-
-                InitRemoveButtons();
-                InitAutocomplete();
-            }
-
-            return false;
-        });
+    TargetNS.PluginInit = function ($PluginFields) {
 
         function InitRemoveButtons() {
             $('.RemoveButton').off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-                var PluginID = $(this).data('plugin'),
-                    PluginKey = PluginID.replace(/^Plugin_/, ''),
-                    $ContainerObj = $(this).parent('div.Field'),
-                    $LabelObj = $ContainerObj.prev('label'),
-                    PluginName = $LabelObj.text().replace(/:$/, '');
+                var $RemoveObj = $(this),
+                    PluginKey = $RemoveObj.data('pluginKey'),
+                    $PluginDataObj = $('#Plugin_' + Core.App.EscapeSelector(PluginKey)),
+                    PluginData = JSON.parse($PluginDataObj.val()),
+                    LinkID = $RemoveObj.data('linkId').toString(),
+                    $Parent = $RemoveObj.parent();
 
-                $LabelObj.remove();
-                $ContainerObj.remove();
+                PluginData.splice(PluginData.indexOf(LinkID), 1);
+                $PluginDataObj.val(JSON.stringify(PluginData));
 
-                $('<option />').prop('value', PluginKey)
-                    .text(PluginName)
-                    .appendTo($PluginListObj);
-
-                $PluginListObj.trigger('redraw.InputField');
+                $Parent.remove();
 
                 return false;
             });
         }
 
-        function InitAutocomplete() {
-            $('.PluginField').each(function () {
-                var $Element = $(this),
-                    PluginID = $Element.attr('id');
+        function AddLink(PluginKey, PluginURL, LinkID, LinkName) {
+            var $PluginContainerObj = $('#PluginContainer_' + Core.App.EscapeSelector(PluginKey)),
+                $PluginDataObj = $('#Plugin_' + Core.App.EscapeSelector(PluginKey)),
+                PluginData = JSON.parse($PluginDataObj.val()),
+                $ExistingLinks = $PluginContainerObj.find('.Link_' + Core.App.EscapeSelector(LinkID)),
+                $LinkContainerObj = $('<div />'),
+                $URLObj = $('<a />'),
+                $RemoveObj = $('<a />'),
+                LinkURL = PluginURL.replace('%s', LinkID);
 
-                // Skip already initialized fields
-                if ($Element.hasClass('ui-autocomplete-input')) {
-                    return true;
-                }
+            if ($ExistingLinks.length > 0) {
+                return;
+            }
 
-                $Element.autocomplete({
-                    minLength: 2,
-                    delay: 500,
-                    source: function (Request, Response) {
-                        var URL = Core.Config.Get('CGIHandle'),
-                            CurrentAJAXNumber = ++AJAXCounter,
-                            Data = {
-                                ChallengeToken: $("#ChallengeToken").val(),
-                                Action: 'AgentAppointmentPluginSearch',
-                                PluginKey: PluginID.replace(/^Plugin_/, ''),
-                                Term: Request.term + '*',
-                                MaxResults: 20
-                            };
+            PluginData.push(LinkID);
+            $PluginDataObj.val(JSON.stringify(PluginData));
 
-                        Core.AJAX.FunctionCall(URL, Data, function (Result) {
-                            var Data = [];
+            $LinkContainerObj.addClass('Link_' + Core.App.EscapeSelector(LinkID));
 
-                            // Check if the result is from the latest ajax request
-                            if (AJAXCounter !== CurrentAJAXNumber) {
-                                return false;
-                            }
+            $URLObj.attr('href', LinkURL)
+                .attr('target', '_blank')
+                .text(LinkName)
+                .appendTo($LinkContainerObj);
 
-                            $.each(Result, function () {
-                                Data.push({
-                                    label: this.Value,
-                                    key:  this.Key,
-                                    value: this.Value
-                                });
-                            });
-                            Response(Data);
-                        });
-                    },
-                    select: function (Event, UI) {
-                        Event.stopPropagation();
-                        $Element.val(UI.item.key);
-                        return false;
-                    }
-                });
-            });
+            $RemoveObj.attr('href', '#')
+                .addClass('RemoveButton')
+                .data('pluginKey', PluginKey)
+                .data('linkId', LinkID)
+                .append(
+                    $('<i />').addClass('fa fa-minus-square-o')
+                )
+                .appendTo($LinkContainerObj);
+
+            $LinkContainerObj.appendTo($PluginContainerObj);
+            InitRemoveButtons();
         }
 
+        $PluginFields.each(function () {
+            var $Element = $(this),
+                PluginKey = $Element.data('pluginKey'),
+                PluginURL = $Element.data('pluginUrl');
+
+            // Skip already initialized fields
+            if ($Element.hasClass('ui-autocomplete-input')) {
+                return true;
+            }
+
+            $Element.autocomplete({
+                minLength: 2,
+                delay: 500,
+                source: function (Request, Response) {
+                    var URL = Core.Config.Get('CGIHandle'),
+                        CurrentAJAXNumber = ++AJAXCounter,
+                        Data = {
+                            ChallengeToken: $("#ChallengeToken").val(),
+                            Action: 'AgentAppointmentPluginSearch',
+                            PluginKey: PluginKey,
+                            Term: Request.term + '*',
+                            MaxResults: 20
+                        };
+
+                    Core.AJAX.FunctionCall(URL, Data, function (Result) {
+                        var Data = [];
+
+                        // Check if the result is from the latest ajax request
+                        if (AJAXCounter !== CurrentAJAXNumber) {
+                            return false;
+                        }
+
+                        $.each(Result, function () {
+                            Data.push({
+                                label: this.Value,
+                                key:  this.Key,
+                                value: this.Value
+                            });
+                        });
+                        Response(Data);
+                    });
+                },
+                select: function (Event, UI) {
+                    Event.stopPropagation();
+                    $Element.val('');
+                    AddLink(PluginKey, PluginURL, UI.item.key, UI.item.label);
+
+                    return false;
+                }
+            });
+        });
+
         InitRemoveButtons();
-        InitAutocomplete();
     }
 
     /**
