@@ -114,6 +114,12 @@ sub Run {
             UserID => $Self->{UserID},
         );
 
+        # define year boundaries
+        my ( %YearPeriodPast, %YearPeriodFuture );
+        for my $Field (qw (Start End RecurrenceUntil)) {
+            $YearPeriodPast{$Field} = $YearPeriodFuture{$Field} = 5;
+        }
+
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
             %Appointment = $AppointmentObject->AppointmentGet(
@@ -174,6 +180,23 @@ sub Run {
                     $Appointment{RecurrenceUntilYear}
                 ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $RecurrenceUntil );
             }
+
+            # recalculate year boundaries
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek )
+                = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                SystemTime => $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime(),
+                );
+            for my $Field (qw(Start End RecurrenceUntil)) {
+                if ( $Appointment{"${Field}Year"} ) {
+                    my $Diff = $Appointment{"${Field}Year"} - $Year;
+                    if ( $Diff > 0 && abs $Diff > $YearPeriodFuture{$Field} ) {
+                        $YearPeriodFuture{$Field} = abs $Diff;
+                    }
+                    elsif ( $Diff < 0 && abs $Diff > $YearPeriodPast{$Field} ) {
+                        $YearPeriodPast{$Field} = abs $Diff;
+                    }
+                }
+            }
         }
 
         # calendar selection
@@ -197,8 +220,8 @@ sub Run {
             StartMinute      => $Appointment{StartMinute} // $GetParam{StartMinute},
             Format           => 'DateInputFormatLong',
             Validate         => 1,
-            YearPeriodPast   => 5,
-            YearPeriodFuture => 5,
+            YearPeriodPast   => $YearPeriodPast{Start},
+            YearPeriodFuture => $YearPeriodFuture{Start},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -215,8 +238,8 @@ sub Run {
             EndMinute        => $Appointment{EndMinute} // $GetParam{EndMinute},
             Format           => 'DateInputFormatLong',
             Validate         => 1,
-            YearPeriodPast   => 5,
-            YearPeriodFuture => 5,
+            YearPeriodPast   => $YearPeriodPast{End},
+            YearPeriodFuture => $YearPeriodFuture{End},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -396,17 +419,21 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # get current and start time for difference
-        my $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime();
+        my $RecurrenceUntilDiffTime = 0;
+        if ( !$Appointment{RecurrenceUntil} ) {
 
-        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->Date2SystemTime(
-            Year   => $Appointment{StartYear}   // $GetParam{StartYear},
-            Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
-            Day    => $Appointment{StartDay}    // $GetParam{StartDay},
-            Hour   => $Appointment{StartHour}   // $GetParam{StartHour},
-            Minute => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Second => 0,
-        );
+            # get current and start time for difference
+            my $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime();
+            my $StartTime  = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->Date2SystemTime(
+                Year   => $Appointment{StartYear}   // $GetParam{StartYear},
+                Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
+                Day    => $Appointment{StartDay}    // $GetParam{StartDay},
+                Hour   => $Appointment{StartHour}   // $GetParam{StartHour},
+                Minute => $Appointment{StartMinute} // $GetParam{StartMinute},
+                Second => 0,
+            );
+            $RecurrenceUntilDiffTime = $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
+        }
 
         # recurrence until date string
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
@@ -414,10 +441,10 @@ sub Run {
             %GetParam,
             Prefix           => 'RecurrenceUntil',
             Format           => 'DateInputFormat',
-            DiffTime         => $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
+            DiffTime         => $RecurrenceUntilDiffTime,
             Validate         => 1,
-            YearPeriodPast   => 5,
-            YearPeriodFuture => 5,
+            YearPeriodPast   => $YearPeriodPast{RecurrenceUntil},
+            YearPeriodFuture => $YearPeriodFuture{RecurrenceUntil},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
