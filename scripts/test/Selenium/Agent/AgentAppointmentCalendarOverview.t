@@ -316,7 +316,7 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "return \$('.fc-timeline-event .fc-title').length;"
             ),
-            '3',
+            '4',
             'All third appointment occurrences visible',
         );
 
