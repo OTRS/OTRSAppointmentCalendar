@@ -119,1867 +119,2470 @@ $Self->Is(
 
 my @Result = (
     {
+        'TeamID' => undef,
+        'Title'  => 'All day',
 
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => undef,
-
-        'Recurring'  => undef,
         'ResourceID' => [
             0
         ],
-        'AllDay'      => '1',
-        'Location'    => undef,
-        'EndTime'     => '2016-04-06 00:00:00',
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-05 00:00:00',
+
+        'ParentID'    => undef,
         'Description' => 'test all day event',
-        'Title'       => 'All day'
+        'Recurring'   => undef,
+        'EndTime'     => '2016-04-06 00:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => '1',
+        'StartTime'   => '2016-04-05 00:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '0'
     },
     {
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-12 12:00:00',
-        'Location'   => 'Belgrade',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => '1',
-        'Title'       => 'Once per week',
-        'Description' => 'Only once per week',
-        'StartTime'   => '2016-04-12 11:30:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => undef,
         'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-
+        'AllDay'     => undef,
+        'StartTime'  => '2016-04-12 11:30:00',
+        'Location'   => 'Belgrade',
+        'TimezoneID' => '2',
+        'Title'      => 'Once per week',
         'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
 
-        'ParentID'   => '107',
-        'Recurring'  => undef,
         'ResourceID' => [
             0
         ],
-        'AllDay'      => undef,
+
+        'ParentID'    => undef,
+        'Recurring'   => '1',
+        'Description' => 'Only once per week',
+        'EndTime'     => '2016-04-12 12:00:00'
+    },
+    {
         'EndTime'     => '2016-04-19 12:00:00',
-        'Location'    => 'Belgrade',
-        'StartTime'   => '2016-04-19 11:30:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Only once per week',
-        'Title'       => 'Once per week'
-    },
-    {
-        'StartTime'   => '2016-04-26 11:30:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Only once per week',
-        'Title'       => 'Once per week',
         'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-26 12:00:00',
-        'Location'   => 'Belgrade',
-        'CalendarID' => $Calendar{CalendarID},
+        'Description' => 'Only once per week',
+        'ParentID'    => '413',
 
-        'ParentID' => '107',
-
-        'TeamID' => undef
-    },
-    {
-        'AllDay'     => undef,
-        'Location'   => 'Belgrade',
-        'EndTime'    => '2016-05-03 12:00:00',
-        'Recurring'  => undef,
         'ResourceID' => [
             0
         ],
-        'Description' => 'Only once per week',
-        'Title'       => 'Once per week',
-        'StartTime'   => '2016-05-03 11:30:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => '107',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'AllDay'     => undef,
-        'EndTime'    => '2016-05-10 12:00:00',
-        'Location'   => 'Belgrade',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Only once per week',
-        'Title'       => 'Once per week',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-10 11:30:00',
-        'TeamID'      => undef,
-
-        'ParentID' => '107',
-
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
+        'Title'  => 'Once per week',
         'TeamID' => undef,
 
-        'ParentID' => '107',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'EndTime'    => '2016-05-17 12:00:00',
-        'AllDay'     => undef,
+        'TimezoneID' => '2',
         'Location'   => 'Belgrade',
+        'StartTime'  => '2016-04-19 11:30:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => 'Belgrade',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-04-26 11:30:00',
+
+        'ParentID' => '413',
+        'TeamID'   => undef,
+
+        'Title'      => 'Once per week',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Only once per week',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-04-26 12:00:00'
+    },
+    {
+
+        'ParentID' => '413',
+        'TeamID'   => undef,
+        'Title'    => 'Once per week',
+
         'ResourceID' => [
             0
         ],
         'Recurring'   => undef,
         'Description' => 'Only once per week',
-        'Title'       => 'Once per week',
+        'EndTime'     => '2016-05-03 12:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => 'Belgrade',
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-05-03 11:30:00'
+    },
+    {
+
+        'ParentID' => '413',
+
+        'TeamID'     => undef,
+        'Title'      => 'Once per week',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Only once per week',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-05-10 12:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => 'Belgrade',
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-05-10 11:30:00'
+    },
+    {
+
+        'ParentID' => '413',
+        'TeamID'   => undef,
+
+        'Title'      => 'Once per week',
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => 'Only once per week',
+        'EndTime'     => '2016-05-17 12:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => 'Belgrade',
         'TimezoneID'  => '2',
         'StartTime'   => '2016-05-17 11:30:00'
     },
     {
-        'ParentID' => '107',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Once per week',
-        'Description' => 'Only once per week',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-24 11:30:00',
-        'AllDay'      => undef,
         'EndTime'     => '2016-05-24 12:00:00',
-        'Location'    => 'Belgrade',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'Title'       => 'Once per week',
         'Description' => 'Only once per week',
-        'StartTime'   => '2016-05-31 11:30:00',
-        'TimezoneID'  => '2',
-        'Location'    => 'Belgrade',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-31 12:00:00',
         'Recurring'   => undef,
-        'ResourceID'  => [
+        'ParentID'    => '413',
+
+        'ResourceID' => [
             0
         ],
+        'TeamID' => undef,
 
-        'ParentID'   => '107',
+        'Title'      => 'Once per week',
+        'TimezoneID' => '2',
+        'Location'   => 'Belgrade',
+        'StartTime'  => '2016-05-24 11:30:00',
+        'AllDay'     => undef,
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
     },
     {
+        'EndTime'     => '2016-05-31 12:00:00',
         'Description' => 'Only once per week',
-        'Title'       => 'Once per week',
+        'Recurring'   => undef,
+        'ParentID'    => '413',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Once per week',
+
+        'TimezoneID' => '2',
+        'Location'   => 'Belgrade',
+        'StartTime'  => '2016-05-31 11:30:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
         'StartTime'   => '2016-06-07 11:30:00',
         'TimezoneID'  => '2',
         'Location'    => 'Belgrade',
+        'CalendarID'  => $Calendar{CalendarID},
         'AllDay'      => undef,
         'EndTime'     => '2016-06-07 12:00:00',
+        'Description' => 'Only once per week',
+        'Recurring'   => undef,
         'ResourceID'  => [
             0
         ],
-        'Recurring' => undef,
 
-        'ParentID'   => '107',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'   => undef,
+        'Title'    => 'Once per week',
+        'ParentID' => '413',
 
     },
     {
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-        'TimezoneID'  => '2',
         'StartTime'   => '2016-04-12 13:15:00',
+        'TimezoneID'  => '2',
+        'Location'    => 'Germany',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
         'EndTime'     => '2016-04-12 14:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Germany',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => '1',
-        'ParentID'  => undef,
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'AllDay'      => undef,
-        'Location'    => 'Germany',
-        'EndTime'     => '2016-05-12 14:00:00',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-12 13:15:00',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '116',
-
-    },
-    {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'AllDay'      => undef,
-        'Location'    => 'Germany',
-        'EndTime'     => '2016-06-12 14:00:00',
-        'StartTime'   => '2016-06-12 13:15:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '116'
-    },
-    {
-        'ParentID' => '116',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Monthly meeting',
-        'Description' => 'Once per month',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-07-12 13:15:00',
-        'AllDay'      => undef,
-        'Location'    => 'Germany',
-        'EndTime'     => '2016-07-12 14:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID' => '116',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'Location'   => 'Germany',
-        'AllDay'     => undef,
-        'EndTime'    => '2016-08-12 14:00:00',
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-08-12 13:15:00'
-    },
-    {
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-09-12 13:15:00',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring'  => undef,
-        'AllDay'     => undef,
-        'EndTime'    => '2016-09-12 14:00:00',
-        'Location'   => 'Germany',
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '116',
-
-        'TeamID' => undef
-    },
-    {
-        'StartTime'   => '2016-10-12 13:15:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'     => undef,
-        'Location'   => 'Germany',
-        'EndTime'    => '2016-10-12 14:00:00',
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '116',
-
-        'TeamID' => undef
-    },
-    {
-        'ParentID' => '116',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Monthly meeting',
-        'Description' => 'Once per month',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-11-12 13:15:00',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-11-12 14:00:00',
-        'Location'    => 'Germany',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
-    },
-    {
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Location'    => 'Germany',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-12-12 14:00:00',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-12-12 13:15:00',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '116',
-
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '116',
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2017-01-12 13:15:00',
-        'Description' => 'Once per month',
-        'Title'       => 'Monthly meeting',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'   => undef,
-        'Location' => 'Germany',
-        'EndTime'  => '2017-01-12 14:00:00'
-    },
-    {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID'   => '116',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'AllDay'      => undef,
-        'Location'    => 'Germany',
-        'EndTime'     => '2017-02-12 14:00:00',
-        'StartTime'   => '2017-02-12 13:15:00',
-        'TimezoneID'  => '2',
-        'Title'       => 'Monthly meeting',
-        'Description' => 'Once per month'
-    },
-    {
-        'StartTime'   => '2016-03-31 08:00:00',
-        'TimezoneID'  => '2',
-        'Description' => undef,
-        'Title'       => 'End of the month',
         'Recurring'   => '1',
+        'Description' => 'Once per month',
         'ResourceID'  => [
             0
         ],
-        'EndTime'    => '2016-03-31 09:00:00',
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
+        'TeamID' => undef,
+        'Title'  => 'Monthly meeting',
 
         'ParentID' => undef,
 
-        'TeamID' => undef
     },
     {
-        'Recurring'  => undef,
+        'StartTime'   => '2016-05-12 13:15:00',
+        'Location'    => 'Germany',
+        'TimezoneID'  => '2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'Recurring'   => undef,
+        'Description' => 'Once per month',
+        'EndTime'     => '2016-05-12 14:00:00',
+        'TeamID'      => undef,
+        'Title'       => 'Monthly meeting',
+
         'ResourceID' => [
             0
         ],
-        'AllDay'      => undef,
-        'EndTime'     => '2016-04-30 09:00:00',
-        'Location'    => undef,
-        'StartTime'   => '2016-04-30 08:00:00',
-        'TimezoneID'  => '2',
-        'Description' => undef,
-        'Title'       => 'End of the month',
 
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '127'
+        'ParentID' => '422'
     },
     {
-        'ParentID' => '127',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => undef,
-        'Title'       => 'End of the month',
+        'StartTime'   => '2016-06-12 13:15:00',
         'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-31 08:00:00',
+        'Location'    => 'Germany',
+        'CalendarID'  => $Calendar{CalendarID},
         'AllDay'      => undef,
-        'Location'    => undef,
-        'EndTime'     => '2016-05-31 09:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
-    },
-    {
-        'Description' => undef,
-        'Title'       => 'End of the month',
-        'StartTime'   => '2016-06-30 08:00:00',
-        'TimezoneID'  => '2',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-06-30 09:00:00',
-        'Location'    => undef,
+        'EndTime'     => '2016-06-12 14:00:00',
+        'Description' => 'Once per month',
         'Recurring'   => undef,
         'ResourceID'  => [
             0
         ],
+        'TeamID' => undef,
+        'Title'  => 'Monthly meeting',
 
-        'ParentID'   => '127',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'ParentID' => '422',
 
     },
     {
-
-        'ParentID'   => '127',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => undef,
-        'Title'       => 'End of the month',
-        'StartTime'   => '2016-07-31 08:00:00',
-        'TimezoneID'  => '2',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-07-31 09:00:00',
-        'Location'    => undef,
+        'EndTime'     => '2016-07-12 14:00:00',
         'Recurring'   => undef,
+        'Description' => 'Once per month',
         'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Monthly meeting',
+
+        'ParentID' => '422',
+
+        'StartTime'  => '2016-07-12 13:15:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Germany',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-08-12 13:15:00',
+        'Location'   => 'Germany',
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+        'Title'      => 'Monthly meeting',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '422',
+        'Recurring'   => undef,
+        'Description' => 'Once per month',
+        'EndTime'     => '2016-08-12 14:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-09-12 13:15:00',
+        'Location'   => 'Germany',
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+        'Title'      => 'Monthly meeting',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '422',
+        'Recurring'   => undef,
+        'Description' => 'Once per month',
+        'EndTime'     => '2016-09-12 14:00:00'
+    },
+    {
+        'ParentID' => '422',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Monthly meeting',
+
+        'EndTime'     => '2016-10-12 14:00:00',
+        'Description' => 'Once per month',
+        'Recurring'   => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => 'Germany',
+        'StartTime'   => '2016-10-12 13:15:00'
+    },
+    {
+        'ParentID' => '422',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'Monthly meeting',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-11-12 14:00:00',
+        'Description' => 'Once per month',
+        'Recurring'   => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => 'Germany',
+        'StartTime'   => '2016-11-12 13:15:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => 'Germany',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-12-12 13:15:00',
+
+        'ParentID' => '422',
+        'TeamID'   => undef,
+
+        'Title'      => 'Monthly meeting',
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => 'Once per month',
+        'EndTime'     => '2016-12-12 14:00:00'
+    },
+    {
+        'Location'    => 'Germany',
+        'TimezoneID'  => '2',
+        'StartTime'   => '2017-01-12 13:15:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Description' => 'Once per month',
+        'Recurring'   => undef,
+        'EndTime'     => '2017-01-12 14:00:00',
+
+        'ParentID' => '422',
+        'Title'    => 'Monthly meeting',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
             0
             ]
     },
     {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '127',
 
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-08-31 08:00:00',
-        'Description' => undef,
-        'Title'       => 'End of the month',
+        'ParentID' => '422',
+        'TeamID'   => undef,
+        'Title'    => 'Monthly meeting',
+
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Once per month',
         'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'   => undef,
-        'Location' => undef,
-        'EndTime'  => '2016-08-31 09:00:00'
-    },
-    {
-
-        'ParentID'   => '127',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => undef,
-        'Title'       => 'End of the month',
-        'StartTime'   => '2016-09-30 08:00:00',
-        'TimezoneID'  => '2',
+        'EndTime'     => '2017-02-12 14:00:00',
         'AllDay'      => undef,
-        'EndTime'     => '2016-09-30 09:00:00',
-        'Location'    => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => 'Germany',
+        'TimezoneID'  => '2',
+        'StartTime'   => '2017-02-12 13:15:00'
     },
     {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'StartTime'  => '2016-03-31 08:00:00',
+        'ParentID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'End of the month',
+
+        'EndTime'     => '2016-03-31 09:00:00',
+        'Recurring'   => '1',
+        'Description' => undef
+    },
+    {
+        'EndTime'     => '2016-04-30 09:00:00',
+        'Description' => undef,
+        'Recurring'   => undef,
+        'ParentID'    => '433',
+
+        'ResourceID' => [
+            0
+        ],
         'TeamID' => undef,
 
-        'ParentID' => '127',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'EndTime'    => '2016-10-31 09:00:00',
-        'AllDay'     => undef,
+        'Title'      => 'End of the month',
+        'TimezoneID' => '2',
         'Location'   => undef,
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Description' => undef,
-        'Title'       => 'End of the month',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-10-31 08:00:00'
+        'StartTime'  => '2016-04-30 08:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
     },
     {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID'   => '127',
-        'Recurring'  => undef,
-        'ResourceID' => [
+        'EndTime'     => '2016-05-31 09:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'ResourceID'  => [
             0
         ],
-        'EndTime'     => '2016-11-30 09:00:00',
-        'AllDay'      => undef,
+        'Title'  => 'End of the month',
+        'TeamID' => undef,
+
+        'ParentID' => '433',
+
+        'StartTime'  => '2016-05-31 08:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'StartTime'   => '2016-06-30 08:00:00',
+        'TimezoneID'  => '2',
         'Location'    => undef,
-        'StartTime'   => '2016-11-30 08:00:00',
-        'TimezoneID'  => '2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2016-06-30 09:00:00',
         'Description' => undef,
-        'Title'       => 'End of the month'
+        'Recurring'   => undef,
+        'ResourceID'  => [
+            0
+        ],
+        'Title'  => 'End of the month',
+        'TeamID' => undef,
+
+        'ParentID' => '433',
+
+    },
+    {
+
+        'ParentID' => '433',
+        'Title'    => 'End of the month',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-07-31 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-07-31 08:00:00'
     },
     {
         'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '127',
+        'AllDay'     => undef,
+        'StartTime'  => '2016-08-31 08:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'End of the month',
+        'TeamID' => undef,
+
+        'ParentID' => '433',
+
+        'EndTime'     => '2016-08-31 09:00:00',
+        'Description' => undef,
+        'Recurring'   => undef
+    },
+    {
+        'ParentID' => '433',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'End of the month',
+
+        'EndTime'     => '2016-09-30 09:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'StartTime'   => '2016-09-30 08:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'StartTime'  => '2016-10-31 08:00:00',
+        'ParentID'   => '433',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'       => 'End of the month',
+        'EndTime'     => '2016-10-31 09:00:00',
+        'Description' => undef,
+        'Recurring'   => undef
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'StartTime'  => '2016-11-30 08:00:00',
+        'ParentID'   => '433',
+
+        'ResourceID' => [
+            0
+        ],
 
         'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-12-31 08:00:00',
         'Title'       => 'End of the month',
+        'EndTime'     => '2016-11-30 09:00:00',
+        'Description' => undef,
+        'Recurring'   => undef
+    },
+    {
+        'EndTime'     => '2016-12-31 09:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'    => 'End of the month',
+        'ParentID' => '433',
+
+        'StartTime'  => '2016-12-31 08:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'StartTime'   => '2017-01-31 08:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2017-01-31 09:00:00',
         'Description' => undef,
         'Recurring'   => undef,
         'ResourceID'  => [
             0
         ],
-        'Location' => undef,
-        'AllDay'   => undef,
-        'EndTime'  => '2016-12-31 09:00:00'
+        'TeamID' => undef,
+
+        'Title'    => 'End of the month',
+        'ParentID' => '433',
+
     },
     {
+        'ParentID' => '433',
 
-        'ParentID'   => '127',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => undef,
-        'Title'       => 'End of the month',
-        'StartTime'   => '2017-01-31 08:00:00',
-        'TimezoneID'  => '2',
-        'AllDay'      => undef,
-        'EndTime'     => '2017-01-31 09:00:00',
-        'Location'    => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
-    },
-    {
         'ResourceID' => [
             0
         ],
-        'Recurring'   => undef,
-        'AllDay'      => undef,
-        'Location'    => undef,
+        'Title'  => 'End of the month',
+        'TeamID' => undef,
+
         'EndTime'     => '2017-02-28 09:00:00',
-        'StartTime'   => '2017-02-28 08:00:00',
-        'TimezoneID'  => '2',
+        'Recurring'   => undef,
         'Description' => undef,
-        'Title'       => 'End of the month',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '127'
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'StartTime'   => '2017-02-28 08:00:00'
     },
     {
         'StartTime'   => '2016-01-31 10:00:00',
         'TimezoneID'  => '2',
-        'Title'       => 'Each 2 months',
+        'Location'    => 'Test',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2016-01-31 11:00:00',
         'Description' => 'test',
         'Recurring'   => '1',
         'ResourceID'  => [
             0
         ],
-        'Location'   => 'Test',
-        'AllDay'     => undef,
-        'EndTime'    => '2016-01-31 11:00:00',
-        'CalendarID' => $Calendar{CalendarID},
+        'TeamID' => undef,
 
+        'Title'    => 'Each 2 months',
         'ParentID' => undef,
 
-        'TeamID' => undef
     },
     {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '139',
-
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'EndTime'     => '2016-03-31 11:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Test',
-        'TimezoneID'  => '2',
         'StartTime'   => '2016-03-31 10:00:00',
-        'Description' => 'test',
-        'Title'       => 'Each 2 months'
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '139',
-
-        'TeamID'      => undef,
         'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-31 10:00:00',
-        'Description' => 'test',
-        'Title'       => 'Each 2 months',
+        'Location'    => 'Test',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2016-03-31 11:00:00',
         'Recurring'   => undef,
+        'Description' => 'test',
         'ResourceID'  => [
             0
         ],
-        'AllDay'   => undef,
-        'Location' => 'Test',
-        'EndTime'  => '2016-05-31 11:00:00'
+        'TeamID' => undef,
+        'Title'  => 'Each 2 months',
+
+        'ParentID' => '445',
+
     },
     {
+        'ParentID' => '445',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'      => undef,
         'Title'       => 'Each 2 months',
+        'EndTime'     => '2016-05-31 11:00:00',
         'Description' => 'test',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-07-31 10:00:00',
+        'Recurring'   => undef,
         'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => 'Test',
+        'StartTime'   => '2016-05-31 10:00:00'
+    },
+    {
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2 months',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '445',
+        'Description' => 'test',
+        'Recurring'   => undef,
         'EndTime'     => '2016-07-31 11:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-07-31 10:00:00',
         'Location'    => 'Test',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'ParentID'  => '139',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-
-        'ParentID'   => '139',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Each 2 months',
-        'Description' => 'test',
-        'StartTime'   => '2016-09-30 10:00:00',
-        'TimezoneID'  => '2',
-        'AllDay'      => undef,
-        'Location'    => 'Test',
-        'EndTime'     => '2016-09-30 11:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '139',
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-11-30 10:00:00',
-        'Description' => 'test',
-        'Title'       => 'Each 2 months',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'EndTime'   => '2016-11-30 11:00:00',
-        'AllDay'    => undef,
-        'Location'  => 'Test'
-    },
-    {
-        'AllDay'     => undef,
-        'Location'   => 'Test',
-        'EndTime'    => '2017-01-31 11:00:00',
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Description' => 'test',
-        'Title'       => 'Each 2 months',
-        'StartTime'   => '2017-01-31 10:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => '139',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID' => undef,
-
-        'CalendarID' => $Calendar{CalendarID},
-        'Location'   => 'Stara Pazova',
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-12 10:00:00',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => '1',
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-12 09:00:00'
-    },
-    {
-        'EndTime'    => '2016-04-14 10:00:00',
-        'AllDay'     => undef,
-        'Location'   => 'Stara Pazova',
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-14 09:00:00',
-        'TeamID'      => undef,
-
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-16 10:00:00',
-        'Location'   => 'Stara Pazova',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-16 09:00:00',
-        'TeamID'      => undef,
-
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-18 09:00:00',
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-04-18 10:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'StartTime'   => '2016-04-20 09:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-20 10:00:00',
-        'Location'   => 'Stara Pazova',
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '146',
-
-        'TeamID' => undef
-    },
-    {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'EndTime'     => '2016-04-22 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Stara Pazova',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-22 09:00:00',
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '146',
-
-    },
-    {
-        'AllDay'     => undef,
-        'Location'   => 'Stara Pazova',
-        'EndTime'    => '2016-04-24 10:00:00',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'StartTime'   => '2016-04-24 09:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-26 09:00:00',
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-04-26 10:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'EndTime'    => '2016-04-28 10:00:00',
-        'AllDay'     => undef,
-        'Location'   => 'Stara Pazova',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'StartTime'   => '2016-04-28 09:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-30 09:00:00',
-        'EndTime'     => '2016-04-30 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Stara Pazova',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '146',
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-02 09:00:00',
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'EndTime'  => '2016-05-02 10:00:00',
-        'AllDay'   => undef,
-        'Location' => 'Stara Pazova'
-    },
-    {
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-        'StartTime'   => '2016-05-04 09:00:00',
-        'TimezoneID'  => '2',
-        'EndTime'     => '2016-05-04 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Stara Pazova',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-06 10:00:00',
-        'StartTime'   => '2016-05-06 09:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '146'
-    },
-    {
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-08 09:00:00',
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-08 10:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '146',
-
-        'TeamID'      => undef,
-        'StartTime'   => '2016-05-10 09:00:00',
-        'TimezoneID'  => '2',
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'Location'  => 'Stara Pazova',
-        'AllDay'    => undef,
-        'EndTime'   => '2016-05-10 10:00:00'
-    },
-    {
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-12 09:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Stara Pazova',
-        'EndTime'     => '2016-05-12 10:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef
-    },
-    {
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'StartTime'   => '2016-05-14 09:00:00',
-        'TimezoneID'  => '2',
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-14 10:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID'   => '146',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-16 10:00:00',
-        'StartTime'   => '2016-05-16 09:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Test description',
-        'Title'       => 'My event'
-    },
-    {
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-18 09:00:00',
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-18 10:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'ParentID'  => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'EndTime'    => '2016-05-20 10:00:00',
-        'AllDay'     => undef,
-        'Location'   => 'Stara Pazova',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'StartTime'   => '2016-05-20 09:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'EndTime'     => '2016-05-22 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => 'Stara Pazova',
-        'StartTime'   => '2016-05-22 09:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '146'
-    },
-    {
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Location'    => 'Stara Pazova',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-24 10:00:00',
-        'StartTime'   => '2016-05-24 09:00:00',
-        'TimezoneID'  => '2',
-        'Title'       => 'My event',
-        'Description' => 'Test description',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '146'
-    },
-    {
-
-        'ParentID'   => '146',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'StartTime'   => '2016-05-26 09:00:00',
-        'TimezoneID'  => '2',
-        'AllDay'      => undef,
-        'EndTime'     => '2016-05-26 10:00:00',
-        'Location'    => 'Stara Pazova',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-28 09:00:00',
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring'  => undef,
-        'EndTime'    => '2016-05-28 10:00:00',
-        'AllDay'     => undef,
-        'Location'   => 'Stara Pazova',
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '146',
-
-        'TeamID' => undef
-    },
-    {
-        'AllDay'     => undef,
-        'EndTime'    => '2016-05-30 10:00:00',
-        'Location'   => 'Stara Pazova',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => 'Test description',
-        'Title'       => 'My event',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-30 09:00:00',
-        'TeamID'      => undef,
-
-        'ParentID' => '146',
-
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID' => undef,
-
-        'CalendarID' => $Calendar{CalendarID},
-        'Location'   => undef,
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-01 11:00:00',
-        'Recurring'  => '1',
-        'ResourceID' => [
-            0
-        ],
-        'Description' => undef,
-        'Title'       => 'Each 2 years',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-04-01 10:00:00'
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '171',
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2018-04-01 10:00:00',
-        'Description' => undef,
-        'Title'       => 'Each 2 years',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'Location'  => undef,
-        'AllDay'    => undef,
-        'EndTime'   => '2018-04-01 11:00:00'
-    },
-    {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '171',
-
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'EndTime'     => '2020-04-01 11:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2020-04-01 10:00:00',
-        'Description' => undef,
-        'Title'       => 'Each 2 years'
-    },
-    {
-        'ParentID' => undef,
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-02 00:00:00',
-        'AllDay'      => '1',
-        'Location'    => undef,
-        'EndTime'     => '2016-04-03 00:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => '1'
-    },
-    {
-        'ParentID' => '174',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Each 3thd all day',
-        'Description' => undef,
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-05 00:00:00',
-        'EndTime'     => '2016-04-06 00:00:00',
-        'AllDay'      => '1',
-        'Location'    => undef,
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'AllDay'     => '1',
-        'EndTime'    => '2016-04-09 00:00:00',
-        'Location'   => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'StartTime'   => '2016-04-08 00:00:00',
-        'TimezoneID'  => '0',
-        'TeamID'      => undef,
-
-        'ParentID'   => '174',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'StartTime'   => '2016-04-11 00:00:00',
-        'TimezoneID'  => '0',
-        'AllDay'      => '1',
-        'EndTime'     => '2016-04-12 00:00:00',
-        'Location'    => undef,
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-
-        'ParentID'   => '174',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID'   => '174',
-        'CalendarID' => $Calendar{CalendarID},
-        'AllDay'     => '1',
-        'Location'   => undef,
-        'EndTime'    => '2016-04-15 00:00:00',
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'StartTime'   => '2016-04-14 00:00:00',
-        'TimezoneID'  => '0'
-    },
-    {
-        'ParentID' => '174',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-        'Title'       => 'Each 3thd all day',
-        'Description' => undef,
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-17 00:00:00',
-        'AllDay'      => '1',
-        'EndTime'     => '2016-04-18 00:00:00',
-        'Location'    => undef,
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-            ]
-    },
-    {
-        'Title'       => 'Each 3thd all day',
-        'Description' => undef,
-        'StartTime'   => '2016-04-20 00:00:00',
-        'TimezoneID'  => '0',
-        'Location'    => undef,
-        'AllDay'      => '1',
-        'EndTime'     => '2016-04-21 00:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-
-        'ParentID'   => '174',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '174',
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-23 00:00:00',
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'Location'  => undef,
-        'AllDay'    => '1',
-        'EndTime'   => '2016-04-24 00:00:00'
-    },
-    {
-        'TimezoneID'  => '0',
-        'StartTime'   => '2016-04-26 00:00:00',
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring'  => undef,
-        'AllDay'     => '1',
-        'EndTime'    => '2016-04-27 00:00:00',
-        'Location'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '174',
-
-        'TeamID' => undef
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '174',
-
-        'TeamID'      => undef,
-        'StartTime'   => '2016-04-29 00:00:00',
-        'TimezoneID'  => '0',
-        'Description' => undef,
-        'Title'       => 'Each 3thd all day',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'Location' => undef,
-        'AllDay'   => '1',
-        'EndTime'  => '2016-04-30 00:00:00'
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'EndTime'    => '2016-03-07 17:00:00',
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'Recurring'  => '1',
-        'ResourceID' => [
-            0
-        ],
-        'Description' => undef,
-        'Title'       => 'First 3 days',
-        'StartTime'   => '2016-03-07 16:00:00',
         'TimezoneID'  => '2'
     },
     {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2017-01-31 10:00:00',
+        'Location'   => 'Test',
+        'TimezoneID' => '2',
 
         'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '184',
-
-        'Recurring'  => undef,
+        'Title'      => 'Each 2 months',
         'ResourceID' => [
             0
         ],
-        'EndTime'     => '2016-03-08 17:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-03-08 16:00:00',
-        'Description' => undef,
-        'Title'       => 'First 3 days'
+
+        'ParentID'    => '445',
+        'Recurring'   => undef,
+        'Description' => 'test',
+        'EndTime'     => '2017-01-31 11:00:00'
     },
     {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'AllDay'      => undef,
-        'EndTime'     => '2016-03-09 17:00:00',
-        'Location'    => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-03-09 16:00:00',
-        'Title'       => 'First 3 days',
-        'Description' => undef,
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '184',
-
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => undef,
-
-        'TeamID'      => undef,
-        'StartTime'   => '2016-03-02 18:00:00',
-        'TimezoneID'  => '2',
-        'Description' => undef,
-        'Title'       => 'Once per next 2 month',
+        'Description' => 'Test description',
         'Recurring'   => '1',
-        'ResourceID'  => [
-            0
-        ],
-        'Location' => undef,
-        'AllDay'   => undef,
-        'EndTime'  => '2016-03-02 19:00:00'
-    },
-    {
+        'EndTime'     => '2016-04-12 10:00:00',
 
         'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
+        'Title'      => 'My event',
+        'ResourceID' => [
+            0
+        ],
 
-        'ParentID'   => '187',
+        'ParentID'   => undef,
+        'StartTime'  => '2016-04-12 09:00:00',
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'ParentID' => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-04-14 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => 'Stara Pazova',
+        'StartTime'   => '2016-04-14 09:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-04-16 09:00:00',
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'Title'      => 'My event',
+        'TeamID'     => undef,
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '450',
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-04-16 10:00:00'
+    },
+    {
+        'EndTime'     => '2016-04-18 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description',
+        'ParentID'    => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'My event',
+
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-04-18 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => 'Test description',
+        'EndTime'     => '2016-04-20 10:00:00',
+        'Title'       => 'My event',
+        'TeamID'      => undef,
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '450',
+        'StartTime'  => '2016-04-20 09:00:00',
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-04-22 09:00:00',
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+        'Title'      => 'My event',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '450',
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-04-22 10:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-04-24 09:00:00',
+        'ParentID'   => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'My event',
+
+        'EndTime'     => '2016-04-24 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description'
+    },
+    {
+        'TimezoneID'  => '2',
+        'Location'    => 'Stara Pazova',
+        'StartTime'   => '2016-04-26 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'EndTime'     => '2016-04-26 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'ParentID'    => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-04-28 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'My event',
+        'ParentID' => '450',
+
+        'EndTime'     => '2016-04-28 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-04-30 09:00:00',
+
+        'ParentID' => '450',
+        'TeamID'   => undef,
+
+        'Title'      => 'My event',
         'ResourceID' => [
             0
         ],
         'Recurring'   => undef,
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'EndTime'     => '2016-04-02 19:00:00',
-        'StartTime'   => '2016-04-02 18:00:00',
-        'TimezoneID'  => '2',
-        'Description' => undef,
-        'Title'       => 'Once per next 2 month'
-    },
-    {
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => undef,
-
-        'TeamID'      => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-01-03 18:00:00',
-        'Description' => undef,
-        'Title'       => 'January 3th next 3 years',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => '1',
-        'AllDay'    => undef,
-        'Location'  => undef,
-        'EndTime'   => '2016-01-03 19:00:00'
-    },
-    {
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID'   => '189',
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'EndTime'     => '2017-01-03 19:00:00',
-        'StartTime'   => '2017-01-03 18:00:00',
-        'TimezoneID'  => '2',
-        'Description' => undef,
-        'Title'       => 'January 3th next 3 years'
+        'Description' => 'Test description',
+        'EndTime'     => '2016-04-30 10:00:00'
     },
     {
         'AllDay'     => undef,
-        'EndTime'    => '2018-01-03 19:00:00',
-        'Location'   => undef,
-        'Recurring'  => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-05-02 09:00:00',
+        'ParentID'   => '450',
+
         'ResourceID' => [
             0
         ],
-        'Description' => undef,
-        'Title'       => 'January 3th next 3 years',
-        'StartTime'   => '2018-01-03 18:00:00',
+        'TeamID' => undef,
+
+        'Title'       => 'My event',
+        'EndTime'     => '2016-05-02 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-05-04 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'My event',
+        'ParentID' => '450',
+
+        'EndTime'     => '2016-05-04 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-05-06 09:00:00',
+        'ParentID'   => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-05-06 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => 'Test description',
+        'EndTime'     => '2016-05-08 10:00:00',
+        'TeamID'      => undef,
+        'Title'       => 'My event',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '450',
+        'StartTime'  => '2016-05-08 09:00:00',
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-05-10 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'ParentID' => '450',
+
+        'EndTime'     => '2016-05-10 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description'
+    },
+    {
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-05-12 10:00:00',
+
+        'ParentID' => '450',
+        'Title'    => 'My event',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-05-12 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-05-14 10:00:00',
+
+        'ParentID' => '450',
+        'Title'    => 'My event',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-05-14 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-05-16 09:00:00',
+        'ParentID'   => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'       => 'My event',
+        'EndTime'     => '2016-05-16 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef
+    },
+    {
+        'ParentID' => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-05-18 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
+        'Location'    => 'Stara Pazova',
+        'StartTime'   => '2016-05-18 09:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'StartTime'  => '2016-05-20 09:00:00',
+        'ParentID'   => '450',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-05-20 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-05-22 09:00:00',
+
+        'ParentID' => '450',
+        'TeamID'   => undef,
+        'Title'    => 'My event',
+
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => 'Test description',
+        'EndTime'     => '2016-05-22 10:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-05-24 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'My event',
+        'TeamID' => undef,
+
+        'ParentID' => '450',
+
+        'EndTime'     => '2016-05-24 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef
+    },
+    {
+        'EndTime'     => '2016-05-26 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Test description',
+        'ResourceID'  => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'My event',
+        'ParentID' => '450',
+
+        'StartTime'  => '2016-05-26 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-05-28 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => 'Stara Pazova',
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'My event',
+        'ParentID' => '450',
+
+        'EndTime'     => '2016-05-28 10:00:00',
+        'Description' => 'Test description',
+        'Recurring'   => undef
+    },
+    {
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-05-30 10:00:00',
+
+        'ParentID' => '450',
+
+        'TeamID'     => undef,
+        'Title'      => 'My event',
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => 'Stara Pazova',
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-05-30 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'StartTime'   => '2016-06-01 09:00:00',
+        'Location'    => 'Stara Pazova',
+        'TimezoneID'  => '2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'Description' => 'Test description',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-06-01 10:00:00',
         'TeamID'      => undef,
 
-        'ParentID'   => '189',
+        'Title'      => 'My event',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID' => '450'
+    },
+    {
+        'Recurring'   => '1',
+        'Description' => undef,
+        'EndTime'     => '2016-04-01 11:00:00',
+
+        'ParentID' => undef,
+        'TeamID'   => undef,
+        'Title'    => 'Each 2 years',
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-04-01 10:00:00',
+        'AllDay'     => undef,
         'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'Each 2 years',
+        'TeamID' => undef,
+
+        'ParentID' => '476',
+
+        'EndTime'     => '2018-04-01 11:00:00',
+        'Description' => undef,
+        'Recurring'   => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2018-04-01 10:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef
+    },
+    {
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Each 2 years',
+
+        'ParentID' => '476',
+
+        'EndTime'     => '2020-04-01 11:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2020-04-01 10:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef
+    },
+    {
+        'StartTime'   => '2016-04-02 00:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '0',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => '1',
+        'Description' => undef,
+        'Recurring'   => '1',
+        'EndTime'     => '2016-04-03 00:00:00',
+        'Title'       => 'Each 3thd all day',
+        'TeamID'      => undef,
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID' => undef
+    },
+    {
+        'EndTime'     => '2016-04-06 00:00:00',
+        'Description' => undef,
+        'Recurring'   => undef,
+        'ParentID'    => '479',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Each 3thd all day',
+
+        'TimezoneID' => '0',
+        'Location'   => undef,
+        'StartTime'  => '2016-04-05 00:00:00',
+        'AllDay'     => '1',
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'AllDay'     => '1',
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => undef,
+        'TimezoneID' => '0',
+        'StartTime'  => '2016-04-08 00:00:00',
+
+        'ParentID' => '479',
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 3thd all day',
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-04-09 00:00:00'
+    },
+    {
+        'EndTime'     => '2016-04-12 00:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'ResourceID'  => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Each 3thd all day',
+        'ParentID' => '479',
+
+        'StartTime'  => '2016-04-11 00:00:00',
+        'TimezoneID' => '0',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => '1'
     },
     {
         'TeamID' => undef,
 
-        'ParentID' => undef,
-
-        'CalendarID' => $Calendar{CalendarID},
-        'Location'   => undef,
-        'AllDay'     => undef,
-        'EndTime'    => '2016-04-12 17:00:00',
+        'Title'      => 'Each 3thd all day',
         'ResourceID' => [
             0
         ],
+
+        'ParentID'    => '479',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-04-15 00:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => '1',
+        'StartTime'   => '2016-04-14 00:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '0'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => '1',
+        'StartTime'  => '2016-04-17 00:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '0',
+        'TeamID'     => undef,
+
+        'Title'      => 'Each 3thd all day',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '479',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-04-18 00:00:00'
+    },
+    {
+        'AllDay'     => '1',
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => undef,
+        'TimezoneID' => '0',
+        'StartTime'  => '2016-04-20 00:00:00',
+
+        'ParentID' => '479',
+        'Title'    => 'Each 3thd all day',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'Description' => undef,
+        'Recurring'   => undef,
+        'EndTime'     => '2016-04-21 00:00:00'
+    },
+    {
+        'TimezoneID'  => '0',
+        'Location'    => undef,
+        'StartTime'   => '2016-04-23 00:00:00',
+        'AllDay'      => '1',
+        'CalendarID'  => $Calendar{CalendarID},
+        'EndTime'     => '2016-04-24 00:00:00',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'ParentID'    => '479',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title' => 'Each 3thd all day'
+    },
+    {
+        'StartTime'   => '2016-04-26 00:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '0',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => '1',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-04-27 00:00:00',
+        'TeamID'      => undef,
+        'Title'       => 'Each 3thd all day',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID' => '479'
+    },
+    {
+        'TimezoneID'  => '0',
+        'Location'    => undef,
+        'StartTime'   => '2016-04-29 00:00:00',
+        'AllDay'      => '1',
+        'CalendarID'  => $Calendar{CalendarID},
+        'EndTime'     => '2016-04-30 00:00:00',
+        'Description' => undef,
+        'Recurring'   => undef,
+        'ParentID'    => '479',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title' => 'Each 3thd all day'
+    },
+    {
+        'ParentID' => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'       => 'First 3 days',
+        'EndTime'     => '2016-03-07 17:00:00',
+        'Description' => undef,
         'Recurring'   => '1',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'StartTime'   => '2016-03-07 16:00:00'
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-03-08 17:00:00',
+
+        'ParentID' => '489',
+        'Title'    => 'First 3 days',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-03-08 16:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-03-09 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+
+        'Title'      => 'First 3 days',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '489',
+        'Recurring'   => undef,
+        'Description' => undef,
+        'EndTime'     => '2016-03-09 17:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-03-02 18:00:00',
+
+        'ParentID' => undef,
+
+        'TeamID'     => undef,
+        'Title'      => 'Once per next 2 month',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => undef,
+        'Recurring'   => '1',
+        'EndTime'     => '2016-03-02 19:00:00'
+    },
+    {
+        'ParentID' => '492',
+
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Once per next 2 month',
+
+        'EndTime'     => '2016-04-02 19:00:00',
+        'Description' => undef,
+        'Recurring'   => undef,
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'StartTime'   => '2016-04-02 18:00:00'
+    },
+    {
+        'EndTime'     => '2016-01-03 19:00:00',
+        'Recurring'   => '1',
+        'Description' => undef,
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'    => 'January 3th next 3 years',
+        'ParentID' => undef,
+
+        'StartTime'  => '2016-01-03 18:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'Description' => undef,
+        'Recurring'   => undef,
+        'EndTime'     => '2017-01-03 19:00:00',
+
+        'ParentID' => '494',
+        'TeamID'   => undef,
+        'Title'    => 'January 3th next 3 years',
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2017-01-03 18:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'StartTime'   => '2018-01-03 18:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'Description' => undef,
+        'Recurring'   => undef,
+        'EndTime'     => '2018-01-03 19:00:00',
+
+        'TeamID'     => undef,
+        'Title'      => 'January 3th next 3 years',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID' => '494'
+    },
+    {
+
+        'ParentID' => undef,
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
         'Description' => 'Developer meeting each 2nd Tuesday',
-        'Title'       => 'Each 2nd week',
+        'Recurring'   => '1',
+        'EndTime'     => '2016-04-12 17:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
         'TimezoneID'  => '2',
         'StartTime'   => '2016-04-12 16:00:00'
     },
     {
-        'Description' => 'Developer meeting each 2nd Tuesday',
-        'Title'       => 'Each 2nd week',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-06-02 16:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'EndTime'     => '2016-06-02 17:00:00',
-        'ResourceID'  => [
-            0
-        ],
-        'Recurring' => undef,
-        'ParentID'  => '192',
 
-        'CalendarID' => $Calendar{CalendarID},
         'TeamID'     => undef,
-
-    },
-    {
-        'Location'   => undef,
-        'AllDay'     => undef,
-        'EndTime'    => '2016-08-02 17:00:00',
-        'Recurring'  => undef,
+        'Title'      => 'Each 2nd week',
         'ResourceID' => [
             0
         ],
-        'Description' => 'Developer meeting each 2nd Tuesday',
-        'Title'       => 'Each 2nd week',
-        'StartTime'   => '2016-08-02 16:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
 
-        'ParentID'   => '192',
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'StartTime'   => '2016-10-02 16:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Developer meeting each 2nd Tuesday',
-        'Title'       => 'Each 2nd week',
+        'ParentID'    => '497',
         'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'EndTime'    => '2016-10-02 17:00:00',
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '192',
-
-        'TeamID' => undef
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-04-26 17:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-04-26 16:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '2'
     },
     {
-        'AllDay'     => undef,
-        'EndTime'    => '2016-12-02 17:00:00',
-        'Location'   => undef,
-        'Recurring'  => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-05-10 17:00:00',
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2nd week',
         'ResourceID' => [
             0
         ],
-        'Title'       => 'Each 2nd week',
-        'Description' => 'Developer meeting each 2nd Tuesday',
-        'StartTime'   => '2016-12-02 16:00:00',
-        'TimezoneID'  => '2',
-        'TeamID'      => undef,
 
-        'ParentID'   => '192',
+        'ParentID'   => '497',
+        'StartTime'  => '2016-05-10 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
     },
     {
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-01-11 09:00:00',
-        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
-        'Title'       => 'Custom 1',
-        'Recurring'   => '1',
-        'ResourceID'  => [
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-05-24 16:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'ResourceID' => [
             0
         ],
-        'EndTime'    => '2016-01-11 10:00:00',
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => undef,
-
-        'TeamID' => undef
-    },
-    {
-        'StartTime'   => '2016-03-03 09:00:00',
-        'TimezoneID'  => '2',
-        'Title'       => 'Custom 1',
-        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'Location'   => undef,
-        'AllDay'     => undef,
-        'EndTime'    => '2016-03-03 10:00:00',
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '197',
-
-        'TeamID' => undef
-    },
-    {
+        'Title'  => 'Each 2nd week',
         'TeamID' => undef,
 
-        'ParentID'   => undef,
+        'ParentID' => '497',
+
+        'EndTime'     => '2016-05-24 17:00:00',
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-06-07 17:00:00',
+
+        'ParentID' => '497',
+        'TeamID'   => undef,
+
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-06-07 16:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'EndTime'     => '2016-06-21 17:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'ResourceID'  => [
+            0
+        ],
+        'Title'  => 'Each 2nd week',
+        'TeamID' => undef,
+
+        'ParentID' => '497',
+
+        'StartTime'  => '2016-06-21 16:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'EndTime'     => '2016-07-05 17:00:00',
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Each 2nd week',
+
+        'ParentID' => '497',
+
+        'StartTime'  => '2016-07-05 16:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-07-19 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '497',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-07-19 17:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'StartTime'  => '2016-08-02 16:00:00',
+        'ParentID'   => '497',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'      => undef,
+        'Title'       => 'Each 2nd week',
+        'EndTime'     => '2016-08-02 17:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday'
+    },
+    {
+        'AllDay'     => undef,
         'CalendarID' => $Calendar{CalendarID},
         'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-08-16 16:00:00',
+
+        'ParentID' => '497',
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-08-16 17:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
         'AllDay'     => undef,
-        'EndTime'    => '2016-01-12 10:00:00',
-        'Recurring'  => '1',
+        'StartTime'  => '2016-08-30 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '497',
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-08-30 17:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-09-13 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '497',
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-09-13 17:00:00'
+    },
+    {
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-09-27 17:00:00',
+        'TeamID'      => undef,
+        'Title'       => 'Each 2nd week',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '497',
+        'StartTime'  => '2016-09-27 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-10-11 17:00:00',
+        'TeamID'      => undef,
+
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '497',
+        'StartTime'  => '2016-10-11 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-10-25 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+
+        'TeamID'     => undef,
+        'Title'      => 'Each 2nd week',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '497',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-10-25 17:00:00'
+    },
+    {
+        'ResourceID' => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Each 2nd week',
+        'ParentID' => '497',
+
+        'EndTime'     => '2016-11-08 17:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-11-08 16:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'EndTime'     => '2016-11-22 17:00:00',
+        'TeamID'      => undef,
+        'Title'       => 'Each 2nd week',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '497',
+        'StartTime'  => '2016-11-22 16:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'EndTime'     => '2016-12-06 17:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday',
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'    => 'Each 2nd week',
+        'ParentID' => '497',
+
+        'StartTime'  => '2016-12-06 16:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-12-20 16:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Each 2nd week',
+
+        'ParentID' => '497',
+
+        'EndTime'     => '2016-12-20 17:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Developer meeting each 2nd Tuesday'
+    },
+    {
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-01-11 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Recurring'   => '1',
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'EndTime'     => '2016-01-11 10:00:00',
+
+        'ParentID' => undef,
+        'TeamID'   => undef,
+
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+            ]
+    },
+    {
+        'Title'  => 'Custom 1',
+        'TeamID' => undef,
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '516',
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-01-13 10:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-01-13 09:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '2'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-01-17 09:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+        'Title'      => 'Custom 1',
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '516',
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-01-17 10:00:00'
+    },
+    {
+        'EndTime'     => '2016-01-27 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Custom 1',
+
+        'ParentID' => '516',
+
+        'StartTime'  => '2016-01-27 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-01-31 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'ResourceID' => [
+            0
+        ],
+        'TeamID' => undef,
+        'Title'  => 'Custom 1',
+
+        'ParentID' => '516',
+
+        'EndTime'     => '2016-01-31 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-02-10 09:00:00',
+
+        'ParentID' => '516',
+        'TeamID'   => undef,
+
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-02-10 10:00:00'
+    },
+    {
+        'StartTime'   => '2016-02-14 09:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2016-02-14 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'ResourceID'  => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Custom 1',
+        'ParentID' => '516',
+
+    },
+    {
+
+        'ParentID' => '516',
+
+        'TeamID'     => undef,
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-02-24 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-02-24 09:00:00'
+    },
+    {
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-02-28 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Recurring'   => undef,
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'EndTime'     => '2016-02-28 10:00:00',
+
+        'ParentID' => '516',
+
+        'TeamID'     => undef,
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+            ]
+    },
+    {
+        'EndTime'     => '2016-03-09 10:00:00',
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'ResourceID'  => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Custom 1',
+        'ParentID' => '516',
+
+        'StartTime'  => '2016-03-09 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+
+        'ParentID' => '516',
+        'TeamID'   => undef,
+        'Title'    => 'Custom 1',
+
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-03-13 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-03-13 09:00:00'
+    },
+    {
+
+        'ParentID' => '516',
+        'TeamID'   => undef,
+
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-03-23 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-03-23 09:00:00'
+    },
+    {
+        'Description' => 'Start at Monday and repeat each 2nd Wednesday and Sunday.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-03-27 10:00:00',
+        'TeamID'      => undef,
+
+        'Title'      => 'Custom 1',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'   => '516',
+        'StartTime'  => '2016-03-27 09:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+
+        'ParentID' => undef,
+        'TeamID'   => undef,
+
+        'Title'      => 'Custom 2',
+        'ResourceID' => [
+            0
+        ],
+        'Recurring'   => '1',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'EndTime'     => '2016-01-12 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-01-12 09:00:00'
+    },
+    {
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-01-16 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-01-16 10:00:00',
+
+        'ParentID' => '529',
+
+        'TeamID'     => undef,
+        'Title'      => 'Custom 2',
+        'ResourceID' => [
+            0
+            ]
+    },
+    {
+
+        'ParentID' => '529',
+        'TeamID'   => undef,
+
+        'Title'      => 'Custom 2',
         'ResourceID' => [
             0
         ],
         'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-        'StartTime'   => '2016-01-12 09:00:00',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-01-31 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-01-31 09:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-02-16 09:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'TeamID'     => undef,
+
+        'Title'      => 'Custom 2',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '529',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-02-16 10:00:00'
+    },
+    {
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef,
+        'StartTime'  => '2016-03-16 09:00:00',
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'Title'      => 'Custom 2',
+        'TeamID'     => undef,
+
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '529',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-03-16 10:00:00'
+    },
+    {
+
+        'TeamID'     => undef,
+        'Title'      => 'Custom 2',
+        'ResourceID' => [
+            0
+        ],
+
+        'ParentID'    => '529',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-03-31 10:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-03-31 09:00:00',
+        'Location'    => undef,
         'TimezoneID'  => '2'
     },
     {
         'AllDay'     => undef,
-        'EndTime'    => '2016-02-12 10:00:00',
+        'CalendarID' => $Calendar{CalendarID},
+        'TimezoneID' => '2',
         'Location'   => undef,
+        'StartTime'  => '2016-04-16 09:00:00',
+        'ParentID'   => '529',
+
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'Custom 2',
+        'TeamID' => undef,
+
+        'EndTime'     => '2016-04-16 10:00:00',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef
+    },
+    {
+        'StartTime'   => '2016-05-16 09:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'EndTime'     => '2016-05-16 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'ResourceID'  => [
+            0
+        ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Custom 2',
+        'ParentID' => '529',
+
+    },
+    {
+
+        'ParentID' => '529',
+        'Title'    => 'Custom 2',
+        'TeamID'   => undef,
+
         'ResourceID' => [
             0
         ],
         'Recurring'   => undef,
-        'Title'       => 'Custom 2',
         'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'EndTime'     => '2016-05-31 10:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Location'    => undef,
         'TimezoneID'  => '2',
-        'StartTime'   => '2016-02-12 09:00:00',
+        'StartTime'   => '2016-05-31 09:00:00'
+    },
+    {
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-06-16 09:00:00',
+
+        'ParentID' => '529',
+        'TeamID'   => undef,
+        'Title'    => 'Custom 2',
+
+        'ResourceID' => [
+            0
+        ],
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-06-16 10:00:00'
+    },
+    {
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'EndTime'     => '2016-07-16 10:00:00',
+
+        'ParentID' => '529',
+        'TeamID'   => undef,
+        'Title'    => 'Custom 2',
+
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-07-16 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'EndTime'     => '2016-07-31 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'ResourceID'  => [
+            0
+        ],
+        'Title'  => 'Custom 2',
+        'TeamID' => undef,
+
+        'ParentID' => '529',
+
+        'StartTime'  => '2016-07-31 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'EndTime'     => '2016-08-16 10:00:00',
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'ResourceID'  => [
+            0
+        ],
+        'TeamID' => undef,
+
+        'Title'    => 'Custom 2',
+        'ParentID' => '529',
+
+        'StartTime'  => '2016-08-16 09:00:00',
+        'TimezoneID' => '2',
+        'Location'   => undef,
+        'CalendarID' => $Calendar{CalendarID},
+        'AllDay'     => undef
+    },
+    {
+        'StartTime'   => '2016-08-31 09:00:00',
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'Recurring'   => undef,
+        'EndTime'     => '2016-08-31 10:00:00',
+        'Title'       => 'Custom 2',
         'TeamID'      => undef,
 
-        'ParentID' => '199',
-
-        'CalendarID' => $Calendar{CalendarID},
-    },
-    {
-        'Recurring'  => undef,
         'ResourceID' => [
             0
         ],
-        'EndTime'     => '2016-03-12 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-03-12 09:00:00',
-        'Title'       => 'Custom 2',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
 
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '199',
-
+        'ParentID' => '529'
     },
     {
-        'CalendarID' => $Calendar{CalendarID},
-
-        'ParentID' => '199',
-
-        'TeamID'      => undef,
-        'StartTime'   => '2016-04-12 09:00:00',
-        'TimezoneID'  => '2',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-        'ResourceID'  => [
+        'ResourceID' => [
             0
         ],
-        'Recurring' => undef,
-        'AllDay'    => undef,
-        'Location'  => undef,
-        'EndTime'   => '2016-04-12 10:00:00'
+        'TeamID' => undef,
+        'Title'  => 'Custom 2',
+
+        'ParentID' => '529',
+
+        'EndTime'     => '2016-09-16 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-09-16 09:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef
     },
     {
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'EndTime'     => '2016-10-16 10:00:00',
+
+        'ParentID' => '529',
+
+        'TeamID'     => undef,
+        'Title'      => 'Custom 2',
+        'ResourceID' => [
+            0
+        ],
+        'Location'   => undef,
+        'TimezoneID' => '2',
+        'StartTime'  => '2016-10-16 09:00:00',
+        'AllDay'     => undef,
+        'CalendarID' => $Calendar{CalendarID},
+    },
+    {
+        'ResourceID' => [
+            0
+        ],
+        'Title'  => 'Custom 2',
         'TeamID' => undef,
 
-        'ParentID' => '199',
+        'ParentID' => '529',
 
-        'CalendarID' => $Calendar{CalendarID},
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'EndTime'    => '2016-05-12 10:00:00',
-        'Recurring'  => undef,
+        'EndTime'     => '2016-10-31 10:00:00',
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-10-31 09:00:00',
+        'TimezoneID'  => '2',
+        'Location'    => undef
+    },
+    {
         'ResourceID' => [
             0
         ],
+
+        'TeamID'   => undef,
+        'Title'    => 'Custom 2',
+        'ParentID' => '529',
+
+        'EndTime'     => '2016-11-16 10:00:00',
+        'Recurring'   => undef,
         'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
+        'CalendarID'  => $Calendar{CalendarID},
+        'AllDay'      => undef,
+        'StartTime'   => '2016-11-16 09:00:00',
         'TimezoneID'  => '2',
-        'StartTime'   => '2016-05-12 09:00:00'
+        'Location'    => undef
     },
     {
+        'Location'    => undef,
+        'TimezoneID'  => '2',
+        'StartTime'   => '2016-12-16 09:00:00',
+        'AllDay'      => undef,
+        'CalendarID'  => $Calendar{CalendarID},
+        'Recurring'   => undef,
+        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'EndTime'     => '2016-12-16 10:00:00',
+
+        'ParentID' => '529',
+        'Title'    => 'Custom 2',
+        'TeamID'   => undef,
+
+        'ResourceID' => [
+            0
+            ]
+    },
+    {
+        'ResourceID' => [
+            0
+        ],
         'TeamID' => undef,
+        'Title'  => 'Custom 2',
 
-        'ParentID' => '199',
+        'ParentID' => '529',
 
-        'CalendarID' => $Calendar{CalendarID},
-        'AllDay'     => undef,
-        'EndTime'    => '2016-06-12 10:00:00',
-        'Location'   => undef,
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'Title'       => 'Custom 2',
+        'EndTime'     => '2016-12-31 10:00:00',
         'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-06-12 09:00:00'
-    },
-    {
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-        'StartTime'   => '2016-07-12 09:00:00',
-        'TimezoneID'  => '2',
+        'Recurring'   => undef,
+        'CalendarID'  => $Calendar{CalendarID},
         'AllDay'      => undef,
-        'Location'    => undef,
-        'EndTime'     => '2016-07-12 10:00:00',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-
-        'ParentID'   => '199',
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'TeamID' => undef,
-
-        'ParentID' => '199',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'AllDay'     => undef,
-        'Location'   => undef,
-        'EndTime'    => '2016-08-12 10:00:00',
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Title'       => 'Custom 2',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
+        'StartTime'   => '2016-12-31 09:00:00',
         'TimezoneID'  => '2',
-        'StartTime'   => '2016-08-12 09:00:00'
-    },
-    {
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-09-12 09:00:00',
-        'Title'       => 'Custom 2',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'AllDay'     => undef,
-        'EndTime'    => '2016-09-12 10:00:00',
-        'Location'   => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '199',
-
-        'TeamID' => undef
-    },
-    {
-        'Recurring'  => undef,
-        'ResourceID' => [
-            0
-        ],
-        'EndTime'     => '2016-10-12 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-10-12 09:00:00',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '199',
-
-    },
-    {
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-11-12 09:00:00',
-        'EndTime'     => '2016-11-12 10:00:00',
-        'AllDay'      => undef,
-        'Location'    => undef,
-        'Recurring'   => undef,
-        'ResourceID'  => [
-            0
-        ],
-        'ParentID' => '199',
-
-        'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
-
-    },
-    {
-        'ResourceID' => [
-            0
-        ],
-        'Recurring'   => undef,
-        'Location'    => undef,
-        'AllDay'      => undef,
-        'EndTime'     => '2016-12-12 10:00:00',
-        'TimezoneID'  => '2',
-        'StartTime'   => '2016-12-12 09:00:00',
-        'Description' => 'Start on jan 12, repeat each month on 16th and 31th.',
-        'Title'       => 'Custom 2',
-
-        'TeamID'     => undef,
-        'CalendarID' => $Calendar{CalendarID},
-        'ParentID'   => '199',
-
+        'Location'    => undef
     }
 );
 

@@ -99,7 +99,7 @@ creates a new appointment.
         RecurrenceByMonth    => 1,                                       # (optional) Recurrence by month
         RecurrenceByDay      => 1,                                       # (optional) Recurrence by day
 
-        RecurrenceDays       => [1, 3, 5],                               # (optional) (1-Monday, 2-Tuesday, 3-Wednesday,...)
+        RecurrenceDays       => [1, 3, 5],                               # (optional) (1-Monday, 2-Tuesday,..., 7-Sunday)
         RecurrenceMonths     => [1, 3, 5],                               # (optional) (1-Jan, 2-Feb, 3-March,...)
         RecurrenceMonthDays  => [1, 15, 30],                             # (optional) (1st, 15th and 30th of month)
         RecurrenceFrequency  => 1,                                       # (optional) default 1.
@@ -130,6 +130,9 @@ sub AppointmentCreate {
             return;
         }
     }
+
+    # neede objects
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     # if Recurring is provided, additional parameters must be present
     if (
@@ -184,7 +187,7 @@ sub AppointmentCreate {
     }
 
     # check StartTime
-    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -206,7 +209,7 @@ sub AppointmentCreate {
     }
 
     # check EndTime
-    my $EndTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    my $EndTimeValid = $CalendarHelperObject->SystemTimeGet(
         String => $Param{EndTime},
     );
     if ( !$EndTimeValid ) {
@@ -256,6 +259,13 @@ sub AppointmentCreate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
+
+        # usually hour, minute and second = 0. In this case, take time from StartTime
+        $Param{RecurrenceUntil} = $CalendarHelperObject->TimeCheck(
+            OriginalTime => $Param{StartTime},
+            Time         => $Param{RecurrenceUntil},
+        );
+
         my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
@@ -974,7 +984,7 @@ updates an existing appointment.
         RecurrenceByMonth   => 2,                                       # (optional)
         RecurrenceByDay     => 5,                                       # (optional)
 
-        RecurrenceDays      => [1, 3, 5],                               # (optional) (1-Monday, 2-Tuesday, 3-Wednesday,...)
+        RecurrenceDays      => [1, 3, 5],                               # (optional) (1-Monday, 2-Tuesday,..., 7-Sunday)
         RecurrenceMonths    => [1, 3, 5],                               # (optional) (1-Jan, 2-Feb, 3-March,...)
         RecurrenceMonthDays => [1, 15, 30],                             # (optional) (1st, 15th and 30th of month)
         RecurrenceFrequency => 1,                                       # (optional)
@@ -1006,6 +1016,9 @@ sub AppointmentUpdate {
         }
     }
 
+    # needed objects
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
     # if Recurring is provided, additional parameter must be present
     if (
         $Param{Recurring}
@@ -1028,7 +1041,7 @@ sub AppointmentUpdate {
     $Param{RecurrenceFrequency} ||= 1;
 
     # check StartTime
-    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{StartTime},
     );
     if ( !$StartTimeSystem ) {
@@ -1040,7 +1053,7 @@ sub AppointmentUpdate {
     }
 
     # check EndTime
-    my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    my $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{EndTime},
     );
     if ( !$EndTimeSystem ) {
@@ -1092,7 +1105,14 @@ sub AppointmentUpdate {
 
     # check RecurrenceUntil
     if ( $Param{RecurrenceUntil} ) {
-        my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+
+        # usually hour, minute and second = 0. In this case, take time from StartTime
+        $Param{RecurrenceUntil} = $CalendarHelperObject->TimeCheck(
+            OriginalTime => $Param{StartTime},
+            Time         => $Param{RecurrenceUntil},
+        );
+
+        my $RecurrenceUntilSystem = $CalendarHelperObject->SystemTimeGet(
             String => $Param{RecurrenceUntil},
         );
         if (
@@ -1530,7 +1550,7 @@ sub _AppointmentRecurringCreate {
         );
 
         UNTIL_TIME:
-        while ( $StartTimeSystem < $RecurrenceUntilSystem ) {
+        while ( $StartTimeSystem <= $RecurrenceUntilSystem ) {
             $Step += $Param{Appointment}->{RecurrenceFrequency};
 
             # calculate recurring times
@@ -1870,8 +1890,9 @@ sub _CalculateRecurenceTime {
             SystemTime => $Param{OriginalTime},
             );
 
+        # loop through each day (max one year), and check if day matches.
         DAY:
-        for ( my $Counter = 0; $Counter < 31 * $Param{Appointment}->{RecurrenceFrequency}; $Counter++ ) {
+        for ( my $Counter = 0; $Counter < 31 * 366; $Counter++ ) {
 
             # Add one day
             $SystemTime += 24 * 60 * 60;
@@ -1881,7 +1902,7 @@ sub _CalculateRecurenceTime {
                 SystemTime => $SystemTime,
                 );
 
-            # check if month is OK
+            # Skip month if needed
             next DAY if ( $Month - $OriginalMonth ) % $Param{Appointment}->{RecurrenceFrequency};
 
             # next day if this day should be skipped
