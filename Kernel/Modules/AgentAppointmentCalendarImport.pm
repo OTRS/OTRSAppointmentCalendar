@@ -178,6 +178,7 @@ sub _Overview {
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import Calendar");
+    $Param{CalendarIDInvalid} //= '';
 
     my @CalendarList = $CalendarObject->CalendarList(
         UserID     => $Self->{UserID},
@@ -196,7 +197,7 @@ sub _Overview {
         Data         => \@CalendarData,
         Name         => 'CalendarID',
         ID           => 'CalendarID',
-        Class        => 'Modernize Validate_Required ' . $Param{CalendarIDInvalid} || '',
+        Class        => 'Modernize Validate_Required ' . $Param{CalendarIDInvalid},
         PossibleNone => 1,
         Title        => $LayoutObject->{LanguageObject}->Translate("Calendar"),
         SelectedID   => $Param{CalendarID} || '',
