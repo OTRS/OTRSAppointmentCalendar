@@ -68,9 +68,9 @@
                             <div id="CalendarIDServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                         </div>
 
-                        <label for="UpdateExistingCalendar">[% Translate("Update existing Calendar?") | html %]</label>
+                        <label for="UpdateExistingAppointments">[% Translate("Update existing Appointments?") | html %]</label>
                         <div class="Field">
-                            <input type="checkbox" value="1" name="UpdateExistingCalendar" id="UpdateExistingCalendar">
+                            <input type="checkbox" value="1" name="UpdateExistingAppointments" id="UpdateExistingAppointments">
                         </div>
                         <div class="Field SpacingTop">
                             <button class="Primary CallForAction" type="submit" value="[% Translate("Upload calendar") | html %]">
