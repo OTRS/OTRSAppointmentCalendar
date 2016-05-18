@@ -241,11 +241,7 @@ sub Run {
         );
 
         $LayoutObject->Block(
-            Name => 'AddLink',
-        );
-
-        $LayoutObject->Block(
-            Name => 'Import',
+            Name => 'MainActions',
         );
 
         $LayoutObject->Block(
