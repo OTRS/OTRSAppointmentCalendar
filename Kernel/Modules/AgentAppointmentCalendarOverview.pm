@@ -103,6 +103,9 @@ sub Run {
         # set initial view
         $Param{DefaultView} = $Preferences{UserCalendarOverviewDefaultView} // 'timelineWeek';
 
+        # get plugin list
+        $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
+
         # auto open appointment
         $Param{AppointmentID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
             Param => 'AppointmentID',
