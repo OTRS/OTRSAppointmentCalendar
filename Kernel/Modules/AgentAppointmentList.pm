@@ -195,6 +195,82 @@ sub Run {
         }
     }
 
+    elsif ( $Self->{Subaction} eq 'NonBusinessHours' ) {
+
+        # get working hours from sysconfig
+        my $TimeWorkingHours = $ConfigObject->Get('TimeWorkingHours');
+
+        # create non-business hour appointments for each day
+        my @NonBusinessHours;
+        for my $DayName ( sort keys %{$TimeWorkingHours} ) {
+
+            # day of the week
+            my $DoW = 0;    # Sun
+            if ( $DayName eq 'Mon' ) {
+                $DoW = 1;
+            }
+            elsif ( $DayName eq 'Tue' ) {
+                $DoW = 2;
+            }
+            elsif ( $DayName eq 'Wed' ) {
+                $DoW = 3;
+            }
+            elsif ( $DayName eq 'Thu' ) {
+                $DoW = 4;
+            }
+            elsif ( $DayName eq 'Fri' ) {
+                $DoW = 5;
+            }
+            elsif ( $DayName eq 'Sat' ) {
+                $DoW = 6;
+            }
+
+            my $StartTime = 0;
+            my $EndTime   = 0;
+
+            ENDTIME:
+            for ( $EndTime = 0; $EndTime < 24; $EndTime++ ) {
+
+                # is this working hour?
+                if ( grep { $_ eq $EndTime } @{ $TimeWorkingHours->{$DayName} } ) {
+
+                    # add appointment
+                    if ( $EndTime > $StartTime ) {
+                        push @NonBusinessHours, {
+                            StartTime => sprintf( '%02d:00:00', $StartTime ),
+                            EndTime   => sprintf( '%02d:00:00', $EndTime ),
+                            DoW       => [$DoW],
+                        };
+                    }
+
+                    # go to the end of the working hours
+                    for ( my $EndHour = $EndTime; $EndHour < 24; $EndHour++ ) {
+                        if ( !grep { $_ eq $EndHour } @{ $TimeWorkingHours->{$DayName} } ) {
+                            $EndTime = $StartTime = $EndHour;
+                            next ENDTIME;
+                        }
+                    }
+                }
+            }
+
+            # last appointment
+            if ( $StartTime < $EndTime ) {
+                push @NonBusinessHours, {
+                    StartTime => sprintf( '%02d:00:00', $StartTime ),
+                    EndTime   => sprintf( '%02d:00:00', $EndTime ),
+                    DoW       => [$DoW],
+                };
+            }
+        }
+
+        # build JSON output
+        $JSON = $LayoutObject->JSONEncode(
+            Data => (
+                \@NonBusinessHours,
+            ),
+        );
+    }
+
     elsif ( $Self->{Subaction} eq 'AppointmentDays' ) {
 
         # append midnight to the timestamps
@@ -246,10 +322,12 @@ sub Run {
                 my @Resources = ();
                 if ($ShowResources) {
                     for my $UserID ( @{ $Appointment{ResourceID} } ) {
-                        my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
-                            UserID => $UserID,
-                        );
-                        push @Resources, $User{UserFullname};
+                        if ($UserID) {
+                            my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
+                                UserID => $UserID,
+                            );
+                            push @Resources, $User{UserFullname};
+                        }
                     }
                 }
 
