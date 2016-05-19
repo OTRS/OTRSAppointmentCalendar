@@ -11,6 +11,8 @@ package Kernel::System::Calendar;
 use strict;
 use warnings;
 
+use Digest::MD5;
+
 use Kernel::System::EventHandler;
 use Kernel::Language qw(Translatable);
 use Kernel::System::VariableCheck qw(:all);
@@ -139,17 +141,21 @@ sub CalendarCreate {
     # return if calendar with same name already exists
     return if %Calendar;
 
+    # create salt string
+    my $SaltString = $Self->_GetRandomString( Length => 64 );
+
     my $SQL = '
         INSERT INTO calendar
-            (group_id, name, create_time, create_by, change_time, change_by, valid_id)
-        VALUES (?, ?, current_timestamp, ?, current_timestamp, ?, ?)
+            (group_id, name, salt_string, create_time, create_by, change_time, change_by, valid_id)
+        VALUES (?, ?, ?, current_timestamp, ?, current_timestamp, ?, ?)
     ';
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{GroupID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{UserID}, \$ValidID
+            \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{UserID}, \$Param{UserID},
+            \$ValidID
         ],
     );
 
@@ -563,6 +569,89 @@ sub CalendarPermissionGet {
 
     return $Result;
 }
+
+=item GetAccessToken()
+
+get access token for the calendar.
+
+    my $Token = $CalendarObject->GetAccessToken(
+        CalendarID => 1,              # (required) CalendarID
+        UserLogin  => 'agent-1',      # (required) User login
+    );
+
+returns:
+    $Token = 'rw';
+
+=cut
+
+sub GetAccessToken {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID UserLogin)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # create db object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL   => 'SELECT salt_string FROM calendar WHERE id = ?',
+        Bind  => [ \$Param{CalendarID} ],
+        Limit => 1,
+    );
+
+    # fetch the result
+    my $SaltString;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $SaltString = $Row[0];
+    }
+
+    return if !$SaltString;
+
+    # calculate md5 sum
+    my $String = "$Param{UserLogin}-$SaltString";
+    my $MD5    = Digest::MD5->new()->add($String)->hexdigest();
+
+    return $MD5;
+}
+
+sub _GetRandomString {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Length)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    return if !int $Param{Length};
+
+    my @Characters = (
+        '0' .. '9', 'a' .. 'z', '`', '~', '!', '@', '$', '%', '^', '&', '*', '(', ')', '-', '_',
+        '=', '+', '[', ']', ';', ':', '\'', '"', '\\', '|', '.', '<', ',', '>', '?', '/'
+    );
+
+    my $Result;
+    while ( $Param{Length}-- ) {
+        $Result .= $Characters[ rand @Characters ];
+    }
+
+    return $Result;
+}
+
 1;
 
 =back

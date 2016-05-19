@@ -104,11 +104,12 @@
                             <th>[% Translate("Changed") | html %]</th>
                             <th>[% Translate("Created") | html %]</th>
                             <th class="Center W10pc">[% Translate("Export") | html %]</th>
+                            <th class="Center W10pc">[% Translate("URL") | html %]</th>
                         </tr>
                     </thead>
                     <tbody>
 [% RenderBlockStart("Calendar") %]
-                        <tr>
+                        <tr[% IF Data.ValidID != 1 %] class="Invalid"[% END %]>
                             <td>
                                 <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Edit;CalendarID=[% Data.CalendarID | uri %]">
                                     [% Data.CalendarName | html %]
@@ -119,28 +120,46 @@
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
                             <td class="Center">
-                                <a href="[% Env("CONTEXT_PREFIX") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];UserID=[% Env("UserID") | uri %]">
+                                <a class="ExportLink" href="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Export calendar") | html %]">
                                     <i class="fa fa-download"></i>
-                                    <span class="InvisibleText">[% Translate("Export") | html %]</span>
+                                    <span class="InvisibleText">[% Translate("Export calendar") | html %]</span>
                                 </a>
+                            </td>
+                            <td class="Center">
+                                <button class="InlineButton CopyToClipboard" data-clipboard-text="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Copy public calendar URL") | html %]">
+                                    <i class="fa fa-clipboard"></i>
+                                    <span class="InvisibleText">[% Translate("Copy public calendar URL") | html %]</span>
+                                </button>
                             </td>
                         </tr>
 [% RenderBlockEnd("Calendar") %]
 [% RenderBlockStart("CalendarNoDataRow") %]
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 [% Translate("No data found.") | html %]
                             </td>
                         </tr>
 [% RenderBlockEnd("CalendarNoDataRow") %]
                         <tr class="FilterMessage Hidden">
-                            <td colspan="6" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
+                            <td colspan="7" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
                         </tr>
                     </tbody>
                 </table>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
     Core.UI.Table.InitTableFilter($('#FilterCalendars'), $('#User'));
+
+    var ClipboardJS = new Clipboard('.CopyToClipboard');
+    ClipboardJS.on('success', function (Event) {
+        $(Event.trigger).hide()
+            .fadeIn();
+        Event.clearSelection();
+    });
+
+    ClipboardJS.on('error', function(Event) {
+        Core.Form.ErrorTooltips.InitTooltip($(Event.trigger), 'Press Ctrl+C (Cmd+C) to copy to clipboard');
+        $(Event.trigger).focus();
+    });
 //]]></script>
 [% END %]
 [% RenderBlockEnd("Overview") %]

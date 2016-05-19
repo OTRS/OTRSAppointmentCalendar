@@ -98,26 +98,23 @@
                 <input type="text" id="RecurrenceCount" name="RecurrenceCount" value="[% Data.RecurrenceCount | html %]" size="1" maxlength="2" />
             </div>
         </fieldset>
-[% IF Data.PluginListStrg %]
+[% IF Data.PluginList %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Link") | html %]</span></legend>
-[% FOREACH Key IN Data.PluginData.keys %]
-            <label for="Plugin_[% Key | html %]">[% Translate(Data.PluginData.$Key.Name) | html %]:</label>
+[% FOREACH Key IN Data.PluginList.keys %]
+            <label>[% Translate(Data.PluginList.$Key.PluginName) | html %]:</label>
             <div class="Field">
-                <input type="text" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value="[% Data.PluginData.$Key.Value | html %]" class="PluginField W75pc"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
-[% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
-                <a class="RemoveButton" data-plugin="Plugin_[% Key | html %]" href="#" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>
+[% IF Data.PermissionLevel AND Data.PermissionLevel >= 2 %]
+                <input type="text" data-plugin-key="[% Key | html %]" data-plugin-url="[% Data.PluginList.$Key.PluginURL | html %]" class="PluginField W75pc" />
 [% END %]
-            </div>
-[% END %]
-            <label id="PluginListLabel" for="PluginList">[% Translate("Add") | html %]:</label>
-            <div class="Field">
-                [% Data.PluginListStrg %]
-[% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
-                <a class="AddButton" href="#" title="[% Translate("Add entry") | html %]"><i class="fa fa-plus-square-o"></i><span class="InvisibleText">[% Translate("Add") | html %]</span></a>
-[% END %]
+                <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList %]' />
+# keep following block on a single line, so :empty CSS selector would work!
+                <div id="PluginContainer_[% Key | html %]" class="PluginContainer">[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">
+                    <a target="_blank" href="[% Link.LinkURL %]">[% Link.LinkName | html %]</a>[% IF Data.PermissionLevel AND Data.PermissionLevel >= 2 %]<a class="RemoveButton" href="#" data-plugin-key="[% Key | html %]" data-link-id="[% Link.LinkID | html %]" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>[% END %]
+                </div>[% END %]</div>
             </div>
             <div class="Clear"></div>
+[% END %]
         </fieldset>
 [% END %]
     </form>
@@ -150,7 +147,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
 });
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
-Core.Agent.AppointmentCalendar.PluginInit($('#PluginList'), $('.AddButton'));
+Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'));
 [% END %]
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {

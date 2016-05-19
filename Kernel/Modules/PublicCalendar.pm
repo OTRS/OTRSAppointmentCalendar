@@ -24,24 +24,22 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
-    # set UserID to root because in public interface there is no user
-    $Self->{UserID} = 1;
-
     return $Self;
 }
 
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # needed objects
+    # get needed objects
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
 
     my %GetParam;
 
     # check needed parameters
-    for my $Needed (qw(CalendarID UserID)) {
+    for my $Needed (qw(CalendarID User Token)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
@@ -51,15 +49,47 @@ sub Run {
         }
     }
 
+    # get user
+    my %User = $UserObject->GetUserData(
+        User  => $GetParam{User},
+        Valid => 1,
+    );
+    if ( !%User ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('No such user!'),
+            Comment => Translatable('Please contact the admin.'),
+        );
+    }
+
     # get calendar
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $GetParam{CalendarID},
-        UserID     => $GetParam{UserID},
+        UserID     => $User{UserID},
     );
 
     if ( !%Calendar ) {
         return $LayoutObject->ErrorScreen(
-            Message => Translatable("No permission!"),
+            Message => Translatable('No permission!'),
+            Comment => Translatable('Please contact the admin.'),
+        );
+    }
+
+    if ( $Calendar{ValidID} != 1 ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('Invalid calendar!'),
+            Comment => Translatable('Please contact the admin.'),
+        );
+    }
+
+    # check access token
+    my $AccessToken = $CalendarObject->GetAccessToken(
+        CalendarID => $GetParam{CalendarID},
+        UserLogin  => $GetParam{User},
+    );
+
+    if ( $AccessToken ne $GetParam{Token} ) {
+        return $LayoutObject->ErrorScreen(
+            Message => Translatable('Invalid URL!'),
             Comment => Translatable('Please contact the admin.'),
         );
     }
@@ -67,7 +97,7 @@ sub Run {
     # get iCalendar string
     my $ICalString = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal')->Export(
         CalendarID => $Calendar{CalendarID},
-        UserID     => $GetParam{UserID},
+        UserID     => $User{UserID},
     );
 
     if ( !$ICalString ) {
@@ -87,7 +117,7 @@ sub Run {
     return $LayoutObject->Attachment(
         ContentType => 'text/calendar',
         Charset     => $LayoutObject->{Charset},
-        Content     => $ICalString || 'Test',
+        Content     => $ICalString,
         Filename    => $Filename,
         NoCache     => 1,
     );
