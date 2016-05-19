@@ -293,6 +293,10 @@ sub _Overview {
         Data => {},
     );
 
+    $LayoutObject->Block(
+        Name => 'OverviewResult',
+    );
+
     # get a local team object
     my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
@@ -301,15 +305,19 @@ sub _Overview {
         UserID => $Self->{UserID}
     );
     if (%TeamData) {
+
+        TEAMID:
         for my $TeamID ( sort { uc( $TeamData{$a} ) cmp uc( $TeamData{$b} ) } keys %TeamData ) {
+
             my %Team = $TeamObject->TeamGet(
                 TeamID => $TeamID,
                 UserID => $Self->{UserID},
             );
 
-            # set output class
+            next TEAMID if !IsHashRefWithData( \%Team );
+
             $LayoutObject->Block(
-                Name => 'Listn1',
+                Name => 'ListTeams',
                 Data => {
                     Subaction => 'Team',
                     %Team,
@@ -321,6 +329,41 @@ sub _Overview {
         $LayoutObject->Block(
             Name => 'NoDataFoundMsg',
             Data => {},
+        );
+    }
+
+    # get a local user object
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+    # get a list of all users
+    my %UserData = $UserObject->UserList(
+        Valid => 0,
+    );
+
+    # get user name
+    USERID:
+    for my $UserID ( sort keys %UserData ) {
+
+        my $UserName = $UserObject->UserName( UserID => $UserID );
+
+        next USERID if !$UserName;
+
+        $UserData{$UserID} .= " ($UserName)";
+    }
+
+    USERID:
+    for my $UserID ( sort { uc( $UserData{$a} ) cmp uc( $UserData{$b} ) } keys %UserData ) {
+
+        next USERID if !$UserID;
+
+        # set output class
+        $LayoutObject->Block(
+            Name => 'ListUsers',
+            Data => {
+                Name      => $UserData{$UserID},
+                Subaction => 'User',
+                ID        => $UserID,
+            },
         );
     }
 
