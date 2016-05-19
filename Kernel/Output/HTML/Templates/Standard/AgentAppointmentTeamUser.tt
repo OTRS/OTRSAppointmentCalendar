@@ -28,7 +28,15 @@
         </div>
         <div class="WidgetSimple">
             <div class="Header">
-                <h2><label for="FilterTeams">[% Translate("Filter") | html %]</label></h2>
+                <h2><label for="FilterTeams">[% Translate("Filter for agents") | html %]</label></h2>
+            </div>
+            <div class="Content">
+                <input type="text" id="FilterAgents" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterAgents" value=""  title="[% Translate("Filter for agents") | html %]"/>
+            </div>
+        </div>
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2><label for="FilterTeams">[% Translate("Filter for teams") | html %]</label></h2>
             </div>
             <div class="Content">
                 <input type="text" id="FilterTeams" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterTeams" value=""  title="[% Translate("Filter for teams") | html %]"/>
@@ -38,41 +46,37 @@
 
     <div class="ContentColumn">
         <div class="WidgetSimple">
+
+[% RenderBlockStart("OverviewResult") %]
             <div class="Header">
-                <h2>[% Translate("List") | html %]</h2>
+                <h2>[% Translate("Overview") | html %]</h2>
             </div>
-            <div class="Content">
-                <table class="DataTable" id="AppointmentTeams">
-                    <thead>
-                        <tr>
-                            <th>[% Translate("Name") | html %]</th>
-                            <th>[% Translate("Comment") | html %]</th>
-                            <th>[% Translate("Created") | html %]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-[% RenderBlockStart("Listn1") %]
-                        <tr>
-                            <td>
-                                <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=[% Data.Subaction | uri %];ID=[% Data.ID | uri %]" class="AsBlock">[% Data.Name | html %]</a>
-                            </td>
-                            <td>[% Data.Comment | html %]</td>
-                            <td>[% Data.CreateTime | Localize("TimeShort") %]</td>
-                        </tr>
-[% RenderBlockEnd("Listn1") %]
+            <div class="Content LayoutGrid ColumnsWithSpacing">
+                <div class="Size1of2">
+                    <ul class="Tablelike" id="Users">
+                        <li class="Header">[% Translate("Agents") | html %]</li>
+                        <li class="FilterMessage Hidden">[% Translate("No matches found.") | html %]</li>
+[% RenderBlockStart("ListUsers") %]
+                        <li><a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=[% Data.Subaction | uri %];ID=[% Data.ID | uri %]" class="AsBlock">[% Data.Name | html %]</a></li>
+[% RenderBlockEnd("ListUsers") %]
+                    </ul>
+                </div>
+                <div class="Size1of2">
+                    <ul class="Tablelike" id="Groups">
+                        <li class="Header">[% Translate("Teams") | html %]</li>
+                        <li class="FilterMessage Hidden">[% Translate("No matches found.") | html %]</li>
 [% RenderBlockStart("NoDataFoundMsg") %]
-                        <tr>
-                            <td colspan="3">
-                                [% Translate("No data found.") | html %]
-                            </td>
-                        </tr>
+                        <li>[% Translate("No data found.") | html %]</li>
 [% RenderBlockEnd("NoDataFoundMsg") %]
-                        <tr class="FilterMessage Hidden">
-                            <td colspan="3" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
-                        </tr>
-                    </tbody>
-                </table>
+[% RenderBlockStart("ListTeams") %]
+                        <li><a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=[% Data.Subaction | uri %];ID=[% Data.ID | uri %]" class="AsBlock">[% Data.Name | html %]</a></li>
+[% RenderBlockEnd("ListTeams") %]
+                    </ul>
+                </div>
+                <div class="Clear"></div>
             </div>
+[% RenderBlockEnd("OverviewResult") %]
+
         </div>
     </div>
     <div class="Clear"></div>
