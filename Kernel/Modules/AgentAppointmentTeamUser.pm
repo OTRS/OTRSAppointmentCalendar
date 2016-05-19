@@ -124,6 +124,95 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
+    # user <-> team n:1  interface to assign teams to a user
+    # ------------------------------------------------------------ #
+    if ( $Self->{Subaction} eq 'User' ) {
+
+        # get Team data
+        my $ID = $ParamObject->GetParam( Param => 'ID' );
+
+        my %TeamData = $TeamObject->TeamGet(
+            TeamID => $ID,
+            UserID => $Self->{UserID},
+        );
+
+        # get user list, with the full name in the value
+        my %UserData = $Kernel::OM->Get('Kernel::System::User')->UserList( Valid => 1 );
+
+        for my $UserID ( sort keys %UserData ) {
+            my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData( UserID => $UserID );
+            $UserData{$UserID} = "$User{UserLastname} $User{UserFirstname} ($User{UserLogin})";
+        }
+
+        # get members of the the Team
+        my %Member = $TeamObject->TeamUserList(
+            TeamID => $ID,
+            UserID => $Self->{UserID},
+        );
+
+        my $Output = $LayoutObject->Header();
+        $Output .= $LayoutObject->NavigationBar();
+        $Output .= $Self->_Change(
+            Selected => \%Member,
+            Data     => \%UserData,
+            ID       => $TeamData{ID},
+            Name     => $TeamData{Name},
+            Type     => 'Team',
+        );
+        $Output .= $LayoutObject->Footer();
+
+        return $Output;
+    }
+
+    # ------------------------------------------------------------ #
+    # add or remove users to a Team
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'ChangeUser' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        # to be set members of the team
+        my %NewUsers = map { $_ => $_ } $ParamObject->GetArray( Param => 'Team' );
+
+        # get the team id
+        my $ID = $ParamObject->GetParam( Param => 'ID' );
+
+        # get user list
+        my %TeamUsers = $TeamObject->TeamUserList(
+            TeamID => $ID,
+            UserID => $Self->{UserID},
+        );
+
+        USERID:
+        for my $UserID ( sort keys %NewUsers ) {
+
+            next USERID if !$UserID;              # for select all checkbox with ID 0
+            next USERID if $TeamUsers{$UserID};
+
+            my $Value = $TeamObject->TeamUserAdd(
+                TeamUserID => $UserID,
+                TeamID     => $ID,
+                UserID     => $Self->{UserID},
+            );
+        }
+
+        USERID:
+        for my $UserID ( sort keys %TeamUsers ) {
+
+            next USERID if $NewUsers{$UserID};
+
+            $TeamObject->TeamUserRemove(
+                TeamUserID => $UserID,
+                TeamID     => $ID,
+                UserID     => $Self->{UserID},
+            );
+        }
+
+        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+    }
+
+    # ------------------------------------------------------------ #
     # overview
     # ------------------------------------------------------------ #
     my $Output = $LayoutObject->Header();
