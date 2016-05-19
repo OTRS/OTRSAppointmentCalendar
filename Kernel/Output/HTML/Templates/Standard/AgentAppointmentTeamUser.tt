@@ -123,7 +123,12 @@
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>
+[% RenderBlockStart("ChangeHeaderTeam") %]
                     [% Translate("Change Agent Relations for Team") | html %] [% Data.Name | html %]
+[% RenderBlockEnd("ChangeHeaderTeam") %]
+[% RenderBlockStart("ChangeHeaderUser") %]
+                    [% Translate("Change Team Relations for Agent") | html %] [% Data.Name | html %]
+[% RenderBlockEnd("ChangeHeaderUser") %]
                 </h2>
             </div>
             <div class="Content ">
@@ -154,7 +159,7 @@
                         <tbody>
 [% RenderBlockStart("ChangeRow") %]
                             <tr>
-                                <td><a href="[% Env("Baselink") %]Action=Admin[% Data.NeType | uri %];Subaction=Change;ID=[% Data.ID | uri %]">[% Data.Name | html %]</a></td>
+                                <td><a href="[% Env("Baselink") %]Action=[% Data.AdminAction | uri %];Subaction=Change;ID=[% Data.ID | uri %]">[% Data.Name | html %]</a></td>
                                 <td class="[% Data.Mark | html %]">
                                     <input type="checkbox" name="[% Data.Type | html %]" title="[% Translate("Toggle active state for %s", Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
                                 </td>

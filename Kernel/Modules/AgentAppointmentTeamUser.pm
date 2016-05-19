@@ -146,7 +146,7 @@ sub Run {
 
         # get members of the the Team
         my %Member = $TeamObject->UserTeamList(
-            UserID => $Self->{UserID},
+            UserID => $UserID,
         );
 
         my $Output = $LayoutObject->Header();
@@ -225,9 +225,10 @@ sub Run {
 sub _Change {
     my ( $Self, %Param ) = @_;
 
-    my %Data   = %{ $Param{Data} };
-    my $Type   = $Param{Type} || 'User';
-    my $NeType = $Type eq 'Team' ? 'User' : 'Team';
+    my %Data        = %{ $Param{Data} };
+    my $Type        = $Param{Type} || 'User';
+    my $NeType      = $Type eq 'Team' ? 'User' : 'Team';
+    my $AdminAction = $Type eq 'Team' ? 'AdminUser' : 'AgentAppointmentTeam';
 
     my %VisibleType = (
         Team => 'Team',
@@ -249,6 +250,11 @@ sub _Change {
     );
 
     $LayoutObject->Block(
+        Name => 'ChangeHeader' . $Type,
+        Data => \%Param,
+    );
+
+    $LayoutObject->Block(
         Name => 'ChangeHeader',
         Data => {
             %Param,
@@ -266,11 +272,12 @@ sub _Change {
             Name => 'ChangeRow',
             Data => {
                 %Param,
-                Name     => $Param{Data}->{$ID},
-                NeType   => $NeType,
-                Type     => $Type,
-                ID       => $ID,
-                Selected => $Selected,
+                Name        => $Param{Data}->{$ID},
+                NeType      => $NeType,
+                Type        => $Type,
+                ID          => $ID,
+                Selected    => $Selected,
+                AdminAction => $AdminAction,
             },
         );
     }

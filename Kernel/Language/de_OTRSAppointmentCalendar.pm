@@ -92,6 +92,7 @@ sub Data {
     # Template: AgentAppointmentTeamUser
     $Self->{Translation}->{'Manage Team-Agent Relations'} = 'Team-Agenten-Zuordnungen verwalten';
     $Self->{Translation}->{'Change Agent Relations for Team'} = 'Ändere Agenten-Zuordnungen für Team';
+    $Self->{Translation}->{'Change Team Relations for Agent'} = 'Ändere Team-Zuordnungen für Agent';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Das System konnten den Kalender nicht erstellen!';
