@@ -247,7 +247,7 @@ sub Run {
                     && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
                     && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
                     && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
-                )
+                    )
                 {
                     push @{ $AppointmentA->{DoW} }, @{ $AppointmentB->{DoW} };
                     $AppointmentB = undef;

@@ -675,8 +675,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear} &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
