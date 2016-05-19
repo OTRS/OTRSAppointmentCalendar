@@ -65,7 +65,7 @@
         <File Permission="640" Location="Kernel/System/Calendar/Helper.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Team.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Plugin.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Plugin/TicketNumber.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
@@ -85,6 +85,8 @@
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
@@ -135,6 +137,7 @@
             <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
             <Column Name="group_id" Required="true" Type="INTEGER"/>
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
+            <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
@@ -279,6 +282,9 @@
             <ColumnAdd Name="recur_days" Type="VARCHAR" Size="20"/>
             <ColumnAdd Name="recur_months" Type="VARCHAR" Size="30"/>
             <ColumnAdd Name="recur_month_days" Type="VARCHAR" Size="70"/>
+        </TableAlter>
+        <TableAlter Name="calendar" Version="1.1.0.12">
+            <ColumnAdd Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
         </TableAlter>
     </DatabaseUpgrade>
 
