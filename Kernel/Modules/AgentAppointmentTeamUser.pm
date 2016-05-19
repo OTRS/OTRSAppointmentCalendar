@@ -32,10 +32,11 @@ sub Run {
     # get local objects
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
     my $TeamObject   = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
     # ------------------------------------------------------------ #
-    # team <-> user n:1  interface to assign users to a team
+    # team <-> user interface to assign users to a team
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Team' ) {
 
@@ -124,29 +125,27 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
-    # user <-> team n:1  interface to assign teams to a user
+    # user <-> team interface to assign teams to a user
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'User' ) {
 
-        # get Team data
-        my $ID = $ParamObject->GetParam( Param => 'ID' );
+        # get user data
+        my $UserID = $ParamObject->GetParam( Param => 'ID' );
 
-        my %TeamData = $TeamObject->TeamGet(
-            TeamID => $ID,
+        my %UserData = $UserObject->GetUserData(
+            UserID => $UserID,
+        );
+
+        $UserData{Name} = "$UserData{UserLastname} $UserData{UserFirstname} ($UserData{UserLogin})";
+
+        # get a list of teams
+        my %TeamList = $TeamObject->TeamList(
+            Valid  => 1,
             UserID => $Self->{UserID},
         );
 
-        # get user list, with the full name in the value
-        my %UserData = $Kernel::OM->Get('Kernel::System::User')->UserList( Valid => 1 );
-
-        for my $UserID ( sort keys %UserData ) {
-            my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData( UserID => $UserID );
-            $UserData{$UserID} = "$User{UserLastname} $User{UserFirstname} ($User{UserLogin})";
-        }
-
         # get members of the the Team
-        my %Member = $TeamObject->TeamUserList(
-            TeamID => $ID,
+        my %Member = $TeamObject->UserTeamList(
             UserID => $Self->{UserID},
         );
 
@@ -154,10 +153,10 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $Output .= $Self->_Change(
             Selected => \%Member,
-            Data     => \%UserData,
-            ID       => $TeamData{ID},
-            Name     => $TeamData{Name},
-            Type     => 'Team',
+            Data     => \%TeamList,
+            ID       => $UserData{UserID},
+            Name     => $UserData{Name},
+            Type     => 'User',
         );
         $Output .= $LayoutObject->Footer();
 
