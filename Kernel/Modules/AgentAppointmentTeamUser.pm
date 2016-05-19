@@ -32,10 +32,11 @@ sub Run {
     # get local objects
     my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
     my $TeamObject   = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
     # ------------------------------------------------------------ #
-    # team <-> user n:1  interface to assign users to a team
+    # team <-> user interface to assign users to a team
     # ------------------------------------------------------------ #
     if ( $Self->{Subaction} eq 'Team' ) {
 
@@ -79,6 +80,93 @@ sub Run {
     # add or remove users to a Team
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'ChangeTeam' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        # to be set members of the team
+        my %NewUsers = map { $_ => $_ } $ParamObject->GetArray( Param => 'Team' );
+
+        # get the team id
+        my $ID = $ParamObject->GetParam( Param => 'ID' );
+
+        # get user list
+        my %TeamUsers = $TeamObject->TeamUserList(
+            TeamID => $ID,
+            UserID => $Self->{UserID},
+        );
+
+        USERID:
+        for my $UserID ( sort keys %NewUsers ) {
+
+            next USERID if !$UserID;              # for select all checkbox with ID 0
+            next USERID if $TeamUsers{$UserID};
+
+            my $Value = $TeamObject->TeamUserAdd(
+                TeamUserID => $UserID,
+                TeamID     => $ID,
+                UserID     => $Self->{UserID},
+            );
+        }
+
+        USERID:
+        for my $UserID ( sort keys %TeamUsers ) {
+
+            next USERID if $NewUsers{$UserID};
+
+            $TeamObject->TeamUserRemove(
+                TeamUserID => $UserID,
+                TeamID     => $ID,
+                UserID     => $Self->{UserID},
+            );
+        }
+
+        return $LayoutObject->Redirect( OP => "Action=$Self->{Action}" );
+    }
+
+    # ------------------------------------------------------------ #
+    # user <-> team interface to assign teams to a user
+    # ------------------------------------------------------------ #
+    if ( $Self->{Subaction} eq 'User' ) {
+
+        # get user data
+        my $UserID = $ParamObject->GetParam( Param => 'ID' );
+
+        my %UserData = $UserObject->GetUserData(
+            UserID => $UserID,
+        );
+
+        $UserData{Name} = "$UserData{UserLastname} $UserData{UserFirstname} ($UserData{UserLogin})";
+
+        # get a list of teams
+        my %TeamList = $TeamObject->TeamList(
+            Valid  => 1,
+            UserID => $Self->{UserID},
+        );
+
+        # get members of the the Team
+        my %Member = $TeamObject->UserTeamList(
+            UserID => $Self->{UserID},
+        );
+
+        my $Output = $LayoutObject->Header();
+        $Output .= $LayoutObject->NavigationBar();
+        $Output .= $Self->_Change(
+            Selected => \%Member,
+            Data     => \%TeamList,
+            ID       => $UserData{UserID},
+            Name     => $UserData{Name},
+            Type     => 'User',
+        );
+        $Output .= $LayoutObject->Footer();
+
+        return $Output;
+    }
+
+    # ------------------------------------------------------------ #
+    # add or remove users to a Team
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'ChangeUser' ) {
 
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();

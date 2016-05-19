@@ -731,6 +731,70 @@ sub TeamUserList {
     return %Data;
 }
 
+=item UserTeamList()
+
+return team list for a user as a hash
+
+    my %List = $TeamObject->UserTeamList(
+        UserID => 123,
+    );
+
+=cut
+
+sub UserTeamList {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # create cache key
+    my $CacheKey = "UserTeamList::$Param{UserID}";
+
+    # get local cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+    # check cache
+    my $Cache = $CacheObject->Get(
+        Key  => $CacheKey,
+        Type => $Self->{CacheType},
+    );
+    return %{$Cache} if $Cache;
+
+    # get local database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
+        SQL => 'SELECT team_id
+                    FROM calendar_team_user
+                    WHERE user_id = ?',
+        Bind => [ \$Param{UserID}, ],
+    );
+
+    # fetch the result
+    my %Data;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $Data{ $Row[0] } = $Row[0];
+    }
+
+    # set cache
+    $CacheObject->Set(
+        Key   => $CacheKey,
+        Value => \%Data,
+        Type  => $Self->{CacheType},
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return %Data;
+}
+
 1;
 
 =back
