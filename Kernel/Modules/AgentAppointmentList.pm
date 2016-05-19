@@ -263,6 +263,23 @@ sub Run {
             }
         }
 
+        # collapse appointments with same start and end times
+        for my $AppointmentA (@NonBusinessHours) {
+            for my $AppointmentB (@NonBusinessHours) {
+                if (
+                    $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
+                    && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
+                    && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
+                    && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
+                )
+                {
+                    push @{ $AppointmentA->{DoW} }, @{ $AppointmentB->{DoW} };
+                    $AppointmentB = undef;
+                }
+            }
+        }
+        @NonBusinessHours = grep { scalar keys %{$_} } @NonBusinessHours;
+
         # build JSON output
         $JSON = $LayoutObject->JSONEncode(
             Data => (
