@@ -264,6 +264,12 @@ sub Run {
                 ValidID => $Calendar->{ValidID},
             );
 
+            # get access tokens
+            $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
+                CalendarID => $Calendar->{CalendarID},
+                UserLogin  => $Self->{UserLogin},
+            );
+
             $LayoutObject->Block(
                 Name => 'Calendar',
                 Data => {

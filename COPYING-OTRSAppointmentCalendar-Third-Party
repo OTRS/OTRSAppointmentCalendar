@@ -1,0 +1,19 @@
+# --
+# A list of all included third party libraries.
+# --
+
+# --
+# JavaScript
+# --
+
+o Name:    FullCalendar
+  Web:     http://fullcalendar.io/
+  License: MIT License - http://www.opensource.org/licenses/mit-license.php
+
+o Name:    FullCalendar Scheduler
+  Web:     http://fullcalendar.io/scheduler/
+  License: GPL License - http://www.gnu.org/licenses/gpl-3.0.en.html
+
+o Name:    clipboard.js
+  Web:     https://clipboardjs.com/
+  License: MIT License - https://zenorocha.mit-license.org/

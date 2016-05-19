@@ -156,6 +156,7 @@
                 </NavBar>
                 <Loader>
                     <CSS>Core.AppointmentCalendar.Manage.css</CSS>
+                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
