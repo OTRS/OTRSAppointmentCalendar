@@ -180,7 +180,26 @@ Core.Agent.AppointmentCalendar.Init({
         ListAction: [% Data.ListAction | JSON %],
         DaysSubacton: [% Data.DaysSubaction | JSON %]
     },
-    AppointmentID: [% Data.AppointmentID | JSON %]
+    AppointmentID: [% Data.AppointmentID | JSON %],
+    NonBusinessHours: {
+        url: Core.Config.Get('CGIHandle'),
+        type: 'POST',
+        data: {
+            ChallengeToken: $("#ChallengeToken").val(),
+            Action: 'AgentAppointmentList',
+            Subaction: 'NonBusinessHours'
+        },
+        color: '#D7D7D7',
+        eventDataTransform: function(NonBusinessHoursData) {
+            return {
+                id: 'nonBusinessHours',
+                start: NonBusinessHoursData.StartTime,
+                end: NonBusinessHoursData.EndTime,
+                rendering: 'background',
+                dow: NonBusinessHoursData.DoW
+            };
+        }
+    }
 });
 
 var EventSources = {
@@ -192,7 +211,7 @@ var EventSources = {
             ChallengeToken: $("#ChallengeToken").val(),
             Action: 'AgentAppointmentList',
             Subaction: 'ListAppointments',
-            CalendarID: [% Data.CalendarID | JSON %],
+            CalendarID: [% Data.CalendarID | JSON %]
         },
         color: [% Data.CalendarColor | JSON %],
         startParam: 'StartTime',

@@ -65,6 +65,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
+     * @param {Object} Params.NonBusinessHours - Object with non-business hours parameters.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Integer} Params.AppointmentID - Auto open appointment edit screen with specified appointment.
      * @description
@@ -102,11 +103,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             timeFormat: 'HH:mm',
             slotLabelFormat: 'HH:mm',
             titleFormat: 'D MMM YYYY #W',
-            businessHours: {
-                start: '08:00',
-                end: '18:00',
-                dow: [ 1, 2, 3, 4, 5 ]
-            },
             eventLimit: true,
             height: 600,
             editable: true,
@@ -309,6 +305,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventMouseout: function() {
                 $('.AppointmentTooltip').fadeOut("fast").remove();
             },
+            eventSources: Params.NonBusinessHours,
             resources: Params.Resources.ResourceJSON,
             resourceColumns: Params.Resources.ResourceColumns,
             resourceLabelText: Params.Resources.ResourceText
