@@ -171,39 +171,38 @@ sub Run {
         # challenge token check for write action
         $LayoutObject->ChallengeTokenCheck();
 
-        # to be set members of the team
-        my %NewUsers = map { $_ => $_ } $ParamObject->GetArray( Param => 'Team' );
+        # to set the new team assignments for the user
+        my %NewTeams = map { $_ => $_ } $ParamObject->GetArray( Param => 'User' );
 
-        # get the team id
+        # get the user id
         my $ID = $ParamObject->GetParam( Param => 'ID' );
 
-        # get user list
-        my %TeamUsers = $TeamObject->TeamUserList(
-            TeamID => $ID,
+        # get a list of teams
+        my %TeamList = $TeamObject->TeamList(
             UserID => $Self->{UserID},
         );
 
-        USERID:
-        for my $UserID ( sort keys %NewUsers ) {
+        TEAMID:
+        for my $TeamID ( sort keys %NewTeams ) {
 
-            next USERID if !$UserID;              # for select all checkbox with ID 0
-            next USERID if $TeamUsers{$UserID};
+            next TEAMID if !$TeamID;
+            next TEAMID if $TeamList{$TeamID};
 
             my $Value = $TeamObject->TeamUserAdd(
-                TeamUserID => $UserID,
-                TeamID     => $ID,
+                TeamUserID => $ID,
+                TeamID     => $TeamID,
                 UserID     => $Self->{UserID},
             );
         }
 
-        USERID:
-        for my $UserID ( sort keys %TeamUsers ) {
+        TEAMID:
+        for my $TeamID ( sort keys %TeamList ) {
 
-            next USERID if $NewUsers{$UserID};
+            next TEAMID if $NewTeams{$TeamID};
 
             $TeamObject->TeamUserRemove(
-                TeamUserID => $UserID,
-                TeamID     => $ID,
+                TeamUserID => $ID,
+                TeamID     => $TeamID,
                 UserID     => $Self->{UserID},
             );
         }
