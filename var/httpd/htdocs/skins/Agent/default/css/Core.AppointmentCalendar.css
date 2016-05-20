@@ -214,6 +214,14 @@
     }
 
     .fc-following {
+        padding-top: 2px !important;
+    }
+
+    .fc-widget-header .fc-following {
+        text-transform: uppercase;
+    }
+
+    .fc-resource-area ~ .fc-time-area .fc-following {
         padding-top: 1px !important;
     }
 
