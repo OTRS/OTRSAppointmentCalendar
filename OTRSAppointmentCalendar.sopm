@@ -15,7 +15,6 @@
         <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Fast.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained/Fast.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Text/vFile/asData.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Data/ICal.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Property.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry.pm"/>
@@ -36,6 +35,9 @@
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/Leapyear.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Date/ICal/Duration.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Devel/StackTrace.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Devel/StackTrace/Frame.pm"/>
+        <File Permission="640" Location="Kernel/cpan-lib/Text/vFile/asData.pm"/>
         <File Permission="640" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm"/>
