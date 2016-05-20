@@ -3,6 +3,47 @@
 # --
 
 # --
+# Perl
+# --
+
+o Name:    CPAN Class::Accessor
+  Web:     n/a
+  License: # GNU v1 - http://dev.perl.org/licenses/gpl1.html
+           # Artistic v1 - http://dev.perl.org/licenses/artistic.html
+  Note:    # Copyright 2009 Marty Pauley.
+           # Original author Michael G Schwern.
+
+o Name:    CPAN Class::ReturnValue
+  Web:     n/a
+  License: # GNU v1 - http://dev.perl.org/licenses/gpl1.html
+           # Artistic v1 - http://dev.perl.org/licenses/artistic.html
+  Note:    # Copyright (c) 2002,2003,2005,2007 Jesse Vincent.
+
+o Name:    CPAN Data::ICal
+  Web:     n/a
+  License: # GNU v1 - http://dev.perl.org/licenses/gpl1.html
+           # Artistic v1 - http://dev.perl.org/licenses/artistic.html
+  Note:    # Copyright (c) 2005 - 2015, Best Practical Solutions, LLC. All rights reserved.
+
+o Name:    CPAN Date::ICal
+  Web:     n/a
+  License: # GNU v1 - http://dev.perl.org/licenses/gpl1.html
+           # Artistic v1 - http://dev.perl.org/licenses/artistic.html
+           # GNU v2 - http://www.gnu.org/licenses/gpl.html
+  Note:    # Author Rich Bowen and the Reefknot team.
+
+o Name:    CPAN Devel::StackTrace
+  Web:     n/a
+  License: # Artistic v2 - http://www.opensource.org/licenses/artistic-license-2.0.php
+  Note:    # Copyright (c) 2000 - 2016 by David Rolsky.
+
+o Name:    CPAN Text::vFile::asData
+  Web:     n/a
+  License: # GNU v1 - http://dev.perl.org/licenses/gpl1.html
+           # Artistic v1 - http://dev.perl.org/licenses/artistic.html
+  Note:    # Copyright 2004, 2010, 2013 Richard Clamp and Nik Clayton. All Rights Reserved.
+
+# --
 # JavaScript
 # --
 
