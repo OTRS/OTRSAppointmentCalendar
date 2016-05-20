@@ -214,8 +214,7 @@
     }
 
     .fc-following {
-        text-transform: uppercase;
-        padding-top: 2px !important;
+        padding-top: 1px !important;
     }
 
     .fc-month-view th.fc-widget-header,
