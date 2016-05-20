@@ -448,13 +448,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
+     * @public
      * @name ShowWaitingDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @description
-     *      Shows waiting dialog until dialog screen is ready.
+     *      Shows waiting dialog.
      */
-    function ShowWaitingDialog() {
+    TargetNS.ShowWaitingDialog = function () {
         Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
     }
 
@@ -576,7 +576,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         function EditDialog() {
-            ShowWaitingDialog();
+            TargetNS.ShowWaitingDialog();
             Core.AJAX.FunctionCall(
                 Core.Config.Get('CGIHandle'),
                 Data,
