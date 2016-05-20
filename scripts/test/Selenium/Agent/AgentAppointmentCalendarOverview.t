@@ -85,6 +85,7 @@ $Selenium->RunTest(
         my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
         my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
         my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
+        my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
 
         my $RandomID = $Helper->GetRandomID();
 
@@ -128,7 +129,7 @@ $Selenium->RunTest(
         # create test user
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
-            Groups   => [$GroupName],
+            Groups   => [ 'users', $GroupName ],
             Language => $Language,
         ) || die "Did not get test user";
 
@@ -173,6 +174,31 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
+        # create a test ticket
+        my $TicketID = $TicketObject->TicketCreate(
+            Title        => 'Link Ticket',
+            Queue        => 'Raw',
+            Lock         => 'unlock',
+            Priority     => '3 normal',
+            State        => 'open',
+            CustomerNo   => '123465',
+            CustomerUser => 'customer@example.com',
+            OwnerID      => $UserID,
+            UserID       => $UserID,
+        );
+        $Self->True(
+            $TicketID,
+            "TicketCreate() - $TicketID",
+        );
+        my $TicketNumber = $TicketObject->TicketNumberLookup(
+            TicketID => $TicketID,
+            UserID   => $UserID,
+        );
+        $Self->True(
+            $TicketNumber,
+            "TicketNumberLookup() - $TicketNumber",
+        );
+
         # go to calendar overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
 
@@ -201,7 +227,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # elements that are not allowed in dialog
-        for my $Element (qw( EditFormDelete EditFormCopy)) {
+        for my $Element (qw(EditFormDelete EditFormCopy)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -215,8 +241,28 @@ $Selenium->RunTest(
             "return \$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'EndHour',      'name' )->send_keys('18');
+        $Selenium->find_element( '.PluginField', 'css' )->send_keys($TicketNumber);
+
+        # wait for autocomplete to load
+        $Selenium->WaitFor(
+            JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length'
+        );
+
+        # link the ticket
+        $Selenium->execute_script(
+            "return \$('li.ui-menu-item').click();"
+        );
+
+        # verify correct ticket is listed
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
             ),
-            $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
+            "$TicketNumber Link Ticket",
+            'Link ticket visible',
+        );
 
         # click on Save
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
@@ -236,7 +282,55 @@ $Selenium->RunTest(
             'First appointment visible',
         );
 
-        # click again on the timeline view for an appointment dialog
+        # go to the ticket zoom screen
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentTicketZoom;TicketID=${TicketID}");
+
+        # find link to the appointment on page
+        $Selenium->find_element( 'a.LinkObjectLink', 'css' )->VerifiedClick();
+
+        # wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check data
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#Title').val();",
+            ),
+            'Appointment 1',
+            'Title matches',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#CalendarID').val();",
+            ),
+            $Calendar1{CalendarID},
+            'Calendar matches',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('#EndHour').val();",
+            ),
+            '18',
+            'End time matches',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
+            ),
+            "$TicketNumber Link Ticket",
+            'Link ticket matches',
+        );
+
+        # cancel the dialog
+        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+
+        # go to previous week in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # click on the timeline view for another appointment dialog
         $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
@@ -248,8 +342,8 @@ $Selenium->RunTest(
             "return \$('#CalendarID').val("
                 . $Calendar2{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
-            ),
-            $Selenium->find_element( 'AllDay', 'name' )->click();
+        );
+        $Selenium->find_element( 'AllDay', 'name' )->click();
 
         # click on Save
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
