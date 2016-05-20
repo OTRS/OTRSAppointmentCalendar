@@ -65,7 +65,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
-     * @param {Object} Params.NonBusinessHours - Object with non-business hours parameters.
+     * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Integer} Params.AppointmentID - Auto open appointment edit screen with specified appointment.
      * @description
@@ -305,7 +305,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventMouseout: function() {
                 $('.AppointmentTooltip').fadeOut("fast").remove();
             },
-            eventSources: Params.NonBusinessHours,
+            events: Params.WorkingHours,
             resources: Params.Resources.ResourceJSON,
             resourceColumns: Params.Resources.ResourceColumns,
             resourceLabelText: Params.Resources.ResourceText

@@ -182,25 +182,22 @@ Core.Agent.AppointmentCalendar.Init({
         DaysSubacton: [% Data.DaysSubaction | JSON %]
     },
     AppointmentID: [% Data.AppointmentID | JSON %],
-    NonBusinessHours: {
-        url: Core.Config.Get('CGIHandle'),
-        type: 'POST',
-        data: {
-            ChallengeToken: $("#ChallengeToken").val(),
-            Action: 'AgentAppointmentList',
-            Subaction: 'NonBusinessHours'
-        },
-        color: '#D7D7D7',
-        eventDataTransform: function(NonBusinessHoursData) {
-            return {
-                id: 'nonBusinessHours',
-                start: NonBusinessHoursData.StartTime,
-                end: NonBusinessHoursData.EndTime,
-                rendering: 'background',
-                dow: NonBusinessHoursData.DoW
-            };
+    WorkingHours: [
+[% RenderBlockStart("WorkingHours") %]
+        {
+            id: 'workingHours',
+            start: [% Data.StartTime | JSON %],
+            end: [% Data.EndTime | JSON %],
+            color: '#D7D7D7',
+            rendering: 'inverse-background',
+            editable: false,
+            dow: [% Data.DoW %]
         }
-    }
+[% RenderBlockStart("WorkingHoursComma") %]
+        ,
+[% RenderBlockEnd("WorkingHoursComma") %]
+[% RenderBlockEnd("WorkingHours") %]
+    ]
 });
 
 var EventSources = {
