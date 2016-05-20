@@ -25,7 +25,7 @@ Kernel::System::Calendar::Plugin::Ticket - Ticket plugin
 
 =head1 SYNOPSIS
 
-Ticket Number appointment plugin.
+Ticket appointment plugin.
 
 =head1 PUBLIC INTERFACE
 

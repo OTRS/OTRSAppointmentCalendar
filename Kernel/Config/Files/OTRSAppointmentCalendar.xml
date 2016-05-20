@@ -335,7 +335,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Plugin::Ticket</Item>
-                <Item Key="Name" Translatable="1">Ticket Number</Item>
+                <Item Key="Name" Translatable="1">Ticket</Item>
                 <Item Key="URL">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentTicketZoom;TicketID=%s</Item>
             </Hash>
         </Setting>
