@@ -112,6 +112,7 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 
+Core.Config.Set('AppointmentCalendarTranslationsLoading', [% Translate("Loading...") | JSON %]);
 Core.Config.Set('AppointmentCalendarTranslationsYes', [% Translate("Yes") | JSON %]);
 
 Core.Agent.AppointmentCalendar.Init({
