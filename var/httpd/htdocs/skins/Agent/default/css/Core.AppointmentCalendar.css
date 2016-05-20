@@ -219,6 +219,7 @@
 
     .fc-widget-header .fc-following {
         text-transform: uppercase;
+        padding-top: 1px !important;
     }
 
     .fc-resource-area ~ .fc-time-area .fc-following {

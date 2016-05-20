@@ -161,6 +161,7 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         }
     });
 
+    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
     Core.Agent.AppointmentCalendar.EditAppointment(Data);
 });
 
@@ -180,9 +181,10 @@ $('#EditFormSubmit').on('click', function() {
 
 // Delete the appointment
 $('#EditFormDelete').on('click', function() {
+    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
     Core.Agent.AppointmentCalendar.EditAppointment({
         CalendarID: [% Data.CalendarID | JSON %],
-        AppointmentID: $('input[name="AppointmentID"]').val(),
+        AppointmentID: [% Data.AppointmentID | JSON %],
         Action: 'AgentAppointmentEdit',
         Subaction: 'DeleteAppointment'
     });
