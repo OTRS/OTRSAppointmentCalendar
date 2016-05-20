@@ -69,7 +69,7 @@ sub Run {
         'rw'        => 7,
     );
 
-    my $Permissions = '';
+    my $Permissions = 'rw';
 
     # challenge token check
     $LayoutObject->ChallengeTokenCheck();

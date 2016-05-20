@@ -21,7 +21,7 @@
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
             <div class="Field">
-                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
                 <div id="TitleError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
@@ -32,12 +32,12 @@
             <div class="Clear"></div>
             <label for="Description">[% Translate("Description") | html %]:</label>
             <div class="Field">
-                <textarea id="Description" name="Description" class="W75pc" rows="4"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %]>[% Data.Description | html %]</textarea>
+                <textarea id="Description" name="Description" class="W75pc" rows="4"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %]>[% Data.Description | html %]</textarea>
             </div>
             <div class="Clear"></div>
             <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
-                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc"[% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
             </div>
             <div class="Clear"></div>
             <label for="CalendarID" class="Mandatory"><span class="Marker">*</span> [% Translate("Calendar") | html %]:</label>
@@ -81,7 +81,7 @@
             <div class="Clear"></div>
             <label for="AllDay">[% Translate("All-day") | html %]:</label>
             <div class="Field">
-                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %][% IF Data.PermissionLevel AND Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %][% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
             </div>
             <div class="Clear"></div>
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
@@ -104,13 +104,13 @@
 [% FOREACH Key IN Data.PluginList.keys %]
             <label>[% Translate(Data.PluginList.$Key.PluginName) | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel AND Data.PermissionLevel >= 2 %]
+[% IF Data.PermissionLevel >= 2 %]
                 <input type="text" data-plugin-key="[% Key | html %]" data-plugin-url="[% Data.PluginList.$Key.PluginURL | html %]" class="PluginField W75pc" />
 [% END %]
-                <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList %]' />
+                <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList || "[]" %]' />
 # keep following block on a single line, so :empty CSS selector would work!
                 <div id="PluginContainer_[% Key | html %]" class="PluginContainer">[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">
-                    <a target="_blank" href="[% Link.LinkURL %]">[% Link.LinkName | html %]</a>[% IF Data.PermissionLevel AND Data.PermissionLevel >= 2 %]<a class="RemoveButton" href="#" data-plugin-key="[% Key | html %]" data-link-id="[% Link.LinkID | html %]" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>[% END %]
+                    <a target="_blank" href="[% Link.LinkURL %]">[% Link.LinkName | html %]</a>[% IF Data.PermissionLevel >= 2 %]<a class="RemoveButton" href="#" data-plugin-key="[% Key | html %]" data-link-id="[% Link.LinkID | html %]" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>[% END %]
                 </div>[% END %]</div>
             </div>
             <div class="Clear"></div>
