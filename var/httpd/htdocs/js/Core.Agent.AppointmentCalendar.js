@@ -455,7 +455,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      Shows waiting dialog.
      */
     TargetNS.ShowWaitingDialog = function () {
-        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
+        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('AppointmentCalendarTranslationsLoading') + '"></span></div>', Core.Config.Get('AppointmentCalendarTranslationsLoading'), '10px', 'Center', true);
     }
 
     /**
