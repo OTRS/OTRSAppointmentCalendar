@@ -183,7 +183,11 @@ sub Import {
                 # 2) there is an explicit value parameter set to DATE
                 if (
                     length $Properties->{'dtstart'}->[0]->{'value'} == 8
-                    || $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'} eq 'DATE'
+                    ||
+                    (
+                        $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'}
+                        && $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'} eq 'DATE'
+                    )
                     )
                 {
                     $Parameters{AllDay} = 1;
