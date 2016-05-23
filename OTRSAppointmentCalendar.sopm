@@ -181,16 +181,11 @@
             <Column Name="team_id" Type="BIGINT"/>
             <Column Name="resource_id" Size="255" Type="VARCHAR"/>
             <Column Name="recurring" Type="SMALLINT"/>
-            <Column Name="recur_freq" Size="100" Type="VARCHAR"/>
+            <Column Name="recur_type" Size="20" Type="VARCHAR"/>
+            <Column Name="recur_freq" Size="255" Type="VARCHAR"/>
             <Column Name="recur_count" Type="INTEGER"/>
             <Column Name="recur_interval" Type="INTEGER"/>
             <Column Name="recur_until" Type="DATE"/>
-            <Column Name="recur_byyear" Type="SMALLINT"/>
-            <Column Name="recur_bymonth" Type="SMALLINT"/>
-            <Column Name="recur_byday" Type="SMALLINT"/>
-            <Column Name="recur_days" Type="VARCHAR" Size="20"/>
-            <Column Name="recur_months" Type="VARCHAR" Size="30"/>
-            <Column Name="recur_month_days" Type="VARCHAR" Size="70"/>
             <Column Name="create_time" Type="DATE"/>
             <Column Name="create_by" Type="INTEGER"/>
             <Column Name="change_time" Type="DATE"/>

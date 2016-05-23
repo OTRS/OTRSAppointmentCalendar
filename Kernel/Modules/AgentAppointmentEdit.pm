@@ -329,39 +329,10 @@ sub Run {
         if ( $Appointment{Recurring} ) {
 
             # from appointment
-            if ( $Appointment{RecurrenceByDay} ) {
-                if ( $Appointment{RecurrenceFrequency} % 7 ) {
-                    $SelectedRecurrenceType = 'Daily';
-                }
-                else {
-                    $SelectedRecurrenceType = 'Weekly';
-                }
-            }
-            elsif ( $Appointment{RecurrenceByMonth} ) {
-                $SelectedRecurrenceType = 'Monthly';
-            }
-            elsif ( $Appointment{RecurrenceByYear} ) {
-                $SelectedRecurrenceType = 'Yearly';
-            }
-
-            # override from %GetParam
-            if ( $GetParam{RecurrenceByDay} ) {
-                if ( $GetParam{RecurrenceFrequency} % 7 ) {
-                    $SelectedRecurrenceType = 'Daily';
-                }
-                else {
-                    $SelectedRecurrenceType = 'Weekly';
-                }
-            }
-            elsif ( $GetParam{RecurrenceByMonth} ) {
-                $SelectedRecurrenceType = 'Monthly';
-            }
-            elsif ( $GetParam{RecurrenceByYear} ) {
-                $SelectedRecurrenceType = 'Yearly';
-            }
+            $SelectedRecurrenceType = $GetParam{RecurrenceType} || $Appointment{RecurrenceType};
         }
 
-        # recurrence frequency selection
+        # recurrence interval selection
         $Param{RecurrenceTypeString} = $LayoutObject->BuildSelection(
             Data => [
                 {
@@ -647,23 +618,24 @@ sub Run {
 
         # recurring appointment
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
+            $GetParam{RecurrenceInterval} = 1;
 
-            if ( $GetParam{RecurrenceType} eq 'Daily' ) {
-                $GetParam{RecurrenceByDay}     = 1;
-                $GetParam{RecurrenceFrequency} = 1;
-            }
-            elsif ( $GetParam{RecurrenceType} eq 'Weekly' ) {
-                $GetParam{RecurrenceByDay}     = 1;
-                $GetParam{RecurrenceFrequency} = 7;
-            }
-            elsif ( $GetParam{RecurrenceType} eq 'Monthly' ) {
-                $GetParam{RecurrenceByMonth}   = 1;
-                $GetParam{RecurrenceFrequency} = 1;
-            }
-            elsif ( $GetParam{RecurrenceType} eq 'Yearly' ) {
-                $GetParam{RecurrenceByYear}    = 1;
-                $GetParam{RecurrenceFrequency} = 1;
-            }
+            # if ( $GetParam{RecurrenceType} eq 'Daily' ) {
+            #     $GetParam{RecurrenceFrequency}    = 1;
+            #     $GetParam{RecurrenceInterval} = 1;
+            # }
+            # elsif ( $GetParam{RecurrenceType} eq 'Weekly' ) {
+            #     $GetParam{RecurrenceByDay}    = 1;
+            #     $GetParam{RecurrenceInterval} = 7;
+            # }
+            # elsif ( $GetParam{RecurrenceType} eq 'Monthly' ) {
+            #     $GetParam{RecurrenceByMonth}  = 1;
+            #     $GetParam{RecurrenceInterval} = 1;
+            # }
+            # elsif ( $GetParam{RecurrenceType} eq 'Yearly' ) {
+            #     $GetParam{RecurrenceByYear}   = 1;
+            #     $GetParam{RecurrenceInterval} = 1;
+            # }
 
             # until ...
             if (

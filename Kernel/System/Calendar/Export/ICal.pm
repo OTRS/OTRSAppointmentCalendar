@@ -179,20 +179,20 @@ sub Export {
         }
         if ( $Appointment{Recurring} ) {
             $ICalEventProperties{rrule} = 'FREQ=';
-            if ( $Appointment{RecurrenceFrequency} == 1 ) {
+            if ( $Appointment{RecurrenceInterval} == 1 ) {
                 $ICalEventProperties{rrule} .= 'DAILY';
             }
-            elsif ( $Appointment{RecurrenceFrequency} == 7 ) {
+            elsif ( $Appointment{RecurrenceInterval} == 7 ) {
                 $ICalEventProperties{rrule} .= 'WEEKLY';
             }
-            elsif ( $Appointment{RecurrenceFrequency} == 30 ) {
+            elsif ( $Appointment{RecurrenceInterval} == 30 ) {
                 $ICalEventProperties{rrule} .= 'MONTHLY';
             }
-            elsif ( $Appointment{RecurrenceFrequency} == 365 ) {
+            elsif ( $Appointment{RecurrenceInterval} == 365 ) {
                 $ICalEventProperties{rrule} .= 'YEARLY';
             }
             else {
-                $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceFrequency};
+                $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceInterval};
             }
             if ( $Appointment{RecurrenceUntil} ) {
                 my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
