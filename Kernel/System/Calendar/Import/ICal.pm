@@ -13,7 +13,6 @@ use warnings;
 
 use Data::ICal;
 use Data::ICal::Entry::Event;
-use Date::ICal;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -288,9 +287,9 @@ sub Import {
 
             # this appointment is repeating
             if ( $Frequency eq "DAILY" ) {
-                $Parameters{Recurring}           = 1;
-                $Parameters{RecurrenceByDay}     = 1;
-                $Parameters{RecurrenceFrequency} = $Interval;
+                $Parameters{Recurring}          = 1;
+                $Parameters{RecurrenceType}     = "Daily";
+                $Parameters{RecurrenceInterval} = $Interval;
 
             }
             elsif ( $Frequency eq "WEEKLY" ) {
@@ -329,16 +328,16 @@ sub Import {
                     if ( scalar @Days > 0 ) {
 
                         $Parameters{Recurring}           = 1;
-                        $Parameters{RecurrenceByDay}     = 1;           # TODO: check if needed
-                        $Parameters{RecurrenceFrequency} = $Interval;
-                        $Parameters{RecurrenceDays}      = \@Days;
+                        $Parameters{RecurrenceType}      = "CustomWeekly";
+                        $Parameters{RecurrenceInterval}  = $Interval;
+                        $Parameters{RecurrenceFrequency} = \@Days;
                     }
                 }
                 else {
                     # each n days
-                    $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceByDay}     = 1;
-                    $Parameters{RecurrenceFrequency} = 7 * $Interval;
+                    $Parameters{Recurring}          = 1;
+                    $Parameters{RecurrenceType}     = "Weekly";
+                    $Parameters{RecurrenceInterval} = $Interval;
                 }
             }
             elsif ( $Frequency eq "MONTHLY" ) {
@@ -348,20 +347,20 @@ sub Import {
                     # FREQ=MONTHLY;UNTIL=20170101T080000Z;BYMONTHDAY=16,31'
                     my @Days = split( ',', $MonthDays );
                     $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceByMonth}   = 1;
-                    $Parameters{RecurrenceMonthDays} = \@Days;
-                    $Parameters{RecurrenceFrequency} = $Interval;
+                    $Parameters{RecurrenceType}      = "CustomMonthly";
+                    $Parameters{RecurrenceFrequency} = \@Days;
+                    $Parameters{RecurrenceInterval}  = $Interval;
                 }
                 else {
-                    $Parameters{Recurring}           = 1;
-                    $Parameters{RecurrenceByMonth}   = 1;
-                    $Parameters{RecurrenceFrequency} = $Interval;
+                    $Parameters{Recurring}          = 1;
+                    $Parameters{RecurrenceType}     = "Monthly";
+                    $Parameters{RecurrenceInterval} = $Interval;
                 }
             }
             elsif ( $Frequency eq "YEARLY" ) {
-                $Parameters{Recurring}           = 1;
-                $Parameters{RecurrenceByYear}    = 1;
-                $Parameters{RecurrenceFrequency} = $Interval;
+                $Parameters{Recurring}          = 1;
+                $Parameters{RecurrenceType}     = "Yearly";
+                $Parameters{RecurrenceInterval} = $Interval;
             }
 
             # FREQ=MONTHLY;UNTIL=20170302T121500Z'

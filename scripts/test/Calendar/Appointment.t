@@ -182,17 +182,17 @@ $Self->False(
 );
 
 my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
-    CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Title',
-    Description         => 'Description',
-    Location            => 'Germany',
-    StartTime           => '2016-01-01 16:00:00',
-    EndTime             => '2016-01-01 17:00:00',
-    AllDay              => 1,
-    TimezoneID          => 0,                        # this must be accepted (UTC)
-    RecurrenceFrequency => 1,
-    RecurrenceCount     => 1,
-    UserID              => $UserID,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Title',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-01-01 16:00:00',
+    EndTime            => '2016-01-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 0,                        # this must be accepted (UTC)
+    RecurrenceInterval => 1,
+    RecurrenceCount    => 1,
+    UserID             => $UserID,
 );
 $Self->True(
     $AppointmentID8,
@@ -201,7 +201,7 @@ $Self->True(
 
 my @Appointments1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 16:00:00',             # Try at this point of time (at this second)
+    StartTime  => '2016-01-01 16:00:00',            # Try at this point of time (at this second)
     EndTime    => '2016-02-01 00:00:00',
 );
 
@@ -343,73 +343,262 @@ $Self->Is(
 
 # add recurring appointment once a day
 my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
-    CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Recurring appointment',
-    Description         => 'Description',
-    Location            => 'Germany',
-    StartTime           => '2016-03-01 16:00:00',
-    EndTime             => '2016-03-01 17:00:00',
-    AllDay              => 1,
-    TimezoneID          => 1,
-    Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 1,                         # once per day
-    RecurrenceUntil     => '2016-03-06 00:00:00',     # included last day
-    UserID              => $UserID,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "Daily",
+    RecurrenceInterval => 1,                         # once per day
+    RecurrenceUntil    => '2016-03-06 00:00:00',     # included last day
+    UserID             => $UserID,
 );
 $Self->True(
     $AppointmentIDRec1,
     'Recurring appointment #1 created',
 );
 
-# add recurring appointment on Wednesday - recurring Monday and Friday
+# missing RecurrenceFrequency
+my $AppointmentIDRecPass1 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2018-03-01 16:00:00',
+    EndTime            => '2018-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomDaily",
+    RecurrenceInterval => 1,
+    RecurrenceCount    => 2,
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRecPass1,
+    'Recurring appointment(CustomDaily) - without RecurrenceFrequency',
+);
+
+# missing RecurrenceType
+my $AppointmentIDRecFail1 = $AppointmentObject->AppointmentCreate(
+    CalendarID  => $Calendar1{CalendarID},
+    Title       => 'Recurring appointment',
+    Description => 'Description',
+    Location    => 'Germany',
+    StartTime   => '2016-03-01 16:00:00',
+    EndTime     => '2016-03-01 17:00:00',
+    AllDay      => 1,
+    TimezoneID  => 1,
+    Recurring   => 1,
+
+    # RecurrenceType     => "Daily",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail1,
+    'Recurring appointment without RecurrenceType',
+);
+
+# wrong RecurrenceType
+my $AppointmentIDRecFail2 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "WrongDaily",              # WrongDaily is not supported
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail2,
+    'Recurring appointment - wrong RecurrenceType',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail3 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomWeekly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail3,
+    'Recurring appointment(CustomWeekly) - missing RecurrenceFrequency',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail4 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomMonthly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail4,
+    'Recurring appointment(CustomMonthly) - missing RecurrenceFrequency',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail5 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomYearly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail5,
+    'Recurring appointment(CustomYearly) - missing RecurrenceFrequency',
+);
+
+# add recurring appointment once a week
 my $AppointmentIDRec2 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Weekly recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-10-01 16:00:00',
+    EndTime            => '2016-10-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "Weekly",
+    RecurrenceInterval => 1,                                # each week
+    RecurrenceUntil    => '2016-10-06 00:00:00',            # included last day
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec2,
+    'Weekly recurring appointment #2 created',
+);
+
+# add recurring appointment once a month
+my $AppointmentIDRec3 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Monthly recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-10-07 16:00:00',
+    EndTime            => '2016-10-07 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "Monthly",
+    RecurrenceInterval => 1,                                 # each month
+    RecurrenceCount    => 3,                                 # 3 months
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec3,
+    'Monthly recurring appointment #3 created',
+);
+
+# add recurring appointment once a month
+my $AppointmentIDRec4 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Monthly recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-10-10 16:00:00',
+    EndTime            => '2016-10-10 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "Yearly",
+    RecurrenceInterval => 1,                                 # each year
+    RecurrenceCount    => 3,                                 # 3 years
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec4,
+    'Yearly recurring appointment #4 created',
+);
+
+# add recurring appointment each 2 days
+my $AppointmentIDRec5 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Custom daily recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2017-01-01 16:00:00',
+    EndTime            => '2016-01-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => 'CustomDaily',
+    RecurrenceInterval => 2,
+    RecurrenceCount    => 3,                                      # 3 appointments
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec5,
+    'Recurring appointment #5 created',
+);
+
+# add recurring appointment on Wednesday - recurring Monday and Friday
+my $AppointmentIDRec6 = $AppointmentObject->AppointmentCreate(
     CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Recurring appointment 2',
+    Title               => 'Custom weekly recurring appointment',
     Description         => 'Description',
     Location            => 'Germany',
-    StartTime           => '2016-05-04 16:00:00',       # wednesday
+    StartTime           => '2016-05-04 16:00:00',                   # wednesday
     EndTime             => '2016-05-04 17:00:00',
     AllDay              => 1,
     TimezoneID          => 1,
     Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 2,                           # each 2nd
-    RecurrenceDays      => [ 1, 5 ],                    # Monday and Friday
-    RecurrenceUntil     => '2016-06-05 00:00:00',       # cca 1 month
+    RecurrenceType      => 'CustomWeekly',
+    RecurrenceInterval  => 2,                                       # each 2nd
+    RecurrenceFrequency => [ 1, 5 ],                                # Monday and Friday
+    RecurrenceCount     => 3,                                       # 3 appointments
     UserID              => $UserID,
 );
 $Self->True(
-    $AppointmentIDRec2,
-    'Recurring appointment #2 created',
-);
-
-# add recurring appointment each 3 years, in January and May
-my $AppointmentIDRec3 = $AppointmentObject->AppointmentCreate(
-    CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Recurring appointment 3',
-    Description         => 'Description',
-    Location            => 'Germany',
-    StartTime           => '2016-07-05 16:00:00',       # wednesday
-    EndTime             => '2016-07-05 17:00:00',
-    AllDay              => 1,
-    TimezoneID          => 1,
-    Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 3,                           # each 3th year
-    RecurrenceMonths    => [ 1, 5 ],                    # January and May
-    RecurrenceUntil     => '2020-07-05 00:00:00',       # cca 4 years
-    UserID              => $UserID,
-);
-$Self->True(
-    $AppointmentIDRec3,
-    'Recurring appointment #3 created',
+    $AppointmentIDRec6,
+    'Recurring appointment #6 created',
 );
 
 # add recurring appointment each 2nd month on 5th, 10th and 15th day
-my $AppointmentIDRec4 = $AppointmentObject->AppointmentCreate(
+my $AppointmentIDRec7 = $AppointmentObject->AppointmentCreate(
     CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Recurring appointment 4',
+    Title               => 'Custom monthly recurring appointment',
     Description         => 'Description',
     Location            => 'Germany',
     StartTime           => '2016-07-05 16:00:00',
@@ -417,15 +606,37 @@ my $AppointmentIDRec4 = $AppointmentObject->AppointmentCreate(
     AllDay              => 1,
     TimezoneID          => 1,
     Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 2,                           # each 2 months
-    RecurrenceMonthDays => [ 5, 10, 15 ],               # Days in month
-    RecurrenceUntil     => '2017-07-05 00:00:00',       # cca 1 year
+    RecurrenceType      => "CustomMonthly",
+    RecurrenceInterval  => 2,                                        # each 2 months
+    RecurrenceFrequency => [ 5, 10, 15 ],                            # Days in month
+    RecurrenceCount     => 3,                                        # 3 appointments
     UserID              => $UserID,
 );
 $Self->True(
-    $AppointmentIDRec4,
-    'Recurring appointment #4 created',
+    $AppointmentIDRec7,
+    'Recurring appointment #7 created',
+);
+
+# add recurring appointment each 2nd year on 5th january, february and december
+my $AppointmentIDRec8 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Custom yearly recurring appointment',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-01-05 16:00:00',
+    EndTime             => '2016-01-05 17:00:00',
+    AllDay              => 1,
+    TimezoneID          => 1,
+    Recurring           => 1,
+    RecurrenceType      => "CustomYearly",
+    RecurrenceInterval  => 2,                                       # each 2 months
+    RecurrenceFrequency => [ 1, 2, 12 ],                            # months
+    RecurrenceCount     => 3,                                       # 3 appointments
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec8,
+    'Recurring appointment #8 created',
 );
 
 # list recurring appointments
@@ -443,20 +654,20 @@ $Self->Is(
 
 # update recurring appointment
 my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID       => $AppointmentIDRec1,
-    CalendarID          => $Calendar1{CalendarID},
-    Title               => 'Classes',
-    Description         => 'Additional description',
-    Location            => 'Germany',
-    StartTime           => '2016-03-02 16:00:00',
-    EndTime             => '2016-03-02 17:00:00',
-    AllDay              => 1,
-    TimezoneID          => 1,
-    Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 2,                          # each 2 days
-    RecurrenceUntil     => '2016-03-10 17:00:00',
-    UserID              => $UserID,
+    AppointmentID      => $AppointmentIDRec1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Classes',
+    Description        => 'Additional description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-02 16:00:00',
+    EndTime            => '2016-03-02 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "Daily",
+    RecurrenceInterval => 2,                          # each 2 days
+    RecurrenceUntil    => '2016-03-10 17:00:00',
+    UserID             => $UserID,
 );
 $Self->True(
     $SuccessRec1,
@@ -499,82 +710,42 @@ my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
 );
 
-$Self->Is(
-    $AppointmentGet1{AppointmentID},
-    $AppointmentID8,
-    'AppointmentGet() - ID ok',
+my %AppointmentExpected1 = (
+    AppointmentID      => $AppointmentID8,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Title',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-01-01 16:00:00',
+    EndTime            => '2016-01-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 0,
+    RecurrenceInterval => 1,
+    RecurrenceCount    => 1,
+    CreateBy           => $UserID,
+    ChangeBy           => $UserID,
 );
-$Self->Is(
-    $AppointmentGet1{CalendarID},
-    $Calendar1{CalendarID},
-    'AppointmentGet() - CalendarID ok',
-);
+
+for my $Key ( sort keys %AppointmentExpected1 ) {
+    $Self->Is(
+        $AppointmentGet1{$Key},
+        $AppointmentExpected1{$Key},
+        "AppointmentGet() - $Key ok",
+    );
+}
+
 $Self->True(
     $AppointmentGet1{UniqueID},
     'AppointmentGet() - UniqueID ok',
 );
-$Self->Is(
-    $AppointmentGet1{Title},
-    'Title',
-    'AppointmentGet() - Title ok',
-);
-$Self->Is(
-    $AppointmentGet1{Description},
-    'Description',
-    'AppointmentGet() - Description ok',
-);
-$Self->Is(
-    $AppointmentGet1{Location},
-    'Germany',
-    'AppointmentGet() - Location ok',
-);
-$Self->Is(
-    $AppointmentGet1{StartTime},
-    '2016-01-01 16:00:00',
-    'AppointmentGet() - StartTime ok',
-);
-$Self->Is(
-    $AppointmentGet1{EndTime},
-    '2016-01-01 17:00:00',
-    'AppointmentGet() - EndTime ok',
-);
-$Self->Is(
-    $AppointmentGet1{AllDay},
-    1,
-    'AppointmentGet() - AllDay ok',
-);
-$Self->Is(
-    $AppointmentGet1{TimezoneID},
-    0,
-    'AppointmentGet() - TimezoneID ok',
-);
-$Self->Is(
-    $AppointmentGet1{RecurrenceFrequency},
-    1,
-    'AppointmentGet() - RecurrenceFrequency ok',
-);
-$Self->Is(
-    $AppointmentGet1{RecurrenceCount},
-    1,
-    'AppointmentGet() - RecurrenceCount ok',
-);
+
 $Self->True(
     $AppointmentGet1{CreateTime},
     'AppointmentGet() - CreateTime ok',
 );
-$Self->Is(
-    $AppointmentGet1{CreateBy},
-    $UserID,
-    'AppointmentGet() - CreateBy ok',
-);
 $Self->True(
     $AppointmentGet1{ChangeTime},
     'AppointmentGet() - ChangeTime ok',
-);
-$Self->Is(
-    $AppointmentGet1{ChangeBy},
-    $UserID,
-    'AppointmentGet() - ChangeBy ok',
 );
 
 my %AppointmentGet2 = $AppointmentObject->AppointmentGet();
@@ -600,20 +771,20 @@ my %Calendar2 = $CalendarObject->CalendarCreate(
 );
 
 my $Update1 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID       => $AppointmentID8,
-    CalendarID          => $Calendar2{CalendarID},
-    Title               => 'Webinar title',
-    Description         => 'Description details',
-    Location            => 'England',
-    StartTime           => '2016-01-02 16:00:00',
-    EndTime             => '2016-01-02 17:00:00',
-    AllDay              => 0,
-    TimezoneID          => 1,
-    Recurring           => 1,
-    RecurrenceByDay     => 1,
-    RecurrenceFrequency => 2,
-    RecurrenceCount     => 2,
-    UserID              => $UserID,
+    AppointmentID      => $AppointmentID8,
+    CalendarID         => $Calendar2{CalendarID},
+    Title              => 'Webinar title',
+    Description        => 'Description details',
+    Location           => 'England',
+    StartTime          => '2016-01-02 16:00:00',
+    EndTime            => '2016-01-02 17:00:00',
+    AllDay             => 0,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => 'Daily',
+    RecurrenceInterval => 2,
+    RecurrenceCount    => 2,
+    UserID             => $UserID,
 );
 $Self->True(
     $Update1,
@@ -623,73 +794,33 @@ $Self->True(
 my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
 );
-$Self->Is(
-    $AppointmentGet4{AppointmentID},
-    $AppointmentID8,
-    'AppointmentUpdate() - AppointmentID ok',
+
+my %AppointmentExpected4 = (
+    AppointmentID      => $AppointmentID8,
+    CalendarID         => $Calendar2{CalendarID},
+    Title              => 'Webinar title',
+    Description        => 'Description details',
+    Location           => 'England',
+    StartTime          => '2016-01-02 16:00:00',
+    EndTime            => '2016-01-02 17:00:00',
+    AllDay             => 0,
+    TimezoneID         => 1,
+    RecurrenceInterval => 2,
+    RecurrenceCount    => 2,
+    CreateBy           => $UserID,
+    ChangeBy           => $UserID,
 );
-$Self->Is(
-    $AppointmentGet4{CalendarID},
-    $Calendar2{CalendarID},
-    'AppointmentUpdate() - CalendarID ok',
-);
+
+for my $Key ( sort keys %AppointmentExpected4 ) {
+    $Self->Is(
+        $AppointmentGet4{$Key},
+        $AppointmentExpected4{$Key},
+        "AppointmentGet() - $Key ok",
+    );
+}
 $Self->True(
     $AppointmentGet4{UniqueID},
     'AppointmentUpdate() - UniqueID ok',
-);
-$Self->Is(
-    $AppointmentGet4{Title},
-    'Webinar title',
-    'AppointmentUpdate() - Title ok',
-);
-$Self->Is(
-    $AppointmentGet4{Description},
-    'Description details',
-    'AppointmentUpdate() - Description ok',
-);
-$Self->Is(
-    $AppointmentGet4{Location},
-    'England',
-    'AppointmentUpdate() - Location ok',
-);
-$Self->Is(
-    $AppointmentGet4{StartTime},
-    '2016-01-02 16:00:00',
-    'AppointmentUpdate() - StartTime ok',
-);
-$Self->Is(
-    $AppointmentGet4{EndTime},
-    '2016-01-02 17:00:00',
-    'AppointmentUpdate() - EndTime ok',
-);
-$Self->False(
-    $AppointmentGet4{AllDay},
-    'AppointmentUpdate() - AllDay ok',
-);
-$Self->Is(
-    $AppointmentGet4{TimezoneID},
-    1,
-    'AppointmentUpdate() - TimezoneID ok',
-);
-$Self->Is(
-    $AppointmentGet4{RecurrenceFrequency},
-    2,
-    'AppointmentUpdate() - RecurrenceFrequency ok',
-);
-$Self->Is(
-    $AppointmentGet4{RecurrenceCount},
-    2,
-    'AppointmentUpdate() - RecurrenceCount ok',
-);
-$Self->Is(
-    $AppointmentGet4{CreateBy},
-    $UserID,
-    'AppointmentUpdate() - CreateBy ok',
-);
-$Self->Is(
-    $AppointmentGet4{ChangeBy},
-    $UserID,
-    'AppointmentUpdate() - ChangeBy ok',
 );
 
 # missing AppointmentID
@@ -870,6 +1001,10 @@ my $AppointmentID9 = $AppointmentObject->AppointmentCreate(
     TimezoneID  => 1,
     UserID      => $UserID,
 );
+$Self->True(
+    $AppointmentID9,
+    'AppointmentCreate() - #9',
+);
 
 my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
     CalendarID  => $Calendar1{CalendarID},
@@ -882,21 +1017,9 @@ my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
     TimezoneID  => 1,
     UserID      => $UserID,
 );
-
-# recurring appointment without additional recurring parameter
-my $AppointmentID11 = $AppointmentObject->AppointmentCreate(
-    CalendarID  => $Calendar1{CalendarID},
-    Title       => 'Bad recurring',
-    Description => 'How to use Process tickets...',
-    StartTime   => '2016-01-01 15:00:00',
-    EndTime     => '2016-01-01 16:00:00',
-    TimezoneID  => 0,
-    Recurring   => 1,
-    UserID      => $UserID,
-);
-$Self->False(
-    $AppointmentID11,
-    "AppointmentCreate #11"
+$Self->True(
+    $AppointmentID10,
+    'AppointmentCreate() - #10',
 );
 
 # Create new calendar
@@ -912,17 +1035,17 @@ $Self->True(
 
 # recurring once per month
 my $AppointmentID12 = $AppointmentObject->AppointmentCreate(
-    CalendarID          => $Calendar3{CalendarID},
-    Title               => 'Monthly recurring',
-    Description         => 'How to use Process tickets...',
-    StartTime           => '2016-01-31 15:00:00',
-    EndTime             => '2016-01-31 16:00:00',
-    Recurring           => 1,
-    RecurrenceByMonth   => 1,
-    RecurrenceFrequency => 1,
-    RecurrenceUntil     => '2017-01-03 16:00:00',
-    TimezoneID          => 0,
-    UserID              => $UserID,
+    CalendarID         => $Calendar3{CalendarID},
+    Title              => 'Monthly recurring',
+    Description        => 'How to use Process tickets...',
+    StartTime          => '2016-01-31 15:00:00',
+    EndTime            => '2016-01-31 16:00:00',
+    Recurring          => 1,
+    RecurrenceType     => 'Monthly',
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2017-01-03 16:00:00',
+    TimezoneID         => 0,
+    UserID             => $UserID,
 );
 $Self->True(
     $AppointmentID12,
@@ -1152,18 +1275,149 @@ $Self->True(
 
 # Missing TimezoneID
 my $Update10 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID   => $AppointmentID1,
-    CalendarID      => $Calendar1{CalendarID},
-    Title           => 'Webinar title',
-    StartTime       => '2016-01-02 16:00:00',
-    EndTime         => '2016-01-02 16:15:00',
-    Recurring       => 1,
-    RecurrenceByDay => 1,
-    UserID          => $UserID,
+    AppointmentID  => $AppointmentID1,
+    CalendarID     => $Calendar1{CalendarID},
+    Title          => 'Webinar title',
+    StartTime      => '2016-01-02 16:00:00',
+    EndTime        => '2016-01-02 16:15:00',
+    Recurring      => 1,
+    RecurrenceType => 'Daily',
+    UserID         => $UserID,
 );
 $Self->False(
     $Update10,
     "AppointmentUpdate #10",
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecPass2 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2018-03-01 16:00:00',
+    EndTime            => '2018-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomDaily",
+    RecurrenceInterval => 1,
+    RecurrenceCount    => 2,
+    UserID             => $UserID,
+);
+$Self->True(
+    $AppointmentIDRecPass2,
+    'Recurring appointment(CustomDaily) - without RecurrenceFrequency',
+);
+
+# missing RecurrenceType
+my $AppointmentIDRecFail6 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail6,
+    'Recurring appointment update without RecurrenceType',
+);
+
+# wrong RecurrenceType
+my $AppointmentIDRecFail7 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "WrongDaily",              # WrongDaily is not supported
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail7,
+    'Recurring appointment update - wrong RecurrenceType',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail8 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomWeekly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail8,
+    'Recurring appointment(CustomWeekly) update - missing RecurrenceFrequency',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail9 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomMonthly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail9,
+    'Recurring appointment(CustomMonthly) update - missing RecurrenceFrequency',
+);
+
+# missing RecurrenceFrequency
+my $AppointmentIDRecFail10 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID      => $AppointmentID1,
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    Description        => 'Description',
+    Location           => 'Germany',
+    StartTime          => '2016-03-01 16:00:00',
+    EndTime            => '2016-03-01 17:00:00',
+    AllDay             => 1,
+    TimezoneID         => 1,
+    Recurring          => 1,
+    RecurrenceType     => "CustomYearly",
+    RecurrenceInterval => 1,
+    RecurrenceUntil    => '2016-03-06 00:00:00',
+    UserID             => $UserID,
+);
+$Self->False(
+    $AppointmentIDRecFail10,
+    'Recurring appointment(CustomYearly) update - missing RecurrenceFrequency',
 );
 
 my $Seen3 = $AppointmentObject->AppointmentSeenGet(
