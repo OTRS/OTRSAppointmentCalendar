@@ -23,10 +23,12 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Appointment',
     'Kernel::System::Calendar::Helper',
+    'Kernel::System::Calendar::Plugin',
+    'Kernel::System::Calendar::Team',
     'Kernel::System::DB',
-    'Kernel::System::LinkObject',
     'Kernel::System::Log',
-    'Kernel::System::Time',
+    'Kernel::System::Main',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -93,7 +95,7 @@ sub Export {
     # needed objects
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $LinkObject        = $Kernel::OM->Get('Kernel::System::LinkObject');
+    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $Param{CalendarID},
@@ -215,25 +217,67 @@ sub Export {
             epoch => $ChangeTime,
         );
 
-        my %PossibleObjectsList = $LinkObject->PossibleObjectsList(
-            Object => 'Appointment',
-        );
+        # check if team object is registered
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-        # check links
-        for my $Object ( sort keys %PossibleObjectsList ) {
-            my %LinkKeyList = $LinkObject->LinkKeyList(
-                Object1 => 'Appointment',
-                Key1    => $AppointmentID,
-                Object2 => $Object,
-                State   => 'Valid',
-                UserID  => 1,
+            # include team name
+            if ( $Appointment{TeamID} ) {
+
+                # get team object
+                my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+
+                # get team name
+                my %Team = $TeamObject->TeamGet(
+                    TeamID => $Appointment{TeamID},
+                    UserID => $Param{UserID},
+                );
+                if ( $Team{Name} ) {
+                    $ICalEvent->add_properties(
+                        "x-otrs-team" => $Team{Name},
+                    );
+                }
+            }
+
+            # include resource names
+            if ( $Appointment{ResourceID} ) {
+                my @Users;
+
+                # get user object
+                my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+                # get user data
+                for my $UserID ( @{ $Appointment{ResourceID} } ) {
+                    my %User = $UserObject->GetUserData(
+                        UserID => $UserID,
+                    );
+                    if ( $User{UserLogin} ) {
+                        push @Users, $User{UserLogin};
+                    }
+                }
+                if (@Users) {
+                    $ICalEvent->add_properties(
+                        "x-otrs-resource" => join( ',', @Users ),
+                    );
+                }
+            }
+        }
+
+        # include plugin (link) data
+        my $PluginList = $PluginObject->PluginList();
+        for my $PluginKey ( sort keys %{$PluginList} ) {
+            my $LinkList = $PluginObject->PluginLinkList(
+                AppointmentID => $Appointment{AppointmentID},
+                PluginKey     => $PluginKey,
+                UserID        => $Param{UserID},
             );
+            my @LinkArray;
+            for my $LinkID ( sort keys %{$LinkList} ) {
+                push @LinkArray, $LinkList->{$LinkID}->{LinkID};
+            }
 
-            my $IDs = join( ",", keys %LinkKeyList );
-
-            if ($IDs) {
+            if (@LinkArray) {
                 $ICalEvent->add_properties(
-                    "x-otrs-$Object" => $IDs,
+                    "x-otrs-plugin-$PluginKey" => join( ',', @LinkArray ),
                 );
             }
         }
