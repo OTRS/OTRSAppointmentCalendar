@@ -179,12 +179,18 @@ sub Import {
 
             if ( ref $Properties->{'dtstart'}->[0]->{'_parameters'} eq 'HASH' ) {
 
-                # Check if all day event
-                if ( $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'} ) {
+                # check if it's an all day event
+                # 1) there is no time component for the date value
+                # 2) there is an explicit value parameter set to DATE
+                if (
+                    length $Properties->{'dtstart'}->[0]->{'value'} == 8
+                    || $Properties->{'dtstart'}->[0]->{'_parameters'}->{'VALUE'} eq 'DATE'
+                    )
+                {
                     $Parameters{AllDay} = 1;
                 }
 
-                # Check timezone
+                # check timezone
                 if ( $Properties->{'dtstart'}->[0]->{'_parameters'}->{'TZID'} ) {
                     $TimezoneID = $Properties->{'dtstart'}->[0]->{'_parameters'}->{'TZID'};
                 }
