@@ -753,11 +753,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
      * @param {Object} EventSources - hash with calendar sources.
+     * @param {Integer} CalendarLimit - maximum number of active calendars.
      * @description
      *      This method initializes calendar checkbox behavior and loads multiple calendars to the
      *      FullCalendar control.
      */
-    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources) {
+    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources, CalendarLimit) {
 
         // Show/hide the calendar appointments
         if ($CalendarSwitch.prop('checked')) {
@@ -768,7 +769,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Register change event handler
         $CalendarSwitch.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources);
+            if ($('.CalendarColorSwatch input:checked').length > CalendarLimit) {
+                $CalendarSwitch.prop('checked', false);
+                Core.UI.Dialog.ShowAlert(Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsHeadline'), Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsText'));
+            } else {
+                TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources, CalendarLimit);
+            }
         });
     }
 
