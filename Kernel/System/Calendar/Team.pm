@@ -19,6 +19,7 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::Cache',
     'Kernel::System::Valid',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -414,12 +415,15 @@ sub TeamImport {
 
     my $Success;
 
+    # import the team
     if ( !IsHashRefWithData( \%ExistingTeam ) ) {
 
         $Success = $Self->TeamAdd(
             %{ $Param{TeamData} },
             UserID => $Param{UserID},
         );
+
+        $Param{TeamData}->{ID} = $Success;
     }
     else {
 
@@ -432,9 +436,55 @@ sub TeamImport {
             TeamID => $ExistingTeam{ID},
             UserID => $Param{UserID},
         );
+
+        $Param{TeamData}->{ID} = $ExistingTeam{ID};
     }
 
-    return $Success;
+    # get a team user list and remove the user assignment
+    # from the (now) existing team
+    my %TeamUserList = $Self->TeamUserList(
+        TeamID => $Param{TeamData}->{ID},
+        UserID => $Param{UserID},
+    );
+
+    if ( IsHashRefWithData( \%TeamUserList ) ) {
+
+        USERID:
+        for my $UserID ( sort keys %TeamUserList ) {
+
+            next USERID if !$UserID;
+
+            my $True = $Self->TeamUserRemove(
+                TeamID     => $Param{TeamData}->{ID},
+                TeamUserID => $UserID,
+                UserID     => $Param{UserID},
+            );
+        }
+    }
+
+    # get a local user object
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+    # setup new team user assignments
+    USERID:
+    for my $UserID ( sort keys %{ $Param{TeamData}->{UserList} } ) {
+
+        next USERID if !$UserID;
+
+        my $NewUserID = $UserObject->UserLookup(
+            UserLogin => $Param{TeamData}->{UserList}->{$UserID},
+        );
+
+        next USERID if !$NewUserID;
+
+        my $True = $Self->TeamUserAdd(
+            TeamID     => $Param{TeamData}->{ID},
+            TeamUserID => $NewUserID,
+            UserID     => $Param{UserID},
+        );
+    }
+
+    return 1;
 }
 
 =item AllowedTeamList()
