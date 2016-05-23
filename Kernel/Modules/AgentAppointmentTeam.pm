@@ -230,11 +230,73 @@ sub Run {
     }
 
     # ------------------------------------------------------------ #
+    # team import
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'TeamImport' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        # get the uploaded file content
+        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        my %UploadStuff = $ParamObject->GetUploadAll(
+            Param => 'FileUpload',
+        );
+        my $Content = $UploadStuff{Content};
+
+        # check for overwriting option
+        my $OverwriteExistingEntities = $ParamObject->GetParam( Param => 'OverwriteExistingEntities' ) || 0;
+
+        # extract the team data from the uploaded file
+        my $TeamData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Content );
+        if ( ref $TeamData ne 'HASH' ) {
+            return (
+                Message =>
+                    "Couldn't read team configuration file. Please make sure you file is valid.",
+            );
+        }
+
+        # import the team
+        my $Success = $TeamObject->TeamImport(
+            TeamData                  => $TeamData,
+            OverwriteExistingEntities => $OverwriteExistingEntities,
+            UserID                    => $Self->{UserID},
+        );
+
+        if ( !$Success ) {
+
+            $Self->_Overview();
+            my $Output = $LayoutObject->Header();
+            $Output .= $LayoutObject->NavigationBar();
+            $Output .= $LayoutObject->Notify( Info => 'Could not import the team!' );
+            $Output .= $LayoutObject->Output(
+                TemplateFile => 'AgentAppointmentTeam',
+                Data         => \%Param,
+            );
+            $Output .= $LayoutObject->Footer();
+            return $Output;
+        }
+        else {
+
+            $Self->_Overview();
+            my $Output = $LayoutObject->Header();
+            $Output .= $LayoutObject->NavigationBar();
+            $Output .= $LayoutObject->Notify( Info => 'Team imported!' );
+            $Output .= $LayoutObject->Output(
+                TemplateFile => 'AgentAppointmentTeam',
+                Data         => \%Param,
+            );
+            $Output .= $LayoutObject->Footer();
+            return $Output;
+        }
+    }
+
+    # ------------------------------------------------------------ #
     # team export
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'TeamExport' ) {
 
-        # check for ProcessID
+        # check for TeamID
         my $TeamID = $ParamObject->GetParam( Param => 'TeamID' ) || '';
         if ( !$TeamID ) {
             return $LayoutObject->ErrorScreen(
