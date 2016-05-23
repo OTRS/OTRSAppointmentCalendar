@@ -268,7 +268,10 @@ sub Run {
             $Self->_Overview();
             my $Output = $LayoutObject->Header();
             $Output .= $LayoutObject->NavigationBar();
-            $Output .= $LayoutObject->Notify( Info => 'Could not import the team!' );
+            $Output .= $LayoutObject->Notify(
+                Priority => 'Error',
+                Info     => 'Could not import the team!'
+            );
             $Output .= $LayoutObject->Output(
                 TemplateFile => 'AgentAppointmentTeam',
                 Data         => \%Param,
