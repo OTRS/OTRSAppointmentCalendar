@@ -229,6 +229,77 @@ sub Run {
         return $Output;
     }
 
+    # ------------------------------------------------------------ #
+    # team export
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'TeamExport' ) {
+
+        # check for ProcessID
+        my $TeamID = $ParamObject->GetParam( Param => 'TeamID' ) || '';
+        if ( !$TeamID ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('Need TeamID!'),
+            );
+        }
+
+        # get team data
+        my %TeamData = $TeamObject->TeamGet(
+            TeamID => $TeamID,
+            UserID => $Self->{UserID},
+        );
+
+        if ( !IsHashRefWithData( \%TeamData ) ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('Could not retrieve data for given TeamID') . " $TeamID",
+            );
+        }
+
+        # get team user list
+        my %TeamUserList = $TeamObject->TeamUserList(
+            TeamID => $TeamID,
+            UserID => $Self->{UserID},
+        );
+
+        # get a local user object
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+        my %PreparedUsers;
+
+        USERID:
+        for my $UserID ( sort keys %TeamUserList ) {
+
+            next USERID if !$UserID;
+
+            # get user login by user id
+            my $UserLogin = $UserObject->UserLookup(
+                UserID => $UserID,
+            );
+
+            next USERID if !$UserLogin;
+
+            # save user id and user login
+            $PreparedUsers{$UserID} = $UserLogin;
+        }
+
+        $TeamData{UserList} = \%PreparedUsers;
+
+        # convert the team data hash to string
+        my $TeamDataYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump( Data => \%TeamData );
+
+        # prepare team name to be part of the filename
+        my $TeamName = $TeamData{Name};
+        $TeamName =~ s/\s+/_/g;
+
+        # send the result to the browser
+        return $LayoutObject->Attachment(
+            ContentType => 'text/html; charset=' . $LayoutObject->{Charset},
+            Content     => $TeamDataYAML,
+            Type        => 'attachment',
+            Filename    => 'Export_Team_' . $TeamName . '.yml',
+            NoCache     => 1,
+        );
+    }
+
     # ------------------------------------------------------------
     # overview screen
     # ------------------------------------------------------------
