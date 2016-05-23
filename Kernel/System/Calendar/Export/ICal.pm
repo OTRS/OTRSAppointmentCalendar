@@ -247,11 +247,13 @@ sub Export {
 
                 # get user data
                 for my $UserID ( @{ $Appointment{ResourceID} } ) {
-                    my %User = $UserObject->GetUserData(
-                        UserID => $UserID,
-                    );
-                    if ( $User{UserLogin} ) {
-                        push @Users, $User{UserLogin};
+                    if ($UserID) {
+                        my %User = $UserObject->GetUserData(
+                            UserID => $UserID,
+                        );
+                        if ( $User{UserLogin} ) {
+                            push @Users, $User{UserLogin};
+                        }
                     }
                 }
                 if (@Users) {
