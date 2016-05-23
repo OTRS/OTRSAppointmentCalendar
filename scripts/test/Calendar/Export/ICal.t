@@ -18,6 +18,7 @@ my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
 my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+my $TeamObject        = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 my $ExportObject      = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal');
 my $ImportObject      = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal');
 
@@ -71,6 +72,36 @@ $Self->True(
     "Test user $UserID added to test group $GroupID",
 );
 
+# create test team
+my $TeamName = 'test-team-' . $Helper->GetRandomID();
+$Success = $TeamObject->TeamAdd(
+    Name    => $TeamName,
+    GroupID => $GroupID,
+    ValidID => 1,
+    UserID  => $UserID,
+);
+
+$Self->True(
+    $Success,
+    'TeamAdd() - Test team created',
+);
+
+my %Team = $TeamObject->TeamGet(
+    Name   => $TeamName,
+    UserID => $UserID,
+);
+
+$Success = $TeamObject->TeamUserAdd(
+    TeamID     => $Team{ID},
+    TeamUserID => $UserID,
+    UserID     => $UserID,
+);
+
+$Self->True(
+    $Success,
+    'TeamUserAdd() - Added test user to test team',
+);
+
 # create a test calendar for export
 my $ExportCalendarName = 'Export ' . $Helper->GetRandomID();
 my %ExportCalendar     = $CalendarObject->CalendarCreate(
@@ -119,6 +150,8 @@ my @Appointments = (
         Title      => 'All-day Appointment',
         Location   => 'Sample location',
         UserID     => $UserID,
+        TeamID     => $Team{ID},
+        ResourceID => [$UserID],
     },
 
     # recurring

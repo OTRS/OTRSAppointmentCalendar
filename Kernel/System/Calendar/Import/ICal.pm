@@ -23,10 +23,12 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Appointment',
     'Kernel::System::Calendar::Helper',
+    'Kernel::System::Calendar::Plugin',
+    'Kernel::System::Calendar::Team',
     'Kernel::System::DB',
-    'Kernel::System::LinkObject',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -103,6 +105,7 @@ sub Import {
     # needed objects
     my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
     my $Calendar             = Data::ICal->new( data => $Param{ICal} );
 
     my $UntilLimitedTimestamp = $Param{UntilLimit} || '';
@@ -376,23 +379,70 @@ sub Import {
             }
         }
 
-        # custom fields (starts with 'x-otrs-')
-        my @CustomFields = grep { $_ =~ /x-otrs-/ } keys %{$Properties};
+        # get team
+        if (
+            IsArrayRefWithData( $Properties->{'x-otrs-team'} )
+            && ref $Properties->{'x-otrs-team'}->[0] eq 'Data::ICal::Property'
+            && $Properties->{'x-otrs-team'}->[0]->{'value'}
+            )
+        {
+            my $TeamName = $Properties->{'x-otrs-team'}->[0]->{'value'};
 
-        for my $CustomField (@CustomFields) {
+            # get team id
+            my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
+                Name   => $TeamName,
+                UserID => $Param{UserID},
+            );
+            $Parameters{TeamID} = $Team{ID} if $Team{ID};
+        }
+
+        # get resource
+        if (
+            IsArrayRefWithData( $Properties->{'x-otrs-resource'} )
+            && ref $Properties->{'x-otrs-resource'}->[0] eq 'Data::ICal::Property'
+            && $Properties->{'x-otrs-resource'}->[0]->{'value'}
+            )
+        {
+            my @Resources = split( ",", $Properties->{'x-otrs-resource'}->[0]->{'value'} );
+
+            if (@Resources) {
+                my @Users;
+
+                # get user ids
+                for my $UserLogin (@Resources) {
+                    my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+                        UserLogin => $UserLogin,
+                    );
+                    push @Users, $UserID if $UserID;
+                }
+                $Parameters{ResourceID} = \@Users if @Users;
+            }
+        }
+
+        # get available plugin keys suitable for lowercase search
+        my $PluginKeys = $PluginObject->PluginKeys();
+
+        # plugin fields (start with 'x-otrs-plugin-')
+        my @PluginFields = grep { $_ =~ /x-otrs-plugin-/i } keys %{$Properties};
+
+        PLUGINFIELD:
+        for my $PluginField (@PluginFields) {
             if (
-                IsArrayRefWithData( $Properties->{$CustomField} )
-                && ref $Properties->{$CustomField}->[0] eq 'Data::ICal::Property'
-                && $Properties->{$CustomField}->[0]->{'value'}
+                IsArrayRefWithData( $Properties->{$PluginField} )
+                && ref $Properties->{$PluginField}->[0] eq 'Data::ICal::Property'
+                && $Properties->{$PluginField}->[0]->{'value'}
                 )
             {
-                my @ObjectIDs = split( ",", $Properties->{$CustomField}->[0]->{'value'} );
+                # extract lowercase plugin key
+                $PluginField =~ /x-otrs-plugin-(.*)$/;
+                my $PluginKeyLC = $1;
 
-                # Extract ObjectName
-                $CustomField =~ /x-otrs-(.*)$/;
-                my $ObjectName = ucfirst $1;    # First letter is uppercase
+                # get proper plugin key
+                my $PluginKey = $PluginKeys->{$PluginKeyLC};
+                next PLUGINFIELD if !$PluginKey;
 
-                $LinkedObjects{$ObjectName} = \@ObjectIDs;
+                my @PluginData = split( ",", $Properties->{$PluginField}->[0]->{'value'} );
+                $LinkedObjects{$PluginKey} = \@PluginData;
             }
         }
 
@@ -406,13 +456,15 @@ sub Import {
         );
 
         # check if old Appointment should be updated
-        if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
+        if ( $Appointment{CalendarID} ) {
+            if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
 
-            # create new appointment (don't update Appointment in different Calendar)
-            delete $Parameters{UniqueID}
-                if %Appointment;    # use original UniqueID (from ics) instead of generating new one
-            %Appointment = ();
+                # create new appointment (don't update Appointment in different Calendar)
+                delete $Parameters{UniqueID}
+                    if %Appointment;    # use original UniqueID (from ics) instead of generating new one
+                %Appointment = ();
 
+            }
         }
 
         if ( %Appointment && $Appointment{AppointmentID} ) {
@@ -444,28 +496,25 @@ sub Import {
         }
 
         if ($Success) {
-            OBJECT:
-            for my $Object ( sort keys %LinkedObjects ) {
-                next OBJECT if !IsArrayRefWithData( $LinkedObjects{$Object} );
 
-                for my $ObjectID ( @{ $LinkedObjects{$Object} } ) {
+            PLUGINKEY:
+            for my $PluginKey ( sort keys %LinkedObjects ) {
+                next PLUGINKEY if !IsArrayRefWithData( $LinkedObjects{$PluginKey} );
 
-                    # create link
-                    my $LinkSuccess = $Kernel::OM->Get('Kernel::System::LinkObject')->LinkAdd(
-                        SourceObject => 'Appointment',
-                        SourceKey    => $Appointment{AppointmentID},
-                        TargetObject => $Object,
-                        TargetKey    => $ObjectID,
-                        Type         => 'Normal',
-                        State        => 'Valid',
-                        UserID       => 1,
+                # add links
+                for my $PluginData ( @{ $LinkedObjects{$PluginKey} } ) {
+                    my $LinkSuccess = $PluginObject->PluginLinkAdd(
+                        AppointmentID => $Appointment{AppointmentID},
+                        PluginKey     => $PluginKey,
+                        PluginData    => $PluginData,
+                        UserID        => $Param{UserID},
                     );
 
                     if ( !$LinkSuccess ) {
                         $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message =>
-                                "Unable to create object link (AppointmentID=$Appointment{AppointmentID} - $Object=$ObjectID) during Calendar import!"
+                                "Unable to create object link (AppointmentID=$Appointment{AppointmentID} - $PluginKey=$PluginData) during calendar import!"
                         );
                     }
                 }
