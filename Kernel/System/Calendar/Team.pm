@@ -363,6 +363,80 @@ sub TeamUpdate {
     return 1;
 }
 
+=item TeamImport()
+
+import a team
+
+    my $True = $TeamObject->TeamImport(
+        TeamData                  => {
+            'ValidID' => '1',
+            'ChangeBy' => '2',
+            'CreateBy' => '2',
+            'ID' => '1',
+            'CreateTime' => '2016-05-10 10:32:40',
+            'ChangeTime' => '2016-05-10 10:32:40',
+            'UserList' => {
+                '2' => 'agent_login1',
+                '3' => 'agent_login2',
+                '4' => 'agent_login3',
+            },
+            'Name' => 'MyTeamName',
+            'GroupID' => '2',
+            'Comment' => ''
+        },
+        OverwriteExistingEntities => 0,  # 0 || 1,
+        UserID                    => 1,
+    );
+
+=cut
+
+sub TeamImport {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(UserID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    return if !IsHashRefWithData( $Param{TeamData} );
+
+    # check for an existing team
+    my %ExistingTeam = $Self->TeamGet(
+        Name   => $Param{TeamData}->{Name},
+        UserID => $Param{UserID},
+    );
+
+    my $Success;
+
+    if ( !IsHashRefWithData( \%ExistingTeam ) ) {
+
+        $Success = $Self->TeamAdd(
+            %{ $Param{TeamData} },
+            UserID => $Param{UserID},
+        );
+    }
+    else {
+
+        if ( !$Param{OverwriteExistingEntities} ) {
+            return 1;
+        }
+
+        $Success = $Self->TeamUpdate(
+            %{ $Param{TeamData} },
+            TeamID => $ExistingTeam{ID},
+            UserID => $Param{UserID},
+        );
+    }
+
+    return $Success;
+}
+
 =item AllowedTeamList()
 
 return allowed, valid Teams list as hash
