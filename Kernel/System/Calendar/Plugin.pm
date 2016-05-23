@@ -101,6 +101,24 @@ sub PluginList {
     return \%PluginList;
 }
 
+=item PluginKeys()
+
+returns the hash of proper plugin keys for lowercase matching
+
+    my %PluginKeys = $PluginObject->PluginKeys();
+
+=cut
+
+sub PluginKeys {
+    my ( $Self, %Param ) = @_;
+
+    my %PluginKeys = map {
+        lc $_ => $_,
+    } keys %{ $Self->{Plugins} };
+
+    return \%PluginKeys;
+}
+
 =item PluginLinkAdd()
 
 link appointment by plugin
