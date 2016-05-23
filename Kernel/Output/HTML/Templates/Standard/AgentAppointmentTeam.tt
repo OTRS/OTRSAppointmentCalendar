@@ -45,6 +45,7 @@
 [% RenderBlockEnd("ActionList") %]
         </div>
 
+[% RenderBlockStart("ActionImport") %]
         <div class="WidgetSimple">
             <div class="Header">
                 <h2>[% Translate("Team Import") | html %]</h2>
@@ -74,6 +75,7 @@
                 </ul>
             </div>
         </div>
+[% RenderBlockEnd("ActionImport") %]
 
         <div class="WidgetSimple">
             <div class="Header">
