@@ -450,6 +450,7 @@ sub _Overview {
     );
 
     $LayoutObject->Block( Name => 'ActionList' );
+    $LayoutObject->Block( Name => 'ActionImport' );
     $LayoutObject->Block( Name => 'ActionAdd' );
 
     $LayoutObject->Block(
