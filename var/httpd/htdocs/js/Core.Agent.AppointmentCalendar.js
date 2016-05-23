@@ -65,7 +65,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
-     * @param {Object} Params.NonBusinessHours - Object with non-business hours parameters.
+     * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Integer} Params.AppointmentID - Auto open appointment edit screen with specified appointment.
      * @description
@@ -305,7 +305,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventMouseout: function() {
                 $('.AppointmentTooltip').fadeOut("fast").remove();
             },
-            eventSources: Params.NonBusinessHours,
+            events: Params.WorkingHours,
             resources: Params.Resources.ResourceJSON,
             resourceColumns: Params.Resources.ResourceColumns,
             resourceLabelText: Params.Resources.ResourceText
@@ -448,14 +448,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
+     * @public
      * @name ShowWaitingDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @description
-     *      Shows waiting dialog until dialog screen is ready.
+     *      Shows waiting dialog.
      */
-    function ShowWaitingDialog() {
-        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('LoadingMsg') + '"></span></div>', Core.Config.Get('LoadingMsg'), '10px', 'Center', true);
+    TargetNS.ShowWaitingDialog = function () {
+        Core.UI.Dialog.ShowContentDialog('<div class="Spacing Center"><span class="AJAXLoader" title="' + Core.Config.Get('AppointmentCalendarTranslationsLoading') + '"></span></div>', Core.Config.Get('AppointmentCalendarTranslationsLoading'), '10px', 'Center', true);
     }
 
     /**
@@ -576,7 +576,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         function EditDialog() {
-            ShowWaitingDialog();
+            TargetNS.ShowWaitingDialog();
             Core.AJAX.FunctionCall(
                 Core.Config.Get('CGIHandle'),
                 Data,
@@ -753,11 +753,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
      * @param {Object} EventSources - hash with calendar sources.
+     * @param {Integer} CalendarLimit - maximum number of active calendars.
      * @description
      *      This method initializes calendar checkbox behavior and loads multiple calendars to the
      *      FullCalendar control.
      */
-    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources) {
+    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources, CalendarLimit) {
 
         // Show/hide the calendar appointments
         if ($CalendarSwitch.prop('checked')) {
@@ -768,7 +769,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Register change event handler
         $CalendarSwitch.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources);
+            if ($('.CalendarColorSwatch input:checked').length > CalendarLimit) {
+                $CalendarSwitch.prop('checked', false);
+                Core.UI.Dialog.ShowAlert(Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsHeadline'), Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsText'));
+            } else {
+                TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources, CalendarLimit);
+            }
         });
     }
 

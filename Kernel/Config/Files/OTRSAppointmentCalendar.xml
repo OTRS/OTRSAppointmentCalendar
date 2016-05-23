@@ -221,6 +221,14 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::CalendarLimitOverview" Required="0" Valid="1">
+        <Description Translatable="1">Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar</SubGroup>
+        <Setting>
+            <String Regex="\d+">10</String>
+        </Setting>
+    </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::CalendarColors" Required="0" Valid="1">
         <Description Translatable="1">List of colors in hexadecimal RGB which will be allocated to different user calendars. Make sure the colors are dark enough so white text can be overlayed on them. If the number of calendars exceeds the number of colors, the list will be reused from the start.</Description>
         <Group>OTRSAppointmentCalendar</Group>
@@ -335,7 +343,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Plugin::Ticket</Item>
-                <Item Key="Name" Translatable="1">Ticket Number</Item>
+                <Item Key="Name" Translatable="1">Ticket</Item>
                 <Item Key="URL">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentTicketZoom;TicketID=%s</Item>
             </Hash>
         </Setting>

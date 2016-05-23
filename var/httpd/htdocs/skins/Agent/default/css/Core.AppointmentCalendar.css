@@ -17,6 +17,8 @@
 
     #CalendarList {
         width: 100%;
+        max-height: 360px;
+        overflow-y: auto;
     }
 
     .CalendarSwitch {
@@ -28,9 +30,10 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 220px;
+        width: 200px;
         display: inline-block;
         vertical-align: middle;
+        line-height: 1.5em;
     }
 
     #CalendarList .CalendarSwitch:last-child {
@@ -214,8 +217,16 @@
     }
 
     .fc-following {
-        text-transform: uppercase;
         padding-top: 2px !important;
+    }
+
+    .fc-widget-header .fc-following {
+        text-transform: uppercase;
+        padding-top: 1px !important;
+    }
+
+    .fc-resource-area ~ .fc-time-area .fc-following {
+        padding-top: 1px !important;
     }
 
     .fc-month-view th.fc-widget-header,

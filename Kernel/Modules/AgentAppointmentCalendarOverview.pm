@@ -30,7 +30,6 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # get needed objects
-    my $ConfigObject   = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
@@ -46,6 +45,9 @@ sub Run {
     # check if we found some
     if (@Calendars) {
 
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
         $LayoutObject->Block(
             Name => 'CalendarDiv',
             Data => {
@@ -58,6 +60,7 @@ sub Run {
             Name => 'CalendarWidget',
         );
 
+        my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
         my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
             [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
 
@@ -67,6 +70,9 @@ sub Run {
 
             # current calendar color (sequential)
             $Calendar->{CalendarColor} = $CalendarColors->[$CalendarColorID];
+
+            # check calendar by default if limit is not yet reached
+            $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
 
             # calendar checkbox in the widget
             $LayoutObject->Block(
@@ -106,6 +112,30 @@ sub Run {
         # get plugin list
         $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
 
+        # get working hour appointments
+        my @WorkingHours = $Self->_GetWorkingHours();
+
+        my $CurrentAppointment = 1;
+        for my $Appointment (@WorkingHours) {
+
+            # sort days of the week
+            my @DoW = sort @{ $Appointment->{DoW} };
+
+            # output block
+            $LayoutObject->Block(
+                Name => 'WorkingHours',
+                Data => {
+                    %{$Appointment},
+                    DoW => $LayoutObject->JSONEncode( Data => \@DoW ),
+                },
+            );
+            $LayoutObject->Block(
+                Name => 'WorkingHoursComma',
+            ) if $CurrentAppointment < scalar @WorkingHours;
+
+            $CurrentAppointment++;
+        }
+
         # auto open appointment
         $Param{AppointmentID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
             Param => 'AppointmentID',
@@ -140,6 +170,90 @@ sub Run {
     );
     $Output .= $LayoutObject->Footer();
     return $Output;
+}
+
+sub _GetWorkingHours {
+    my ( $Self, %Param ) = @_;
+
+    # get working hours from sysconfig
+    my $WorkingHoursConfig = $Kernel::OM->Get('Kernel::Config')->Get('TimeWorkingHours');
+
+    # create working hour appointments for each day
+    my @WorkingHours;
+    for my $DayName ( sort keys %{$WorkingHoursConfig} ) {
+
+        # day of the week
+        my $DoW = 0;    # Sun
+        if ( $DayName eq 'Mon' ) {
+            $DoW = 1;
+        }
+        elsif ( $DayName eq 'Tue' ) {
+            $DoW = 2;
+        }
+        elsif ( $DayName eq 'Wed' ) {
+            $DoW = 3;
+        }
+        elsif ( $DayName eq 'Thu' ) {
+            $DoW = 4;
+        }
+        elsif ( $DayName eq 'Fri' ) {
+            $DoW = 5;
+        }
+        elsif ( $DayName eq 'Sat' ) {
+            $DoW = 6;
+        }
+
+        my $StartTime = 0;
+        my $EndTime   = 0;
+
+        START_TIME:
+        for ( $StartTime = 0; $StartTime < 24; $StartTime++ ) {
+
+            # is this working hour?
+            if ( grep { $_ eq $StartTime } @{ $WorkingHoursConfig->{$DayName} } ) {
+
+                # go to the end of the working hours
+                for ( my $EndHour = $StartTime; $EndHour < 24; $EndHour++ ) {
+                    if ( !grep { $_ eq $EndHour } @{ $WorkingHoursConfig->{$DayName} } ) {
+                        $EndTime = $EndHour;
+
+                        # add appointment
+                        if ( $EndTime > $StartTime ) {
+                            push @WorkingHours, {
+                                StartTime => sprintf( '%02d:00:00', $StartTime ),
+                                EndTime   => sprintf( '%02d:00:00', $EndTime ),
+                                DoW       => [$DoW],
+                            };
+                        }
+
+                        # skip some hours
+                        $StartTime = $EndHour;
+
+                        next START_TIME;
+                    }
+                }
+            }
+        }
+    }
+
+    # collapse appointments with same start and end times
+    for my $AppointmentA (@WorkingHours) {
+        for my $AppointmentB (@WorkingHours) {
+            if (
+                $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
+                && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
+                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
+                && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
+                )
+            {
+                push @{ $AppointmentA->{DoW} }, @{ $AppointmentB->{DoW} };
+                $AppointmentB = undef;
+            }
+        }
+    }
+
+    # return only non-empty appointments
+    return grep { scalar keys %{$_} } @WorkingHours;
 }
 
 1;

@@ -296,18 +296,18 @@ sub CalendarGet {
                 TTL   => $Self->{CacheTTL},
             );
         }
-    }
 
-    if ( $Param{UserID} ) {
+        if ( $Param{UserID} && $Calendar{GroupID} ) {
 
-        # get user groups
-        my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-            UserID => $Param{UserID},
-            Type   => 'ro',
-        );
+            # get user groups
+            my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+                UserID => $Param{UserID},
+                Type   => 'ro',
+            );
 
-        if ( !grep { $Calendar{GroupID} == $_ } keys %GroupList ) {
-            %Calendar = ();
+            if ( !grep { $Calendar{GroupID} == $_ } keys %GroupList ) {
+                %Calendar = ();
+            }
         }
     }
 
