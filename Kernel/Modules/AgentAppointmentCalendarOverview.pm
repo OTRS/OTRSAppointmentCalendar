@@ -45,6 +45,9 @@ sub Run {
     # check if we found some
     if (@Calendars) {
 
+        # get config object
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
         $LayoutObject->Block(
             Name => 'CalendarDiv',
             Data => {
@@ -57,7 +60,8 @@ sub Run {
             Name => 'CalendarWidget',
         );
 
-        my $CalendarColors = $Kernel::OM->Get('Kernel::Config')->Get('AppointmentCalendar::CalendarColors') ||
+        my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+        my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
             [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
 
         my $CalendarColorID = 0;
@@ -66,6 +70,9 @@ sub Run {
 
             # current calendar color (sequential)
             $Calendar->{CalendarColor} = $CalendarColors->[$CalendarColorID];
+
+            # check calendar by default if limit is not yet reached
+            $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
 
             # calendar checkbox in the widget
             $LayoutObject->Block(
