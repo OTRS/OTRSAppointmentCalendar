@@ -60,8 +60,8 @@ sub Run {
             Name => 'CalendarWidget',
         );
 
-        my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
-        my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
+        my $CalendarLimit  = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+        my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors')            ||
             [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
 
         my $CalendarColorID = 0;
@@ -242,7 +242,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

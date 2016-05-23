@@ -159,7 +159,7 @@
                         <tbody>
 [% RenderBlockStart("ChangeRow") %]
                             <tr>
-                                <td><a href="[% Env("Baselink") %]Action=[% Data.AdminAction | uri %];Subaction=Change;ID=[% Data.ID | uri %]">[% Data.Name | html %]</a></td>
+                                <td><a href="[% Env("Baselink") %]Action=[% Data.AdminAction | uri %];Subaction=Change;ID=[% Data.ID | uri %];TeamID=[% Data.ID | uri %]">[% Data.Name | html %]</a></td>
                                 <td class="[% Data.Mark | html %]">
                                     <input type="checkbox" name="[% Data.Type | html %]" title="[% Translate("Toggle active state for %s", Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
                                 </td>
