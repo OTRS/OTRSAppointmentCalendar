@@ -131,14 +131,14 @@ sub Run {
             );
         }
 
-        my $Success = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal')->Import(
+        my $Count = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal')->Import(
             CalendarID     => $Calendar{CalendarID},
             ICal           => $UploadStuff{Content},
             UserID         => $Self->{UserID},
             UpdateExisting => $UpdateExisting,
         );
 
-        if ( !$Success ) {
+        if ( !$Count ) {
             return $LayoutObject->FatalError(
                 Message =>
                     $LayoutObject->{LanguageObject}->Translate('System was unable to import file!'),
@@ -147,21 +147,10 @@ sub Run {
 
         # Import ok
         return $LayoutObject->Redirect(
-            OP => "Action=AgentAppointmentCalendarImport;Subaction=ImportSucess;CalendarName=$Calendar{CalendarName}",
+            OP => "Action=AgentAppointmentCalendarManage;ImportSuccess=1;Count=${Count};Name="
+                . $LayoutObject->LinkEncode( $Calendar{CalendarName} ),
         );
 
-    }
-    if ( $Self->{Subaction} eq 'ImportSucess' ) {
-        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import");
-
-        my $CalendarName = $ParamObject->GetParam( Param => 'CalendarName' ) || '';
-
-        $LayoutObject->Block(
-            Name => 'ImportSuccess',
-            Data => {
-                CalendarName => $CalendarName,
-                }
-        );
     }
     else {
         return $Self->_Overview();
@@ -193,7 +182,7 @@ sub _Overview {
         }
     } sort { $a->{CalendarName} cmp $b->{CalendarName} } @CalendarList;
 
-    my $Calendar = $LayoutObject->BuildSelection(
+    $Param{Calendar} = $LayoutObject->BuildSelection(
         Data         => \@CalendarData,
         Name         => 'CalendarID',
         ID           => 'CalendarID',
@@ -204,20 +193,10 @@ sub _Overview {
     );
 
     # get FormID from params
-    my $FormID = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'FormID' ) || '';
+    $Param{FormID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam( Param => 'FormID' ) || '';
 
     # generate FormID if empty
-    $FormID = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate() if !$FormID;
-
-    # overview
-    $LayoutObject->Block(
-        Name => 'Import',
-        Data => {
-            Calendar => $Calendar,
-            FormID   => $FormID,
-            %Param,
-            }
-    );
+    $Param{FormID} = $Kernel::OM->Get('Kernel::System::Web::UploadCache')->FormIDCreate() if !$Param{FormID};
 
     return $Self->_Mask(%Param);
 }

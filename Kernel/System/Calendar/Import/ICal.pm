@@ -83,7 +83,8 @@ import calendar in iCalendar format
                                                   # instead of AppointmentCalendar::Import::RecurringMonthsLimit to do the calculation
                                                   # NOTE: PLEASE USE THIS PARAMETER FOR UNIT TESTS ONLY
     );
-returns 1 if successful
+
+returns number of imported appointments if successful, otherwise 0
 
 =cut
 
@@ -533,7 +534,7 @@ sub Import {
         }
     }
 
-    return $AppointmentsImported > 0 ? 1 : 0;
+    return $AppointmentsImported;
 }
 
 sub _FormatTime {
