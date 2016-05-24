@@ -81,6 +81,7 @@
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
+        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentResourceOverview.t"/>
         <File Permission="640" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
