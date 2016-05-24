@@ -234,6 +234,17 @@ sub Run {
     }
     else {
 
+        my $ImportSuccess = $ParamObject->GetParam( Param => 'ImportSuccess' ) || '';
+        if ($ImportSuccess) {
+            $LayoutObject->Block(
+                Name => 'ImportSuccess',
+                Data => {
+                    Name  => $ParamObject->GetParam( Param => 'Name' )  || '',
+                    Count => $ParamObject->GetParam( Param => 'Count' ) || 0,
+                },
+            );
+        }
+
         # get all calendars user has RW access to
         my @Calendars = $CalendarObject->CalendarList(
             UserID     => $Self->{UserID},

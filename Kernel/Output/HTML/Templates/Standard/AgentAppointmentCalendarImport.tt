@@ -32,7 +32,7 @@
             </div>
             <div class="Content">
                 <p class="FieldExplanation">
-                    [% Translate("Uploaded file must be in valid iCal format(.ics).") | html %]
+                    [% Translate("Uploaded file must be in valid iCal format (.ics).") | html %]
                 </p>
                 <p class="FieldExplanation">
                     [% Translate("If desired Calendar is not listed here, please make sure that you have at least 'create' permissions.") | html %]
@@ -48,7 +48,6 @@
             </div>
 
             <div class="Content">
-[% RenderBlockStart("Import") %]
                 <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
                     <input type="hidden" name="Action" value="[% Env("Action") %]"/>
                     <input type="hidden" name="Subaction" value="Import"/>
@@ -84,11 +83,6 @@
                         <div class="Clear"></div>
                     </fieldset>
                 </form>
-[% RenderBlockEnd("Import") %]
-[% RenderBlockStart("ImportSuccess") %]
-                <p>[% Translate("Calendar imported successfully (%s).", Data.CalendarName ) | html %]</p>
-[% RenderBlockEnd("ImportSuccess") %]
-
             </div>
         </div>
     </div>

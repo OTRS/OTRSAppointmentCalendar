@@ -6,6 +6,12 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+[% RenderBlockStart("ImportSuccess") %]
+<div class="MessageBox Notice">
+    <p>[% Translate("Successfully imported calendar '%s': %s appointment(s).", Data.Name, Data.Count) | html %]</p>
+</div>
+[% RenderBlockEnd("ImportSuccess") %]
+
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
 
     <h1 class="Header">[% Translate("Calendar Management") | html %]</h1>
