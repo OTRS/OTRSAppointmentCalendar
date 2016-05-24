@@ -229,6 +229,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay) {
                     $Element.addClass('AllDay');
                 }
+                if (CalEvent.recurring) {
+                    $Element.addClass('RecurringParent');
+                } else if (CalEvent.parentId) {
+                    $Element.addClass('RecurringChild');
+                }
             },
             eventResizeStart: function(CalEvent) {
                 CurrentAppointment.start = CalEvent.start;

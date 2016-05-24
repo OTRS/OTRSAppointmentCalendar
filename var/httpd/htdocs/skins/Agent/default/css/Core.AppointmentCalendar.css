@@ -58,6 +58,36 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
+    .RecurringParent:before {
+        content: "\f01e";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .RecurringChild:before {
+        content: "\f0c1";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .AllDay .fc-content,
+    .RecurringParent .fc-content,
+    .RecurringChild .fc-content {
+        margin-right: 16px;
+    }
+
+    .fc-day-grid-event .fc-content {
+        text-overflow: ellipsis;
+    }
+
     .fc button {
         background: #eee;
         border: 1px solid #ccc;
