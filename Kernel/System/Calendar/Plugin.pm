@@ -84,7 +84,7 @@ sub new {
 
 returns the hash of registered plugins
 
-    my %PluginList = $PluginObject->PluginList();
+    my $PluginList = $PluginObject->PluginList();
 
 =cut
 
@@ -105,7 +105,7 @@ sub PluginList {
 
 returns the hash of proper plugin keys for lowercase matching
 
-    my %PluginKeys = $PluginObject->PluginKeys();
+    my $PluginKeys = $PluginObject->PluginKeys();
 
 =cut
 
@@ -125,8 +125,8 @@ link appointment by plugin
 
     my $Success = $PluginObject->PluginLinkAdd(
         AppointmentID => 1,
-        PluginKey     => '0100-TicketNumber',
-        PluginData    => '20160101540000014',
+        PluginKey     => '0100-Ticket',
+        PluginData    => '42',
         UserID        => 1,
     );
 
@@ -156,8 +156,9 @@ sub PluginLinkAdd {
 
 returns list of links for supplied appointment
 
-    my $Success = $PluginObject->PluginLinkList(
+    my $LinkList = $PluginObject->PluginLinkList(
         AppointmentID => 1,
+        PluginKey     => '0100-Ticket',
         UserID        => 1,
     );
 
@@ -231,7 +232,7 @@ sub PluginLinkDelete {
 
 search for plugin objects
 
-    my %ResultList = $PluginObject->PluginSearch(
+    my $ResultList = $PluginObject->PluginSearch(
         Search    => $Search,
         PluginKey => $PluginKey,
         UserID    => $Self->{UserID},
