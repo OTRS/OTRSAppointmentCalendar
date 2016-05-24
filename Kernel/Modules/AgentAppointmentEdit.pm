@@ -621,6 +621,19 @@ sub Run {
             );
         }
 
+        # prevent recurrence until dates before start time
+        if ( $Appointment{Recurring} && $Appointment{RecurrenceUntil} ) {
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{StartTime},
+            );
+            my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $Appointment{RecurrenceUntil},
+            );
+            if ( $RecurrenceUntil < $StartTime ) {
+                $Appointment{RecurrenceUntil} = $GetParam{StartTime};
+            }
+        }
+
         # recurring appointment
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
             $GetParam{RecurrenceInterval} = 1;

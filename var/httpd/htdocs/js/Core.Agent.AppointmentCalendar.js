@@ -669,7 +669,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (Data.Recurring === '1') {
+                        if (Data.Recurring === '1' || AppointmentData.CalEvent.allDay) {
                             $('#calendar').fullCalendar('refetchEvents');
                         }
                     } else {
@@ -680,6 +680,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
                 }
             );
+        }
+
+        // Make end time for all day appointments inclusive
+        if (AppointmentData.CalEvent.allDay) {
+            AppointmentData.CalEvent.end.subtract(1, 'day');
+            Data.EndYear = AppointmentData.CalEvent.end.year();
+            Data.EndMonth = AppointmentData.CalEvent.end.month() + 1;
+            Data.EndDay = AppointmentData.CalEvent.end.date();
+            Data.EndHour = AppointmentData.CalEvent.end.hour();
+            Data.EndMinute = AppointmentData.CalEvent.end.minute();
         }
 
         // Repeating event
