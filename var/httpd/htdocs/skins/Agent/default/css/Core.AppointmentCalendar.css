@@ -84,10 +84,6 @@
         margin-right: 16px;
     }
 
-    .fc-day-grid-event .fc-content {
-        text-overflow: ellipsis;
-    }
-
     .fc button {
         background: #eee;
         border: 1px solid #ccc;
