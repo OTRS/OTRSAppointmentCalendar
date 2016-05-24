@@ -8,7 +8,7 @@
 
 [% RenderBlockStart("ImportSuccess") %]
 <div class="MessageBox Notice">
-    <p>[% Translate("Successfully imported calendar '%s': %s appointment(s).", Data.Name, Data.Count) | html %]</p>
+    <p>[% Translate("Successfully imported %s appointment(s) to calendar %s.", Data.Count, Data.Name) | html %]</p>
 </div>
 [% RenderBlockEnd("ImportSuccess") %]
 
