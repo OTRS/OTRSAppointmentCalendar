@@ -30,12 +30,12 @@
 
 [% RenderBlockStart("ActionAdd") %]
                     <li>
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Add" class="CallForAction Fullsize Center">
+                        <a id="TeamAdd" href="[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Add" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-plus-square"></i>[% Translate("Add Team") | html %]</span>
                         </a>
                     </li>
                     <li>
-                        <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeamUser" class="CallForAction Fullsize Center">
+                        <a id="TeamUser" href="[% Env("CGIHandle") %]?Action=AgentAppointmentTeamUser" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-user-plus"></i>[% Translate("Manage Team Agents") | html %]</span>
                         </a>
                     </li>
