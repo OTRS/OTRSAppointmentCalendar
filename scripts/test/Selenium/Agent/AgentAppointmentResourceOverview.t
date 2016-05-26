@@ -100,7 +100,6 @@ $Selenium->RunTest(
         my $TestTeamLinkHref = $TestTeamLink->get_attribute('href');
         $TestTeamLinkHref =~ /ID=([0-9]+)/;
         my $TeamID = $1;
-        $Kernel::OM->Get('Kernel::System::Log')->Dumper($TeamID);
         $TestTeamLink->VerifiedClick();
 
         # select test user

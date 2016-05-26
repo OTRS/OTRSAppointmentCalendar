@@ -142,7 +142,7 @@ sub CalendarCreate {
     return if %Calendar;
 
     # create salt string
-    my $SaltString = $Self->_GetRandomString( Length => 64 );
+    my $SaltString = $Self->GetRandomString( Length => 64 );
 
     my $SQL = '
         INSERT INTO calendar
@@ -623,7 +623,20 @@ sub GetAccessToken {
     return $MD5;
 }
 
-sub _GetRandomString {
+=item GetRandomString()
+
+returns random string of specified length from the set of ASCII characters.
+
+    my $RandomString = $CalendarObject->GetRandomString(
+        Length => 8,    # (required)
+    );
+
+returns:
+    $RandomString = ']t%C`L9q';
+
+=cut
+
+sub GetRandomString {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff

@@ -118,7 +118,6 @@ sub Export {
             AppointmentID => $AppointmentID,
         );
         return if !$Appointment{AppointmentID};
-        next APPOINTMENT_ID if $Appointment{ParentID};
 
         # get padded offset
         my $Offset = $Self->_GetPaddedOffset(
@@ -171,6 +170,10 @@ sub Export {
 
         # optional properties
         my %ICalEventProperties;
+
+        # repeatable properties
+        my @ICalRepeatableProperties;
+
         if ( $Appointment{Description} ) {
             $ICalEventProperties{description} = $Appointment{Description};
         }
@@ -199,13 +202,60 @@ sub Export {
                     String => $Appointment{RecurrenceUntil},
                 );
                 my $ICalRecurrenceUntil = Date::ICal->new(
-                    epoch => $RecurrenceUntil - 1,    # make it exclusive
+                    epoch => $RecurrenceUntil,
                 );
                 $ICalRecurrenceUntil->offset($Offset);
-                $ICalEventProperties{rrule} .= ';UNTIL=' . $ICalRecurrenceUntil->ical();
+                $ICalEventProperties{rrule} .= ';UNTIL=' . substr( $ICalRecurrenceUntil->ical(), 0, -1 );
             }
             elsif ( $Appointment{RecurrenceCount} ) {
                 $ICalEventProperties{rrule} .= ';COUNT=' . $Appointment{RecurrenceCount};
+            }
+            if ( $Appointment{RecurrenceExclude} ) {
+                for my $RecurrenceExclude ( @{ $Appointment{RecurrenceExclude} } ) {
+                    my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        String => $RecurrenceExclude,
+                    );
+                    my $ICalRecurrenceID = Date::ICal->new(
+                        epoch => $RecurrenceID,
+                    );
+                    $ICalRecurrenceID->offset($Offset);
+
+                    push @ICalRepeatableProperties, {
+                        Property => 'exdate',
+                        Value    => $Appointment{AllDay}
+                        ? substr( $ICalRecurrenceID->ical(), 0, -1 )
+                        : $ICalRecurrenceID->ical(),
+                    };
+                }
+            }
+        }
+
+        # occurrence appointment
+        if ( $Appointment{ParentID} ) {
+
+            # overriden occurences only
+            if (
+                $Appointment{RecurrenceID}
+                && grep { $_ eq $Appointment{RecurrenceID} } @{ $Appointment{RecurrenceExclude} }
+                )
+            {
+
+                # calculate recurrence id
+                my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    String => $Appointment{RecurrenceID},
+                );
+                my $ICalRecurrenceID = Date::ICal->new(
+                    epoch => $RecurrenceID,
+                );
+                $ICalRecurrenceID->offset($Offset);
+
+                $ICalEventProperties{'recurrence-id'}
+                    = $Appointment{AllDay} ? substr( $ICalRecurrenceID->ical(), 0, -1 ) : $ICalRecurrenceID->ical();
+            }
+
+            # skip if not overriden
+            else {
+                next APPOINTMENT_ID;
             }
         }
 
@@ -294,6 +344,13 @@ sub Export {
             'last-modified' => $ICalChangeTime->ical(),
             %ICalEventProperties,
         );
+
+        # add repeatable properties
+        for my $Repeatable (@ICalRepeatableProperties) {
+            $ICalEvent->add_properties(
+                $Repeatable->{Property} => $Repeatable->{Value},
+            );
+        }
 
         $ICalCalendar->add_entry($ICalEvent);
     }

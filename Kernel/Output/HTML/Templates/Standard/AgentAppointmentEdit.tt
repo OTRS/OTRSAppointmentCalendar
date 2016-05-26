@@ -85,6 +85,12 @@
             </div>
             <div class="Clear"></div>
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
+[% IF Data.ParentID %]
+            <div class="Field">
+                [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
+                <a href="#" id="EditParent">[% Translate("Click here to edit the parent appointment.") | html %]</a>
+            </div>
+[% ELSE %]
             <div class="Field">
                 [% Data.RecurrenceTypeString %]
             </div>
@@ -97,6 +103,7 @@
             <div id="RecurrenceCountDiv" class="Field Hidden">
                 <input type="text" id="RecurrenceCount" name="RecurrenceCount" value="[% Data.RecurrenceCount | html %]" size="1" maxlength="2" />
             </div>
+[% END %]
         </fieldset>
 [% IF Data.PluginList %]
         <fieldset class="TableLike">
@@ -188,6 +195,30 @@ $('#EditFormDelete').on('click', function() {
         Action: 'AgentAppointmentEdit',
         Subaction: 'DeleteAppointment'
     });
+});
+
+[% END %]
+
+[% IF Data.ParentID %]
+
+// Edit parent appointment
+$('#EditParent').on('click', function() {
+    var Data = {
+        ChallengeToken: $("#ChallengeToken").val(),
+        Action: 'AgentAppointmentEdit',
+        Subaction: 'EditMask',
+        AppointmentID: [% Data.ParentID | JSON %]
+    };
+
+    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
+    Core.AJAX.FunctionCall(
+        Core.Config.Get('CGIHandle'),
+        Data,
+        function (HTML) {
+            Core.UI.Dialog.ShowContentDialog(HTML, [% Translate("Appointment") | JSON %], '10px', 'Center', true, undefined, true);
+            Core.UI.InputFields.Activate($('.Dialog:visible'));
+        }, 'html'
+    );
 });
 
 [% END %]

@@ -387,6 +387,35 @@ sub Import {
                 # default value
                 $Parameters{RecurrenceUntil} = $UntilLimitedTimestamp;
             }
+
+            # excluded dates
+            if ( IsArrayRefWithData( $Properties->{'exdate'} ) ) {
+                my @RecurrenceExclude;
+                for my $Exclude ( @{ $Properties->{'exdate'} } ) {
+                    if (
+                        ref $Exclude eq 'Data::ICal::Property'
+                        && $Exclude->{'value'}
+                        )
+                    {
+                        my $TimezoneID;
+                        if ( ref $Exclude->{'_parameters'} eq 'HASH' ) {
+
+                            # check timezone
+                            if ( $Exclude->{'_parameters'}->{'TZID'} ) {
+                                $TimezoneID = $Exclude->{'_parameters'}->{'TZID'};
+                            }
+                        }
+
+                        my $ExcludeTime = $Exclude->{'value'};
+
+                        push @RecurrenceExclude, $Self->_FormatTime(
+                            Time       => $ExcludeTime,
+                            TimezoneID => $TimezoneID,
+                        );
+                    }
+                }
+                $Parameters{RecurrenceExclude} = \@RecurrenceExclude;
+            }
         }
 
         # get team
@@ -458,28 +487,70 @@ sub Import {
 
         next ENTRY if !$Parameters{Title};
 
-        my $Success;
+        my %Appointment;
+
+        # get recurrence id
+        if (
+            IsArrayRefWithData( $Properties->{'recurrence-id'} )
+            && ref $Properties->{'recurrence-id'}->[0] eq 'Data::ICal::Property'
+            && $Properties->{'recurrence-id'}->[0]->{'value'}
+            )
+        {
+            # get parent id
+            my %ParentAppointment = $AppointmentObject->AppointmentGet(
+                UniqueID   => $Parameters{UniqueID},
+                CalendarID => $Param{CalendarID},
+            );
+            next ENTRY if !%ParentAppointment;
+
+            $Parameters{ParentID} = $ParentAppointment{AppointmentID};
+
+            my $TimezoneID;
+            if ( ref $Properties->{'recurrence-id'}->[0]->{'_parameters'} eq 'HASH' ) {
+
+                # check timezone
+                if ( $Properties->{'recurrence-id'}->[0]->{'_parameters'}->{'TZID'} ) {
+                    $TimezoneID = $Properties->{'recurrence-id'}->[0]->{'_parameters'}->{'TZID'};
+                }
+            }
+
+            my $RecurrenceID = $Properties->{'recurrence-id'}->[0]->{'value'};
+            $Parameters{RecurrenceID} = $Self->_FormatTime(
+                Time       => $RecurrenceID,
+                TimezoneID => $TimezoneID,
+            );
+
+            # delete existing overriden occurrence
+            $AppointmentObject->AppointmentDeleteOccurrence(
+                UniqueID     => $Parameters{UniqueID},
+                CalendarID   => $Param{CalendarID},
+                RecurrenceID => $Parameters{RecurrenceID},
+                UserID       => $Param{UserID},
+            );
+        }
 
         # check if appointment exists already (same UniqueID)
-        my %Appointment = $AppointmentObject->AppointmentGet(
-            UniqueID => $Parameters{UniqueID},
-        );
+        else {
+            %Appointment = $AppointmentObject->AppointmentGet(
+                UniqueID   => $Parameters{UniqueID},
+                CalendarID => $Param{CalendarID},
+            );
 
-        # check if old Appointment should be updated
-        if ( $Appointment{CalendarID} ) {
-            if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
+            # check if old appointment in the same calendar should be updated
+            if ( $Appointment{CalendarID} ) {
+                if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
 
-                # create new appointment (don't update Appointment in different Calendar)
-                delete $Parameters{UniqueID}
-                    if %Appointment;    # use original UniqueID (from ics) instead of generating new one
-                %Appointment = ();
-
+                    # create new appointment
+                    delete $Parameters{UniqueID} if %Appointment;
+                    %Appointment = ();
+                }
             }
         }
 
-        if ( %Appointment && $Appointment{AppointmentID} ) {
+        my $Success;
 
-            # Appointment exists, update it
+        # appointment exists, update it
+        if ( %Appointment && $Appointment{AppointmentID} ) {
             $Success = $AppointmentObject->AppointmentUpdate(
                 CalendarID    => $Param{CalendarID},
                 AppointmentID => $Appointment{AppointmentID},
@@ -488,21 +559,15 @@ sub Import {
                 %Parameters,
             );
         }
+
+        # there is no appointment, create new one
         else {
-            # There is no Appointment, create new one
-            my $AppointmentID = $AppointmentObject->AppointmentCreate(
+            $Success = $AppointmentObject->AppointmentCreate(
                 CalendarID => $Param{CalendarID},
                 UserID     => $Param{UserID},
                 TimezoneID => 0,
                 %Parameters,
             );
-
-            # get Appointment
-            %Appointment = $AppointmentObject->AppointmentGet(
-                AppointmentID => $AppointmentID,
-            );
-
-            $Success = %Appointment ? 1 : 0;
         }
 
         if ($Success) {
