@@ -51,7 +51,11 @@
                         </a>
                     </li>
                     <li>
+[% IF Data.ValidCount %]
                         <a id="Import" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarImport" class="CallForAction Fullsize Center" title="[% Translate("Import Calendar") | html %]">
+[% ELSE %]
+                        <a id="Import" class="CallForAction Fullsize Center Disabled" title="[% Translate("Import Calendar") | html %]">
+[% END %]
                             <span><i class="fa fa-upload"></i>[% Translate("Import Calendar") | html %]</span>
                         </a>
                     </li>

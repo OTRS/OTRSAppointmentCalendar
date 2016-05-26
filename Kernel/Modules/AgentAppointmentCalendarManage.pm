@@ -252,10 +252,6 @@ sub Run {
         );
 
         $LayoutObject->Block(
-            Name => 'MainActions',
-        );
-
-        $LayoutObject->Block(
             Name => 'CalendarFilter',
         );
 
@@ -263,6 +259,7 @@ sub Run {
             Name => 'Overview',
         );
 
+        $Param{ValidCount} = 0;
         for my $Calendar (@Calendars) {
 
             # group name
@@ -274,6 +271,7 @@ sub Run {
             $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
                 ValidID => $Calendar->{ValidID},
             );
+            $Param{ValidCount}++ if $Calendar->{ValidID} == 1;
 
             # get access tokens
             $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
@@ -295,6 +293,13 @@ sub Run {
 
         $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
         $Param{Overview} = 1;
+
+        $LayoutObject->Block(
+            Name => 'MainActions',
+            Data => {
+                %Param,
+            },
+        );
     }
 
     return $Self->_Mask(%Param);
