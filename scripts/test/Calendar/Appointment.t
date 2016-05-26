@@ -637,6 +637,28 @@ $Self->True(
     'Recurring appointment #8 created',
 );
 
+# add custom weekly recurring appointment (All day)
+my $AppointmentIDRec9 = $AppointmentObject->AppointmentCreate(
+    CalendarID          => $Calendar1{CalendarID},
+    Title               => 'Custom Recurring appointment 5',
+    Description         => 'Description',
+    Location            => 'Germany',
+    StartTime           => '2016-09-01 00:00:00',
+    EndTime             => '2016-09-02 00:00:00',
+    AllDay              => 1,
+    TimezoneID          => 1,
+    Recurring           => 1,
+    RecurrenceType      => "CustomWeekly",
+    RecurrenceInterval  => 2,                                  # each 2 weeks
+    RecurrenceFrequency => [ 1, 3, 4, 5, 7 ],                  # Mod, Wed, Thu, Fri, Sun
+    RecurrenceUntil     => '2017-10-01 00:00:00',              # october
+    UserID              => $UserID,
+);
+$Self->True(
+    $AppointmentIDRec9,
+    'Recurring appointment #9 created',
+);
+
 # list recurring appointments
 my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
@@ -662,7 +684,7 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     AllDay             => 1,
     TimezoneID         => 1,
     Recurring          => 1,
-    RecurrenceType     => "Daily",
+    RecurrenceType     => "CustomDaily",
     RecurrenceInterval => 2,                          # each 2 days
     RecurrenceUntil    => '2016-03-10 17:00:00',
     UserID             => $UserID,
@@ -703,6 +725,81 @@ $Self->Is(
     '2016-03-04 17:00:00',
     'Recurring updated - #1 end time',
 );
+
+# list recurring appointments
+my @AppointmentsRec5List = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-09-01 00:00:00',
+    EndTime    => '2016-10-01 00:00:00',
+);
+
+my @AppointmentRec5Only;
+for my $Appointment ( sort { $a->{StartTime} cmp $b->{StartTime} } @AppointmentsRec5List ) {
+    if ( $Appointment->{Title} eq 'Custom Recurring appointment 5' ) {
+        push @AppointmentRec5Only, $Appointment;
+    }
+}
+
+my @AppointmentRec5Expected = (
+    {
+        'StartTime' => '2016-09-01 00:00:00',
+        'EndTime'   => '2016-09-02 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-02 00:00:00',
+        'EndTime'   => '2016-09-03 00:00:00'
+    },
+    {
+        'StartTime' => '2016-09-04 00:00:00',
+        'EndTime'   => '2016-09-05 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-12 00:00:00',
+        'EndTime'   => '2016-09-13 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-14 00:00:00',
+        'EndTime'   => '2016-09-15 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-15 00:00:00',
+        'EndTime'   => '2016-09-16 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-16 00:00:00',
+        'EndTime'   => '2016-09-17 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-18 00:00:00',
+        'EndTime'   => '2016-09-19 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-26 00:00:00',
+        'EndTime'   => '2016-09-27 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-28 00:00:00',
+        'EndTime'   => '2016-09-29 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-29 00:00:00',
+        'EndTime'   => '2016-09-30 00:00:00',
+    },
+    {
+        'StartTime' => '2016-09-30 00:00:00',
+        'EndTime'   => '2016-10-01 00:00:00',
+    }
+);
+
+for ( my $Counter = 0; $Counter < scalar @AppointmentRec5Expected; $Counter++ ) {
+    for my $Item ( sort keys $AppointmentRec5Expected[$Counter] ) {
+        $Self->Is(
+            $AppointmentRec5Expected[$Counter]->{$Item},
+            $AppointmentRec5Only[$Counter]->{$Item},
+            "AppointmentRec5 - $Item = $AppointmentRec5Expected[$Counter]->{$Item}",
+        );
+    }
+}
 
 my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
     AppointmentID => $AppointmentID8,
@@ -1277,7 +1374,7 @@ for my $Date (qw(2016-03-03 2016-03-05)) {
     );
 }
 for my $Date (
-    qw(2016-02-02 2016-02-03 2016-02-04 2016-02-05 2016-02-06 2016-02-07 2016-02-08 2016-02-09 2016-02-10 2016-02-11 2016-02-12
+    qw(2016-02-02 2016-02-03 2016-02-04 2016-02-06 2016-02-07 2016-02-08 2016-02-09 2016-02-10 2016-02-11 2016-02-12
     2016-02-13 2016-02-14 2016-02-15 2016-02-16 2016-02-17 2016-02-18 2016-02-19 2016-02-20 2016-02-21 2016-02-22 2016-02-23
     2016-02-24 2016-02-25 2016-02-26 2016-02-27 2016-02-28 2016-03-01 2016-03-04)
     )
@@ -1288,7 +1385,7 @@ for my $Date (
         "AppointmentDays5 - #$Date",
     );
 }
-for my $Date (qw(2016-02-29 2016-03-02 )) {
+for my $Date (qw(2016-02-05 2016-02-29 2016-03-02 )) {
     $Self->Is(
         $AppointmentDays5{$Date},
         3,

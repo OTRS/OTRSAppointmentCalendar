@@ -255,7 +255,7 @@ sub Import {
             && $Properties->{'rrule'}->[0]->{'value'}
             )
         {
-            my ( $Frequency, $Until, $Interval, $Count, $DayNames, $MonthDays );
+            my ( $Frequency, $Until, $Interval, $Count, $DayNames, $MonthDay, $Months );
 
             my @Rules = split ';', $Properties->{'rrule'}->[0]->{'value'};
 
@@ -264,27 +264,24 @@ sub Import {
 
                 if ( $Rule =~ /FREQ=(.*?)$/i ) {
                     $Frequency = $1;
-                    next RULE;
                 }
                 elsif ( $Rule =~ /UNTIL=(.*?)$/i ) {
                     $Until = $1;
-                    next RULE;
                 }
                 elsif ( $Rule =~ /INTERVAL=(\d+?)$/i ) {
                     $Interval = $1;
-                    next RULE;
                 }
                 elsif ( $Rule =~ /COUNT=(\d+?)$/i ) {
                     $Count = $1;
-                    next RULE;
                 }
                 elsif ( $Rule =~ /BYDAY=(.*?)$/i ) {
                     $DayNames = $1;
-                    next RULE;
                 }
                 elsif ( $Rule =~ /BYMONTHDAY=(.*?)$/i ) {
-                    $MonthDays = $1;
-                    next RULE;
+                    $MonthDay = $1;
+                }
+                elsif ( $Rule =~ /BYMONTH=(.*?)$/i ) {
+                    $Months = $1;
                 }
             }
 
@@ -293,7 +290,7 @@ sub Import {
             # this appointment is repeating
             if ( $Frequency eq "DAILY" ) {
                 $Parameters{Recurring}          = 1;
-                $Parameters{RecurrenceType}     = "Daily";
+                $Parameters{RecurrenceType}     = $Interval == 1 ? "Daily" : "CustomDaily";
                 $Parameters{RecurrenceInterval} = $Interval;
 
             }
@@ -346,11 +343,11 @@ sub Import {
                 }
             }
             elsif ( $Frequency eq "MONTHLY" ) {
-                if ($MonthDays) {
+                if ($MonthDay) {
 
                     # Custom
                     # FREQ=MONTHLY;UNTIL=20170101T080000Z;BYMONTHDAY=16,31'
-                    my @Days = split( ',', $MonthDays );
+                    my @Days = split( ',', $MonthDay );
                     $Parameters{Recurring}           = 1;
                     $Parameters{RecurrenceType}      = "CustomMonthly";
                     $Parameters{RecurrenceFrequency} = \@Days;
@@ -363,11 +360,36 @@ sub Import {
                 }
             }
             elsif ( $Frequency eq "YEARLY" ) {
-                $Parameters{Recurring}          = 1;
-                $Parameters{RecurrenceType}     = "Yearly";
-                $Parameters{RecurrenceInterval} = $Interval;
+                my @Months = split( ',', $Months || '' );
+
+                my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
+                    String => $Parameters{StartTime},
+                );
+                my @Date = $CalendarHelperObject->DateGet(
+                    SystemTime => $StartTimeSystem,
+                );
+
+                if (
+                    scalar @Months > 1
+                    || (
+                        scalar @Months == 1
+                        && $Date[3] != $Months[0]
+                    )
+                    )
+                {
+                    $Parameters{Recurring}           = 1;
+                    $Parameters{RecurrenceType}      = "CustomYearly";
+                    $Parameters{RecurrenceFrequency} = \@Months;
+                    $Parameters{RecurrenceInterval}  = $Interval;
+                }
+                else {
+                    $Parameters{Recurring}          = 1;
+                    $Parameters{RecurrenceType}     = "Yearly";
+                    $Parameters{RecurrenceInterval} = $Interval;
+                }
             }
 
+            # FREQ=YEARLY;INTERVAL=2;BYMONTH=1,2,12
             # FREQ=MONTHLY;UNTIL=20170302T121500Z'
             # FREQ=MONTHLY;UNTIL=20170202T090000Z;INTERVAL=2;BYMONTHDAY=31',
             # FREQ=WEEKLY;INTERVAL=2;BYDAY=TU

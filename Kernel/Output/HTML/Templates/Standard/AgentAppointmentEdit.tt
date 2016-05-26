@@ -17,6 +17,9 @@
         <input type="hidden" id="ResourceID" name="ResourceID[]" value="[% ResourceID | html %]"/>
 [% END %]
         <input type="hidden" id="Recurring" name="Recurring" value="[% Data.Recurring | html %]"/>
+        <input type="hidden" id="RecurrenceDays" name="RecurrenceDays" value="[% Data.RecurrenceDays | html %]"/>
+        <input type="hidden" id="RecurrenceMonths" name="RecurrenceMonths" value="[% Data.RecurrenceMonths | html %]"/>
+        <input type="hidden" id="RecurrenceMonthDays" name="RecurrenceMonthDays" value="[% Data.RecurrenceMonthDays | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
@@ -94,6 +97,187 @@
             <div class="Field">
                 [% Data.RecurrenceTypeString %]
             </div>
+##
+            <div style="background-color:#f5f5f5">
+                <fieldset class="TableLike" id="RecurrenceCustomTypeStringFieldset">
+                    <label>[% Translate("Recurrence pattern") | html %]:</label>
+                    <div class="Field">
+                        [% Data.RecurrenceCustomTypeString %]
+                    </div>
+
+                    <div class="Field">
+                        [% Translate("Every") | html %]:
+                        [% Data.RecurrenceIntervalString %]
+                        <span id="RecurrenceIntervalText"></span>
+                    </div>
+                </fieldset>
+
+                <fieldset class="TableLike" id="RecurrenceCustomWeeklyFieldset">
+                    <div class="Field">
+                        [% Translate("On") | html %]:
+                        <input type="hidden" id="Days" name="Days" value="[% Data.Days %]" />
+
+                        <table class="ButtonTable">
+                            <tbody>
+                                <tr>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="1" title="[% Translate("Monday") | html %]">
+                                            [% Translate("Monday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="2" title="[% Translate("Tuesday") | html %]">
+                                            [% Translate("Tuesday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="3" title="[% Translate("Wednesday") | html %]">
+                                            [% Translate("Wednesday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="4" title="[% Translate("Thursday") | html %]">
+                                            [% Translate("Thursday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="5" title="[% Translate("Friday") | html %]">
+                                            [% Translate("Friday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="6" title="[% Translate("Saturday") | html %]">
+                                            [% Translate("Saturday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="7" title="[% Translate("Sunday") | html %]">
+                                            [% Translate("Sunday") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+
+                <fieldset class="TableLike" id="RecurrenceCustomMonthlyFieldset">
+                    <div class="Field">
+                        [% Translate("On") | html %]:
+                        <input type="hidden" id="MonthDays" name="MonthDays" value="[% Data.MonthDays %]" />
+
+                        <table class="ButtonTable">
+                            <tbody>
+
+# Output table with 31 days
+# Monthly table start
+
+[% Count = 1 %]
+
+[% WHILE Count < 32 %]
+[% IF Count % 7 == 1 %]
+                                <tr>
+[% END %]
+
+# join strings (Monthly1, Monthly2,...)
+[% MonthlyCount = "Monthly" _ Count %]
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" value="[% Count %]" title="[% Count %]">
+                                            [% Count %]
+                                        </button>
+                                    </td>
+[% IF Count % 7 == 0 %]
+                                </tr>
+[% END %]
+
+[% Count = Count + 1 %]
+[% END %]
+
+# Monthly table end
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+
+                <fieldset class="TableLike" id="RecurrenceCustomYearlyFieldset">
+                    <div class="Field">
+                        [% Translate("On") | html %]:
+                        <input type="hidden" id="Months" name="Months" value="[% Data.Months %]" />
+
+                        <table class="ButtonTable">
+                            <tbody>
+                                <tr>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("January") | html %]" value="1" >
+                                            [% Translate("January") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("February") | html %]" value="2" >
+                                            [% Translate("February") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("March") | html %]" value="3" >
+                                            [% Translate("March") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("April") | html %]" value="4" >
+                                            [% Translate("April") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("May") | html %]" value="5" >
+                                            [% Translate("May") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("June") | html %]" value="6" >
+                                            [% Translate("June") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("Jully") | html %]" value="7" >
+                                            [% Translate("Jully") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("August") | html %]" value="8" >
+                                            [% Translate("August") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("September") | html %]" value="9" >
+                                            [% Translate("September") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("October") | html %]" value="10" >
+                                            [% Translate("October") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("November") | html %]" value="11" >
+                                            [% Translate("November") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                    <td class="fc">
+                                        <button class="fc-button fc-state-default" type="button" title="[% Translate("December") | html %]" value="12" >
+                                            [% Translate("December") | truncate(3,'') | html %]
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+##
             <div id="RecurrenceLimitDiv" class="Field Hidden">
                 [% Data.RecurrenceLimitString %]
             </div>
@@ -147,10 +331,16 @@ Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
 Core.Agent.AppointmentCalendar.RecurringInit({
     $Recurring: $('#Recurring'),
     $RecurrenceType: $('#RecurrenceType'),
+    $RecurrenceCustomType: $('#RecurrenceCustomType'),
+    $RecurrenceCustomTypeStringFieldset: $('#RecurrenceCustomTypeStringFieldset'),
+    $RecurrenceIntervalText: $('#RecurrenceIntervalText'),
+    $RecurrenceCustomWeeklyFieldset: $('#RecurrenceCustomWeeklyFieldset'),
+    $RecurrenceCustomMonthlyFieldset: $('#RecurrenceCustomMonthlyFieldset'),
+    $RecurrenceCustomYearlyFieldset: $('#RecurrenceCustomYearlyFieldset'),
     $RecurrenceLimitDiv: $('#RecurrenceLimitDiv'),
     $RecurrenceLimit: $('#RecurrenceLimit'),
     $RecurrenceUntilDiv: $('#RecurrenceUntilDiv'),
-    $RecurrenceCountDiv: $('#RecurrenceCountDiv'),
+    $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
@@ -158,7 +348,28 @@ Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'));
 [% END %]
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
-    var Data = new Object();
+    var Data = new Object(),
+        Days = new Array(),
+        MonthDays = new Array(),
+        Months = new Array();
+
+    // serialize days
+    $("#RecurrenceCustomWeeklyFieldset button.fc-state-active").each(function(){
+        Days.push($(this).val());
+    });
+    $("input#Days").val(Days.join());
+
+    // serialize month days
+    $("#RecurrenceCustomMonthlyFieldset button.fc-state-active").each(function(){
+        MonthDays.push($(this).val());
+    });
+    $("input#MonthDays").val(MonthDays.join());
+
+    // serialize months
+    $("#RecurrenceCustomYearlyFieldset button.fc-state-active").each(function(){
+        Months.push($(this).val());
+    });
+    $("input#Months").val(Months.join());
 
     $(Form).find('input,textarea,select').each(function (Index, Element) {
         if (Element.type == 'checkbox') {
@@ -170,6 +381,11 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
 
     Core.Agent.AppointmentCalendar.ShowWaitingDialog();
     Core.Agent.AppointmentCalendar.EditAppointment(Data);
+});
+
+
+$(".ButtonTable button").on("click", function() {
+    $(this).toggleClass("fc-state-active");
 });
 
 // Duplicate appointment
