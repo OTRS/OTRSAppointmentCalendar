@@ -199,6 +199,47 @@ sub Run {
                     }
                 }
             }
+
+            if ( $Appointment{Recurring} ) {
+                my $RecurrenceType = $GetParam{RecurrenceType} || $Appointment{RecurrenceType};
+
+                my %RecurrenceFrequency;
+                if ( $RecurrenceType eq 'CustomWeekly' ) {
+
+                    if ( defined $GetParam{Days} ) {
+
+                        # check parameters
+                        $Appointment{Days} = $GetParam{Days};
+                    }
+                    else {
+                        $Appointment{Days} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                    }
+                }
+                elsif ( $RecurrenceType eq 'CustomMonthly' ) {
+
+                    if ( defined $GetParam{MonthDays} ) {
+
+                        # check parameters
+                        $Appointment{MonthDays} = $GetParam{MonthDays};
+                    }
+                    else {
+                        $Appointment{MonthDays} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                    }
+                }
+                elsif ( $RecurrenceType eq 'CustomYearly' ) {
+
+                    if ( defined $GetParam{Months} ) {
+
+                        # check parameters
+                        $Appointment{Months} = $GetParam{Months};
+                    }
+                    else {
+                        $Appointment{Months} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                    }
+                }
+
+                %GetParam = ( %GetParam, %RecurrenceFrequency );
+            }
         }
 
         # calendar selection
@@ -328,15 +369,20 @@ sub Run {
             $Param{AllDayChecked} = '';
         }
 
-        my $SelectedRecurrenceType = 0;
+        my $SelectedRecurrenceType       = 0;
+        my $SelectedRecurrenceCustomType = 'CustomDaily';    # default
 
         if ( $Appointment{Recurring} ) {
 
             # from appointment
             $SelectedRecurrenceType = $GetParam{RecurrenceType} || $Appointment{RecurrenceType};
+            if ( $SelectedRecurrenceType =~ /Custom/ ) {
+                $SelectedRecurrenceCustomType = $SelectedRecurrenceType;
+                $SelectedRecurrenceType       = 'Custom';
+            }
         }
 
-        # recurrence interval selection
+        # recurrence type selection
         $Param{RecurrenceTypeString} = $LayoutObject->BuildSelection(
             Data => [
                 {
@@ -359,6 +405,10 @@ sub Run {
                     Key   => 'Yearly',
                     Value => Translatable('Every Year'),
                 },
+                {
+                    Key   => 'Custom',
+                    Value => Translatable('Custom'),
+                },
             ],
             SelectedID   => $SelectedRecurrenceType,
             Name         => 'RecurrenceType',
@@ -367,6 +417,47 @@ sub Run {
             PossibleNone => 0,
             Disabled     => $Permissions
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
+        # recurrence custom type selection
+        $Param{RecurrenceCustomTypeString} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => 'CustomDaily',
+                    Value => Translatable('Every Day'),
+                },
+                {
+                    Key   => 'CustomWeekly',
+                    Value => Translatable('Every Week'),
+                },
+                {
+                    Key   => 'CustomMonthly',
+                    Value => Translatable('Every Month'),
+                },
+                {
+                    Key   => 'CustomYearly',
+                    Value => Translatable('Every Year'),
+                },
+            ],
+            SelectedID => $SelectedRecurrenceCustomType,
+            Name       => 'RecurrenceCustomType',
+            Class      => 'Modernize',
+        );
+
+        my $SelectedInterval = $GetParam{RecurrenceInterval} || $Appointment{RecurrenceInterval} || 1;
+
+        # add Interval selection (1-31)
+        my @RecurrenceCustomInterval;
+        for ( my $DayNumber = 1; $DayNumber < 32; $DayNumber++ ) {
+            push @RecurrenceCustomInterval, {
+                Key   => $DayNumber,
+                Value => $DayNumber,
+            };
+        }
+        $Param{RecurrenceIntervalString} = $LayoutObject->BuildSelection(
+            Data       => \@RecurrenceCustomInterval,
+            SelectedID => $SelectedInterval,
+            Name       => 'RecurrenceInterval',
         );
 
         # recurrence limit string
@@ -636,24 +727,41 @@ sub Run {
 
         # recurring appointment
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
-            $GetParam{RecurrenceInterval} = 1;
 
-            # if ( $GetParam{RecurrenceType} eq 'Daily' ) {
-            #     $GetParam{RecurrenceFrequency}    = 1;
-            #     $GetParam{RecurrenceInterval} = 1;
-            # }
-            # elsif ( $GetParam{RecurrenceType} eq 'Weekly' ) {
-            #     $GetParam{RecurrenceByDay}    = 1;
-            #     $GetParam{RecurrenceInterval} = 7;
-            # }
-            # elsif ( $GetParam{RecurrenceType} eq 'Monthly' ) {
-            #     $GetParam{RecurrenceByMonth}  = 1;
-            #     $GetParam{RecurrenceInterval} = 1;
-            # }
-            # elsif ( $GetParam{RecurrenceType} eq 'Yearly' ) {
-            #     $GetParam{RecurrenceByYear}   = 1;
-            #     $GetParam{RecurrenceInterval} = 1;
-            # }
+            if (
+                $GetParam{RecurrenceType}    eq 'Daily'
+                || $GetParam{RecurrenceType} eq 'Weekly'
+                || $GetParam{RecurrenceType} eq 'Monthly'
+                || $GetParam{RecurrenceType} eq 'Yearly'
+                )
+            {
+                $GetParam{RecurrenceInterval} = 1;
+            }
+            elsif ( $GetParam{RecurrenceType} eq 'Custom' ) {
+                if ( $GetParam{RecurrenceCustomType} eq 'CustomDaily' ) {
+
+                }
+                elsif ( $GetParam{RecurrenceCustomType} eq 'CustomWeekly' ) {
+                    if ( $GetParam{Days} ) {
+                        my @Days = split( ",", $GetParam{Days} );
+                        $GetParam{RecurrenceFrequency} = \@Days;
+                    }
+                }
+                elsif ( $GetParam{RecurrenceCustomType} eq 'CustomMonthly' ) {
+                    if ( $GetParam{MonthDays} ) {
+                        my @MonthDays = split( ",", $GetParam{MonthDays} );
+                        $GetParam{RecurrenceFrequency} = \@MonthDays;
+                    }
+                }
+                elsif ( $GetParam{RecurrenceCustomType} eq 'CustomYearly' ) {
+                    if ( $GetParam{Months} ) {
+                        my @Months = split( ",", $GetParam{Months} );
+                        $GetParam{RecurrenceFrequency} = \@Months;
+                    }
+                }
+
+                $GetParam{RecurrenceType} = $GetParam{RecurrenceCustomType};
+            }
 
             # until ...
             if (
