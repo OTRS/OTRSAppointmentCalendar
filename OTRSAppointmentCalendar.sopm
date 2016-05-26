@@ -177,13 +177,15 @@
             <Column Name="all_day" Type="SMALLINT"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
             <Column Name="team_id" Type="BIGINT"/>
-            <Column Name="resource_id" Size="255" Type="VARCHAR"/>
+            <Column Name="resource_id" Size="3800" Type="VARCHAR"/>
             <Column Name="recurring" Type="SMALLINT"/>
             <Column Name="recur_type" Size="20" Type="VARCHAR"/>
             <Column Name="recur_freq" Size="255" Type="VARCHAR"/>
             <Column Name="recur_count" Type="INTEGER"/>
             <Column Name="recur_interval" Type="INTEGER"/>
             <Column Name="recur_until" Type="DATE"/>
+            <Column Name="recur_id" Type="DATE"/>
+            <Column Name="recur_exclude" Size="3800" Type="VARCHAR"/>
             <Column Name="create_time" Type="DATE"/>
             <Column Name="create_by" Type="INTEGER"/>
             <Column Name="change_time" Type="DATE"/>

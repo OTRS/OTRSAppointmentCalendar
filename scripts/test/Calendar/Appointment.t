@@ -182,17 +182,15 @@ $Self->False(
 );
 
 my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
-    CalendarID         => $Calendar1{CalendarID},
-    Title              => 'Title',
-    Description        => 'Description',
-    Location           => 'Germany',
-    StartTime          => '2016-01-01 16:00:00',
-    EndTime            => '2016-01-01 17:00:00',
-    AllDay             => 1,
-    TimezoneID         => 0,                        # this must be accepted (UTC)
-    RecurrenceInterval => 1,
-    RecurrenceCount    => 1,
-    UserID             => $UserID,
+    CalendarID  => $Calendar1{CalendarID},
+    Title       => 'Title',
+    Description => 'Description',
+    Location    => 'Germany',
+    StartTime   => '2016-01-01 16:00:00',
+    EndTime     => '2016-01-01 17:00:00',
+    AllDay      => 1,
+    TimezoneID  => 0,                        # this must be accepted (UTC)
+    UserID      => $UserID,
 );
 $Self->True(
     $AppointmentID8,
@@ -201,7 +199,7 @@ $Self->True(
 
 my @Appointments1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 16:00:00',            # Try at this point of time (at this second)
+    StartTime  => '2016-01-01 16:00:00',     # Try at this point of time (at this second)
     EndTime    => '2016-02-01 00:00:00',
 );
 
@@ -721,7 +719,6 @@ my %AppointmentExpected1 = (
     AllDay             => 1,
     TimezoneID         => 0,
     RecurrenceInterval => 1,
-    RecurrenceCount    => 1,
     CreateBy           => $UserID,
     ChangeBy           => $UserID,
 );
@@ -754,10 +751,12 @@ $Self->False(
     'AppointmentGet() - Missing AppointmentID and UniqueID',
 );
 
-# Get by UndiqueID
+# get by UniqueID
 my %AppointmentGet3 = $AppointmentObject->AppointmentGet(
-    UniqueID => $AppointmentGet1{UniqueID},
+    UniqueID   => $AppointmentGet1{UniqueID},
+    CalendarID => $AppointmentGet1{CalendarID},
 );
+
 $Self->Is(
     $AppointmentGet1{AppointmentID},
     $AppointmentGet3{AppointmentID},
@@ -1088,6 +1087,95 @@ for ( my $Index = 0; $Index < 12; $Index++ ) {
         "AppointmentCreate #12 - $Index"
     );
 }
+
+# add recurring appointment once a day
+my $AppointmentIDRec13 = $AppointmentObject->AppointmentCreate(
+    CalendarID         => $Calendar1{CalendarID},
+    Title              => 'Recurring appointment',
+    StartTime          => '2016-06-01 00:00:00',
+    EndTime            => '2016-06-01 00:00:00',
+    AllDay             => 1,
+    TimezoneID         => 0,
+    Recurring          => 1,
+    RecurrenceType     => 'Daily',
+    RecurrenceInterval => 1,                         # once per day
+    RecurrenceUntil    => '2016-06-05 00:00:00',     # included last day
+    UserID             => $UserID,
+);
+
+$Self->True(
+    $AppointmentIDRec13,
+    'Recurring appointment #13 created',
+);
+
+# check number of occurences
+my @Appointments13 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-06-01 00:00:00',
+    EndTime    => '2016-06-05 00:00:00',
+    Result     => 'ARRAY',
+);
+
+$Self->Is(
+    scalar @Appointments13,
+    5,
+    'Occurrences for recurring appointment #13',
+);
+
+# delete middle appointment only
+my $Delete13 = $AppointmentObject->AppointmentDelete(
+    AppointmentID => $Appointments13[2],
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $Delete13,
+    'Single occurrence of recurring appointment #13 deleted',
+);
+
+# check number of occurences again
+@Appointments13 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-06-01 00:00:00',
+    EndTime    => '2016-06-05 00:00:00',
+    Result     => 'ARRAY',
+);
+
+$Self->Is(
+    scalar @Appointments13,
+    4,
+    'Occurrences for recurring appointment #13',
+);
+
+# update title and time of the second occurrence
+my $Update13 = $AppointmentObject->AppointmentUpdate(
+    AppointmentID => $Appointments13[1],
+    CalendarID    => $Calendar1{CalendarID},
+    Title         => 'Recurring appointment edit',
+    StartTime     => '2016-06-07 00:00:00',
+    EndTime       => '2016-06-07 00:00:00',
+    TimezoneID    => 1,
+    UserID        => $UserID,
+);
+
+$Self->True(
+    $Update13,
+    'Single occurrence of recurring appointment #13 updated',
+);
+
+# check number of occurences again
+@Appointments13 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar1{CalendarID},
+    StartTime  => '2016-06-01 00:00:00',
+    EndTime    => '2016-06-05 00:00:00',
+    Result     => 'ARRAY',
+);
+
+$Self->Is(
+    scalar @Appointments13,
+    3,
+    'Occurrences for recurring appointment #13',
+);
 
 my %AppointmentDays1 = $AppointmentObject->AppointmentDays(
     StartTime => '2016-01-25 00:00:00',
@@ -1503,5 +1591,23 @@ $Self->False(
     defined $SeenSet4,
     "AppointmentSeenSet #4",
 );
+
+# get a few UniqueIDs in quick succession
+my @UniqueIDs;
+for ( 1 .. 10 ) {
+    push @UniqueIDs, $AppointmentObject->GetUniqueID(
+        CalendarID => 1,
+        StartTime  => 1451606400,    # same start time '2016-01-01 00:00:00'
+        UserID     => 1,
+    );
+}
+
+my %Seen;
+for my $UniqueID (@UniqueIDs) {
+    $Self->False(
+        $Seen{$UniqueID}++,
+        "UniqueID $UniqueID is unique",
+    );
+}
 
 1;
