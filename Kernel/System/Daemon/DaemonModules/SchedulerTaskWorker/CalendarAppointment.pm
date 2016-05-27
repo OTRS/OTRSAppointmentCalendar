@@ -64,8 +64,6 @@ performs the selected task.
         TaskName => 'some name',    # optional
         Data     => {               # job data as got from Kernel::System::Calendar::Appointment::AppointmentGet()
             AppointmentID => 123,
-            CalendarID => 123,
-            # ...
         },
     );
 
@@ -81,7 +79,7 @@ sub Run {
     # check task params
     my $CheckResult = $Self->_CheckTaskParams(
         %Param,
-        NeededDataAttributes => [ 'AppointmentID', 'StartTime' ],
+        NeededDataAttributes => ['AppointmentID'],
     );
 
     # stop execution if an error in params is detected
