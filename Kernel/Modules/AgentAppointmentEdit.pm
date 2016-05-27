@@ -144,7 +144,7 @@ sub Run {
             (
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
-                $Appointment{StartYear}
+                $Appointment{StartYear}, $Appointment{StartWeekDay}
             ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $StartTime );
 
             # get end time components
@@ -201,8 +201,12 @@ sub Run {
             if ( $Appointment{Recurring} ) {
                 my $RecurrenceType = $GetParam{RecurrenceType} || $Appointment{RecurrenceType};
 
-                my %RecurrenceFrequency;
                 if ( $RecurrenceType eq 'CustomWeekly' ) {
+
+                    my $DayOffset = $Self->_DayOffetGet(
+                        Time     => $Appointment{StartTime},
+                        Timezone => $Appointment{TimezoneID},
+                    );
 
                     if ( defined $GetParam{Days} ) {
 
@@ -210,10 +214,25 @@ sub Run {
                         $Appointment{Days} = $GetParam{Days};
                     }
                     else {
-                        $Appointment{Days} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                        my @Days = @{ $Appointment{RecurrenceFrequency} };
+
+                        # display selected days according to user timezone
+                        if ($DayOffset) {
+                            for my $Day (@Days) {
+                                $Day += $DayOffset;
+                                $Day = 1 if $Day == 8;
+                            }
+                        }
+
+                        $Appointment{Days} = join( ",", @Days );
                     }
                 }
                 elsif ( $RecurrenceType eq 'CustomMonthly' ) {
+
+                    my $DayOffset = $Self->_DayOffetGet(
+                        Time     => $Appointment{StartTime},
+                        Timezone => $Appointment{TimezoneID},
+                    );
 
                     if ( defined $GetParam{MonthDays} ) {
 
@@ -221,10 +240,24 @@ sub Run {
                         $Appointment{MonthDays} = $GetParam{MonthDays};
                     }
                     else {
-                        $Appointment{MonthDays} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                        my @MonthDays = @{ $Appointment{RecurrenceFrequency} };
+
+                        # display selected days according to user timezone
+                        if ($DayOffset) {
+                            for my $MonthDay (@MonthDays) {
+                                $MonthDay += $DayOffset;
+                                $MonthDay = 1 if $Day == 32;
+                            }
+                        }
+                        $Appointment{MonthDays} = join( ",", @MonthDays );
                     }
                 }
                 elsif ( $RecurrenceType eq 'CustomYearly' ) {
+
+                    my $DayOffset = $Self->_DayOffetGet(
+                        Time     => $Appointment{StartTime},
+                        Timezone => $Appointment{TimezoneID},
+                    );
 
                     if ( defined $GetParam{Months} ) {
 
@@ -232,12 +265,38 @@ sub Run {
                         $Appointment{Months} = $GetParam{Months};
                     }
                     else {
-                        $Appointment{Months} = join( ",", @{ $Appointment{RecurrenceFrequency} } );
+                        my @Months = @{ $Appointment{RecurrenceFrequency} };
+                        $Appointment{Months} = join( ",", @Months );
                     }
                 }
-
-                %GetParam = ( %GetParam, %RecurrenceFrequency );
             }
+        }
+        else {
+            # new appointment
+
+            # get selected timestamp
+            my $SelectedTimestamp = sprintf(
+                "%04d-%02d-%02d 00:00:00", $GetParam{StartYear}, $GetParam{StartMonth},
+                $GetParam{StartDay}
+            );
+
+            # get current day
+            my $SelectedSystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $SelectedTimestamp,
+            );
+
+            my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                SystemTime => $SelectedSystemTime,
+            );
+
+            # set week day
+            $Appointment{Days} = ( $DateInfo[6] );
+
+            # set month day
+            $Appointment{MonthDays} = ( $DateInfo[3] );
+
+            # set month
+            $Appointment{Months} = ( $DateInfo[4] );
         }
 
         # calendar selection
@@ -761,8 +820,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -945,4 +1004,60 @@ sub Run {
     );
 }
 
+sub _DayOffetGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Time)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+    $Param{Timezone} //= 0;
+
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # get user timezone offset
+    my $UserTimezone = $CalendarHelperObject->TimezoneOffsetGet(
+        UserID => $Self->{UserID},
+    );
+
+    # convert timestamp to unix time
+    my $OriginalTimeSystem = $CalendarHelperObject->SystemTimeGet(
+        String => $Param{Time},
+    );
+
+    # get original date info
+    my @OriginalDateInfo = $CalendarHelperObject->DateGet(
+        SystemTime => $OriginalTimeSystem,
+    );
+
+    # calculate destination time (according to user timezone)
+    my $DestinationTimeSystem = $OriginalTimeSystem
+        - $Param{Timezone} * 3600
+        + $UserTimezone * 3600;
+
+    # get destination date info
+    my @DestinationDateInfo = $CalendarHelperObject->DateGet(
+        SystemTime => $DestinationTimeSystem,
+    );
+
+    # compare days - arrays contains following values: Second, Minute, Hour, Day, Month, Year and DayOfWeek
+    if ( $OriginalDateInfo[3] == $DestinationDateInfo[3] ) {
+
+        # same day
+        return 0;
+    }
+    elsif ( $OriginalTimeSystem > $DestinationTimeSystem ) {
+        return -1;
+    }
+    else {
+        return 1;
+    }
+
+}
 1;
