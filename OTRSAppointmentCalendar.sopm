@@ -72,6 +72,7 @@
         <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
+        <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
