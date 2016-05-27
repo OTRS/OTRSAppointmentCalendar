@@ -909,7 +909,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     // Update text
                     // TODO: TRANSLATE PROPERLY!!
                     Fields.$RecurrenceIntervalText.html("day(s)");
-
                 }
                 else if (Fields.$RecurrenceCustomType.val()=="CustomWeekly") {
                     Fields.$RecurrenceCustomWeeklyFieldset.show();
@@ -992,10 +991,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         Fields.$RecurrenceType.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
            RecInit(Fields);
         }).trigger('change.AppointmentCalendar');
-
-        if (Fields.$Recurring) {
-            RecInit(Fields);
-        }
     }
 
     /**
