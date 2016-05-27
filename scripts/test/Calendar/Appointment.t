@@ -792,7 +792,7 @@ my @AppointmentRec5Expected = (
 );
 
 for ( my $Counter = 0; $Counter < scalar @AppointmentRec5Expected; $Counter++ ) {
-    for my $Item ( sort keys $AppointmentRec5Expected[$Counter] ) {
+    for my $Item ( sort keys %{ $AppointmentRec5Expected[$Counter] } ) {
         $Self->Is(
             $AppointmentRec5Expected[$Counter]->{$Item},
             $AppointmentRec5Only[$Counter]->{$Item},
