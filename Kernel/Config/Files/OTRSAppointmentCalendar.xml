@@ -371,4 +371,15 @@
             <String Regex="\d+">120</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::EventModulePost###100-Notification" Required="0" Valid="1">
+        <Description Translatable="1">Appointment calendar event module that prepares notification entries for appointments.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::Event</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Event::Notification</Item>
+                <Item Key="Event">(AppointmentCreate|AppointmentUpdate|AppointmentDelete)</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
 </otrs_config>
