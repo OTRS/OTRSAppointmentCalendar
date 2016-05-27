@@ -273,33 +273,32 @@ sub Run {
                 }
             }
         }
-        else {
-            # new appointment
 
-            # get selected timestamp
-            my $SelectedTimestamp = sprintf(
-                "%04d-%02d-%02d 00:00:00", $GetParam{StartYear}, $GetParam{StartMonth},
-                $GetParam{StartDay}
-            );
+        # get selected timestamp
+        my $SelectedTimestamp = sprintf(
+            "%04d-%02d-%02d 00:00:00",
+            $Appointment{StartYear}  // $GetParam{StartYear},
+            $Appointment{StartMonth} // $GetParam{StartMonth},
+            $Appointment{StartDay}   // $GetParam{StartDay}
+        );
 
-            # get current day
-            my $SelectedSystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                String => $SelectedTimestamp,
-            );
+        # get current day
+        my $SelectedSystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            String => $SelectedTimestamp,
+        );
 
-            my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
-                SystemTime => $SelectedSystemTime,
-            );
+        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+            SystemTime => $SelectedSystemTime,
+        );
 
-            # set week day
-            $Appointment{Days} = ( $DateInfo[6] );
+        # set week day if not set
+        $Appointment{Days} = $DateInfo[6] if !$Appointment{Days};
 
-            # set month day
-            $Appointment{MonthDays} = ( $DateInfo[3] );
+        # set month day if not set
+        $Appointment{MonthDays} = $DateInfo[3] if !$Appointment{MonthDays};
 
-            # set month
-            $Appointment{Months} = ( $DateInfo[4] );
-        }
+        # set month if not set
+        $Appointment{Months} = $DateInfo[4] if !$Appointment{Months};
 
         # calendar selection
         $Param{CalendarIDStrg} = $LayoutObject->BuildSelection(
@@ -797,13 +796,22 @@ sub Run {
                 $GetParam{RecurrenceInterval} = 1;
             }
             elsif ( $GetParam{RecurrenceType} eq 'Custom' ) {
-                if ( $GetParam{RecurrenceCustomType} eq 'CustomDaily' ) {
 
-                }
-                elsif ( $GetParam{RecurrenceCustomType} eq 'CustomWeekly' ) {
+                if ( $GetParam{RecurrenceCustomType} eq 'CustomWeekly' ) {
                     if ( $GetParam{Days} ) {
                         my @Days = split( ",", $GetParam{Days} );
                         $GetParam{RecurrenceFrequency} = \@Days;
+                    }
+                    else {
+                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                            String => $GetParam{StartTime},
+                        );
+
+                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                            SystemTime => $StartTime,
+                        );
+
+                        $GetParam{RecurrenceFrequency} = [ $DateInfo[6] ];
                     }
                 }
                 elsif ( $GetParam{RecurrenceCustomType} eq 'CustomMonthly' ) {
@@ -811,11 +819,33 @@ sub Run {
                         my @MonthDays = split( ",", $GetParam{MonthDays} );
                         $GetParam{RecurrenceFrequency} = \@MonthDays;
                     }
+                    else {
+                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                            String => $GetParam{StartTime},
+                        );
+
+                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                            SystemTime => $StartTime,
+                        );
+
+                        $GetParam{RecurrenceFrequency} = [ $DateInfo[3] ];
+                    }
                 }
                 elsif ( $GetParam{RecurrenceCustomType} eq 'CustomYearly' ) {
                     if ( $GetParam{Months} ) {
                         my @Months = split( ",", $GetParam{Months} );
                         $GetParam{RecurrenceFrequency} = \@Months;
+                    }
+                    else {
+                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                            String => $GetParam{StartTime},
+                        );
+
+                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                            SystemTime => $StartTime,
+                        );
+
+                        $GetParam{RecurrenceFrequency} = [ $DateInfo[4] ];
                     }
                 }
 
