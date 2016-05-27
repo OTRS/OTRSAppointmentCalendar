@@ -204,7 +204,7 @@ sub CurrentSystemTime {
 returns date/time information in a hash for given unix time.
 
     my ($Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek) = $CalendarHelperObject->DateGet(
-        SystemTime => '1462871162'
+        SystemTime => '1462871162',
     );
 
 returns:
