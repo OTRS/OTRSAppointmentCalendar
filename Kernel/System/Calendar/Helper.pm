@@ -245,7 +245,7 @@ returns:
     $Day       = '1';
     $Month     = '1';
     $Year      = '2016';
-    $DayOfWeek = '2';   # 0-sunday, 1-monday,...
+    $DayOfWeek = '2';   #  1-monday,...7-sunday
 
 =cut
 
