@@ -482,19 +482,19 @@ sub Run {
             Data => [
                 {
                     Key   => 'CustomDaily',
-                    Value => Translatable('Every Day'),
+                    Value => Translatable('Daily'),
                 },
                 {
                     Key   => 'CustomWeekly',
-                    Value => Translatable('Every Week'),
+                    Value => Translatable('Weekly'),
                 },
                 {
                     Key   => 'CustomMonthly',
-                    Value => Translatable('Every Month'),
+                    Value => Translatable('Monthly'),
                 },
                 {
                     Key   => 'CustomYearly',
-                    Value => Translatable('Every Year'),
+                    Value => Translatable('Yearly'),
                 },
             ],
             SelectedID => $SelectedRecurrenceCustomType,

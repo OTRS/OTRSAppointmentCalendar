@@ -825,15 +825,16 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {jQueryObject} Fields.$Recurring - field with recurring flag.
      * @param {jQueryObject} Fields.$RecurrenceType - drop down with recurrence type
      * @param {jQueryObject} Fields.$RecurrenceCustomType - Recurrence pattern
-     * @param {jQueryObject} Fields.$RecurrenceCustomTypeStringFieldset - Custom type drop-down
+     * @param {jQueryObject} Fields.$RecurrenceCustomTypeStringDiv - Custom type drop-down
      * @param {jQueryObject} Fields.$RecurrenceIntervalText - interval text
-     * @param {jQueryObject} Fields.$RecurrenceCustomWeeklyFieldset - contains week days table
-     * @param {jQueryObject} Fields.$RecurrenceCustomMonthlyFieldset - contains month days table
-     * @param {jQueryObject} Fields.$RecurrenceCustomYearlyFieldset - contains months table
+     * @param {jQueryObject} Fields.$RecurrenceCustomWeeklyDiv - contains week days table
+     * @param {jQueryObject} Fields.$RecurrenceCustomMonthlyDiv - contains month days table
+     * @param {jQueryObject} Fields.$RecurrenceCustomYearlyDiv - contains months table
      * @param {jQueryObject} Fields.$RecurrenceLimitDiv - layer with recurrence limit fields.
      * @param {jQueryObject} Fields.$RecurrenceLimit - drop down with recurrence limit field.
      * @param {jQueryObject} Fields.$RecurrenceCountDiv - layer with reccurence count field.
      * @param {jQueryObject} Fields.$RecurrenceUntilDiv - layer with reccurence until fields.
+     * @param {jQueryObject} Fields.$RecurrenceUntilDay - select field for reccurence until day.
      * @description
      *      This method initializes recurrence fields behavior.
      */
@@ -847,95 +848,85 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             for(Index = 0; Index < Days.length; Index++) {
                 if (Days[Index] != "") {
-                    $("#RecurrenceCustomWeeklyFieldset button[value=" + Days[Index] + "]")
+                    $("#RecurrenceCustomWeeklyDiv button[value=" + Days[Index] + "]")
                         .addClass("fc-state-active");
                 }
             }
 
             for(Index = 0; Index < MonthDays.length; Index++) {
                 if (MonthDays[Index] != "") {
-                    $("#RecurrenceCustomMonthlyFieldset button[value=" + MonthDays[Index] + "]")
+                    $("#RecurrenceCustomMonthlyDiv button[value=" + MonthDays[Index] + "]")
                         .addClass("fc-state-active");
                 }
             }
 
             for(Index = 0; Index < Months.length; Index++) {
                 if (Months[Index] != "") {
-                    $("#RecurrenceCustomYearlyFieldset button[value=" + Months[Index] + "]")
+                    $("#RecurrenceCustomYearlyDiv button[value=" + Months[Index] + "]")
                         .addClass("fc-state-active");
                 }
             }
 
-            /*
-            Fields.$RecurrenceCustomWeeklyFieldset.find("input[type=checkbox]").each(function () {
-                if ($(this).prop("checked") == true){
-                    $(this).parent().find("button").addClass("fc-state-active");
-                }
-            });
-            Fields.$RecurrenceCustomMonthlyFieldset.find("input[type=checkbox]").each(function () {
-                if ($(this).prop("checked") == true){
-                    $(this).parent().find("button").addClass("fc-state-active");
-                }
-            });
-            Fields.$RecurrenceCustomYearlyFieldset.find("input[type=checkbox]").each(function () {
-                if ($(this).prop("checked") == true){
-                    $(this).parent().find("button").addClass("fc-state-active");
-                }
-            });*/
-
-             if (Fields.$RecurrenceType.val() == 0) {
+            if (Fields.$RecurrenceType.val() == 0) {
                 Fields.$Recurring.val(0);
-                Fields.$RecurrenceCustomTypeStringFieldset.hide();
-                Fields.$RecurrenceCustomWeeklyFieldset.hide();
-                Fields.$RecurrenceCustomMonthlyFieldset.hide();
-                Fields.$RecurrenceCustomYearlyFieldset.hide();
+                Fields.$RecurrenceCustomTypeStringDiv.hide();
+                Fields.$RecurrenceCustomWeeklyDiv.hide();
+                Fields.$RecurrenceCustomMonthlyDiv.hide();
+                Fields.$RecurrenceCustomYearlyDiv.hide();
 
                 Fields.$RecurrenceLimitDiv.hide();
                 Fields.$RecurrenceCountDiv.hide();
                 Fields.$RecurrenceUntilDiv.hide();
 
                 // Skip validation of RecurrenceUntil fields
-                $('#RecurrenceUntilDay').addClass('ValidationIgnore');
+                Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
             }
             else if (Fields.$RecurrenceType.val() == 'Custom') {
                 Fields.$Recurring.val(1);
-                Fields.$RecurrenceCustomTypeStringFieldset.show();
+                Fields.$RecurrenceCustomTypeStringDiv.show();
 
                 if (Fields.$RecurrenceCustomType.val()=="CustomDaily") {
-                    Fields.$RecurrenceCustomWeeklyFieldset.hide();
-                    Fields.$RecurrenceCustomMonthlyFieldset.hide();
-                    Fields.$RecurrenceCustomYearlyFieldset.hide();
-
-                    // Update text
-                    // TODO: TRANSLATE PROPERLY!!
-                    Fields.$RecurrenceIntervalText.html("day(s)");
+                    Fields.$RecurrenceCustomWeeklyDiv.hide();
+                    Fields.$RecurrenceCustomMonthlyDiv.hide();
+                    Fields.$RecurrenceCustomYearlyDiv.hide();
+                    Fields.$RecurrenceIntervalText.find('span')
+                        .hide()
+                        .end()
+                        .find('.TextDay')
+                        .show();
                 }
                 else if (Fields.$RecurrenceCustomType.val()=="CustomWeekly") {
-                    Fields.$RecurrenceCustomWeeklyFieldset.show();
+                    Fields.$RecurrenceCustomWeeklyDiv.show();
 
-                    Fields.$RecurrenceCustomMonthlyFieldset.hide();
-                    Fields.$RecurrenceCustomYearlyFieldset.hide();
-
-                    // TODO: TRANSLATE PROPERLY!!
-                    Fields.$RecurrenceIntervalText.html("week(s)");
+                    Fields.$RecurrenceCustomMonthlyDiv.hide();
+                    Fields.$RecurrenceCustomYearlyDiv.hide();
+                    Fields.$RecurrenceIntervalText.find('span')
+                        .hide()
+                        .end()
+                        .find('.TextWeek')
+                        .show();
                 }
                 else if (Fields.$RecurrenceCustomType.val()=="CustomMonthly") {
-                    Fields.$RecurrenceCustomMonthlyFieldset.show();
+                    Fields.$RecurrenceCustomMonthlyDiv.show();
 
-                    Fields.$RecurrenceCustomWeeklyFieldset.hide();
-                    Fields.$RecurrenceCustomYearlyFieldset.hide();
-
-                    // TODO: TRANSLATE PROPERLY!!
-                    Fields.$RecurrenceIntervalText.html("month(s)");
+                    Fields.$RecurrenceCustomWeeklyDiv.hide();
+                    Fields.$RecurrenceCustomYearlyDiv.hide();
+                    Fields.$RecurrenceIntervalText.find('span')
+                        .hide()
+                        .end()
+                        .find('.TextMonth')
+                        .show();
                 }
                 else if (Fields.$RecurrenceCustomType.val()=="CustomYearly") {
-                    Fields.$RecurrenceCustomYearlyFieldset.show();
+                    Fields.$RecurrenceCustomYearlyDiv.show();
 
-                    Fields.$RecurrenceCustomWeeklyFieldset.hide();
-                    Fields.$RecurrenceCustomMonthlyFieldset.hide();
-
-                    // TODO: TRANSLATE PROPERLY!!
-                    Fields.$RecurrenceIntervalText.html("year(s)");
+                    Fields.$RecurrenceCustomWeeklyDiv.hide();
+                    Fields.$RecurrenceCustomMonthlyDiv.hide();
+                    Fields.$RecurrenceIntervalText.find('span')
+                        .hide()
+                        .end()
+                        .find('.TextYear')
+                        .show();
                 }
 
                 Fields.$RecurrenceLimitDiv.show();
@@ -945,25 +936,27 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Fields.$RecurrenceUntilDiv.show();
 
                         // Resume validation of RecurrenceUntil fields
-                        $('#RecurrenceUntilDay').removeClass('ValidationIgnore');
+                        Fields.$RecurrenceUntilDay.removeClass('ValidationIgnore');
                     } else {
                         Fields.$RecurrenceUntilDiv.hide();
                         Fields.$RecurrenceCountDiv.show();
 
                         // Skip validation of RecurrenceUntil fields
-                        $('#RecurrenceUntilDay').addClass('ValidationIgnore');
+                        Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
                     }
                 }).trigger('change.AppointmentCalendar');
+
+                Core.UI.InputFields.Activate(Fields.$RecurrenceCustomTypeStringDiv);
                 Core.UI.InputFields.Activate(Fields.$RecurrenceLimitDiv);
             }
             else {
                 Fields.$Recurring.val(1);
                 Fields.$RecurrenceLimitDiv.show();
 
-                Fields.$RecurrenceCustomTypeStringFieldset.hide();
-                Fields.$RecurrenceCustomWeeklyFieldset.hide();
-                Fields.$RecurrenceCustomMonthlyFieldset.hide();
-                Fields.$RecurrenceCustomYearlyFieldset.hide();
+                Fields.$RecurrenceCustomTypeStringDiv.hide();
+                Fields.$RecurrenceCustomWeeklyDiv.hide();
+                Fields.$RecurrenceCustomMonthlyDiv.hide();
+                Fields.$RecurrenceCustomYearlyDiv.hide();
 
                 Fields.$RecurrenceLimit.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
                     if ($(this).val() == 1) {
@@ -971,25 +964,25 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         Fields.$RecurrenceUntilDiv.show();
 
                         // Resume validation of RecurrenceUntil fields
-                        $('#RecurrenceUntilDay').removeClass('ValidationIgnore');
+                        Fields.$RecurrenceUntilDay.removeClass('ValidationIgnore');
                     } else {
                         Fields.$RecurrenceUntilDiv.hide();
                         Fields.$RecurrenceCountDiv.show();
 
                         // Skip validation of RecurrenceUntil fields
-                        $('#RecurrenceUntilDay').addClass('ValidationIgnore');
+                        Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
                     }
                 }).trigger('change.AppointmentCalendar');
                 Core.UI.InputFields.Activate(Fields.$RecurrenceLimitDiv);
             }
 
-            Fields.$RecurrenceCustomType.on("change", function() {
+            Fields.$RecurrenceCustomType.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
                 TargetNS.RecurringInit(Fields);
             });
         }
 
         Fields.$RecurrenceType.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-           RecInit(Fields);
+            RecInit(Fields);
         }).trigger('change.AppointmentCalendar');
     }
 
