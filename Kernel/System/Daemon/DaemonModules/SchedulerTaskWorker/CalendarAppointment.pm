@@ -62,7 +62,7 @@ performs the selected task.
     my $Result = $TaskHandlerObject->Run(
         TaskID   => 123,
         TaskName => 'some name',    # optional
-        Data     => {               # job data as got from Kernel::System::Calendar::Appointment::AppointmentGet()
+        Data     => {               # appointment id as got from Kernel::System::Calendar::Appointment::AppointmentGet()
             AppointmentID => 123,
         },
     );

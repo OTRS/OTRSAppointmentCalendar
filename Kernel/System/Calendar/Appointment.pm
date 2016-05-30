@@ -160,7 +160,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -948,8 +948,8 @@ sub AppointmentGet {
 
         # resource id
         $Row[12] = $Row[12] ? $Row[12] : 0;
-        my @ResourceID = $Row[12] =~ /,/ ? split( ',', $Row[12] ) : ( $Row[12] );
-        my @RecurrenceFrequency = $Row[15] ? split( ',', $Row[15] ) : undef;
+        my @ResourceID          = $Row[12] =~ /,/ ? split( ',', $Row[12] ) : ( $Row[12] );
+        my @RecurrenceFrequency = $Row[15]        ? split( ',', $Row[15] ) : undef;
 
         # recurrence exclude
         my @RecurrenceExclude;
@@ -1074,7 +1074,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -1708,6 +1708,60 @@ sub AppointmentSeenSet {
     );
 
     return 1;
+}
+
+=item AppointmentUpcomingGet()
+
+Get the next upcoming appointment data.
+
+    my %Appointment = $AppointmentObject->AppointmentUpcomingGet();
+
+returns:
+
+    Appointment result from AppointmentGet
+
+=cut
+
+sub AppointmentUpcomingGet {
+    my ( $Self, %Param ) = @_;
+
+    # needed objects
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # get local calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # get current timestamp
+    my $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
+
+    my $SQL = "
+        SELECT id, parent_id, calendar_id, unique_id
+        FROM calendar_appointment
+        WHERE DATE(start_time) > DATE(?)
+        ORDER BY start_time";
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL   => $SQL,
+        Bind  => [ \$CurrentTimestamp ],
+        Limit => 1,
+    );
+
+    my %Result;
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+
+        $Result{AppointmentID} = $Row[0];
+        $Result{ParentID}      = $Row[1];
+        $Result{CalendarID}    = $Row[2];
+        $Result{UniqueID}      = $Row[3];
+    }
+
+    if ( IsHashRefWithData( \%Result ) ) {
+        return $Self->AppointmentGet(%Result);
+    }
+
+    return;
 }
 
 =begin Internal:
