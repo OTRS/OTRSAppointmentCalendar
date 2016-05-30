@@ -356,6 +356,12 @@ sub Run {
         # check if team object is registered
         if ( $MainObject->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
+            my $TeamIDs = $Appointment{TeamID};
+            if ( !$TeamIDs ) {
+                my @TeamIDs = $ParamObject->GetArray( Param => 'TeamID[]' );
+                $TeamIDs = \@TeamIDs;
+            }
+
             my $ResourceIDs = $Appointment{ResourceID};
             if ( !$ResourceIDs ) {
                 my @ResourceIDs = $ParamObject->GetArray( Param => 'ResourceID[]' );
@@ -373,19 +379,22 @@ sub Run {
             );
 
             # team list string
-            $Param{TeamListStrg} = $LayoutObject->BuildSelection(
+            $Param{TeamIDStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamList,
-                SelectedID   => $Appointment{TeamID} // $GetParam{TeamList},
-                Name         => 'TeamList',
-                Multiple     => 0,
+                SelectedID   => $TeamIDs,
+                Name         => 'TeamID',
+                Multiple     => 1,
                 Class        => 'Modernize',
                 PossibleNone => 1,
                 Disabled     => $Permissions
                     && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
             );
 
-            # iterate through teams
-            for my $TeamID ( sort keys %TeamList ) {
+            # iterate through selected teams
+            my %TeamUserListAll;
+            TEAMID:
+            for my $TeamID ( @{$TeamIDs} ) {
+                next TEAMID if !$TeamID;
 
                 # get list of team members
                 my %TeamUserList = $TeamObject->TeamUserList(
@@ -398,21 +407,23 @@ sub Run {
                     my %User = $UserObject->GetUserData(
                         UserID => $UserID,
                     );
-                    $TeamUserList{$UserID} = "$User{UserFirstname} $User{UserLastname}",
+                    $TeamUserList{$UserID} = $User{UserFullname},
                 }
 
-                # team user list string
-                $Param{TeamUserLists}->{$TeamID} = $LayoutObject->BuildSelection(
-                    Data         => \%TeamUserList,
-                    SelectedID   => $ResourceIDs,
-                    Name         => 'TeamUserList' . $TeamID,
-                    Multiple     => 1,
-                    Class        => 'Modernize',
-                    PossibleNone => 1,
-                    Disabled     => $Permissions
-                        && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,  # disable if permissions are below move_into
-                );
+                %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
             }
+
+            # team user list string
+            $Param{ResourceIDStrg} = $LayoutObject->BuildSelection(
+                Data         => \%TeamUserListAll,
+                SelectedID   => $ResourceIDs,
+                Name         => 'ResourceID',
+                Multiple     => 1,
+                Class        => 'Modernize',
+                PossibleNone => 1,
+                Disabled     => $Permissions
+                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+            );
         }
 
         # all day
@@ -787,7 +798,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType}    eq 'Daily'
+                $GetParam{RecurrenceType} eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -855,8 +866,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear} &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -875,18 +886,21 @@ sub Run {
         }
 
         # team
-        if ( $GetParam{TeamList} ) {
-            $GetParam{TeamID} = $GetParam{TeamList};
+        if ( $GetParam{'TeamID[]'} ) {
+            my @TeamIDs = $ParamObject->GetArray( Param => 'TeamID[]' );
+            $GetParam{TeamID} = \@TeamIDs;
         }
         else {
             $GetParam{TeamID} = undef;
         }
 
         # resources
-        if ( $GetParam{ResourceID} ) {
-            if ( ref $GetParam{ResourceID} ne 'ARRAY' ) {
-                $GetParam{ResourceID} = [ $GetParam{ResourceID} ];
-            }
+        if ( $GetParam{'ResourceID[]'} ) {
+            my @ResourceID = $ParamObject->GetArray( Param => 'ResourceID[]' );
+            $GetParam{ResourceID} = \@ResourceID;
+        }
+        else {
+            $GetParam{ResourceID} = undef;
         }
 
         my $Success;
@@ -1028,6 +1042,48 @@ sub Run {
                 },
             );
         }
+    }
+
+    # ------------------------------------------------------------ #
+    # team list selection update
+    # ------------------------------------------------------------ #
+    elsif ( $Self->{Subaction} eq 'TeamUserList' ) {
+
+        my @TeamIDs = $ParamObject->GetArray( Param => 'TeamID[]' );
+
+        # get needed objects
+        my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+        my %TeamUserListAll;
+        TEAMID:
+        for my $TeamID (@TeamIDs) {
+            next TEAMID if !$TeamID;
+
+            # get list of team members
+            my %TeamUserList = $TeamObject->TeamUserList(
+                TeamID => $TeamID,
+                UserID => $Self->{UserID},
+            );
+
+            # get user data
+            for my $UserID ( sort keys %TeamUserList ) {
+                my %User = $UserObject->GetUserData(
+                    UserID => $UserID,
+                );
+                $TeamUserList{$UserID} = $User{UserFullname},
+            }
+
+            %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
+        }
+
+        # build JSON output
+        $JSON = $LayoutObject->JSONEncode(
+            Data => {
+                TeamUserList => \%TeamUserListAll,
+            },
+        );
+
     }
 
     # send JSON response

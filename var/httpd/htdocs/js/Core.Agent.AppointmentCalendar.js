@@ -566,7 +566,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndHour: !AppointmentData.CalEvent ? AppointmentData.End.hour() : null,
             EndMinute: !AppointmentData.CalEvent ? AppointmentData.End.minute() : null,
             AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null,
-            TeamList: AppointmentData.Resource ? AppointmentData.Resource.TeamID : null,
+            TeamID: AppointmentData.Resource ? [ AppointmentData.Resource.TeamID ] : null,
             ResourceID: AppointmentData.Resource ? [ AppointmentData.Resource.id ] : null
         };
 
@@ -663,8 +663,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndMinute: AppointmentData.CalEvent.end.minute(),
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
             Recurring: AppointmentData.CalEvent.recurring ? '1' : '0',
-            TeamList: AppointmentData.CalEvent.teamId ? AppointmentData.CalEvent.teamId : undefined,
-            ResourceID: AppointmentData.CalEvent.resourceId ? AppointmentData.CalEvent.resourceId : undefined
+            TeamID: AppointmentData.CalEvent.teamIds ? AppointmentData.CalEvent.teamIds : undefined,
+            ResourceID: AppointmentData.CalEvent.resourceId ? [ AppointmentData.CalEvent.resourceId ] : undefined
         };
 
         function Update() {
@@ -989,28 +989,84 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     /**
      * @name TeamInit
      * @memberof Core.Agent.AppointmentCalendar
-     * @param {jQueryObject} $TeamListObj - field with team list.
+     * @param {jQueryObject} $TeamIDObj - field with list of teams.
+     * @param {jQueryObject} $ResourceIDObj - field with list of resources.
      * @description
      *      This method initializes team fields behavior.
      */
-    TargetNS.TeamInit = function ($TeamListObj) {
-        $TeamListObj.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            var TeamID = $TeamListObj.val();
+    TargetNS.TeamInit = function ($TeamIDObj, $ResourceIDObj) {
+        $TeamIDObj.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function () {
+            var Data = {
+                ChallengeToken: $('#ChallengeToken').val(),
+                Action: 'AgentAppointmentEdit',
+                Subaction: 'TeamUserList',
+                TeamID: $TeamIDObj.val()
+            };
 
-            // Hide all fields
-            $('.TeamUserList,.TeamUserListLabel').hide();
+            ToggleAJAXLoader($ResourceIDObj, true);
 
-            // Show selected team fields
-            $('#TeamUserList' + Core.App.EscapeSelector(TeamID)).parent('.Field').show();
-            $('label[for="TeamUserList' + Core.App.EscapeSelector(TeamID) + '"]').show();
+            Core.AJAX.FunctionCall(
+                Core.Config.Get('CGIHandle'),
+                Data,
+                function (Response) {
+                    var SelectedID = $ResourceIDObj.val();
+                    if (Response.TeamUserList) {
+                        $ResourceIDObj.empty();
+                        $.each(Response.TeamUserList, function (Index, Value) {
+                            var NewOption = new Option(Value, Index);
 
-            // Store resource IDs
-            TargetNS.StoreResource($('#TeamUserList' + Core.App.EscapeSelector(TeamID)));
+                            // Overwrite option text, because of wrong html quoting of text content.
+                            // (This is needed for IE.)
+                            NewOption.innerHTML = Value;
 
-            // Activate InputFields
-            Core.UI.InputFields.Activate('.TeamUserList');
+                            // Restore selection
+                            if (SelectedID && SelectedID.indexOf(Index) > -1) {
+                                NewOption.selected = true;
+                            }
 
-        }).trigger('change.AppointmentCalendar');
+                            $ResourceIDObj.append(NewOption);
+                        });
+
+                        // Trigger custom redraw event for InputFields
+                        $ResourceIDObj.trigger('redraw.InputField');
+                    }
+                    ToggleAJAXLoader($ResourceIDObj, false);
+                }
+            );
+        });
+    }
+
+    /**
+     * @private
+     * @name ToggleAJAXLoader
+     * @memberof Core.Agent.AppointmentCalendar
+     * @function
+     * @param {jQueryObject} $Element - Object reference of the field which is updated
+     * @param {Boolean} Show - Show or hide the AJAX loader image
+     * @description
+     *      Shows and hides an ajax loader for every element which is updates via ajax.
+     */
+    function ToggleAJAXLoader($Element, Show) {
+        var $Loader = $('#AJAXLoader' + $Element.attr('id')),
+            LoaderHTML = '<span id="AJAXLoader' + $Element.attr('id') + '" class="AJAXLoader"></span>';
+
+        // Element not present
+        if (!$Element.length) {
+            return;
+        }
+
+        // Show or hide the loader
+        if (Show) {
+            if (!$Loader.length) {
+                $Element.after(LoaderHTML);
+            } else {
+                $Loader.show();
+            }
+        } else {
+            if ($Loader.length) {
+                $Loader.hide();
+            }
+        }
     }
 
     /**
@@ -1130,34 +1186,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         });
 
         InitRemoveButtons();
-    }
-
-    /**
-     * @name StoreResource
-     * @memberof Core.Agent.AppointmentCalendar
-     * @param {jQueryObject} $TeamUserListObj - field with team list.
-     * @description
-     *      This method stores selected resource IDs.
-     */
-    TargetNS.StoreResource = function ($TeamUserListObj) {
-        $TeamUserListObj.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            var $FormObj = $TeamUserListObj.closest("form"),
-                $ResourceIDObj;
-
-            // Create resource ID field if it's missing in the form
-            $ResourceIDObj = $FormObj.find('input#ResourceID');
-            if ($ResourceIDObj.length === 0) {
-                $ResourceIDObj = $('<input />')
-                    .prop('id', 'ResourceID')
-                    .prop('name', 'ResourceID[]')
-                    .prop('type', 'hidden')
-                    .appendTo($FormObj);
-            }
-
-            // Store resource IDs
-            $ResourceIDObj.val($TeamUserListObj.val());
-
-        }).trigger('change.AppointmentCalendar');
     }
 
     /**

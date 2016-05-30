@@ -150,11 +150,11 @@ my @Appointments = (
         Title      => 'All-day Appointment',
         Location   => 'Sample location',
         UserID     => $UserID,
-        TeamID     => $Team{ID},
+        TeamID     => [ $Team{ID} ],
         ResourceID => [$UserID],
     },
 
-    # recurring
+    # recurring daily
     {
         CalendarID      => $ExportCalendar{CalendarID},
         StartTime       => '2016-03-01 15:00:00',
@@ -163,10 +163,115 @@ my @Appointments = (
         Recurring       => 1,
         RecurrenceType  => 'Daily',
         RecurrenceCount => 3,
-        Title           => 'Recurring Appointment',
+        Title           => 'Recurring Daily Appointment',
         Description     => 'Every day, for 3 days',
         UserID          => $UserID,
-    }
+    },
+
+    # recurring weekly
+    {
+        CalendarID      => $ExportCalendar{CalendarID},
+        StartTime       => '2016-03-02 15:00:00',
+        EndTime         => '2016-03-02 16:00:00',
+        TimezoneID      => 0,
+        Recurring       => 1,
+        RecurrenceType  => 'Weekly',
+        RecurrenceCount => 3,
+        Title           => 'Recurring Weekly Appointment',
+        Description     => 'Every week, for 3 weeks',
+        UserID          => $UserID,
+    },
+
+    # recurring monthly
+    {
+        CalendarID      => $ExportCalendar{CalendarID},
+        StartTime       => '2016-03-03 15:00:00',
+        EndTime         => '2016-03-03 16:00:00',
+        TimezoneID      => 0,
+        Recurring       => 1,
+        RecurrenceType  => 'Monthly',
+        RecurrenceCount => 3,
+        Title           => 'Recurring Monthly Appointment',
+        Description     => 'Every month, for 3 months',
+        UserID          => $UserID,
+    },
+
+    # recurring yearly
+    {
+        CalendarID      => $ExportCalendar{CalendarID},
+        StartTime       => '2016-03-04 15:00:00',
+        EndTime         => '2016-03-04 16:00:00',
+        TimezoneID      => 0,
+        Recurring       => 1,
+        RecurrenceType  => 'Yearly',
+        RecurrenceCount => 3,
+        Title           => 'Recurring Yearly Appointment',
+        Description     => 'Every Yearly, for 3 years',
+        UserID          => $UserID,
+    },
+
+    # custom daily recurring
+    {
+        CalendarID         => $ExportCalendar{CalendarID},
+        StartTime          => '2016-03-01 15:00:00',
+        EndTime            => '2016-03-01 16:00:00',
+        TimezoneID         => 0,
+        Recurring          => 1,
+        RecurrenceType     => 'CustomDaily',
+        RecurrenceInterval => 2,
+        RecurrenceCount    => 3,
+        Title              => 'Custom Daily Recurring Appointment',
+        Description        => 'Every 2 days, 3 times',
+        UserID             => $UserID,
+    },
+
+    #  custom weekly recurring
+    {
+        CalendarID          => $ExportCalendar{CalendarID},
+        StartTime           => '2016-03-02 15:00:00',
+        EndTime             => '2016-03-02 16:00:00',
+        TimezoneID          => 0,
+        Recurring           => 1,
+        RecurrenceType      => 'CustomWeekly',
+        RecurrenceInterval  => 2,
+        RecurrenceFrequency => [ 1, 3, 7 ],                                            # Mon, Wed, Sun
+        RecurrenceCount     => 6,
+        Title               => 'Custom Weekly Recurring Appointment',
+        Description         => 'Every monday, wednesday and sunday, 6 appointments',
+        UserID              => $UserID,
+    },
+
+    # custom monthly recurring monthly
+    {
+        CalendarID          => $ExportCalendar{CalendarID},
+        StartTime           => '2016-03-03 15:00:00',
+        EndTime             => '2016-03-03 16:00:00',
+        TimezoneID          => 0,
+        Recurring           => 1,
+        RecurrenceType      => 'CustomMonthly',
+        RecurrenceInterval  => 2,
+        RecurrenceFrequency => [ 1, 3, 31 ],                                      # 1st, 3th and 31st
+        RecurrenceUntil     => '2017-10-01 00:00:00',
+        Title               => 'Custom Monthly Recurring Appointment',
+        Description         => 'Every 1st, 3th and 31st day, until 2017-10-01',
+        UserID              => $UserID,
+    },
+
+    # custom yearly recurring yearly
+    {
+        CalendarID          => $ExportCalendar{CalendarID},
+        StartTime           => '2016-03-04 15:00:00',
+        EndTime             => '2016-03-04 16:00:00',
+        TimezoneID          => 0,
+        Recurring           => 1,
+        RecurrenceType      => 'CustomYearly',
+        RecurrenceFrequency => [ 1, 3, 12 ],                                     # jan, mar, dec
+        RecurrenceInterval  => 2,
+        RecurrenceCount     => 10,
+        Title               => 'Custom Yearly Recurring Appointment',
+        Description         => 'Every 2 Years in Jan, Feb and Mar - 10 times',
+        UserID              => $UserID,
+    },
 );
 
 for my $Appointment (@Appointments) {

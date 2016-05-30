@@ -231,8 +231,8 @@ var EventSources = {
                 calendarId: AppointmentData.CalendarID,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                 recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
-                teamId: AppointmentData.TeamID,
-                teamName: AppointmentData.TeamName,
+                teamIds: AppointmentData.TeamID,
+                teamNames: AppointmentData.TeamNames,
                 resourceIds: AppointmentData.ResourceID,
                 resourceNames: AppointmentData.ResourceNames,
                 pluginData: AppointmentData.PluginData
@@ -275,7 +275,7 @@ $('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
         </fieldset>
         <fieldset>
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <p class="Value">%teamName%</p>
+            <p class="Value">%teamNames%</p>
             <label>[% Translate("Team") | html %]:</label>
             <div class="Clear"></div>
             <p class="Value">%resourceNames%</p>

@@ -66,14 +66,14 @@ sub Run {
         if ( scalar keys %TeamList > 0 ) {
 
             my @TeamIDs = sort keys %TeamList;
-            $Param{TeamID} = $GetParam{TeamID} // $TeamIDs[0];
+            $Param{Team} = $GetParam{Team} // $TeamIDs[0];
 
             $Param{TeamStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamList,
-                Name         => 'TeamID',
-                ID           => 'TeamID',
+                Name         => 'Team',
+                ID           => 'Team',
                 Class        => 'Modernize',
-                SelectedID   => $Param{TeamID},
+                SelectedID   => $Param{Team},
                 PossibleNone => 0,
             );
 
@@ -85,7 +85,7 @@ sub Run {
             );
 
             my %TeamUserList = $TeamObject->TeamUserList(
-                TeamID => $Param{TeamID},
+                TeamID => $Param{Team},
                 UserID => $Self->{UserID},
             );
 
@@ -106,8 +106,8 @@ sub Run {
                     Name => 'CalendarWidget',
                 );
 
-                my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
-                my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
+                my $CalendarLimit  = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+                my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors')            ||
                     [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
 
                 my $CalendarColorID = 0;
@@ -151,7 +151,7 @@ sub Run {
                 $LayoutObject->Block(
                     Name => 'ResourceJSON',
                     Data => {
-                        TeamID => $GetParam{TeamID},
+                        TeamID => $GetParam{Team},
                         %Param,
                     },
                 );
@@ -312,7 +312,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

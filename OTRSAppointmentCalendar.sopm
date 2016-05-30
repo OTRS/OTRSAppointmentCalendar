@@ -178,7 +178,7 @@
             <Column Name="end_time" Required="true" Type="DATE"/>
             <Column Name="all_day" Type="SMALLINT"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
-            <Column Name="team_id" Type="BIGINT"/>
+            <Column Name="team_id" Size="3800" Type="VARCHAR"/>
             <Column Name="resource_id" Size="3800" Type="VARCHAR"/>
             <Column Name="recurring" Type="SMALLINT"/>
             <Column Name="recur_type" Size="20" Type="VARCHAR"/>
@@ -200,9 +200,6 @@
             </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
-            </ForeignKey>
-            <ForeignKey ForeignTable="calendar_team">
-                <Reference Local="team_id" Foreign="id"/>
             </ForeignKey>
             <ForeignKey ForeignTable="users">
                 <Reference Local="create_by" Foreign="id"/>
@@ -272,6 +269,15 @@
             <Data Key="name" Type="Quote">Appointment</Data>
         </Insert>
     </DatabaseInstall>
+
+    <!-- TODO: Remove after VO testing -->
+    <DatabaseUpgrade Type="pre">
+        <TableAlter Name="calendar_appointment" Version="1.1.0.17">
+            <ForeignKeyDrop ForeignTable="calendar_team">
+                <Reference Local="team_id" Foreign="id"/>
+            </ForeignKeyDrop>
+        </TableAlter>
+    </DatabaseUpgrade>
 
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>

@@ -13,9 +13,6 @@
         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
         <input type="hidden" id="Subaction" name="Subaction" value="EditAppointment"/>
         <input type="hidden" id="AppointmentID" name="AppointmentID" value="[% Data.AppointmentID | html %]"/>
-[% FOREACH ResourceID IN Data.ResourceID %]
-        <input type="hidden" id="ResourceID" name="ResourceID[]" value="[% ResourceID | html %]"/>
-[% END %]
         <input type="hidden" id="Recurring" name="Recurring" value="[% Data.Recurring | html %]"/>
         <input type="hidden" id="RecurrenceDays" name="RecurrenceDays" value="[% Data.RecurrenceDays | html %]"/>
         <input type="hidden" id="RecurrenceMonths" name="RecurrenceMonths" value="[% Data.RecurrenceMonths | html %]"/>
@@ -54,20 +51,18 @@
                 </div>
             </div>
         </fieldset>
-[% IF Data.TeamListStrg %]
+[% IF Data.TeamIDStrg %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <label for="TeamList">[% Translate("Team") | html %]:</label>
+            <label for="TeamID">[% Translate("Team") | html %]:</label>
             <div class="Field">
-                [% Data.TeamListStrg %]
+                [% Data.TeamIDStrg %]
             </div>
             <div class="Clear"></div>
-[% FOREACH TeamID IN Data.TeamUserLists.keys %]
-            <label for="TeamUserList[% TeamID %]" class="TeamUserListLabel">[% Translate("Agent") | html %]:</label>
-            <div class="Field TeamUserList">
-                [% Data.TeamUserLists.$TeamID %]
+            <label for="ResourceID">[% Translate("Agent") | html %]:</label>
+            <div class="Field">
+                [% Data.ResourceIDStrg %]
             </div>
-[% END %]
         </fieldset>
 [% END %]
         <fieldset class="TableLike">
@@ -351,7 +346,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDay: $('#RecurrenceUntilDay'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
-Core.Agent.AppointmentCalendar.TeamInit($('#TeamList'));
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'));
 [% END %]

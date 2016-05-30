@@ -181,22 +181,73 @@ sub Export {
             $ICalEventProperties{location} = $Appointment{Location};
         }
         if ( $Appointment{Recurring} ) {
-            $ICalEventProperties{rrule} = 'FREQ=';
-            if ( $Appointment{RecurrenceInterval} == 1 ) {
-                $ICalEventProperties{rrule} .= 'DAILY';
+            $ICalEventProperties{rrule} = '';
+
+            if ( $Appointment{RecurrenceType} eq 'Daily' ) {
+                $ICalEventProperties{rrule} .= 'FREQ=DAILY';
             }
-            elsif ( $Appointment{RecurrenceInterval} == 7 ) {
-                $ICalEventProperties{rrule} .= 'WEEKLY';
+            elsif ( $Appointment{RecurrenceType} eq 'Weekly' ) {
+                $ICalEventProperties{rrule} .= 'FREQ=WEEKLY';
             }
-            elsif ( $Appointment{RecurrenceInterval} == 30 ) {
-                $ICalEventProperties{rrule} .= 'MONTHLY';
+            elsif ( $Appointment{RecurrenceType} eq 'Monthly' ) {
+                $ICalEventProperties{rrule} .= 'FREQ=MONTHLY';
             }
-            elsif ( $Appointment{RecurrenceInterval} == 365 ) {
-                $ICalEventProperties{rrule} .= 'YEARLY';
+            elsif ( $Appointment{RecurrenceType} eq 'Yearly' ) {
+                $ICalEventProperties{rrule} .= 'FREQ=YEARLY';
             }
-            else {
-                $ICalEventProperties{rrule} .= 'DAILY;INTERVAL=' . $Appointment{RecurrenceInterval};
+            elsif ( $Appointment{RecurrenceType} eq 'CustomDaily' ) {
+                $ICalEventProperties{rrule} .= "FREQ=DAILY;INTERVAL=$Appointment{RecurrenceInterval}";
             }
+            elsif ( $Appointment{RecurrenceType} eq 'CustomWeekly' ) {
+                $ICalEventProperties{rrule} .= "FREQ=WEEKLY;INTERVAL=$Appointment{RecurrenceInterval}";
+
+                if ( IsArrayRefWithData( $Appointment{RecurrenceFrequency} ) ) {
+                    my @DayNames;
+
+                    for my $Day ( @{ $Appointment{RecurrenceFrequency} } ) {
+                        if ( $Day == 1 ) {
+                            push @DayNames, 'MO';
+                        }
+                        elsif ( $Day == 2 ) {
+                            push @DayNames, 'TU';
+                        }
+                        elsif ( $Day == 3 ) {
+                            push @DayNames, 'WE';
+                        }
+                        elsif ( $Day == 4 ) {
+                            push @DayNames, 'TH';
+                        }
+                        elsif ( $Day == 5 ) {
+                            push @DayNames, 'FR';
+                        }
+                        elsif ( $Day == 6 ) {
+                            push @DayNames, 'SA';
+                        }
+                        elsif ( $Day == 7 ) {
+                            push @DayNames, 'SU';
+                        }
+                    }
+
+                    $ICalEventProperties{rrule} .= ";BYDAY=" . join( ",", @DayNames );
+                }
+            }
+            elsif ( $Appointment{RecurrenceType} eq 'CustomMonthly' ) {
+                $ICalEventProperties{rrule} .= "FREQ=MONTHLY;INTERVAL=$Appointment{RecurrenceInterval}";
+                $ICalEventProperties{rrule} .= ";BYMONTHDAY=" . join( ",", @{ $Appointment{RecurrenceFrequency} } );
+
+            }
+            elsif ( $Appointment{RecurrenceType} eq 'CustomYearly' ) {
+                my ( $Sec, $Min, $Hour, $Day, $Month, $Year )
+                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                    SystemTime => $StartTime,
+                    );
+
+                $ICalEventProperties{rrule} .= "FREQ=YEARLY;INTERVAL=$Appointment{RecurrenceInterval};BYMONTHDAY=$Day";
+                $ICalEventProperties{rrule} .= ";BYMONTH=" . join( ",", @{ $Appointment{RecurrenceFrequency} } );
+
+                # RRULE:FREQ=YEARLY;UNTIL=20200602T080000Z;INTERVAL=2;BYMONTHDAY=1;BYMONTH=4
+            }
+
             if ( $Appointment{RecurrenceUntil} ) {
                 my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
@@ -270,20 +321,28 @@ sub Export {
         # check if team object is registered
         if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-            # include team name
+            # include team names
             if ( $Appointment{TeamID} ) {
+                my @Teams;
 
                 # get team object
                 my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
-                # get team name
-                my %Team = $TeamObject->TeamGet(
-                    TeamID => $Appointment{TeamID},
-                    UserID => $Param{UserID},
-                );
-                if ( $Team{Name} ) {
+                # get team names
+                for my $TeamID ( @{ $Appointment{TeamID} } ) {
+                    if ($TeamID) {
+                        my %Team = $TeamObject->TeamGet(
+                            TeamID => $TeamID,
+                            UserID => $Param{UserID},
+                        );
+                        if ( $Team{Name} ) {
+                            push @Teams, $Team{Name};
+                        }
+                    }
+                }
+                if (@Teams) {
                     $ICalEvent->add_properties(
-                        "x-otrs-team" => $Team{Name},
+                        "x-otrs-team" => join( ',', @Teams ),
                     );
                 }
             }
