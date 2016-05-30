@@ -291,7 +291,6 @@
     .ButtonTable button {
         width: 100%;
         padding: 4px 6px;
-        line-height: 1em;
         vertical-align: baseline;
         border: none;
         outline: none;

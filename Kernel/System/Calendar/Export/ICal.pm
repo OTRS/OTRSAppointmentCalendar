@@ -321,20 +321,28 @@ sub Export {
         # check if team object is registered
         if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-            # include team name
+            # include team names
             if ( $Appointment{TeamID} ) {
+                my @Teams;
 
                 # get team object
                 my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
-                # get team name
-                my %Team = $TeamObject->TeamGet(
-                    TeamID => $Appointment{TeamID},
-                    UserID => $Param{UserID},
-                );
-                if ( $Team{Name} ) {
+                # get team names
+                for my $TeamID ( @{ $Appointment{TeamID} } ) {
+                    if ($TeamID) {
+                        my %Team = $TeamObject->TeamGet(
+                            TeamID => $TeamID,
+                            UserID => $Param{UserID},
+                        );
+                        if ( $Team{Name} ) {
+                            push @Teams, $Team{Name};
+                        }
+                    }
+                }
+                if (@Teams) {
                     $ICalEvent->add_properties(
-                        "x-otrs-team" => $Team{Name},
+                        "x-otrs-team" => join( ',', @Teams ),
                     );
                 }
             }

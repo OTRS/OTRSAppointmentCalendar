@@ -448,14 +448,21 @@ sub Import {
             && $Properties->{'x-otrs-team'}->[0]->{'value'}
             )
         {
-            my $TeamName = $Properties->{'x-otrs-team'}->[0]->{'value'};
+            my @Teams = split( ",", $Properties->{'x-otrs-team'}->[0]->{'value'} );
 
-            # get team id
-            my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
-                Name   => $TeamName,
-                UserID => $Param{UserID},
-            );
-            $Parameters{TeamID} = $Team{ID} if $Team{ID};
+            if (@Teams) {
+                my @TeamIDs;
+
+                # get team ids
+                for my $TeamName (@Teams) {
+                    my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
+                        Name   => $TeamName,
+                        UserID => $Param{UserID},
+                    );
+                    push @TeamIDs, $Team{ID} if $Team{ID};
+                }
+                $Parameters{TeamID} = \@TeamIDs if @TeamIDs;
+            }
         }
 
         # get resource

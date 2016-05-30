@@ -149,7 +149,7 @@ $Self->Is(
 
 my @Result = (
     {
-        'TeamID'     => $Team{ID},
+        'TeamID'     => [ $Team{ID} ],
         'StartTime'  => '2016-04-05 00:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'All day',
@@ -168,7 +168,7 @@ my @Result = (
     {
         'StartTime' => '2016-04-12 11:30:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'Title'       => 'Once per week',
         'CalendarID'  => $Calendar{CalendarID},
@@ -188,7 +188,7 @@ my @Result = (
         'StartTime'  => '2016-04-19 11:30:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Once per week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -206,7 +206,7 @@ my @Result = (
         'StartTime'  => '2016-04-26 11:30:00',
         'Title'      => 'Once per week',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'ResourceID' => [
@@ -222,7 +222,7 @@ my @Result = (
     {
         'StartTime' => '2016-05-03 11:30:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Once per week',
@@ -251,7 +251,7 @@ my @Result = (
         'Title'       => 'Once per week',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-05-10 11:30:00'
     },
@@ -261,7 +261,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Once per week',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-05-17 12:00:00',
         'Recurring'  => undef,
 
@@ -285,7 +285,7 @@ my @Result = (
         'Location'    => 'Belgrade',
         'Title'       => 'Once per week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-05-24 11:30:00'
@@ -296,7 +296,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Once per week',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-05-31 12:00:00',
         'Recurring'  => undef,
         'ResourceID' => [
@@ -312,7 +312,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Once per week',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-06-07 11:30:00',
         'AllDay'    => undef,
@@ -337,7 +337,7 @@ my @Result = (
 
         'Recurring'  => '1',
         'EndTime'    => '2016-04-12 14:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Monthly meeting',
@@ -348,7 +348,7 @@ my @Result = (
         'StartTime' => '2016-05-12 13:15:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'Title'       => 'Monthly meeting',
         'CalendarID'  => $Calendar{CalendarID},
         'Location'    => 'Germany',
@@ -365,7 +365,7 @@ my @Result = (
     {
         'Title'      => 'Monthly meeting',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-06-12 13:15:00',
@@ -383,7 +383,7 @@ my @Result = (
     {
         'Title'      => 'Monthly meeting',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-07-12 13:15:00',
@@ -399,7 +399,7 @@ my @Result = (
     },
     {
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Monthly meeting',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2016-08-12 13:15:00',
@@ -420,7 +420,7 @@ my @Result = (
         'Title'      => 'Monthly meeting',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2016-09-12 14:00:00',
 
@@ -447,7 +447,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Monthly meeting',
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
 
@@ -460,7 +460,7 @@ my @Result = (
 
         'EndTime'    => '2016-11-12 14:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Monthly meeting',
         'CalendarID' => $Calendar{CalendarID},
@@ -470,7 +470,7 @@ my @Result = (
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Monthly meeting',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-12-12 13:15:00',
@@ -490,7 +490,7 @@ my @Result = (
         'StartTime'  => '2017-01-12 13:15:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Monthly meeting',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -515,7 +515,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Monthly meeting',
         'StartTime'  => '2017-02-12 13:15:00',
@@ -526,7 +526,7 @@ my @Result = (
         'StartTime'  => '2016-03-31 08:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'End of the month',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -544,7 +544,7 @@ my @Result = (
         'StartTime'  => '2016-04-30 08:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'End of the month',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -571,7 +571,7 @@ my @Result = (
         'Title'       => 'End of the month',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-05-31 08:00:00'
     },
@@ -587,7 +587,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'End of the month',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2016-06-30 08:00:00',
@@ -607,7 +607,7 @@ my @Result = (
         'StartTime'  => '2016-07-31 08:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'End of the month',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -622,7 +622,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'End of the month',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-08-31 08:00:00'
@@ -633,7 +633,7 @@ my @Result = (
         'Title'      => 'End of the month',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-09-30 09:00:00',
         'Recurring'  => undef,
         'ResourceID' => [
@@ -649,7 +649,7 @@ my @Result = (
         'Title'      => 'End of the month',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-10-31 08:00:00',
         'AllDay'    => undef,
@@ -677,13 +677,13 @@ my @Result = (
         'StartTime'  => '2016-11-30 08:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'End of the month',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
         'StartTime' => '2016-12-31 08:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'Title'       => 'End of the month',
         'CalendarID'  => $Calendar{CalendarID},
@@ -712,12 +712,12 @@ my @Result = (
         'Title'       => 'End of the month',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2017-01-31 08:00:00'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'End of the month',
         'CalendarID' => $Calendar{CalendarID},
@@ -737,7 +737,7 @@ my @Result = (
         'StartTime' => '2016-01-31 10:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'Title'       => 'Each 2 months',
         'CalendarID'  => $Calendar{CalendarID},
         'Location'    => 'Test',
@@ -764,7 +764,7 @@ my @Result = (
         'StartTime' => '2016-03-31 10:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 2 months',
         'CalendarID' => $Calendar{CalendarID},
     },
@@ -780,7 +780,7 @@ my @Result = (
         'Location'    => 'Test',
         'Title'       => 'Each 2 months',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-05-31 10:00:00'
@@ -789,7 +789,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2 months',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-07-31 10:00:00',
         'AllDay'    => undef,
@@ -814,7 +814,7 @@ my @Result = (
 
         'Recurring'  => undef,
         'EndTime'    => '2017-01-31 11:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2 months',
         'CalendarID' => $Calendar{CalendarID},
@@ -834,7 +834,7 @@ my @Result = (
         'Location'    => 'Stara Pazova',
         'Title'       => 'My event',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-04-12 09:00:00'
@@ -852,7 +852,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-04-14 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -870,13 +870,13 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-04-16 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -905,7 +905,7 @@ my @Result = (
         'StartTime' => '2016-04-20 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event'
     },
@@ -913,7 +913,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-04-22 09:00:00',
         'AllDay'    => undef,
@@ -931,7 +931,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-04-24 09:00:00',
         'AllDay'    => undef,
@@ -951,7 +951,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2016-04-26 10:00:00',
         'ResourceID' => [
@@ -978,13 +978,13 @@ my @Result = (
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-04-30 09:00:00',
         'AllDay'    => undef,
@@ -1011,13 +1011,13 @@ my @Result = (
         'Location'    => 'Stara Pazova',
         'Title'       => 'My event',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-05-02 09:00:00'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -1046,14 +1046,14 @@ my @Result = (
         'StartTime' => '2016-05-06 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event'
     },
     {
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-05-08 09:00:00',
@@ -1071,7 +1071,7 @@ my @Result = (
         'StartTime' => '2016-05-10 09:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'My event',
         'Location'    => 'Stara Pazova',
@@ -1095,7 +1095,7 @@ my @Result = (
 
         'EndTime'    => '2016-05-12 10:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -1115,7 +1115,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-05-14 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -1123,7 +1123,7 @@ my @Result = (
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-05-16 09:00:00',
@@ -1142,7 +1142,7 @@ my @Result = (
         'StartTime' => '2016-05-18 09:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'My event',
         'Location'    => 'Stara Pazova',
@@ -1158,7 +1158,7 @@ my @Result = (
     {
         'StartTime' => '2016-05-20 09:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'My event',
@@ -1174,7 +1174,7 @@ my @Result = (
         'AllDay' => undef
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
@@ -1205,7 +1205,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event',
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
 
@@ -1218,7 +1218,7 @@ my @Result = (
         ],
         'Recurring'  => undef,
         'EndTime'    => '2016-05-26 10:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -1239,7 +1239,7 @@ my @Result = (
         'StartTime' => '2016-05-28 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'My event'
     },
@@ -1249,7 +1249,7 @@ my @Result = (
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-05-30 10:00:00',
         'Recurring'  => undef,
 
@@ -1272,7 +1272,7 @@ my @Result = (
         ],
         'EndTime'    => '2016-06-01 10:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'My event',
         'CalendarID' => $Calendar{CalendarID},
@@ -1293,12 +1293,12 @@ my @Result = (
         'StartTime'  => '2016-04-01 10:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2 years',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 2 years',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2018-04-01 10:00:00',
@@ -1315,7 +1315,7 @@ my @Result = (
     },
     {
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 2 years',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2020-04-01 10:00:00',
@@ -1331,7 +1331,7 @@ my @Result = (
             ]
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '0',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 3thd all day',
@@ -1353,7 +1353,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 3thd all day',
         'TimezoneID' => '0',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2016-04-06 00:00:00',
 
@@ -1369,7 +1369,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 3thd all day',
         'TimezoneID' => '0',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-04-08 00:00:00',
         'AllDay'    => '1',
@@ -1394,7 +1394,7 @@ my @Result = (
 
         'EndTime'    => '2016-04-12 00:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '0',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 3thd all day',
@@ -1404,7 +1404,7 @@ my @Result = (
     {
         'StartTime' => '2016-04-14 00:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '0',
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 3thd all day',
@@ -1422,7 +1422,7 @@ my @Result = (
     {
         'StartTime' => '2016-04-17 00:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '0',
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 3thd all day',
@@ -1449,7 +1449,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '0',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 3thd all day',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2016-04-20 00:00:00',
@@ -1467,7 +1467,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 3thd all day',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '0',
 
         'StartTime' => '2016-04-23 00:00:00'
@@ -1484,7 +1484,7 @@ my @Result = (
             0
         ],
         'TimezoneID' => '0',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 3thd all day',
         'StartTime'  => '2016-04-26 00:00:00',
@@ -1505,7 +1505,7 @@ my @Result = (
         'Title'      => 'Each 3thd all day',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '0',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
         'AllDay' => undef,
@@ -1521,7 +1521,7 @@ my @Result = (
         'Title'       => 'First 3 days',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-03-07 16:00:00'
     },
@@ -1539,14 +1539,14 @@ my @Result = (
         'StartTime'  => '2016-03-08 16:00:00',
         'Title'      => 'First 3 days',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
         'Title'      => 'First 3 days',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-03-09 16:00:00',
         'AllDay'    => undef,
@@ -1566,7 +1566,7 @@ my @Result = (
         'Title'      => 'Once per next 2 month',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => '1',
         'EndTime'    => '2016-03-02 19:00:00',
 
@@ -1580,7 +1580,7 @@ my @Result = (
     },
     {
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Once per next 2 month',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2016-04-02 18:00:00',
@@ -1608,12 +1608,12 @@ my @Result = (
         'StartTime' => '2016-01-03 18:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'January 3th next 3 years',
         'CalendarID' => $Calendar{CalendarID},
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'January 3th next 3 years',
         'CalendarID' => $Calendar{CalendarID},
@@ -1643,14 +1643,14 @@ my @Result = (
         'StartTime'  => '2018-01-03 18:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'January 3th next 3 years',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
         'StartTime' => '2016-04-12 16:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 2nd week',
         'Location'    => undef,
@@ -1666,7 +1666,7 @@ my @Result = (
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-04-26 16:00:00',
@@ -1684,7 +1684,7 @@ my @Result = (
     {
         'StartTime' => '2016-05-10 16:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
@@ -1710,7 +1710,7 @@ my @Result = (
         ],
         'Recurring'  => undef,
         'EndTime'    => '2016-05-24 17:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
@@ -1720,7 +1720,7 @@ my @Result = (
     {
         'StartTime' => '2016-06-07 16:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 2nd week',
@@ -1741,7 +1741,7 @@ my @Result = (
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-06-21 17:00:00',
         'Recurring'  => undef,
         'ResourceID' => [
@@ -1767,12 +1767,12 @@ my @Result = (
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 2nd week',
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-07-05 16:00:00'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -1792,7 +1792,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-08-02 16:00:00',
         'AllDay'    => undef,
@@ -1820,7 +1820,7 @@ my @Result = (
         'StartTime'  => '2016-08-16 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -1836,7 +1836,7 @@ my @Result = (
         'StartTime' => '2016-08-30 16:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week'
     },
@@ -1852,7 +1852,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'StartTime'  => '2016-09-13 16:00:00',
@@ -1871,7 +1871,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-09-27 16:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -1880,7 +1880,7 @@ my @Result = (
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-10-11 16:00:00',
         'AllDay'    => undef,
@@ -1909,7 +1909,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
         'AllDay' => undef,
@@ -1924,7 +1924,7 @@ my @Result = (
         'Location'    => undef,
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 2nd week',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-11-08 16:00:00'
@@ -1933,7 +1933,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-11-22 16:00:00',
         'AllDay'    => undef,
@@ -1960,7 +1960,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-12-06 16:00:00'
@@ -1979,7 +1979,7 @@ my @Result = (
         'StartTime'  => '2016-12-20 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -1995,7 +1995,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2017-01-03 16:00:00'
@@ -2005,7 +2005,7 @@ my @Result = (
         'StartTime'  => '2017-01-17 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -2033,7 +2033,7 @@ my @Result = (
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
         'AllDay' => undef,
@@ -2049,7 +2049,7 @@ my @Result = (
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2017-02-14 16:00:00'
     },
@@ -2065,7 +2065,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'StartTime'  => '2017-02-28 16:00:00',
@@ -2074,7 +2074,7 @@ my @Result = (
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2017-03-14 16:00:00',
@@ -2101,7 +2101,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2017-03-28 16:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -2117,7 +2117,7 @@ my @Result = (
         ],
         'EndTime'    => '2017-04-11 17:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -2138,7 +2138,7 @@ my @Result = (
         'StartTime'  => '2017-04-25 16:00:00',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -2155,7 +2155,7 @@ my @Result = (
         'StartTime' => '2017-05-09 16:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week'
     },
@@ -2170,7 +2170,7 @@ my @Result = (
         ],
         'EndTime'    => '2017-05-23 17:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
@@ -2178,7 +2178,7 @@ my @Result = (
 
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -2205,7 +2205,7 @@ my @Result = (
         ],
         'Recurring'  => undef,
         'EndTime'    => '2017-06-20 17:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -2213,7 +2213,7 @@ my @Result = (
 
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
@@ -2233,7 +2233,7 @@ my @Result = (
         'StartTime' => '2017-07-18 16:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Each 2nd week',
         'Location'    => undef,
@@ -2253,7 +2253,7 @@ my @Result = (
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2017-08-01 17:00:00',
         'Recurring'  => undef,
 
@@ -2278,7 +2278,7 @@ my @Result = (
         'StartTime' => '2017-08-15 16:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
     },
@@ -2295,7 +2295,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2017-08-29 16:00:00'
@@ -2303,7 +2303,7 @@ my @Result = (
     {
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2017-09-12 16:00:00',
@@ -2330,12 +2330,12 @@ my @Result = (
         'StartTime' => '2017-09-26 16:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
@@ -2363,7 +2363,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Each 2nd week',
         'CalendarID' => $Calendar{CalendarID},
         'StartTime'  => '2017-10-24 16:00:00',
@@ -2374,7 +2374,7 @@ my @Result = (
         'StartTime'  => '2017-11-07 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -2400,7 +2400,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2017-11-21 16:00:00'
@@ -2418,7 +2418,7 @@ my @Result = (
         'Location'    => undef,
         'Title'       => 'Each 2nd week',
         'CalendarID'  => $Calendar{CalendarID},
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2017-12-05 16:00:00'
@@ -2435,7 +2435,7 @@ my @Result = (
         ],
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Each 2nd week',
         'StartTime'  => '2017-12-19 16:00:00',
@@ -2456,7 +2456,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1',
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
 
@@ -2464,7 +2464,7 @@ my @Result = (
         'Title'      => 'Custom 1',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-01-13 10:00:00',
         'Recurring'  => undef,
 
@@ -2487,7 +2487,7 @@ my @Result = (
         ],
         'Recurring'  => undef,
         'EndTime'    => '2016-01-17 10:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1',
@@ -2507,7 +2507,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-01-27 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1'
@@ -2525,7 +2525,7 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-01-31 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Custom 1',
         'CalendarID' => $Calendar{CalendarID},
@@ -2544,7 +2544,7 @@ my @Result = (
         'StartTime'  => '2016-02-10 09:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -2562,7 +2562,7 @@ my @Result = (
         'Title'      => 'Custom 1',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef
+        'TeamID'     => []
     },
     {
         'AllDay' => undef,
@@ -2578,12 +2578,12 @@ my @Result = (
         'Title'       => 'Custom 1',
         'CalendarID'  => $Calendar{CalendarID},
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-02-24 09:00:00'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1',
@@ -2613,13 +2613,13 @@ my @Result = (
         'StartTime'  => '2016-03-09 09:00:00',
         'Title'      => 'Custom 1',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
         'StartTime' => '2016-03-13 09:00:00',
 
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
         'Title'       => 'Custom 1',
         'CalendarID'  => $Calendar{CalendarID},
@@ -2645,7 +2645,7 @@ my @Result = (
 
         'Recurring'  => undef,
         'EndTime'    => '2016-03-23 10:00:00',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Custom 1',
         'CalendarID' => $Calendar{CalendarID},
@@ -2658,7 +2658,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 1',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2016-03-27 10:00:00',
         'ResourceID' => [
@@ -2671,7 +2671,7 @@ my @Result = (
 
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
@@ -2693,7 +2693,7 @@ my @Result = (
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2016-01-16 10:00:00',
 
@@ -2708,7 +2708,7 @@ my @Result = (
     {
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
 
         'StartTime' => '2016-01-31 09:00:00',
@@ -2733,7 +2733,7 @@ my @Result = (
 
         'EndTime'    => '2016-02-16 10:00:00',
         'Recurring'  => undef,
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
@@ -2754,7 +2754,7 @@ my @Result = (
         'StartTime' => '2016-03-16 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2'
     },
@@ -2762,7 +2762,7 @@ my @Result = (
         'StartTime' => '2016-03-31 09:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'Title'       => 'Custom 2',
         'CalendarID'  => $Calendar{CalendarID},
         'Location'    => undef,
@@ -2790,7 +2790,7 @@ my @Result = (
         'StartTime'  => '2016-04-16 09:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -2807,7 +2807,7 @@ my @Result = (
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Custom 2',
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
 
         'StartTime' => '2016-05-16 09:00:00'
     },
@@ -2824,7 +2824,7 @@ my @Result = (
         'StartTime' => '2016-05-31 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
     },
@@ -2832,7 +2832,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
 
         'StartTime' => '2016-06-16 09:00:00',
         'AllDay'    => undef,
@@ -2851,7 +2851,7 @@ my @Result = (
         'StartTime'  => '2016-07-16 09:00:00',
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -2878,7 +2878,7 @@ my @Result = (
         'StartTime'  => '2016-07-31 09:00:00',
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
@@ -2894,14 +2894,14 @@ my @Result = (
         'AllDay'    => undef,
         'StartTime' => '2016-08-16 09:00:00',
 
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2'
     },
     {
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
         'StartTime'  => '2016-08-31 09:00:00',
@@ -2930,7 +2930,7 @@ my @Result = (
         'StartTime' => '2016-09-16 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2'
     },
@@ -2938,7 +2938,7 @@ my @Result = (
         'StartTime' => '2016-10-16 09:00:00',
 
         'TimezoneID'  => '2',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'Title'       => 'Custom 2',
         'CalendarID'  => $Calendar{CalendarID},
         'Location'    => undef,
@@ -2952,7 +2952,7 @@ my @Result = (
         'AllDay' => undef
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
@@ -2982,11 +2982,11 @@ my @Result = (
         'StartTime'  => '2016-11-16 09:00:00',
         'Title'      => 'Custom 2',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
@@ -3008,7 +3008,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 2',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'EndTime'    => '2016-12-31 10:00:00',
         'Recurring'  => undef,
 
@@ -3034,11 +3034,11 @@ my @Result = (
         'StartTime'  => '2016-01-31 09:00:00',
         'Title'      => 'Custom 3',
         'CalendarID' => $Calendar{CalendarID},
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2'
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Custom 3',
         'CalendarID' => $Calendar{CalendarID},
@@ -3067,12 +3067,12 @@ my @Result = (
         'StartTime' => '2016-12-31 09:00:00',
 
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Title'      => 'Custom 3',
         'CalendarID' => $Calendar{CalendarID},
     },
     {
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'Title'      => 'Custom 4',
         'CalendarID' => $Calendar{CalendarID},
@@ -3093,7 +3093,7 @@ my @Result = (
         'StartTime'  => '2016-02-04 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 4',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -3111,7 +3111,7 @@ my @Result = (
         'StartTime'  => '2017-02-04 16:00:00',
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Custom 4',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'TimezoneID' => '2',
         'ResourceID' => [
             0
@@ -3136,7 +3136,7 @@ my @Result = (
         'Location'    => undef,
         'CalendarID'  => $Calendar{CalendarID},
         'Title'       => 'Yearly',
-        'TeamID'      => undef,
+        'TeamID'      => [],
         'TimezoneID'  => '2',
 
         'StartTime' => '2016-01-04 16:00:00'
@@ -3147,7 +3147,7 @@ my @Result = (
         'CalendarID' => $Calendar{CalendarID},
         'Title'      => 'Yearly',
         'TimezoneID' => '2',
-        'TeamID'     => undef,
+        'TeamID'     => [],
         'Recurring'  => undef,
         'EndTime'    => '2017-01-04 17:00:00',
 
