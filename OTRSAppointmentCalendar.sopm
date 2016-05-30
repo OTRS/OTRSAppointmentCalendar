@@ -203,9 +203,6 @@
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
             </ForeignKey>
-            <ForeignKey ForeignTable="calendar_team">
-                <Reference Local="team_id" Foreign="id"/>
-            </ForeignKey>
             <ForeignKey ForeignTable="users">
                 <Reference Local="create_by" Foreign="id"/>
                 <Reference Local="change_by" Foreign="id"/>
