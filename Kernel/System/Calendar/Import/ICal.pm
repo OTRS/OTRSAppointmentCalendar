@@ -348,6 +348,7 @@ sub Import {
                     # Custom
                     # FREQ=MONTHLY;UNTIL=20170101T080000Z;BYMONTHDAY=16,31'
                     my @Days = split( ',', $MonthDay );
+
                     $Parameters{Recurring}           = 1;
                     $Parameters{RecurrenceType}      = "CustomMonthly";
                     $Parameters{RecurrenceFrequency} = \@Days;
