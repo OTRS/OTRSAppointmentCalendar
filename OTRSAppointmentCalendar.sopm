@@ -199,9 +199,6 @@
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="parent_id" Foreign="id"/>
             </ForeignKey>
-            <ForeignKey ForeignTable="calendar_team">
-                <Reference Local="team_id" Foreign="id"/>
-            </ForeignKey>
             <ForeignKey ForeignTable="users">
                 <Reference Local="create_by" Foreign="id"/>
                 <Reference Local="change_by" Foreign="id"/>
@@ -270,6 +267,15 @@
             <Data Key="name" Type="Quote">Appointment</Data>
         </Insert>
     </DatabaseInstall>
+
+    <!-- TODO: Remove after VO testing -->
+    <DatabaseUpgrade Type="pre">
+        <TableAlter Name="calendar_appointment" Version="1.1.0.17">
+            <ForeignKeyDrop ForeignTable="calendar_team">
+                <Reference Local="team_id" Foreign="id"/>
+            </ForeignKeyDrop>
+        </TableAlter>
+    </DatabaseUpgrade>
 
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_seen"/>
