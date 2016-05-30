@@ -91,7 +91,7 @@ creates a new appointment.
         EndTime              => '2016-01-01 17:00:00',                   # (required)
         AllDay               => 0,                                       # (optional) default 0
         TimezoneID           => 1,                                       # (optional) Timezone - it can be 0 (UTC)
-        TeamID               => 1,                                       # (optional)
+        TeamID               => [ 1 ],                                   # (optional) must be an array reference if supplied
         ResourceID           => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring            => 1,                                       # (optional) flag the appointment as recurring (parent only!)
 
@@ -178,21 +178,6 @@ sub AppointmentCreate {
 
     $Param{RecurrenceInterval} ||= 1;
 
-    my $RecurrenceFrequency;
-    if ( $Param{Recurring} && $Param{RecurrenceFrequency} ) {
-
-        # check if array
-        if ( !IsArrayRefWithData( $Param{RecurrenceFrequency} ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "RecurrenceFrequency must be array!",
-            );
-            return;
-        }
-
-        $RecurrenceFrequency = join( ",", @{ $Param{RecurrenceFrequency} } );
-    }
-
     if ( $Param{UniqueID} && !$Param{ParentID} ) {
         my %Appointment = $Self->AppointmentGet(
             UniqueID   => $Param{UniqueID},
@@ -260,23 +245,33 @@ sub AppointmentCreate {
         return;
     }
 
-    # check ResourceID
-    my $ResourceID;
-    if ( $Param{ResourceID} ) {
-        if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "ResourceID not ARRAYREF!",
-            );
-            return;
-        }
+    # check if array refs
+    my %Arrays;
+    for my $Parameter (
+        qw(TeamID ResourceID RecurrenceFrequency RecurrenceExclude)
+        )
+    {
+        if ( $Param{$Parameter} ) {
+            if ( !IsArrayRefWithData( $Param{$Parameter} ) ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "$Parameter not ARRAYREF!",
+                );
+                return;
+            }
 
-        $ResourceID = join( ',', @{ $Param{ResourceID} } );
+            my @Array = @{ $Param{$Parameter} };
+
+            # remove undefined values
+            @Array = grep { defined $_ } @Array;
+
+            $Arrays{$Parameter} = join( ',', @Array ) if @Array;
+        }
     }
 
     # check if numbers
     for my $Parameter (
-        qw(Recurring RecurrenceCount RecurrenceInterval TeamID)
+        qw(Recurring RecurrenceCount RecurrenceInterval)
         )
     {
         if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
@@ -314,12 +309,6 @@ sub AppointmentCreate {
         }
     }
 
-    # join RecurrenceExclude
-    my $RecurrenceExclude;
-    if ( IsArrayRefWithData( $Param{RecurrenceExclude} ) ) {
-        $RecurrenceExclude = join( ',', @{ $Param{RecurrenceExclude} } );
-    }
-
     # get db object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
     my @Bind;
@@ -341,11 +330,11 @@ sub AppointmentCreate {
     }
 
     push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
-        \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
-        \$Param{TimezoneID}, \$Param{TeamID}, \$ResourceID, \$Param{Recurring},
-        \$Param{RecurrenceType}, \$RecurrenceFrequency, \$Param{RecurrenceCount},
-        \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil}, \$Param{RecurrenceID},
-        \$RecurrenceExclude, \$Param{UserID}, \$Param{UserID};
+        \$Param{Location},   \$Param{StartTime}, \$Param{EndTime},     \$Param{AllDay},
+        \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
+        \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
+        \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},      \$Param{RecurrenceID},
+        \$Arrays{RecurrenceExclude}, \$Param{UserID},               \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
@@ -464,7 +453,7 @@ Result => 'HASH':
             StartTime     => '2016-01-02 16:00:00',
             EndTime       => '2016-01-02 17:00:00',
             TimezoneID    => 1,
-            TeamID        => 1,
+            TeamID        => [ 1 ],
             ResourceID    => [ 1, 3 ],
             AllDay        => 0,
         },
@@ -547,17 +536,6 @@ sub AppointmentList {
         );
     }
 
-    # check TeamID
-    if ( $Param{TeamID} ) {
-        if ( !IsInteger( $Param{TeamID} ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "TeamID must be a number!"
-            );
-            return;
-        }
-    }
-
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, timezone_id, team_id, resource_id, all_day, recurring
@@ -590,12 +568,6 @@ sub AppointmentList {
         push @Bind, \$Param{EndTime};
     }
 
-    if ( $Param{TeamID} ) {
-
-        $SQL .= 'AND team_id = ? ';
-        push @Bind, \$Param{TeamID};
-    }
-
     $SQL .= 'ORDER BY id ASC';
 
     # db query
@@ -606,7 +578,14 @@ sub AppointmentList {
 
     my @Result;
 
+    ROW:
     while ( my @Row = $DBObject->FetchrowArray() ) {
+
+        # team id
+        my @TeamID = split( ',', $Row[10] // '' );
+        if ( $Param{TeamID} ) {
+            next ROW if !grep { $_ == $Param{TeamID} } @TeamID;
+        }
 
         # resource id
         $Row[11] = $Row[11] ? $Row[11] : 0;
@@ -623,7 +602,7 @@ sub AppointmentList {
             StartTime     => $Row[7],
             EndTime       => $Row[8],
             TimezoneID    => $Row[9],
-            TeamID        => $Row[10],
+            TeamID        => \@TeamID,
             ResourceID    => \@ResourceID,
             AllDay        => $Row[12],
             Recurring     => $Row[13],
@@ -863,7 +842,7 @@ returns a hash:
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
         TimezoneID          => 1,
-        TeamID              => 1,
+        TeamID              => [ 1 ],
         ResourceID          => [ 1, 3 ],
         Recurring           => 1,
         RecurrenceType      => 'Daily',
@@ -947,14 +926,17 @@ sub AppointmentGet {
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
+        # team id
+        my @TeamID = split( ',', $Row[11] // '' );
+
         # resource id
-        $Row[12] = $Row[12] ? $Row[12] : 0;
-        my @ResourceID = $Row[12] =~ /,/ ? split( ',', $Row[12] ) : ( $Row[12] );
+        my @ResourceID = split( ',', $Row[12] // '0' );
+
+        # recurrence frequency
         my @RecurrenceFrequency = $Row[15] ? split( ',', $Row[15] ) : undef;
 
         # recurrence exclude
-        my @RecurrenceExclude;
-        @RecurrenceExclude = split( ',', $Row[20] ) if $Row[20];
+        my @RecurrenceExclude = $Row[20] ? split( ',', $Row[20] ) : undef;
 
         $Result{AppointmentID}       = $Row[0];
         $Result{ParentID}            = $Row[1];
@@ -967,7 +949,7 @@ sub AppointmentGet {
         $Result{EndTime}             = $Row[8];
         $Result{AllDay}              = $Row[9];
         $Result{TimezoneID}          = $Row[10];
-        $Result{TeamID}              = $Row[11];
+        $Result{TeamID}              = \@TeamID;
         $Result{ResourceID}          = \@ResourceID;
         $Result{Recurring}           = $Row[13];
         $Result{RecurrenceType}      = $Row[14];
@@ -1092,21 +1074,6 @@ sub AppointmentUpdate {
 
     $Param{RecurrenceInterval} ||= 1;
 
-    my $RecurrenceFrequency;
-    if ( $Param{Recurring} && $Param{RecurrenceFrequency} ) {
-
-        # check if array
-        if ( IsArrayRefWithData( @{ $Param{RecurrenceFrequency} } ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "RecurrenceFrequency must be array!",
-            );
-            return;
-        }
-
-        $RecurrenceFrequency = join( ",", @{ $Param{RecurrenceFrequency} } );
-    }
-
     # check StartTime
     my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{StartTime},
@@ -1143,22 +1110,33 @@ sub AppointmentUpdate {
         return;
     }
 
-    # check ResourceID
-    my $ResourceID;
-    if ( $Param{ResourceID} ) {
-        if ( !IsArrayRefWithData( $Param{ResourceID} ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "ResourceID not a ARRAYREF!",
-            );
-            return;
+    # check if array refs
+    my %Arrays;
+    for my $Parameter (
+        qw(TeamID ResourceID RecurrenceFrequency)
+        )
+    {
+        if ( $Param{$Parameter} ) {
+            if ( !IsArrayRefWithData( $Param{$Parameter} ) ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "$Parameter not ARRAYREF!",
+                );
+                return;
+            }
+
+            my @Array = @{ $Param{$Parameter} };
+
+            # remove undefined values
+            @Array = grep { defined $_ } @Array;
+
+            $Arrays{$Parameter} = join( ',', @Array ) if @Array;
         }
-        $ResourceID = join( ',', @{ $Param{ResourceID} } );
     }
 
     # check if numbers
     for my $Parameter (
-        qw(Recurring RecurrenceCount RecurrenceInterval TeamID)
+        qw(Recurring RecurrenceCount RecurrenceInterval)
         )
     {
         if ( $Param{$Parameter} && !IsInteger( $Param{$Parameter} ) ) {
@@ -1218,6 +1196,10 @@ sub AppointmentUpdate {
         @RecurrenceExclude = () if !$Param{Recurring};
     }
 
+    # remove undefined values
+    @RecurrenceExclude = grep { defined $_ } @RecurrenceExclude;
+
+    # serialize data
     my $RecurrenceExclude = join( ',', @RecurrenceExclude ) || undef;
 
     # delete existing recurred appointments
@@ -1248,10 +1230,10 @@ sub AppointmentUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title},   \$Param{Description}, \$Param{Location},
-            \$Param{StartTime},  \$Param{EndTime}, \$Param{AllDay},      \$Param{TimezoneID},
-            \$Param{TeamID}, \$ResourceID, \$Param{Recurring}, \$Param{RecurrenceType},
-            \$RecurrenceFrequency, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
+            \$Param{CalendarID}, \$Param{Title},       \$Param{Description}, \$Param{Location},
+            \$Param{StartTime},  \$Param{EndTime},     \$Param{AllDay},      \$Param{TimezoneID},
+            \$Arrays{TeamID},    \$Arrays{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceType},
+            \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
             \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
@@ -1737,6 +1719,11 @@ sub _AppointmentRecurringCreate {
     );
 
     my @RecurrenceExclude = @{ $Param{Appointment}->{RecurrenceExclude} // [] };
+
+    # remove undefined values
+    @RecurrenceExclude = grep { defined $_ } @RecurrenceExclude;
+
+    # reset the parameter for occurrences
     $Param{Appointment}->{RecurrenceExclude} = undef;
 
     my $OriginalStartTime = $StartTimeSystem;

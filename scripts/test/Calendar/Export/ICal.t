@@ -150,7 +150,7 @@ my @Appointments = (
         Title      => 'All-day Appointment',
         Location   => 'Sample location',
         UserID     => $UserID,
-        TeamID     => $Team{ID},
+        TeamID     => [ $Team{ID} ],
         ResourceID => [$UserID],
     },
 

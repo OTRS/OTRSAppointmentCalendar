@@ -95,7 +95,7 @@
                 <div class="SpacingBottom">
                     <form id="ChangeTeamForm">
                         <input type="hidden" id="Action" name="Action" value="[% Env("Action") | html %]"/>
-                        <label for="TeamID">[% Translate("Team") %]:</label>
+                        <label for="Team">[% Translate("Team") %]:</label>
                         [% Data.TeamStrg %]
                     </form>
                 </div>
@@ -229,7 +229,7 @@ Core.Agent.AppointmentCalendar.Init({
                 ChallengeToken: $("#ChallengeToken").val(),
                 Action: 'AgentAppointmentTeamList',
                 Subaction: 'ListResources',
-                TeamID: [% Data.TeamID | JSON %],
+                TeamID: [% Data.Team | JSON %],
             },
         }
 [% RenderBlockEnd("ResourceJSON") %]
@@ -263,7 +263,7 @@ var EventSources = {
             Action: 'AgentAppointmentList',
             Subaction: 'ListAppointments',
             CalendarID: [% Data.CalendarID | JSON %],
-            TeamID: [% Data.TeamID | JSON %]
+            TeamID: [% Data.Team | JSON %]
         },
         color: [% Data.CalendarColor | JSON %],
         startParam: 'StartTime',
@@ -283,8 +283,8 @@ var EventSources = {
                 calendarId: AppointmentData.CalendarID,
                 allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                 recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
-                teamId: AppointmentData.TeamID,
-                teamName: AppointmentData.TeamName,
+                teamIds: AppointmentData.TeamID,
+                teamNames: AppointmentData.TeamNames,
                 resourceIds: AppointmentData.ResourceID,
                 resourceNames: AppointmentData.ResourceNames,
                 pluginData: AppointmentData.PluginData
@@ -301,7 +301,7 @@ $('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
     Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources, [% Config("AppointmentCalendar::CalendarLimitOverview") || 10 %]);
 });
 
-$('#TeamID').on('change', function() {
+$('#Team').on('change', function() {
     $('#ChangeTeamForm').submit();
 });
 
@@ -331,7 +331,7 @@ $('#TeamID').on('change', function() {
         </fieldset>
         <fieldset>
             <legend><span>[% Translate("Resource") | html %]</span></legend>
-            <p class="Value">%teamName%</p>
+            <p class="Value">%teamNames%</p>
             <label>[% Translate("Team") | html %]:</label>
             <div class="Clear"></div>
             <p class="Value">%resourceNames%</p>

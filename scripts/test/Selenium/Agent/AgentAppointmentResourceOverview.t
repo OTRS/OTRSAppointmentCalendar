@@ -109,7 +109,7 @@ $Selenium->RunTest(
         $Selenium->find_element( 'button.Primary', 'css' )->VerifiedClick();
 
         # go to resource overview page for test team
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentResourceOverview;TeamID=${TeamID}");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentResourceOverview;Team=${TeamID}");
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -135,16 +135,16 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # verify resource data
-        $Self->Is(
+        $Self->IsDeeply(
             $Selenium->execute_script(
-                "return \$('#TeamList').val();"
+                "return \$('#TeamID').val();"
             ),
-            $TeamID,
+            [$TeamID],
             'Team',
         );
         $Self->IsDeeply(
             $Selenium->execute_script(
-                "return \$('#TeamUserList$TeamID').val();"
+                "return \$('#ResourceID').val();"
             ),
             [$UserID],
             'Agent',
@@ -189,7 +189,7 @@ $Selenium->RunTest(
         );
 
         # edit test team
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentTeam;Subaction=Change;TeamID=${TeamID}");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentTeam;Subaction=Change;Team=${TeamID}");
 
         # set it to invalid
         $Selenium->execute_script(

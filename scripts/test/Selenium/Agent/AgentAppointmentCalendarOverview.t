@@ -550,8 +550,8 @@ $Selenium->RunTest(
 
         # check if fields are disabled
         for my $Element (
-            qw(Title Description Location CalendarID TeamList StartMonth StartDay StartYear StartHour StartMinute
-            EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            qw(Title Description Location CalendarID TeamID ResourceID StartMonth StartDay StartYear
+            StartHour StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
             )
             )
         {
@@ -613,8 +613,8 @@ $Selenium->RunTest(
 
         # check if fields are enabled
         for my $Element (
-            qw( Title Description Location TeamList StartMonth StartDay StartYear StartHour StartMinute
-            EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            qw( Title Description Location TeamID ResourceID StartMonth StartDay StartYear StartHour
+            StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
             )
             )
         {
@@ -668,8 +668,9 @@ $Selenium->RunTest(
 
         # check if fields are enabled
         for my $Element (
-            qw( Title Description Location CalendarID TeamList StartMonth StartDay StartYear StartHour StartMinute
-            EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            qw( Title Description Location CalendarID TeamID ResourceID StartMonth StartDay
+            StartYear StartHour StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay
+            RecurrenceType
             )
             )
         {

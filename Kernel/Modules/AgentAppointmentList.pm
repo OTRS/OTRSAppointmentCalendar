@@ -133,11 +133,25 @@ sub Run {
                     )
                 {
                     if ( $Appointment->{TeamID} ) {
-                        my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
-                            TeamID => $Appointment->{TeamID},
-                            UserID => $Self->{UserID},
-                        );
-                        $Appointment->{TeamName} = $Team{Name} if %Team;
+                        my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+                        my @TeamNames;
+                        TEAM:
+                        for my $TeamID ( @{ $Appointment->{TeamID} } ) {
+                            next TEAM if !$TeamID;
+                            my %Team = $TeamObject->TeamGet(
+                                TeamID => $TeamID,
+                                UserID => $Self->{UserID},
+                            );
+                            push @TeamNames, $Team{Name} if %Team;
+                        }
+
+                        # truncate more than three elements
+                        if ( scalar @TeamNames > 3 ) {
+                            splice @TeamNames, 3;
+                            $TeamNames[2] .= '...';
+                        }
+
+                        $Appointment->{TeamNames} = join( '\n', @TeamNames );
                     }
                     if ( $Appointment->{ResourceID} ) {
                         my $UserObject = $Kernel::OM->Get('Kernel::System::User');
