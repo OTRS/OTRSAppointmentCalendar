@@ -189,7 +189,7 @@ $Selenium->RunTest(
         );
 
         # edit test team
-        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentTeam;Subaction=Change;Team=${TeamID}");
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentTeam;Subaction=Change;TeamID=${TeamID}");
 
         # set it to invalid
         $Selenium->execute_script(
