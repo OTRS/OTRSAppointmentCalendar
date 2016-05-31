@@ -23,14 +23,13 @@
 
     .CalendarSwitch {
         margin-right: 5px;
-        margin-bottom: 5px;
     }
 
     .CalendarSwitch label {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 200px;
+        width: 225px;
         display: inline-block;
         vertical-align: middle;
         line-height: 1.5em;
@@ -40,12 +39,12 @@
         margin-bottom: 0;
     }
 
-    .CalendarColorSwatch {
+    .CalendarColor {
         display: inline-block;
-        vertical-align: middle;
-        padding: 1px;
-        min-width: 12px;
-        min-height: 12px;
+        vertical-align: -3px;
+        width: 20px;
+        height: 13px;
+        border: 1px solid #222;
     }
 
     .AllDay:before {

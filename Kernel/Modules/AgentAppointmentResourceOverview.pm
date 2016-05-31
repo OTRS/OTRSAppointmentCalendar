@@ -107,15 +107,9 @@ sub Run {
                 );
 
                 my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
-                my $CalendarColors = $ConfigObject->Get('AppointmentCalendar::CalendarColors') ||
-                    [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
 
-                my $CalendarColorID = 0;
                 my $CurrentCalendar = 1;
                 for my $Calendar (@Calendars) {
-
-                    # current calendar color (sequential)
-                    $Calendar->{CalendarColor} = $CalendarColors->[$CalendarColorID];
 
                     # check calendar by default if limit is not yet reached
                     $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
@@ -140,9 +134,6 @@ sub Run {
                     $LayoutObject->Block(
                         Name => 'CalendarSourceComma',
                     ) if $CurrentCalendar < scalar @Calendars;
-
-                    # restart using the color array if needed
-                    $CalendarColorID = $CalendarColors->[ $CalendarColorID + 1 ] ? $CalendarColorID + 1 : 0;
 
                     $CurrentCalendar++;
                 }

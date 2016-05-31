@@ -109,6 +109,7 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
+                            <th class="Flags">Color</th>
                             <th>[% Translate("Group") | html %]</th>
                             <th>[% Translate("Validity") | html %]</th>
                             <th>[% Translate("Changed") | html %]</th>
@@ -124,6 +125,13 @@
                                 <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Edit;CalendarID=[% Data.CalendarID | uri %]">
                                     [% Data.CalendarName | html %]
                                 </a>
+                            </td>
+                            <td class="Flags">
+                                <div class="Flag Small Color">
+                                    <span style="background-color: [% Data.Color | html %];">
+                                        <em>[% Data.Color | html %]</em>
+                                    </span>
+                                </div>
                             </td>
                             <td>[% Data.Group | html %]</td>
                             <td>[% Translate(Data.Valid) | html %]</td>
@@ -145,13 +153,13 @@
 [% RenderBlockEnd("Calendar") %]
 [% RenderBlockStart("CalendarNoDataRow") %]
                         <tr>
-                            <td colspan="7">
+                            <td colspan="8">
                                 [% Translate("No data found.") | html %]
                             </td>
                         </tr>
 [% RenderBlockEnd("CalendarNoDataRow") %]
                         <tr class="FilterMessage Hidden">
-                            <td colspan="7" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
+                            <td colspan="8" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -196,6 +204,16 @@
                         </div>
                         <div class="Clear"></div>
 
+                        <label for="Color" class="Mandatory">
+                            <span class="Marker">*</span>
+                            [% Translate("Color") | html %]:
+                        </label>
+                        <div class="Field">
+                            <input type="text" id="Color" name="Color" value="[% Data.Color | html %]" class="Validate_Required W50pc" />
+                            <div id="ColorError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+                        <div class="Clear"></div>
+
                         <label for="GroupID" class="Mandatory">
                             <span class="Marker">*</span>
                             [% Translate("Permission group") | html %]:
@@ -226,6 +244,22 @@
                         <div class="Clear"></div>
                     </fieldset>
                 </form>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+$('input#Color').spectrum({
+    color: [% Data.Color | JSON %],
+    containerClassName: 'ColorPaletteContainer',
+    hideAfterPaletteSelect: true,
+    preferredFormat: 'hex',
+    replacerClassName: 'ColorPaletteButton',
+    showPalette: true,
+    showPaletteOnly: true,
+    palette: [
+        '[% Data.ColorPalette.join("','") %]'
+    ]
+});
+//]]></script>
+[% END %]
 [% RenderBlockEnd("CalendarEdit") %]
             </div>
         </div>
