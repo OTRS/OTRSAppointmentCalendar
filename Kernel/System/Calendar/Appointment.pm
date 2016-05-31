@@ -1719,7 +1719,7 @@ sub AppointmentUpcomingGet {
     my $SQL = "
         SELECT id, parent_id, calendar_id, unique_id
         FROM calendar_appointment
-        WHERE DATE(start_time) > DATE(?)
+        WHERE DATE(start_time) >= DATE(?)
         ORDER BY start_time";
 
     # db query
