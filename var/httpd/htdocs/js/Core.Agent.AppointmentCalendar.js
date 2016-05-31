@@ -126,9 +126,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     titleFormat: 'MMMM YYYY',
                     columnFormat: 'dddd'
                 },
-                agendaWeek: {
-                    weekends: false
-                },
                 agendaDay: {
                     titleFormat: 'D MMM YYYY',
                     resources: false
