@@ -1836,6 +1836,24 @@ sub AppointmentUpcomingUpdate {
     return 1;
 }
 
+=item AppointmentUpcomingNotify()
+
+Get the next upcoming appointment data.
+
+    my $Success = $AppointmentObject->AppointmentUpcomingNotify();
+
+returns:
+
+    True if future task update was successful, otherwise false.
+
+=cut
+
+sub AppointmentUpcomingNotify {
+    my ( $Self, %Param ) = @_;
+
+    return 1;
+}
+
 =begin Internal:
 
 =cut
