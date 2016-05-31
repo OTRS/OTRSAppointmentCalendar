@@ -73,13 +73,14 @@ $Self->True(
 # this will be ok
 my %Calendar1 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
+    Color        => '#3A87AD',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
 $Self->True(
     $Calendar1{CalendarID},
-    "CalendarCreate( CalendarName => 'Test calendar', GroupID => $GroupID, UserID => $UserID ) - CalendarID",
+    "CalendarCreate( CalendarName => 'Test calendar', Color => '#3A87AD', GroupID => $GroupID, UserID => $UserID ) - CalendarID",
 );
 
 # only required fields
@@ -862,6 +863,7 @@ $Self->Is(
 
 my %Calendar2 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar 2',
+    Color        => '#EC9073',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );
@@ -1121,6 +1123,7 @@ $Self->True(
 # Create new calendar
 my %Calendar3 = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar 3',
+    Color        => '#6BAD54',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );

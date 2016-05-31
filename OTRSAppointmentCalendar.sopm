@@ -88,12 +88,14 @@
         <File Permission="640" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/spectrum-1.8.0/spectrum.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.min.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
@@ -145,6 +147,7 @@
             <Column Name="group_id" Required="true" Type="INTEGER"/>
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
             <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
+            <Column Name="color" Required="true" Size="7" Type="VARCHAR"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
@@ -277,6 +280,9 @@
             <ForeignKeyDrop ForeignTable="calendar_team">
                 <Reference Local="team_id" Foreign="id"/>
             </ForeignKeyDrop>
+        </TableAlter>
+        <TableAlter Name="calendar" Version="1.1.0.17">
+            <ColumnAdd Name="color" Type="VARCHAR" Size="7"/>
         </TableAlter>
     </DatabaseUpgrade>
 

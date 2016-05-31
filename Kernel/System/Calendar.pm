@@ -97,6 +97,7 @@ creates a new calendar for given user.
     my %Calendar = $CalendarObject->CalendarCreate(
         CalendarName    => 'Meetings',          # (required) Personal calendar name
         GroupID         => 3,                   # (required) GroupID
+        Color           => '#FF7700',           # (required) Color in hexadecimal RGB notation
         UserID          => 4,                   # (required) UserID
         ValidID         => 1,                   # (optional) Default is 1.
     );
@@ -122,7 +123,7 @@ sub CalendarCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarName GroupID UserID)) {
+    for my $Needed (qw(CalendarName GroupID Color UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -131,6 +132,18 @@ sub CalendarCreate {
             return;
         }
     }
+
+    # check color
+    if ( !( $Param{Color} =~ /#[A-Z0-9]{3,6}/i ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Color must be in hexadecimal RGB notation, eg. #FFFFFF.',
+        );
+        return;
+    }
+
+    # make it uppercase for the sake of consistency
+    $Param{Color} = uc $Param{Color};
 
     my $ValidID = defined $Param{ValidID} ? $Param{ValidID} : 1;
 
@@ -146,16 +159,17 @@ sub CalendarCreate {
 
     my $SQL = '
         INSERT INTO calendar
-            (group_id, name, salt_string, create_time, create_by, change_time, change_by, valid_id)
-        VALUES (?, ?, ?, current_timestamp, ?, current_timestamp, ?, ?)
+            (group_id, name, salt_string, color, create_time, create_by, change_time, change_by,
+            valid_id)
+        VALUES (?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?, ?)
     ';
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{UserID}, \$Param{UserID},
-            \$ValidID
+            \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{Color}, \$Param{UserID},
+            \$Param{UserID}, \$ValidID
         ],
     );
 
@@ -207,6 +221,7 @@ returns Calendar data:
         CalendarID   => 2,
         GroupID      => 3,
         CalendarName => 'Meetings',
+        Color        => '#FF7700',
         CreateTime   => '2016-01-01 08:00:00',
         CreateBy     => 1,
         ChangeTime   => '2016-01-01 08:00:00',
@@ -248,11 +263,12 @@ sub CalendarGet {
         # create db object
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-        my $SQL = "
-            SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
+        my $SQL = '
+            SELECT id, group_id, name, color, create_time, create_by, change_time, change_by,
+            valid_id
             FROM calendar
             WHERE
-        ";
+        ';
 
         my @Bind;
         if ( $Param{CalendarID} ) {
@@ -279,11 +295,12 @@ sub CalendarGet {
             $Calendar{CalendarID}   = $Row[0];
             $Calendar{GroupID}      = $Row[1];
             $Calendar{CalendarName} = $Row[2];
-            $Calendar{CreateTime}   = $Row[3];
-            $Calendar{CreateBy}     = $Row[4];
-            $Calendar{ChangeTime}   = $Row[5];
-            $Calendar{ChangeBy}     = $Row[6];
-            $Calendar{ValidID}      = $Row[7];
+            $Calendar{Color}        = $Row[3];
+            $Calendar{CreateTime}   = $Row[4];
+            $Calendar{CreateBy}     = $Row[5];
+            $Calendar{ChangeTime}   = $Row[6];
+            $Calendar{ChangeBy}     = $Row[7];
+            $Calendar{ValidID}      = $Row[8];
         }
 
         if ( $Param{CalendarID} ) {
@@ -334,6 +351,7 @@ returns:
             CalendarID   => 2,
             GroupID      => 3,
             CalendarName => 'Meetings',
+            Color        => '#FF7700',
             CreateTime   => '2016-01-01 08:00:00',
             CreateBy     => 3,
             ChangeTime   => '2016-01-01 08:00:00',
@@ -344,6 +362,7 @@ returns:
             CalendarID   => 3,
             GroupID      => 3,
             CalendarName => 'Customer presentations',
+            Color        => '#BB00BB',
             CreateTime   => '2016-01-01 08:00:00',
             CreateBy     => 3,
             ChangeTime   => '2016-01-01 08:00:00',
@@ -375,7 +394,8 @@ sub CalendarList {
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         my $SQL = '
-            SELECT id, group_id, name, create_time, create_by, change_time, change_by, valid_id
+            SELECT id, group_id, name, color, create_time, create_by, change_time, change_by,
+            valid_id
             FROM calendar
             WHERE 1=1
         ';
@@ -399,11 +419,12 @@ sub CalendarList {
             $Calendar{CalendarID}   = $Row[0];
             $Calendar{GroupID}      = $Row[1];
             $Calendar{CalendarName} = $Row[2];
-            $Calendar{CreateTime}   = $Row[3];
-            $Calendar{CreateBy}     = $Row[4];
-            $Calendar{ChangeTime}   = $Row[5];
-            $Calendar{ChangeBy}     = $Row[6];
-            $Calendar{ValidID}      = $Row[7];
+            $Calendar{Color}        = $Row[3];
+            $Calendar{CreateTime}   = $Row[4];
+            $Calendar{CreateBy}     = $Row[5];
+            $Calendar{ChangeTime}   = $Row[6];
+            $Calendar{ChangeBy}     = $Row[7];
+            $Calendar{ValidID}      = $Row[8];
             push @Result, \%Calendar;
         }
 
@@ -448,6 +469,7 @@ updates an existing calendar.
         CalendarID       => 1,                   # (required) CalendarID
         GroupID          => 2,                   # (required) Calendar group
         CalendarName     => 'Meetings',          # (required) Personal calendar name
+        Color            => '#FF9900',           # (required) Color in hexadecimal RGB notation
         UserID           => 4,                   # (required) UserID (who made update)
         ValidID          => 1,                   # (required) ValidID
     );
@@ -463,7 +485,7 @@ sub CalendarUpdate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID GroupID CalendarName UserID ValidID)) {
+    for my $Needed (qw(CalendarID GroupID CalendarName Color UserID ValidID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -473,19 +495,29 @@ sub CalendarUpdate {
         }
     }
 
-    # needed objects
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+    # check color
+    if ( !( $Param{Color} =~ /#[A-Z0-9]{3,6}/i ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Color must be in hexadecimal RGB notation, eg. #FFFFFF.',
+        );
+        return;
+    }
+
+    # make it uppercase for the sake of consistency
+    $Param{Color} = uc $Param{Color};
 
     my $SQL = '
         UPDATE calendar
-        SET group_id=?, name=?, change_time=current_timestamp, change_by=?, valid_id=?
+        SET group_id=?, name=?, color=?, change_time=current_timestamp, change_by=?, valid_id=?
     ';
 
     my @Bind;
-    push @Bind, ( \$Param{GroupID}, \$Param{CalendarName}, \$Param{UserID}, \$Param{ValidID} );
+    push @Bind, \$Param{GroupID}, \$Param{CalendarName}, \$Param{Color}, \$Param{UserID},
+        \$Param{ValidID};
 
     $SQL .= '
-            WHERE id=?
+        WHERE id=?
     ';
     push @Bind, \$Param{CalendarID};
 
@@ -494,6 +526,9 @@ sub CalendarUpdate {
         SQL  => $SQL,
         Bind => \@Bind,
     );
+
+    # get cache object
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # clear cache
     $CacheObject->CleanUp(

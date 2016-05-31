@@ -104,13 +104,14 @@ $Self->True(
 # this will be ok
 my %Calendar = $CalendarObject->CalendarCreate(
     CalendarName => 'Test calendar',
+    Color        => '#3A87AD',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
 $Self->True(
     $Calendar{CalendarID},
-    "CalendarCreate( CalendarName => 'Test calendar', GroupID => $GroupID, UserID => $UserID ) - CalendarID",
+    "CalendarCreate( CalendarName => 'Test calendar', Color => '#3A87AD', GroupID => $GroupID, UserID => $UserID ) - CalendarID",
 );
 
 # read sample .ics file
