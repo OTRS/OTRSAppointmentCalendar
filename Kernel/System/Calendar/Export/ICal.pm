@@ -112,6 +112,11 @@ sub Export {
         calname => $Calendar{CalendarName},
     );
 
+    # export color for apple calendar
+    $ICalCalendar->add_property(
+        'x-apple-calendar-color' => $Calendar{Color},
+    );
+
     APPOINTMENT_ID:
     for my $AppointmentID (@AppointmentIDs) {
         my %Appointment = $AppointmentObject->AppointmentGet(
@@ -262,7 +267,9 @@ sub Export {
                 $ICalEventProperties{rrule} .= ';COUNT=' . $Appointment{RecurrenceCount};
             }
             if ( $Appointment{RecurrenceExclude} ) {
+                RECURRENCE_EXCLUDE:
                 for my $RecurrenceExclude ( @{ $Appointment{RecurrenceExclude} } ) {
+                    next RECURRENCE_EXCLUDE if !$RecurrenceExclude;
                     my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                         String => $RecurrenceExclude,
                     );
@@ -287,7 +294,7 @@ sub Export {
             # overriden occurences only
             if (
                 $Appointment{RecurrenceID}
-                && grep { $_ eq $Appointment{RecurrenceID} } @{ $Appointment{RecurrenceExclude} }
+                && grep { ( $_ // '' ) eq $Appointment{RecurrenceID} } @{ $Appointment{RecurrenceExclude} }
                 )
             {
 
