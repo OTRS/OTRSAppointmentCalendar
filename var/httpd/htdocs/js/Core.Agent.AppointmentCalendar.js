@@ -102,7 +102,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             columnFormat: 'ddd, D MMM',
             timeFormat: 'HH:mm',
             slotLabelFormat: 'HH:mm',
-            titleFormat: 'D MMM YYYY #W',
+            titleFormat: 'D MMM YYYY',
+            weekNumbers: true,
+            weekNumberTitle: '#',
+            weekNumberCalculation: 'ISO',
             eventLimit: true,
             height: 600,
             editable: true,
@@ -122,9 +125,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 month: {
                     titleFormat: 'MMMM YYYY',
                     columnFormat: 'dddd'
-                },
-                agendaWeek: {
-                    weekends: false
                 },
                 agendaDay: {
                     titleFormat: 'D MMM YYYY',
@@ -168,6 +168,18 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             },
             viewRender: function(View) {
+
+                // Add calendar week number to timeline view titles
+                if (View.name === 'timelineWeek' || View.name === 'timelineDay') {
+                    window.setTimeout(function () {
+                        $CalendarObj.find('.fc-toolbar > div > h2').append(
+                            $('<span />').addClass('fc-week-number')
+                                .text(View.start.format(' #W'))
+                        );
+                    }, 0);
+                }
+
+                // Remember view selection
                 if (CurrentView !== undefined && CurrentView !== View.name) {
                     Core.AJAX.FunctionCall(
                         Core.Config.Get('CGIHandle'),
