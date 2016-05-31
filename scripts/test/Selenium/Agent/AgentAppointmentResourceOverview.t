@@ -69,6 +69,7 @@ $Selenium->RunTest(
         # create a test calendar
         my %Calendar = $CalendarObject->CalendarCreate(
             CalendarName => "Test Calendar $RandomID",
+            Color        => '#3A87AD',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,

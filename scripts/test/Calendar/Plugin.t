@@ -154,6 +154,7 @@ if ($PluginKeyTicket) {
     # crete test calendar
     my %Calendar = $CalendarObject->CalendarCreate(
         CalendarName => 'Test Calendar ' . $RandomID,
+        Color        => '#3A87AD',
         GroupID      => $GroupID,
         UserID       => $UserID,
     );

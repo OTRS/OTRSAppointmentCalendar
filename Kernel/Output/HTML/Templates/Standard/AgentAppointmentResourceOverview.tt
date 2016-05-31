@@ -47,10 +47,9 @@
                     </div>
 [% RenderBlockStart("CalendarSwitch") %]
                     <div class="CalendarSwitch">
-                        <span class="CalendarColorSwatch" style="background-color: [% Data.CalendarColor | html %];">
-                            <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" data-id="[% Data.CalendarID | html %]" [% Data.Checked %]/>
-                        </span>
+                        <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" data-id="[% Data.CalendarID | html %]" [% Data.Checked %]/>
                         <label for="Calendar[% Data.CalendarID | html %]">
+                            <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
                             [% Data.CalendarName | html %]
                         </label>
                     </div>
@@ -265,7 +264,7 @@ var EventSources = {
             CalendarID: [% Data.CalendarID | JSON %],
             TeamID: [% Data.Team | JSON %]
         },
-        color: [% Data.CalendarColor | JSON %],
+        color: [% Data.Color | JSON %],
         startParam: 'StartTime',
         endParam: 'EndTime',
 

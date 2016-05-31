@@ -145,7 +145,7 @@ $Selenium->RunTest(
             UserLanguage => $Language,
         );
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid'),
             'Calendar is marked invalid',
@@ -164,7 +164,7 @@ $Selenium->RunTest(
 
         # verify the calendar is invalid temporarily
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',

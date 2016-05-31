@@ -106,13 +106,14 @@ $Self->True(
 my $ExportCalendarName = 'Export ' . $Helper->GetRandomID();
 my %ExportCalendar     = $CalendarObject->CalendarCreate(
     CalendarName => $ExportCalendarName,
+    Color        => '#3A87AD',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );
 
 $Self->True(
     $ExportCalendar{CalendarID},
-    "CalendarCreate( CalendarName => '$ExportCalendarName', GroupID => $GroupID, UserID => $UserID ) - CalendarID: $ExportCalendar{CalendarID}",
+    "CalendarCreate( CalendarName => '$ExportCalendarName', Color => '#3A87AD', GroupID => $GroupID, UserID => $UserID ) - CalendarID: $ExportCalendar{CalendarID}",
 );
 
 # sample appointments
@@ -306,6 +307,7 @@ $Self->True(
 my $ImportCalendarName = 'Import ' . $Helper->GetRandomID();
 my %ImportCalendar     = $CalendarObject->CalendarCreate(
     CalendarName => $ImportCalendarName,
+    Color        => '#EC9073',
     GroupID      => $GroupID,
     UserID       => $UserID,
 );

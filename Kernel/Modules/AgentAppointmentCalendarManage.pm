@@ -38,14 +38,17 @@ sub Run {
     if ( $Self->{Subaction} eq 'New' ) {
 
         my $GroupSelection = $Self->_GroupSelectionGet();
+        my $ColorPalette   = $Self->_ColorPaletteGet();
         my $ValidSelection = $Self->_ValidSelectionGet();
 
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
-                GroupID   => $GroupSelection,
-                ValidID   => $ValidSelection,
-                Subaction => 'StoreNew',
+                GroupID      => $GroupSelection,
+                ColorPalette => $ColorPalette,
+                ValidID      => $ValidSelection,
+                Subaction    => 'StoreNew',
+                Color        => $ColorPalette->[ int rand( scalar @{$ColorPalette} ) ],
             },
         );
         $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
@@ -53,7 +56,7 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
         # get data
-        for my $Param (qw(CalendarName GroupID ValidID)) {
+        for my $Param (qw(CalendarName GroupID Color ValidID)) {
             $GetParam{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
         }
 
@@ -78,11 +81,12 @@ sub Run {
 
         if (%Error) {
 
-            # eet title
+            # add title
             $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
 
             # get selections
             my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
+            my $ColorPalette   = $Self->_ColorPaletteGet();
             my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
             $LayoutObject->Block(
@@ -90,9 +94,10 @@ sub Run {
                 Data => {
                     %Error,
                     %GetParam,
-                    GroupID   => $GroupSelection,
-                    ValidID   => $ValidSelection,
-                    Subaction => 'StoreNew',
+                    GroupID      => $GroupSelection,
+                    ColorPalette => $ColorPalette,
+                    ValidID      => $ValidSelection,
+                    Subaction    => 'StoreNew',
                 },
             );
             return $Self->_Mask(%Param);
@@ -146,15 +151,17 @@ sub Run {
 
         # get selections
         my $GroupSelection = $Self->_GroupSelectionGet(%Calendar);
+        my $ColorPalette   = $Self->_ColorPaletteGet();
         my $ValidSelection = $Self->_ValidSelectionGet(%Calendar);
 
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
                 %Calendar,
-                GroupID   => $GroupSelection,
-                ValidID   => $ValidSelection,
-                Subaction => 'Update',
+                GroupID      => $GroupSelection,
+                ColorPalette => $ColorPalette,
+                ValidID      => $ValidSelection,
+                Subaction    => 'Update',
             },
         );
 
@@ -164,14 +171,14 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'Update' ) {
 
         # get data
-        for my $Param (qw(CalendarID CalendarName GroupID ValidID)) {
+        for my $Param (qw(CalendarID CalendarName Color GroupID ValidID)) {
             $GetParam{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
         }
 
         my %Error;
 
         # check needed stuff
-        for my $Needed (qw(CalendarID CalendarName GroupID)) {
+        for my $Needed (qw(CalendarID CalendarName Color GroupID)) {
             if ( !$GetParam{$Needed} ) {
                 $Error{ $Needed . 'Invalid' } = 'ServerError';
                 $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
@@ -198,6 +205,7 @@ sub Run {
 
             # get selections
             my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
+            my $ColorPalette   = $Self->_ColorPaletteGet();
             my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
             $LayoutObject->Block(
@@ -205,9 +213,10 @@ sub Run {
                 Data => {
                     %Error,
                     %GetParam,
-                    GroupID   => $GroupSelection,
-                    ValidID   => $ValidSelection,
-                    Subaction => 'Update',
+                    GroupID      => $GroupSelection,
+                    ColorPalette => $ColorPalette,
+                    ValidID      => $ValidSelection,
+                    Subaction    => 'Update',
                 },
             );
             return $Self->_Mask(%Param);
@@ -344,6 +353,16 @@ sub _GroupSelectionGet {
     );
 
     return $GroupSelection;
+}
+
+sub _ColorPaletteGet {
+    my ( $Self, %Param ) = @_;
+
+    # get color palette
+    my $CalendarColors = $Kernel::OM->Get('Kernel::Config')->Get('AppointmentCalendar::CalendarColors') ||
+        [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
+
+    return $CalendarColors;
 }
 
 sub _ValidSelectionGet {

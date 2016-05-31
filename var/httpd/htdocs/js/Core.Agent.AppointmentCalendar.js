@@ -796,7 +796,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Register change event handler
         $CalendarSwitch.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            if ($('.CalendarColorSwatch input:checked').length > CalendarLimit) {
+            if ($('.CalendarSwitch input:checked').length > CalendarLimit) {
                 $CalendarSwitch.prop('checked', false);
                 Core.UI.Dialog.ShowAlert(Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsHeadline'), Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsText'));
             } else {

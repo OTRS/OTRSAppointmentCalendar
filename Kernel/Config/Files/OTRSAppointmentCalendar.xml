@@ -156,7 +156,9 @@
                 </NavBar>
                 <Loader>
                     <CSS>Core.AppointmentCalendar.Manage.css</CSS>
+                    <CSS>thirdparty/spectrum-1.8.0/spectrum.css</CSS>
                     <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/spectrum-1.8.0/spectrum.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -230,7 +232,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::CalendarColors" Required="0" Valid="1">
-        <Description Translatable="1">List of colors in hexadecimal RGB which will be allocated to different user calendars. Make sure the colors are dark enough so white text can be overlayed on them. If the number of calendars exceeds the number of colors, the list will be reused from the start.</Description>
+        <Description Translatable="1">List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar</SubGroup>
         <Setting>

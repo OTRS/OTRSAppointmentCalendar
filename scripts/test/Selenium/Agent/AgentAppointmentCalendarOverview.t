@@ -151,24 +151,28 @@ $Selenium->RunTest(
         # create a few test calendars
         my %Calendar1 = $CalendarObject->CalendarCreate(
             CalendarName => "My Calendar $RandomID",
+            Color        => '#3A87AD',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar2 = $CalendarObject->CalendarCreate(
             CalendarName => "Another Calendar $RandomID",
+            Color        => '#EC9073',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar3 = $CalendarObject->CalendarCreate(
             CalendarName => "Yet Another Calendar $RandomID",
+            Color        => '#6BAD54',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar4 = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar for permissions check $RandomID",
+            Color        => '#78A7FC',
             GroupID      => $GroupID2,
             UserID       => 1,
             ValidID      => 1,
