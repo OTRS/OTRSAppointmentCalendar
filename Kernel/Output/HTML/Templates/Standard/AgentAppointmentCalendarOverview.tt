@@ -152,7 +152,9 @@ Core.Agent.AppointmentCalendar.Init({
         month: [% Translate("Month") | JSON %],
         week: [% Translate("Week") | JSON %],
         day: [% Translate("Day") | JSON %],
-        timelineWeek: [% Translate("Timeline") | JSON %],
+        timelineMonth: [% Translate("Timeline Month") | JSON %],
+        timelineWeek: [% Translate("Timeline Week") | JSON %],
+        timelineDay: [% Translate("Timeline Day") | JSON %],
         jump:[% Translate("Jump") | JSON %],
         prevDatepicker: [% Translate("Previous") | JSON %],
         nextDatepicker: [% Translate("Next") | JSON %]
@@ -160,7 +162,7 @@ Core.Agent.AppointmentCalendar.Init({
     FirstDay: [% Data.FirstDay | html %],
     DefaultView: [% Data.DefaultView | JSON %],
     Header: {
-        left: 'month,agendaWeek,agendaDay timelineWeek',
+        left: 'month,agendaWeek,agendaDay timelineMonth,timelineWeek,timelineDay',
         center: 'title',
         right: 'jump,today prev,next'
     },
