@@ -49,7 +49,7 @@
     }
 
     .AllDay:before {
-        content: "\f185";
+        content: "\F185";
         float: right;
         font: normal normal normal 13px/1 FontAwesome;
         margin-right: 2px;
@@ -59,7 +59,7 @@
     }
 
     .RecurringParent:before {
-        content: "\f01e";
+        content: "\F01E";
         float: right;
         font: normal normal normal 13px/1 FontAwesome;
         margin-right: 2px;
@@ -69,7 +69,7 @@
     }
 
     .RecurringChild:before {
-        content: "\f0c1";
+        content: "\F0C1";
         float: right;
         font: normal normal normal 13px/1 FontAwesome;
         margin-right: 2px;
@@ -85,9 +85,9 @@
     }
 
     .fc button {
-        background: #eee;
-        border: 1px solid #ccc;
-        border-bottom: 1px solid #bbb;
+        background: #EEE;
+        border: 1px solid #CCC;
+        border-bottom: 1px solid #BBB;
         display: inline-block;
         transition: all ease-in 0.2s;
     	margin: 0;
@@ -117,8 +117,8 @@
     .AppointmentTooltip {
         position: absolute;
         z-index: 1000;
-        background-color: #fff;
-        border: 1px solid #ccc;
+        background-color: #FFF;
+        border: 1px solid #CCC;
         width: 375px;
         padding: 5px;
     }
@@ -199,7 +199,7 @@
     }
 
     .fc-agenda-view th.fc-resource-cell {
-        color: #4b4b4b;
+        color: #4B4B4B;
         font-size: 11px;
         text-transform: uppercase;
         vertical-align: baseline;
@@ -223,7 +223,7 @@
     .fc-state-down,
     .fc-state-active,
     .fc-state-disabled {
-        background-color: #e5e5e5 !important;
+        background-color: #E5E5E5 !important;
         border-color: #999 !important;
     }
 
@@ -242,7 +242,7 @@
     }
 
     .fc-view table thead.fc-head {
-        background: #eeeeee;
+        background: #EEEEEE;
     }
 
     .fc-view table thead.fc-head th.fc-widget-header {
@@ -259,6 +259,10 @@
     .fc-widget-header .fc-following {
         text-transform: uppercase;
         padding-top: 1px !important;
+    }
+
+    .fc-week-number {
+        color: #B0B0B0 !important;
     }
 
     .fc-resource-area ~ .fc-time-area .fc-following {
