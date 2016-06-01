@@ -1758,6 +1758,55 @@ sub AppointmentUpcomingGet {
     return \%UpcomingAppointment;
 }
 
+=item AppointmentFutureTasksDelete()
+
+Delete all calendar appointment future tasks.
+
+    my $Success = $AppointmentObject->AppointmentFutureTasksDelete();
+
+returns:
+
+    True if future task deletion was successful, otherwise false.
+
+=cut
+
+sub AppointmentFutureTasksDelete {
+    my ( $Self, %Param ) = @_;
+
+    # get a local scheduler db object
+    my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+
+    # get a list of already stored future tasks
+    my @FutureTaskList = $SchedulerDBObject->FutureTaskList(
+        Type => 'CalendarAppointment',
+    );
+
+    # flush obsolete future tasks
+    if ( IsArrayRefWithData( \@FutureTaskList ) ) {
+
+        FUTURETASK:
+        for my $FutureTask (@FutureTaskList) {
+
+            next FUTURETASK if !$FutureTask;
+            next FUTURETASK if !IsHashRefWithData($FutureTask);
+
+            my $Success = $SchedulerDBObject->FutureTaskDelete(
+                TaskID => $FutureTask->{TaskID},
+            );
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Could not delete future task with id $FutureTask->{TaskID}!",
+                );
+                return;
+            }
+        }
+    }
+
+    return 1;
+}
+
 =item AppointmentFutureTasksUpdate()
 
 Update OTRS daemon future task list for upcoming appointments.
@@ -1854,26 +1903,14 @@ sub AppointmentFutureTasksUpdate {
     }
 
     # flush obsolete future tasks
-    if ( IsArrayRefWithData( \@FutureTaskList ) ) {
+    my $Success = $Self->AppointmentFutureTasksDelete();
 
-        FUTURETASK:
-        for my $FutureTask (@FutureTaskList) {
-
-            next FUTURETASK if !$FutureTask;
-            next FUTURETASK if !IsHashRefWithData($FutureTask);
-
-            my $Success = $SchedulerDBObject->FutureTaskDelete(
-                TaskID => $FutureTask->{TaskID},
-            );
-
-            if ( !$Success ) {
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => "Could not delete future task with id $FutureTask->{TaskID}!",
-                );
-                return;
-            }
-        }
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Could not delete appointment future tasks!',
+        );
+        return;
     }
 
     # schedule new future tasks for notification actions
