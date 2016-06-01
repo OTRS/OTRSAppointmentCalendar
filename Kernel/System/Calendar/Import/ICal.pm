@@ -609,7 +609,7 @@ sub Import {
                 # add links
                 for my $PluginData ( @{ $LinkedObjects{$PluginKey} } ) {
                     my $LinkSuccess = $PluginObject->PluginLinkAdd(
-                        AppointmentID => $Appointment{AppointmentID},
+                        AppointmentID => $Success,
                         PluginKey     => $PluginKey,
                         PluginData    => $PluginData,
                         UserID        => $Param{UserID},
@@ -619,7 +619,7 @@ sub Import {
                         $Kernel::OM->Get('Kernel::System::Log')->Log(
                             Priority => 'error',
                             Message =>
-                                "Unable to create object link (AppointmentID=$Appointment{AppointmentID} - $PluginKey=$PluginData) during calendar import!"
+                                "Unable to create object link (AppointmentID=$Success - $PluginKey=$PluginData) during calendar import!"
                         );
                     }
                 }

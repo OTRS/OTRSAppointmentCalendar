@@ -23,6 +23,8 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    $Self->{OverviewScreen} = 'ResourceOverview';
+
     return $Self;
 }
 
@@ -91,8 +93,27 @@ sub Run {
 
             if ( scalar keys %TeamUserList > 0 ) {
 
-                # get config object
+                # get needed objects
                 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+                my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+                # new appointment dialog
+                if ( $Self->{Subaction} eq 'AppointmentCreate' ) {
+                    $Param{AppointmentCreate} = $LayoutObject->JSONEncode(
+                        Data => {
+                            Start     => $ParamObject->GetParam( Param => 'Start' )     // undef,
+                            End       => $ParamObject->GetParam( Param => 'End' )       // undef,
+                            PluginKey => $ParamObject->GetParam( Param => 'PluginKey' ) // undef,
+                            Search    => $ParamObject->GetParam( Param => 'Search' )    // undef,
+                            ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' )  // undef,
+                        },
+                    );
+                }
+
+                # edit appointment dialog
+                else {
+                    $Param{AppointmentID} = $ParamObject->GetParam( Param => 'AppointmentID' ) // undef;
+                }
 
                 $LayoutObject->Block(
                     Name => 'CalendarDiv',
@@ -106,13 +127,30 @@ sub Run {
                     Name => 'CalendarWidget',
                 );
 
+                # get user preferences
+                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                    UserID => $Self->{UserID},
+                );
+
                 my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+                my $CalendarSelection = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                    Data => $Preferences{ 'User' . $Self->{OverviewScreen} . 'CalendarSelection' } || '[]',
+                );
 
                 my $CurrentCalendar = 1;
                 for my $Calendar (@Calendars) {
 
+                    # check the calendar if stored in preferences
+                    if ( scalar @{$CalendarSelection} ) {
+                        if ( grep { $_ == $Calendar->{CalendarID} } @{$CalendarSelection} ) {
+                            $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                        }
+                    }
+
                     # check calendar by default if limit is not yet reached
-                    $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                    else {
+                        $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                    }
 
                     # calendar checkbox in the widget
                     $LayoutObject->Block(
@@ -147,13 +185,9 @@ sub Run {
                     },
                 );
 
-                # get user preferences
-                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
-                    UserID => $Self->{UserID},
-                );
-
                 # set initial view
-                $Param{DefaultView} = $Preferences{UserResourceOverviewDefaultView} // 'timelineWeek';
+                $Param{DefaultView} = $Preferences{ 'User' . $Self->{OverviewScreen} . 'DefaultView' }
+                    || 'timelineWeek';
 
                 # get plugin list
                 $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
@@ -181,9 +215,6 @@ sub Run {
 
                     $CurrentAppointment++;
                 }
-
-                # auto open appointment
-                $Param{AppointmentID} = $ParamObject->GetParam( Param => 'AppointmentID' ) // undef;
             }
 
             # show empty team message
@@ -303,7 +334,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

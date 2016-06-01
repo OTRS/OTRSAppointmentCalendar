@@ -154,6 +154,13 @@ $Selenium->RunTest(
         # enter title
         $Selenium->find_element( 'Title', 'name' )->send_keys('Task');
 
+        # select calendar
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+
         # click on Save
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
 

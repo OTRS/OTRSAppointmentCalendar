@@ -233,9 +233,13 @@ sub PluginLinkDelete {
 search for plugin objects
 
     my $ResultList = $PluginObject->PluginSearch(
-        Search    => $Search,
-        PluginKey => $PluginKey,
-        UserID    => $Self->{UserID},
+        PluginKey => $PluginKey,        # (required)
+
+        Search    => $Search,           # (required) Search string
+                                        # or
+        ObjectID  => $ObjectID          # (required) Object ID
+
+        UserID    => $Self->{UserID},   # (required)
     );
 
 =cut
@@ -244,14 +248,21 @@ sub PluginSearch {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Search PluginKey UserID)) {
+    for (qw(PluginKey UserID)) {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $_!",
             );
             return;
         }
+    }
+    if ( !$Param{Search} && !$Param{ObjectID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need either Search or ObjectID!',
+        );
+        return;
     }
 
     my $ResultList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->Search(

@@ -233,7 +233,57 @@ Core.Agent.AppointmentCalendar.Init({
         }
 [% RenderBlockEnd("ResourceJSON") %]
     },
-    AppointmentID: [% Data.AppointmentID | JSON %],
+    Appointment: {
+        AppointmentCreate: [% Data.AppointmentCreate || "null" %],
+        AppointmentID: [% Data.AppointmentID | JSON %],
+    },
+    Calendars: {
+        Sources: {
+[% RenderBlockStart("CalendarSource") %]
+            [% Data.CalendarID | JSON %]: {
+                url: Core.Config.Get('CGIHandle'),
+                type: 'POST',
+                data: {
+                    ChallengeToken: $("#ChallengeToken").val(),
+                    Action: 'AgentAppointmentList',
+                    Subaction: 'ListAppointments',
+                    CalendarID: [% Data.CalendarID | JSON %],
+                    TeamID: [% Data.Team | JSON %]
+                },
+                color: [% Data.Color | JSON %],
+                startParam: 'StartTime',
+                endParam: 'EndTime',
+
+                // workaround for removeEventSource
+                googleCalendarId: [% Data.CalendarID | JSON %],
+                eventDataTransform: function(AppointmentData) {
+                    return {
+                        id: AppointmentData.AppointmentID,
+                        parentId: AppointmentData.ParentID,
+                        start: AppointmentData.StartTime,
+                        end: AppointmentData.EndTime,
+                        title: AppointmentData.Title,
+                        description: AppointmentData.Description,
+                        location: AppointmentData.Location,
+                        calendarId: AppointmentData.CalendarID,
+                        allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
+                        recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
+                        teamIds: AppointmentData.TeamID,
+                        teamNames: AppointmentData.TeamNames,
+                        resourceIds: AppointmentData.ResourceID,
+                        resourceNames: AppointmentData.ResourceNames,
+                        pluginData: AppointmentData.PluginData
+                    };
+                }
+            }
+[% RenderBlockStart("CalendarSourceComma") %]
+            ,
+[% RenderBlockEnd("CalendarSourceComma") %]
+[% RenderBlockEnd("CalendarSource") %]
+        },
+        Switches: $('.CalendarSwitch input[type="checkbox"]'),
+        Limit: [% Config("AppointmentCalendar::CalendarLimitOverview") || 10 %]
+    },
     WorkingHours: [
 [% RenderBlockStart("WorkingHours") %]
         {
@@ -250,54 +300,6 @@ Core.Agent.AppointmentCalendar.Init({
 [% RenderBlockEnd("WorkingHoursComma") %]
 [% RenderBlockEnd("WorkingHours") %]
     ]
-});
-
-var EventSources = {
-[% RenderBlockStart("CalendarSource") %]
-    [% Data.CalendarID | JSON %]: {
-        url: Core.Config.Get('CGIHandle'),
-        type: 'POST',
-        data: {
-            ChallengeToken: $("#ChallengeToken").val(),
-            Action: 'AgentAppointmentList',
-            Subaction: 'ListAppointments',
-            CalendarID: [% Data.CalendarID | JSON %],
-            TeamID: [% Data.Team | JSON %]
-        },
-        color: [% Data.Color | JSON %],
-        startParam: 'StartTime',
-        endParam: 'EndTime',
-
-        // workaround for removeEventSource
-        googleCalendarId: [% Data.CalendarID | JSON %],
-        eventDataTransform: function(AppointmentData) {
-            return {
-                id: AppointmentData.AppointmentID,
-                parentId: AppointmentData.ParentID,
-                start: AppointmentData.StartTime,
-                end: AppointmentData.EndTime,
-                title: AppointmentData.Title,
-                description: AppointmentData.Description,
-                location: AppointmentData.Location,
-                calendarId: AppointmentData.CalendarID,
-                allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
-                recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
-                teamIds: AppointmentData.TeamID,
-                teamNames: AppointmentData.TeamNames,
-                resourceIds: AppointmentData.ResourceID,
-                resourceNames: AppointmentData.ResourceNames,
-                pluginData: AppointmentData.PluginData
-            };
-        }
-    }
-[% RenderBlockStart("CalendarSourceComma") %]
-    ,
-[% RenderBlockEnd("CalendarSourceComma") %]
-[% RenderBlockEnd("CalendarSource") %]
-};
-
-$('.CalendarSwitch input[type="checkbox"]').each(function(Index, Element) {
-    Core.Agent.AppointmentCalendar.CalendarSwitchInit($(this), EventSources, [% Config("AppointmentCalendar::CalendarLimitOverview") || 10 %]);
 });
 
 $('#Team').on('change', function() {

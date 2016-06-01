@@ -128,6 +128,20 @@ sub Run {
                 AppointmentID => $GetParam{AppointmentID},
             );
 
+            # non-existent appointment
+            if ( !$Appointment{AppointmentID} ) {
+                my $Output = $LayoutObject->Error(
+                    Message => Translatable('Appointment not found!'),
+                );
+                return $LayoutObject->Attachment(
+                    NoCache     => 1,
+                    ContentType => 'text/html',
+                    Charset     => $LayoutObject->{UserCharset},
+                    Content     => $Output,
+                    Type        => 'inline',
+                );
+            }
+
             # check permissions
             $Permissions = $CalendarObject->CalendarPermissionGet(
                 CalendarID => $Appointment{CalendarID},
@@ -307,7 +321,7 @@ sub Run {
             Name         => 'CalendarID',
             Multiple     => 0,
             Class        => 'Modernize Validate_Required',
-            PossibleNone => 0,
+            PossibleNone => 1,
             Disabled     => $Permissions
                 && ( $PermissionLevel{$Permissions} < 3 ) ? 1 : 0,    # disable if permissions are below create
         );
@@ -591,7 +605,40 @@ sub Run {
         # get plugin list
         $Param{PluginList} = $PluginObject->PluginList();
 
-        if ( $GetParam{AppointmentID} ) {
+        # new appointment plugin search
+        if ( $GetParam{PluginKey} && ( $GetParam{Search} || $GetParam{ObjectID} ) ) {
+
+            if ( grep { $_ eq $GetParam{PluginKey} } keys %{ $Param{PluginList} } ) {
+
+                # search using plugin
+                my $ResultList = $PluginObject->PluginSearch(
+                    %GetParam,
+                    UserID => $Self->{UserID},
+                );
+
+                $Param{PluginData}->{ $GetParam{PluginKey} } = [];
+                my @LinkArray = sort keys %{$ResultList};
+
+                # add possible links
+                for my $LinkID (@LinkArray) {
+                    push @{ $Param{PluginData}->{ $GetParam{PluginKey} } }, {
+                        LinkID   => $LinkID,
+                        LinkName => $ResultList->{$LinkID},
+                        LinkURL  => sprintf(
+                            $Param{PluginList}->{ $GetParam{PluginKey} }->{PluginURL},
+                            $LinkID
+                        ),
+                    };
+                }
+
+                $Param{PluginList}->{ $GetParam{PluginKey} }->{LinkList} = $LayoutObject->JSONEncode(
+                    Data => \@LinkArray,
+                );
+            }
+        }
+
+        # edit appointment plugin links
+        elsif ( $GetParam{AppointmentID} ) {
 
             for my $PluginKey ( sort keys %{ $Param{PluginList} } ) {
                 my $LinkList = $PluginObject->PluginLinkList(
@@ -1026,12 +1073,20 @@ sub Run {
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'UpdatePreferences' ) {
 
-        if ( $GetParam{OverviewScreen} && $GetParam{CurrentView} ) {
+        if ( $GetParam{OverviewScreen} && ( $GetParam{DefaultView} || $GetParam{CalendarSelection} ) ) {
+
+            my $PreferenceKey;
+            if ( $GetParam{DefaultView} ) {
+                $PreferenceKey = 'DefaultView';
+            }
+            elsif ( $GetParam{CalendarSelection} ) {
+                $PreferenceKey = 'CalendarSelection';
+            }
 
             # set user preferences
             my $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
-                Key    => 'User' . $GetParam{OverviewScreen} . 'DefaultView',
-                Value  => $GetParam{CurrentView},
+                Key    => 'User' . $GetParam{OverviewScreen} . $PreferenceKey,
+                Value  => $GetParam{$PreferenceKey},
                 UserID => $Self->{UserID},
             );
 
