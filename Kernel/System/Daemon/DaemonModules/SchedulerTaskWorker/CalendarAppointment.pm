@@ -14,11 +14,8 @@ use warnings;
 use base qw(Kernel::System::Daemon::DaemonModules::BaseTaskWorker);
 
 our @ObjectDependencies = (
-    'Kernel::Config',
-    'Kernel::System::Daemon::SchedulerDB',
-    'Kernel::System::GenericAgent',
     'Kernel::System::Log',
-    'Kernel::System::Time',
+    'Kernel::System::Calendar::Appointment',
 );
 
 =head1 NAME
@@ -64,12 +61,16 @@ performs the selected task.
         TaskName => 'some name',    # optional
         Data     => {               # appointment id as got from Kernel::System::Calendar::Appointment::AppointmentGet()
             AppointmentID => 123,
+            ParentID      => 234,
+            CalendarID    => 345,
+            StartTime     => '2016-08-02 03:59:00',
+            EndTime       => '2016-08-12 03:59:00',
         },
     );
 
 Returns:
 
-    $Result =  1;       # or fail in case of an error
+    $Result = 1;       # or fail in case of an error
 
 =cut
 
@@ -79,82 +80,24 @@ sub Run {
     # check task params
     my $CheckResult = $Self->_CheckTaskParams(
         %Param,
-        NeededDataAttributes => ['AppointmentID'],
+        NeededDataAttributes => [ 'AppointmentID', 'CalendarID', 'StartTime', 'EndTime' ],
     );
 
     # stop execution if an error in params is detected
     return if !$CheckResult;
 
-    # skip if job is not valid
-    return if !$Param{Data}->{Valid};
+    # get a local appointment
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
-    my %Job = %{ $Param{Data} };
-
-    my $StartSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
-
-    # check if last run was less than 1 minute ago
-    if (
-        $Job{ScheduleLastRunUnixTime}
-        && $StartSystemTime - $Job{ScheduleLastRunUnixTime} < 60
-        )
-    {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "GenericAgent Job: $Job{Name}, was already executed less than 1 minute ago!",
-        );
-        return;
-    }
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    my $TicketLimit = $ConfigObject->Get('Daemon::SchedulerGenericAgentTaskManager::TicketLimit') || 0;
-    my $SleepTime   = $ConfigObject->Get('Daemon::SchedulerGenericAgentTaskManager::SleepTime')   || 0;
-
-    my $Success;
-    my $ErrorMessage;
-
-    if ( $Self->{Debug} ) {
-        print "    $Self->{WorkerName} executes task: $Param{TaskName}\n";
-    }
-
-    do {
-
-        # localize the standard error, everything will be restored after the eval block
-        local *STDERR;
-
-        # redirect the standard error to a variable
-        open STDERR, ">>", \$ErrorMessage;
-
-        $Success = $Kernel::OM->Get('Kernel::System::GenericAgent')->JobRun(
-            Job       => $Job{Name},
-            Limit     => $TicketLimit,
-            SleepTime => $SleepTime,
-            UserID    => 1,
-        );
-    };
-
-    # get current system time (as soon as the job finish to run)
-    my $EndSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
+    # trigger the appointment notification
+    my $Success = $AppointmentObject->AppointmentUpcomingNotify( %{ $Param{Data} } );
 
     if ( !$Success ) {
-
-        $ErrorMessage ||= "$Job{Name} execution failed without an error message!";
-
-        $Self->_HandleError(
-            TaskName     => $Job{Name},
-            TaskType     => 'GenericAgent',
-            LogMessage   => "There was an error executing $Job{Name}: $ErrorMessage",
-            ErrorMessage => "$ErrorMessage",
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not trigger appointment notification for AppointmentID $Param{Data}->{AppointmentID}!",
         );
     }
-
-    # update worker task
-    $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->RecurrentTaskWorkerInfoSet(
-        LastWorkerTaskID      => $Param{TaskID},
-        LastWorkerStatus      => $Success,
-        LastWorkerRunningTime => $EndSystemTime - $StartSystemTime,
-    );
 
     return $Success;
 }
