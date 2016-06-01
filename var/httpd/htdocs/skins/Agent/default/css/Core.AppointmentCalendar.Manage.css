@@ -11,87 +11,92 @@
 
 @media screen,projection,tv,handheld {
 
-.WidgetSimple fieldset.Separated {
-    background-color: #E9E9E9;
-    border: 1px solid #CCCCCC;
-    margin: 9px 0;
-    padding: 4px;
-}
+    .WidgetSimple fieldset.Separated {
+        background-color: #E9E9E9;
+        border: 1px solid #CCCCCC;
+        margin: 9px 0;
+        padding: 4px;
+    }
 
-.InlineButton {
-    background: transparent;
-    cursor: pointer;
-    border: none;
-    padding: 0;
-}
+    .InlineButton {
+        background: transparent;
+        cursor: pointer;
+        border: none;
+        padding: 0;
+    }
 
-tr.Invalid .ExportLink,
-tr.Invalid .InlineButton {
-    display: none;
-}
+    tr.Invalid .ExportLink,
+    tr.Invalid .InlineButton {
+        display: none;
+    }
 
-.Flag.Color {
-    width: 20px;
-    height: 13px;
-    border: 1px solid #222;
-}
+    .Flag.Color {
+        width: 20px;
+        height: 13px;
+        border: 1px solid #222;
+    }
 
-.Flag.Color span {
-    cursor: default;
-}
+    .Flag.Color span {
+        cursor: default;
+    }
 
-.Invalid .Flag.Color {
-    opacity: 0.3;
-}
+    .Invalid .Flag.Color {
+        opacity: 0.3;
+    }
 
-/**
- * Spectrum Color picker
- */
-.ColorPaletteButton.sp-replacer {
-    background-color: #FFF;
-    box-shadow: 1px 1px 3px #EEE inset, -1px -1px 3px #EEE inset;
-    border-color: #C0C0C0 #C9C9C9 #C9C9C9;
-    padding: 3px 4px !important;
-}
+    /**
+     * Spectrum Color picker
+     */
+    .ColorPaletteButton.sp-replacer {
+        background-color: #FFF;
+        box-shadow: 1px 1px 3px #EEE inset, -1px -1px 3px #EEE inset;
+        border-color: #C0C0C0 #C9C9C9 #C9C9C9;
+        padding: 3px 4px !important;
+    }
 
-.ColorPaletteButton.sp-replacer:hover {
-    border-color: #C0C0C0 #C9C9C9 #C9C9C9;
-}
+    .ColorPaletteButton.sp-replacer:hover {
+        border-color: #C0C0C0 #C9C9C9 #C9C9C9;
+    }
 
-.ColorPaletteButton.sp-replacer:focus,
-.ColorPaletteButton.sp-replacer.sp-active {
-    border-color: #F92;
-}
+    .ColorPaletteButton.sp-replacer:focus,
+    .ColorPaletteButton.sp-replacer.sp-active {
+        border-color: #F92;
+    }
 
-.ColorPaletteButton .sp-preview {
-    width: 20px;
-    height: 13px;
-    border: 1px solid #222;
-}
+    .ColorPaletteButton .sp-preview {
+        width: 20px;
+        height: 13px;
+        border: 1px solid #222;
+    }
 
-.ColorPaletteButton .sp-dd {
-    font-size: 9px;
-    height: 8px;
-    line-height: 8px;
-    padding: 3px 0;
-}
+    .ColorPaletteButton .sp-dd {
+        font-size: 9px;
+        height: 8px;
+        line-height: 8px;
+        padding: 3px 0;
+    }
 
-.ColorPaletteContainer.sp-container {
-    border-color: #C0C0C0 #C9C9C9 #C9C9C9;
-    background-color: #FFF;
-}
+    .ColorPaletteContainer.sp-container {
+        border-color: #C0C0C0 #C9C9C9 #C9C9C9;
+        background-color: #FFF;
+    }
 
-.ColorPaletteContainer .sp-palette-container {
-    padding: 5px 5px 295px;
-}
+    .ColorPaletteContainer .sp-palette-container {
+        padding: 5px 5px 295px;
+    }
 
-.ColorPaletteContainer .sp-palette .sp-thumb-el {
-    border-color: #4B4B4B;
-}
+    .ColorPaletteContainer .sp-palette .sp-thumb-el {
+        border-color: #4B4B4B;
+    }
 
-.ColorPaletteContainer .sp-palette .sp-thumb-el:hover,
-.ColorPaletteContainer .sp-palette .sp-thumb-el.sp-thumb-active {
-    border-color: #F92;
-}
+    .ColorPaletteContainer .sp-palette .sp-thumb-el:hover,
+    .ColorPaletteContainer .sp-palette .sp-thumb-el.sp-thumb-active {
+        border-color: #F92;
+    }
+
+    input[readonly] + .ColorPaletteButton {
+        background-color: #DDD;
+        pointer-events: none;
+    }
 
 } /* end @media */
