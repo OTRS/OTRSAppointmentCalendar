@@ -97,6 +97,7 @@
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
+        <File Permission="640" Location="var/packagesetup/OTRSAppointmentCalendar.pm"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
 
