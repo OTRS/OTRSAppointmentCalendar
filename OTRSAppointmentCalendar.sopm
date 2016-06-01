@@ -294,4 +294,21 @@
         <TableDrop Name="calendar_team_user"/>
         <TableDrop Name="calendar_team"/>
     </DatabaseUninstall>
+
+    <CodeInstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeInstall();
+    ]]></CodeInstall>
+
+    <CodeReinstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeReinstall();
+    ]]></CodeReinstall>
+
+    <CodeUpgrade Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeUpgrade();
+    ]]></CodeUpgrade>
+
+    <CodeUninstall Type="pre"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeUninstall();
+    ]]></CodeUninstall>
+
 </otrs_package>
