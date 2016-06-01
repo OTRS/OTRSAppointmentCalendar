@@ -65,12 +65,13 @@ performs the selected task.
             CalendarID    => 345,
             StartTime     => '2016-08-02 03:59:00',
             EndTime       => '2016-08-12 03:59:00',
+            Type          => 'Start'                # can be either 'Start' or 'End'
         },
     );
 
 Returns:
 
-    $Result = 1;       # or fail in case of an error
+    $Result = 1;    # or fail in case of an error
 
 =cut
 
@@ -90,7 +91,7 @@ sub Run {
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
     # trigger the appointment notification
-    my $Success = $AppointmentObject->AppointmentUpcomingNotify( %{ $Param{Data} } );
+    my $Success = $AppointmentObject->AppointmentNotification( %{ $Param{Data} } );
 
     if ( !$Success ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(

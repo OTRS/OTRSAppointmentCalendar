@@ -1693,20 +1693,29 @@ sub AppointmentSeenSet {
     return 1;
 }
 
-=item AppointmentUpcomingUpdate()
+=item AppointmentUpcomingGet()
 
-Get the next upcoming appointment data.
+Get appointment data for upcoming appointment start or end.
 
-    my $Success = $AppointmentObject->AppointmentUpcomingUpdate();
+    my %AppointmentData = $AppointmentObject->AppointmentUpcomingGet(
+        Type => 'Start', # can be either 'Start' or 'End', default: 'Start'
+    );
 
 returns:
 
-    True if future task update was successful, otherwise false.
+    Appointment data of AppointmentGet().
 
 =cut
 
-sub AppointmentUpcomingUpdate {
+sub AppointmentUpcomingGet {
     my ( $Self, %Param ) = @_;
+
+    # determine appointment type to get upcoming entry for
+    my $AppointmentType = 'start_time';
+
+    if ( lc $Param{Type} eq 'end' ) {
+        $AppointmentType = 'end_time';
+    }
 
     # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -1720,8 +1729,8 @@ sub AppointmentUpcomingUpdate {
     my $SQL = "
         SELECT id, parent_id, calendar_id, unique_id
         FROM calendar_appointment
-        WHERE DATE(start_time) >= DATE(?)
-        ORDER BY start_time";
+        WHERE DATE($AppointmentType) >= DATE(?)
+        ORDER BY $AppointmentType";
 
     # db query
     return if !$DBObject->Prepare(
@@ -1746,8 +1755,45 @@ sub AppointmentUpcomingUpdate {
         %UpcomingAppointment = $Self->AppointmentGet(%Result);
     }
 
-    return if !IsHashRefWithData( \%UpcomingAppointment );
-    return if !$UpcomingAppointment{StartTime};
+    return \%UpcomingAppointment;
+}
+
+=item AppointmentFutureTasksUpdate()
+
+Update OTRS daemon future task list for upcoming appointments.
+
+    my $Success = $AppointmentObject->AppointmentFutureTasksUpdate();
+
+returns:
+
+    True if future task update was successful, otherwise false.
+
+=cut
+
+sub AppointmentFutureTasksUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # get appointment data for upcoming appointment start and end
+    my %UpcomingAppointment = (
+        'Start' => $Self->AppointmentUpcomingGet(
+            Type => 'Start',
+        ),
+        'End' => $Self->AppointmentUpcomingGet(
+            Type => 'End',
+        ),
+    );
+
+    if (
+        !IsHashRefWithData( $UpcomingAppointment{Start} )
+        || !IsHashRefWithData( $UpcomingAppointment{End} )
+        )
+    {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not get upcoming appointment data for start and/or end-time!",
+        );
+        return;
+    }
 
     # get a local scheduler db object
     my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
@@ -1758,35 +1804,53 @@ sub AppointmentUpcomingUpdate {
     );
 
     # check if it is needed to update the future task list
-    if ( scalar @FutureTaskList == 1 ) {
+    if ( scalar @FutureTaskList == 2 ) {
 
-        # get the stored future task
-        my %StoredFutureTask = $SchedulerDBObject->FutureTaskGet(
-            TaskID => $FutureTaskList[0]->{TaskID},
-        );
+        # get a local calendar helper object
+        my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
-        if ( IsHashRefWithData( \%StoredFutureTask ) ) {
+        my $UpdateNeeded = 0;
 
-            # get a local calendar helper object
-            my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+        FUTURETASK:
+        for my $FutureTask (@FutureTaskList) {
 
-            # get unix timestamps of stored, modified and upcoming starttime to compare
-            my $StoredAppointmentStartTime = $CalendarHelperObject->SystemTimeGet(
-                String => $StoredFutureTask{Data}->{StartTime},
+            if ( !IsHashRefWithData($FutureTask) || !$FutureTask->{TaskID} ) {
+                $UpdateNeeded = 1;
+                last FUTURETASK;
+            }
+
+            # get the stored future task
+            my %FutureTaskData = $SchedulerDBObject->FutureTaskGet(
+                TaskID => $FutureTask->{TaskID},
             );
-            my $UpcomingAppointmentStartTime = $CalendarHelperObject->SystemTimeGet(
-                String => $UpcomingAppointment{StartTime},
+
+            if ( !IsHashRefWithData( \%FutureTaskData ) ) {
+                $UpdateNeeded = 1;
+                last FUTURETASK;
+            }
+
+            my $Type = $FutureTaskData{Data}->{Type};
+
+            # get unix timestamps of stored and upcoming times to compare
+            my $FutureTaskTime = $CalendarHelperObject->SystemTimeGet(
+                String => $FutureTaskData{Data}->{ $Type . 'Time' },
+            );
+            my $UpcomingAppointmentTime = $CalendarHelperObject->SystemTimeGet(
+                String => $UpcomingAppointment{$Type}->{ $Type . 'Time' },
             );
 
             # do nothing if the upcoming start time and id equals the stored values
             if (
-                $UpcomingAppointmentStartTime == $StoredAppointmentStartTime
-                && $UpcomingAppointment{AppointmentID} == $StoredFutureTask{Data}->{AppointmentID}
+                $UpcomingAppointmentTime != $FutureTaskTime
+                || $UpcomingAppointment{$Type}->{AppointmentID} != $FutureTaskData{Data}->{AppointmentID}
                 )
             {
-                return 1;
+                $UpdateNeeded = 1;
+                last FUTURETASK;
             }
         }
+
+        return 1 if !$UpdateNeeded;
     }
 
     # flush obsolete future tasks
@@ -1812,35 +1876,40 @@ sub AppointmentUpcomingUpdate {
         }
     }
 
-    # schedule new future task for notification actions
-    my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
-        ExecutionTime => $UpcomingAppointment{StartTime},
-        Type          => 'CalendarAppointment',
-        Data          => {
-            AppointmentID => $UpcomingAppointment{AppointmentID},
-            ParentID      => $UpcomingAppointment{ParentID},
-            CalendarID    => $UpcomingAppointment{CalendarID},
-            StartTime     => $UpcomingAppointment{StartTime},
-            EndTime       => $UpcomingAppointment{EndTime},
-        },
-    );
+    # schedule new future tasks for notification actions
+    for my $TaskType ( sort keys %UpcomingAppointment ) {
 
-    if ( !$TaskID ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Could not schedule future task for AppointmentID $UpcomingAppointment{AppointmentID}!",
+        my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
+            ExecutionTime => $UpcomingAppointment{$TaskType}->{ $TaskType . 'Time' },
+            Type          => 'CalendarAppointment',
+            Data          => {
+                AppointmentID => $UpcomingAppointment{$TaskType}->{AppointmentID},
+                ParentID      => $UpcomingAppointment{$TaskType}->{ParentID},
+                CalendarID    => $UpcomingAppointment{$TaskType}->{CalendarID},
+                StartTime     => $UpcomingAppointment{$TaskType}->{StartTime},
+                EndTime       => $UpcomingAppointment{$TaskType}->{EndTime},
+                Type          => $TaskType,
+            },
         );
-        return;
+
+        if ( !$TaskID ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message =>
+                    "Could not schedule future task for AppointmentID $UpcomingAppointment{$TaskType}->{AppointmentID} ! Type: $TaskType !",
+            );
+            return;
+        }
     }
 
     return 1;
 }
 
-=item AppointmentUpcomingNotify()
+=item AppointmentNotification()
 
 Get the next upcoming appointment data.
 
-    my $Success = $AppointmentObject->AppointmentUpcomingNotify();
+    my $Success = $AppointmentObject->AppointmentNotification();
 
 returns:
 
@@ -1848,7 +1917,7 @@ returns:
 
 =cut
 
-sub AppointmentUpcomingNotify {
+sub AppointmentNotification {
     my ( $Self, %Param ) = @_;
 
     return 1;

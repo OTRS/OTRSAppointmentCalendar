@@ -54,7 +54,7 @@ sub Run {
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
     # get the next upcoming appointment
-    my $Success = $AppointmentObject->AppointmentUpcomingUpdate();
+    my $Success = $AppointmentObject->AppointmentFutureTasksUpdate();
 
     if ( !$Success ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
