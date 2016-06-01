@@ -1073,12 +1073,20 @@ sub Run {
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'UpdatePreferences' ) {
 
-        if ( $GetParam{OverviewScreen} && $GetParam{CurrentView} ) {
+        if ( $GetParam{OverviewScreen} && ( $GetParam{DefaultView} || $GetParam{CalendarSelection} ) ) {
+
+            my $PreferenceKey;
+            if ( $GetParam{DefaultView} ) {
+                $PreferenceKey = 'DefaultView';
+            }
+            elsif ( $GetParam{CalendarSelection} ) {
+                $PreferenceKey = 'CalendarSelection';
+            }
 
             # set user preferences
             my $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
-                Key    => 'User' . $GetParam{OverviewScreen} . 'DefaultView',
-                Value  => $GetParam{CurrentView},
+                Key    => 'User' . $GetParam{OverviewScreen} . $PreferenceKey,
+                Value  => $GetParam{$PreferenceKey},
                 UserID => $Self->{UserID},
             );
 

@@ -68,9 +68,17 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Object} Params.Appointment - Object with appointment screen related data (optional).
-     * @param {Boolean} Params.Appointment.AppointmentCreate - Auto open appointment create screen (optional).
+     * @param {Object} Params.Appointment.AppointmentCreate - Auto open appointment create screen parameters (optional).
+     * @param {String} Params.Appointment.AppointmentCreate.Start - Start date of new appointment (moment ready).
+     * @param {String} Params.Appointment.AppointmentCreate.End - End date of new appointment (moment ready).
+     * @param {String} Params.Appointment.AppointmentCreate.PluginKey - Name of the plugin module to use.
+     * @param {String} Params.Appointment.AppointmentCreate.Search - Search string for the plugin module search.
+     * @param {String} Params.Appointment.AppointmentCreate.ObjectID - Object ID for the plugin module search.
      * @param {Integer} Params.Appointment.AppointmentID - Auto open appointment edit screen with specified appointment (optional).
-     * @param {Object} Params.Appointment.Plugin -
+     * @param {Object} Params.Calendars - Object with calendar parameters.
+     * @param {Array} Params.Calendars.Sources - Array of calendar sources.
+     * @param {jQueryObjects} Params.Calendars.Switches - Array of calendar switch elements.
+     * @param {jQueryObjects} Params.Calendars.Limit - Maximum number of active calendar switches.
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -187,11 +195,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Core.AJAX.FunctionCall(
                         Core.Config.Get('CGIHandle'),
                         {
-                            ChallengeToken: $("#ChallengeToken").val(),
+                            ChallengeToken: $('#ChallengeToken').val(),
                             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
                             Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
                             OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
-                            CurrentView: View.name
+                            DefaultView: View.name
                         },
                         function (Response) {
                             if (!Response.Success) {
@@ -363,6 +371,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         });
 
+        Params.Calendars.Switches.each(function () {
+            CalendarSwitchInit($(this), Params);
+        });
+
         if (Params.Appointment) {
 
             // Auto open appointment create screen
@@ -455,7 +467,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         var StartTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').startOf('month'),
             EndTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').add(1, 'months').startOf('month'),
             Data = {
-                ChallengeToken: $("#ChallengeToken").val(),
+                ChallengeToken: $('#ChallengeToken').val(),
                 Action: Params.Callbacks.ListAction,
                 Subaction: Params.Callbacks.DaysSubacton,
                 StartTime: StartTime.format('YYYY-MM-DD'),
@@ -580,7 +592,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function OpenEditDialog(Params, AppointmentData) {
         var Data = {
-            ChallengeToken: $("#ChallengeToken").val(),
+            ChallengeToken: $('#ChallengeToken').val(),
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditMaskSubaction ? Params.Callbacks.EditMaskSubaction : 'EditMask',
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
@@ -679,7 +691,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function UpdateAppointment(Params, AppointmentData) {
         var Data = {
-            ChallengeToken: $("#ChallengeToken").val(),
+            ChallengeToken: $('#ChallengeToken').val(),
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditSubaction ? Params.Callbacks.EditSubaction : 'EditAppointment',
             AppointmentID: AppointmentData.CalEvent.id,
@@ -796,33 +808,86 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @private
      * @name CalendarSwitchInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
-     * @param {Object} EventSources - hash with calendar sources.
-     * @param {Integer} CalendarLimit - maximum number of active calendars.
+     * @param {Object} Params - Hash with different config options.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
+     * @param {Array} Params.OverviewScreen - Name of the screen (CalendarOverview|ResourceOverview).
+     * @param {Object} Params.Calendars - Object with calendar parameters.
+     * @param {Array} Params.Calendars.Sources - Array of calendar sources.
+     * @param {jQueryObjects} Params.Calendars.Switches - Array of calendar switch elements.
+     * @param {jQueryObjects} Params.Calendars.Limit - Maximum number of active calendar switches.
      * @description
      *      This method initializes calendar checkbox behavior and loads multiple calendars to the
      *      FullCalendar control.
      */
-    TargetNS.CalendarSwitchInit = function ($CalendarSwitch, EventSources, CalendarLimit) {
+    function CalendarSwitchInit($CalendarSwitch, Params) {
 
-        // Show/hide the calendar appointments
+        // Initialize enabled sources
         if ($CalendarSwitch.prop('checked')) {
-            $('#calendar').fullCalendar('addEventSource', EventSources[$CalendarSwitch.data('id')]);
-        } else {
-            $('#calendar').fullCalendar('removeEventSource', EventSources[$CalendarSwitch.data('id')]);
+            $('#calendar').fullCalendar('addEventSource', Params.Calendars.Sources[$CalendarSwitch.data('id')]);
         }
 
         // Register change event handler
         $CalendarSwitch.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            if ($('.CalendarSwitch input:checked').length > CalendarLimit) {
+            if ($('.CalendarSwitch input:checked').length > Params.Calendars.Limit) {
                 $CalendarSwitch.prop('checked', false);
                 Core.UI.Dialog.ShowAlert(Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsHeadline'), Core.Config.Get('AppointmentCalendarTranslationsTooManyCalendarsText'));
             } else {
-                TargetNS.CalendarSwitchInit($CalendarSwitch, EventSources, CalendarLimit);
+                CalendarSwitchSource($CalendarSwitch, Params);
             }
         });
+    }
+
+    /**
+     * @private
+     * @name CalendarSwitchSource
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $CalendarSwitch - calendar checkbox element.
+     * @param {Object} Params - Hash with different config options.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
+     * @param {Array} Params.OverviewScreen - Name of the screen (CalendarOverview|ResourceOverview).
+     * @param {Object} Params.Calendars - Object with calendar parameters.
+     * @param {Array} Params.Calendars.Sources - Array of calendar sources.
+     * @description
+     *      This method enables/disables calendar source in FullCalendar control and stores
+     *      selection to user preferences.
+     */
+    function CalendarSwitchSource($CalendarSwitch, Params) {
+        var CalendarSelection = [];
+
+        // Show/hide the calendar appointments
+        if ($CalendarSwitch.prop('checked')) {
+            $('#calendar').fullCalendar('addEventSource', Params.Calendars.Sources[$CalendarSwitch.data('id')]);
+        } else {
+            $('#calendar').fullCalendar('removeEventSource', Params.Calendars.Sources[$CalendarSwitch.data('id')]);
+        }
+
+        // Get all checked calendars
+        $.each($('.CalendarSwitch input:checked'), function (Index, Element) {
+            CalendarSelection.push($(Element).data('id'));
+        });
+
+        // Store selection in user preferences
+        Core.AJAX.FunctionCall(
+            Core.Config.Get('CGIHandle'),
+            {
+                ChallengeToken: $('#ChallengeToken').val(),
+                Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+                Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
+                OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
+                CalendarSelection: JSON.stringify(CalendarSelection)
+            },
+            function (Response) {
+                if (!Response.Success) {
+                    Core.Debug.Log('Error updating user preferences!');
+                }
+            }
+        );
     }
 
     /**
@@ -1182,7 +1247,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     var URL = Core.Config.Get('CGIHandle'),
                         CurrentAJAXNumber = ++AJAXCounter,
                         Data = {
-                            ChallengeToken: $("#ChallengeToken").val(),
+                            ChallengeToken: $('#ChallengeToken').val(),
                             Action: 'AgentAppointmentPluginSearch',
                             PluginKey: PluginKey,
                             Term: Request.term + '*',
@@ -1383,7 +1448,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         Data = {
-            ChallengeToken: $("#ChallengeToken").val(),
+            ChallengeToken: $('#ChallengeToken').val(),
             Action: "AgentAppointmentList",
             Subaction: "AppointmentsStarted",
             AppointmentIDs: AppointmentIDs

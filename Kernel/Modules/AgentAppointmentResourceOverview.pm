@@ -23,6 +23,8 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    $Self->{OverviewScreen} = 'ResourceOverview';
+
     return $Self;
 }
 
@@ -125,13 +127,30 @@ sub Run {
                     Name => 'CalendarWidget',
                 );
 
+                # get user preferences
+                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                    UserID => $Self->{UserID},
+                );
+
                 my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+                my $CalendarSelection = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                    Data => $Preferences{ 'User' . $Self->{OverviewScreen} . 'CalendarSelection' } || '[]',
+                );
 
                 my $CurrentCalendar = 1;
                 for my $Calendar (@Calendars) {
 
+                    # check the calendar if stored in preferences
+                    if ( scalar @{$CalendarSelection} ) {
+                        if ( grep { $_ == $Calendar->{CalendarID} } @{$CalendarSelection} ) {
+                            $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                        }
+                    }
+
                     # check calendar by default if limit is not yet reached
-                    $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                    else {
+                        $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                    }
 
                     # calendar checkbox in the widget
                     $LayoutObject->Block(
@@ -166,13 +185,9 @@ sub Run {
                     },
                 );
 
-                # get user preferences
-                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
-                    UserID => $Self->{UserID},
-                );
-
                 # set initial view
-                $Param{DefaultView} = $Preferences{UserResourceOverviewDefaultView} // 'timelineWeek';
+                $Param{DefaultView} = $Preferences{ 'User' . $Self->{OverviewScreen} . 'DefaultView' }
+                    || 'timelineWeek';
 
                 # get plugin list
                 $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();

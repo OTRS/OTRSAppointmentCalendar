@@ -533,16 +533,19 @@ $Selenium->RunTest(
         );
 
         # reload page
-        # go to calendar overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # hide all Calendars except Calendar4
+        # show the fourth calendar and hide all others
+        $Selenium->find_element( 'Calendar' . $Calendar4{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # click on appointment
         $Selenium->execute_script(
