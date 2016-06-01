@@ -321,7 +321,7 @@ sub Run {
             Name         => 'CalendarID',
             Multiple     => 0,
             Class        => 'Modernize Validate_Required',
-            PossibleNone => 0,
+            PossibleNone => 1,
             Disabled     => $Permissions
                 && ( $PermissionLevel{$Permissions} < 3 ) ? 1 : 0,    # disable if permissions are below create
         );

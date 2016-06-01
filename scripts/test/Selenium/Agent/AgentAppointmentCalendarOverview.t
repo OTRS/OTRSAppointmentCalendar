@@ -180,7 +180,7 @@ $Selenium->RunTest(
 
         # create a test ticket
         my $TicketID = $TicketObject->TicketCreate(
-            Title        => 'Link Ticket',
+            Title        => "Link Ticket $RandomID",
             Queue        => 'Raw',
             Lock         => 'unlock',
             Priority     => '3 normal',
@@ -264,7 +264,7 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
             ),
-            "$TicketNumber Link Ticket",
+            "$TicketNumber Link Ticket $RandomID",
             'Link ticket visible',
         );
 
@@ -321,7 +321,7 @@ $Selenium->RunTest(
             $Selenium->execute_script(
                 "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
             ),
-            "$TicketNumber Link Ticket",
+            "$TicketNumber Link Ticket $RandomID",
             'Link ticket matches',
         );
 
