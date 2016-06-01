@@ -42,6 +42,17 @@
                     <AccessKey></AccessKey>
                     <Prio>6000</Prio>
                 </NavBar>
+                <NavBar>
+                    <Description Translatable="1">Create new appointment.</Description>
+                    <Name Translatable="1">New Appointment</Name>
+                    <Link>Action=AgentAppointmentCalendarOverview;Subaction=AppointmentCreate</Link>
+                    <LinkOption></LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>8000</Prio>
+                </NavBar>
                 <Loader>
                     <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
                     <CSS>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css</CSS>

@@ -368,8 +368,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             // Auto open appointment create screen
             if (Params.Appointment.AppointmentCreate) {
                 OpenEditDialog(Params, {
-                    Start: Params.Appointment.AppointmentCreate.Start ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.Start) : $.fullCalendar.moment(),
-                    End: Params.Appointment.AppointmentCreate.End ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.End) : $.fullCalendar.moment().add(1, 'hours'),
+                    Start: Params.Appointment.AppointmentCreate.Start ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.Start) : $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
+                    End: Params.Appointment.AppointmentCreate.End ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.End) : $.fullCalendar.moment().add(2, 'hours').startOf('hour'),
                     PluginKey: Params.Appointment.AppointmentCreate.PluginKey ? Params.Appointment.AppointmentCreate.PluginKey : null,
                     Search: Params.Appointment.AppointmentCreate.Search ? Params.Appointment.AppointmentCreate.Search : null,
                     ObjectID: Params.Appointment.AppointmentCreate.ObjectID ? Params.Appointment.AppointmentCreate.ObjectID : null
