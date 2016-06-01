@@ -145,10 +145,13 @@ sub LinkList {
 
 =item Search()
 
-search for supplied ticket number or title and return a hash of found tickets
+search for ticket and return a hash of found tickets
 
     my $ResultList = $TicketPluginObject->Search(
-        Search => '**',
+        Search   => '**',   # search by ticket number or title
+                            # or
+        ObjectID => 1,      # search by ticket ID (single result)
+
         UserID => 1,
     );
 
@@ -158,7 +161,7 @@ sub Search {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Search UserID)) {
+    for (qw(UserID)) {
         if ( !$Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -167,23 +170,43 @@ sub Search {
             return;
         }
     }
+    if ( !$Param{Search} && !$Param{ObjectID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need either Search or ObjectID!',
+        );
+        return;
+    }
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
 
-    # search the tickets by ticket number
-    my @TicketIDs = $TicketObject->TicketSearch(
-        TicketNumber => $Param{Search},
-        Limit        => 100,
-        Result       => 'ARRAY',
-        ArchiveFlags => ['n'],
-        UserID       => $Param{UserID},
-    );
+    my @TicketIDs;
+    if ( $Param{Search} ) {
 
-    # try the title search if no results were found
-    if ( !@TicketIDs ) {
+        # search the tickets by ticket number
         @TicketIDs = $TicketObject->TicketSearch(
-            Title        => '%' . $Param{Search},
+            TicketNumber => $Param{Search},
+            Limit        => 100,
+            Result       => 'ARRAY',
+            ArchiveFlags => ['n'],
+            UserID       => $Param{UserID},
+        );
+
+        # try the title search if no results were found
+        if ( !@TicketIDs ) {
+            @TicketIDs = $TicketObject->TicketSearch(
+                Title        => '%' . $Param{Search},
+                Limit        => 100,
+                Result       => 'ARRAY',
+                ArchiveFlags => ['n'],
+                UserID       => $Param{UserID},
+            );
+        }
+    }
+    elsif ( $Param{ObjectID} ) {
+        @TicketIDs = $TicketObject->TicketSearch(
+            TicketID     => $Param{ObjectID},
             Limit        => 100,
             Result       => 'ARRAY',
             ArchiveFlags => ['n'],

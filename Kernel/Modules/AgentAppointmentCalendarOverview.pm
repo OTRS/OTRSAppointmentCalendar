@@ -45,8 +45,27 @@ sub Run {
     # check if we found some
     if (@Calendars) {
 
-        # get config object
+        # get needed objects
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+        my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+
+        # new appointment dialog
+        if ( $Self->{Subaction} eq 'AppointmentCreate' ) {
+            $Param{AppointmentCreate} = $LayoutObject->JSONEncode(
+                Data => {
+                    Start     => $ParamObject->GetParam( Param => 'Start' )     // undef,
+                    End       => $ParamObject->GetParam( Param => 'End' )       // undef,
+                    PluginKey => $ParamObject->GetParam( Param => 'PluginKey' ) // undef,
+                    Search    => $ParamObject->GetParam( Param => 'Search' )    // undef,
+                    ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' )  // undef,
+                },
+            );
+        }
+
+        # edit appointment dialog
+        else {
+            $Param{AppointmentID} = $ParamObject->GetParam( Param => 'AppointmentID' ) // undef;
+        }
 
         $LayoutObject->Block(
             Name => 'CalendarDiv',
@@ -126,11 +145,6 @@ sub Run {
 
             $CurrentAppointment++;
         }
-
-        # auto open appointment
-        $Param{AppointmentID} = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
-            Param => 'AppointmentID',
-        ) // undef;
     }
 
     # show no calendar found message
