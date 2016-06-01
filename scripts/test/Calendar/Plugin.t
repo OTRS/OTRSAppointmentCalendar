@@ -179,7 +179,7 @@ if ($PluginKeyTicket) {
         "AppointmentCreate() - $AppointmentID",
     );
 
-    # search the ticket via plugin
+    # search the ticket via ticket number
     my $ResultList = $PluginObject->PluginSearch(
         Search    => $TicketNumber,
         PluginKey => $PluginKeyTicket,
@@ -191,7 +191,22 @@ if ($PluginKeyTicket) {
         {
             $TicketID => "$TicketNumber Test Ticket $RandomID",
         },
-        'PluginSearch() - Search results'
+        'PluginSearch() - Search results (by ticket number)'
+    );
+
+    # search the ticket via ticket id
+    $ResultList = $PluginObject->PluginSearch(
+        ObjectID  => $TicketID,
+        PluginKey => $PluginKeyTicket,
+        UserID    => $UserID,
+    );
+
+    $Self->IsDeeply(
+        $ResultList,
+        {
+            $TicketID => "$TicketNumber Test Ticket $RandomID",
+        },
+        'PluginSearch() - Search results (by ticket ID)'
     );
 
     # link appointment with the ticket

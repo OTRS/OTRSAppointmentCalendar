@@ -233,7 +233,10 @@ Core.Agent.AppointmentCalendar.Init({
         }
 [% RenderBlockEnd("ResourceJSON") %]
     },
-    AppointmentID: [% Data.AppointmentID | JSON %],
+    Appointment: {
+        AppointmentCreate: [% Data.AppointmentCreate || "null" %],
+        AppointmentID: [% Data.AppointmentID | JSON %],
+    },
     WorkingHours: [
 [% RenderBlockStart("WorkingHours") %]
         {

@@ -184,7 +184,10 @@ Core.Agent.AppointmentCalendar.Init({
         ListAction: [% Data.ListAction | JSON %],
         DaysSubacton: [% Data.DaysSubaction | JSON %]
     },
-    AppointmentID: [% Data.AppointmentID | JSON %],
+    Appointment: {
+        AppointmentCreate: [% Data.AppointmentCreate || "null" %],
+        AppointmentID: [% Data.AppointmentID | JSON %],
+    },
     WorkingHours: [
 [% RenderBlockStart("WorkingHours") %]
         {

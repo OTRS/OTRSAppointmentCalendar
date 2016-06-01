@@ -67,7 +67,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
      * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
-     * @param {Integer} Params.AppointmentID - Auto open appointment edit screen with specified appointment.
+     * @param {Object} Params.Appointment - Object with appointment screen related data (optional).
+     * @param {Boolean} Params.Appointment.AppointmentCreate - Auto open appointment create screen (optional).
+     * @param {Integer} Params.Appointment.AppointmentID - Auto open appointment edit screen with specified appointment (optional).
+     * @param {Object} Params.Appointment.Plugin -
      * @description
      *      Initializes the appointment calendar control.
      */
@@ -360,9 +363,23 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         });
 
-        // Auto open appointment edit screen
-        if (Params.AppointmentID) {
-            OpenEditDialog(Params, { CalEvent: { id: Params.AppointmentID } });
+        if (Params.Appointment) {
+
+            // Auto open appointment create screen
+            if (Params.Appointment.AppointmentCreate) {
+                OpenEditDialog(Params, {
+                    Start: Params.Appointment.AppointmentCreate.Start ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.Start) : $.fullCalendar.moment(),
+                    End: Params.Appointment.AppointmentCreate.End ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.End) : $.fullCalendar.moment().add(1, 'hours'),
+                    PluginKey: Params.Appointment.AppointmentCreate.PluginKey ? Params.Appointment.AppointmentCreate.PluginKey : null,
+                    Search: Params.Appointment.AppointmentCreate.Search ? Params.Appointment.AppointmentCreate.Search : null,
+                    ObjectID: Params.Appointment.AppointmentCreate.ObjectID ? Params.Appointment.AppointmentCreate.ObjectID : null
+                });
+            }
+
+            // Auto open appointment edit screen
+            else if (Params.Appointment.AppointmentID) {
+                OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
+            }
         }
 
         // Check each 5 seconds
@@ -579,7 +596,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             EndMinute: !AppointmentData.CalEvent ? AppointmentData.End.minute() : null,
             AllDay: !AppointmentData.CalEvent ? (AppointmentData.End.hasTime() ? '0' : '1') : null,
             TeamID: AppointmentData.Resource ? [ AppointmentData.Resource.TeamID ] : null,
-            ResourceID: AppointmentData.Resource ? [ AppointmentData.Resource.id ] : null
+            ResourceID: AppointmentData.Resource ? [ AppointmentData.Resource.id ] : null,
+            PluginKey: AppointmentData.PluginKey ? AppointmentData.PluginKey : null,
+            Search: AppointmentData.Search ? AppointmentData.Search : null,
+            ObjectID: AppointmentData.ObjectID ? AppointmentData.ObjectID : null
         };
 
         // Make end time for all day appointments inclusive
