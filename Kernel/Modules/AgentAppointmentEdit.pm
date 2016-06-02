@@ -602,6 +602,74 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
+        my $MinutesBefore = $LayoutObject->{LanguageObject}->Translate('minutes before');
+        my $HourBefore    = $LayoutObject->{LanguageObject}->Translate('hour before');
+        my $HoursBefore   = $LayoutObject->{LanguageObject}->Translate('hours before');
+        my $DayBefore     = $LayoutObject->{LanguageObject}->Translate('day before');
+        my $DaysBefore    = $LayoutObject->{LanguageObject}->Translate('days before');
+        my $WeekBefore    = $LayoutObject->{LanguageObject}->Translate('week before');
+
+        # reminder selection
+        $Param{ReminderString} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => '0',
+                    Value => Translatable('No reminder'),
+                },
+                {
+                    Key   => 'Start',
+                    Value => "0 $MinutesBefore",
+                },
+                {
+                    Key   => '300',
+                    Value => "5 $MinutesBefore",
+                },
+                {
+                    Key   => '900',
+                    Value => "15 $MinutesBefore",
+                },
+                {
+                    Key   => '1800',
+                    Value => "30 $MinutesBefore",
+                },
+                {
+                    Key   => '3600',
+                    Value => "1 $HourBefore",
+                },
+                {
+                    Key   => '7200',
+                    Value => "2 $HoursBefore",
+                },
+                {
+                    Key   => '43200',
+                    Value => "12 $HoursBefore",
+                },
+                {
+                    Key   => '86400',
+                    Value => "1 $DayBefore",
+                },
+                {
+                    Key   => '172800',
+                    Value => "2 $DaysBefore",
+                },
+                {
+                    Key   => '604800',
+                    Value => "1 $WeekBefore",
+                },
+                {
+                    Key   => 'Custom',
+                    Value => Translatable('Custom'),
+                },
+            ],
+            SelectedID   => $SelectedRecurrenceType,
+            Name         => 'RecurrenceType',
+            Multiple     => 0,
+            Class        => 'Modernize',
+            PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
         # get plugin list
         $Param{PluginList} = $PluginObject->PluginList();
 
@@ -1204,6 +1272,6 @@ sub _DayOffetGet {
     else {
         return 1;
     }
-
 }
+
 1;

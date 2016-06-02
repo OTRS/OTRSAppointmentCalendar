@@ -292,6 +292,20 @@
             </div>
 [% END %]
         </fieldset>
+
+        <fieldset class="TableLike">
+            <legend><span>[% Translate("Reminder") | html %]</span></legend>
+            <label for="TeamID">[% Translate("Reminder") | html %]:</label>
+            <div class="Field">
+                [% Data.ReminderString %]
+            </div>
+            <div class="Clear"></div>
+            <label for="ResourceID">[% Translate("System notification") | html %]:</label>
+            <div class="Field">
+                <input type="checkbox" name="[% Data.Type | html %]" title="[% Translate("Toggle active state for %s", Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
+            </div>
+        </fieldset>
+
 [% IF Data.PluginList %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Link") | html %]</span></legend>

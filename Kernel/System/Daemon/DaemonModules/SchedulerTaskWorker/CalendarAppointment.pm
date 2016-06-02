@@ -47,7 +47,7 @@ sub new {
     bless( $Self, $Type );
 
     $Self->{Debug}      = $Param{Debug};
-    $Self->{WorkerName} = 'Worker: CalendarAppointment';
+    $Self->{WorkerName} = 'Worker: CalendarAppointmentStart';
 
     return $Self;
 }
