@@ -294,16 +294,43 @@
         </fieldset>
 
         <fieldset class="TableLike">
+
             <legend><span>[% Translate("Reminder") | html %]</span></legend>
-            <label for="TeamID">[% Translate("Reminder") | html %]:</label>
+
+            <label for="SystemNotification">[% Translate("Send system notification") | html %]:</label>
             <div class="Field">
-                [% Data.ReminderString %]
+                [% Data.SystemNotificationStrg %]
             </div>
             <div class="Clear"></div>
-            <label for="ResourceID">[% Translate("System notification") | html %]:</label>
+
+            <label for="Reminder">[% Translate("Reminder") | html %]:</label>
             <div class="Field">
-                <input type="checkbox" name="[% Data.Type | html %]" title="[% Translate("Toggle active state for %s", Data.Name) | html %]" value="[% Data.ID | html %]" [% Data.Selected %]/>
+                [% Data.ReminderStrg %]
             </div>
+            <div class="Clear"></div>
+
+            <div class="Field" id="ReminderCustomStringDiv">
+
+                <label for="Reminder">[% Translate("Relative point of time") | html %]:</label>
+
+                <div class="FieldExplanation">
+                    <input type="radio" name="ReminderCustomRelativeInput" value="Vacation" id="ReminderCustomRelativeInput" checked="checked">
+                    <input type="text" id="ReminderCustomUnitCount" name="ReminderCustomUnitCount" value="[% Data.ReminderCustomUnitCount | html %]" size="1" maxlength="2" />
+                    <div class="FieldInline">
+                        [% Data.ReminderCustomUnitsStrg %]
+                    </div>
+                    [% Data.ReminderCustomUnitsPointOfTimeStrg %]
+                </div>
+
+                <label for="Reminder">[% Translate("Date/Time") | html %]:</label>
+
+                <div class="FieldExplanation">
+                    <input type="radio" name="ReminderCustomDateTimeInput" value="Vacation" id="ReminderCustomDateTimeInput">
+                    [% Data.ReminderCustomDateTimeStrg %]
+                </div>
+            </div>
+            <div class="Clear"></div>
+
         </fieldset>
 
 [% IF Data.PluginList %]
@@ -360,6 +387,12 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDay: $('#RecurrenceUntilDay'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
+
+Core.Agent.AppointmentCalendar.ReminderInit({
+    $Reminder: $('#Reminder'),
+    $ReminderCustomStringDiv: $('#ReminderCustomStringDiv')
+});
+
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'));

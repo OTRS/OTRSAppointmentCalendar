@@ -146,6 +146,16 @@ sub Data {
     $Self->{Translation}->{'day before'} = 'Tag vorher';
     $Self->{Translation}->{'days before'} = 'Tage vorher';
     $Self->{Translation}->{'week before'} = 'Woche vorher';
+    $Self->{Translation}->{'Send system notification'} = 'Systembenachrichtigung senden';
+    $Self->{Translation}->{'No system notification'} = 'Keine Systembenachrichtigung';
+    $Self->{Translation}->{'When appointment starts'} = 'Wenn der Termin beginnt';
+    $Self->{Translation}->{'When appointment ends'} = 'Wenn der Termin endet';
+    $Self->{Translation}->{'On appointment start and end'} = 'Wenn der Termin beginnt und endet';
+    $Self->{Translation}->{'Relative point of time'} = 'Relativer Zeitpunkt';
+    $Self->{Translation}->{'before the appointment starts'} = 'bevor der Termin beginnt';
+    $Self->{Translation}->{'after the appointment has been started'} = 'nachdem der Termin begonnen hat';
+    $Self->{Translation}->{'before the appointment ends'} = 'bevor der Termin endet';
+    $Self->{Translation}->{'after the appointment has been ended'} = 'nachdem der Termin geendet hat';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'Ongoing appointments'} = 'Laufende Termine';

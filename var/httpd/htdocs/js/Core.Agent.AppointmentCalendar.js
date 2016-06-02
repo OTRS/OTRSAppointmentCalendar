@@ -1084,6 +1084,44 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @name ReminderInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {Object} Fields - Array with references to reminder fields.
+     * @param {jQueryObject} Fields.$Reminder - drop down with reminder selection.
+     * @param {jQueryObject} Fields.$ReminderCustomStringDiv - custom selection of reminder date
+     * @description
+     *      This method initializes the reminder section behavior.
+     */
+    TargetNS.ReminderInit = function (Fields) {
+
+        if (Fields.$Reminder.val() !== 'Custom') {
+
+            // hide the custom fields
+            Fields.$ReminderCustomStringDiv.hide();
+
+            // Skip validation of RecurrenceUntil fields
+//            Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
+        }
+        else {
+
+            // custom field is needed
+            Fields.$ReminderCustomStringDiv.show();
+        }
+
+        // Show/hide the start hour/minute and complete end time
+//        if ($AllDay.prop('checked')) {
+//            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true);
+//        } else {
+//            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false);
+//        }
+
+        // Register change event handler
+        Fields.$Reminder.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            TargetNS.ReminderInit(Fields);
+        });
+    }
+
+    /**
      * @name TeamInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $TeamIDObj - field with list of teams.

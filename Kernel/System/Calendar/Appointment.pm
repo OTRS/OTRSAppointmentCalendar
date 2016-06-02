@@ -1698,7 +1698,8 @@ sub AppointmentSeenSet {
 Get appointment data for upcoming appointment start or end.
 
     my %AppointmentData = $AppointmentObject->AppointmentUpcomingGet(
-        Type => 'Start', # can be either 'Start' or 'End', default: 'Start'
+        Type      => 'Start', # can be either 'Start' or 'End', default: 'Start'
+        Timestamp => '2016-08-02 03:59:00', # can be either 'Start' or 'End', default: 'Start'
     );
 
 returns:
