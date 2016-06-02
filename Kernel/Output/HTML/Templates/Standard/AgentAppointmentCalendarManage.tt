@@ -109,7 +109,7 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th class="Flags">Color</th>
+                            <th class="Flags">[% Translate("Color") | html %]</th>
                             <th>[% Translate("Group") | html %]</th>
                             <th>[% Translate("Validity") | html %]</th>
                             <th>[% Translate("Changed") | html %]</th>
