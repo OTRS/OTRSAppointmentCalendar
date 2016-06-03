@@ -109,7 +109,6 @@
                     <thead>
                         <tr>
                             <th>[% Translate("Name") | html %]</th>
-                            <th class="Flags">[% Translate("Color") | html %]</th>
                             <th>[% Translate("Group") | html %]</th>
                             <th>[% Translate("Validity") | html %]</th>
                             <th>[% Translate("Changed") | html %]</th>
@@ -123,15 +122,9 @@
                         <tr[% IF Data.ValidID != 1 %] class="Invalid"[% END %]>
                             <td>
                                 <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Edit;CalendarID=[% Data.CalendarID | uri %]">
+                                    <span class="Color" style="background-color: [% Data.Color | html %];"></span>
                                     [% Data.CalendarName | html %]
                                 </a>
-                            </td>
-                            <td class="Flags">
-                                <div class="Flag Small Color">
-                                    <span style="background-color: [% Data.Color | html %];">
-                                        <em>[% Data.Color | html %]</em>
-                                    </span>
-                                </div>
                             </td>
                             <td>[% Data.Group | html %]</td>
                             <td>[% Translate(Data.Valid) | html %]</td>
@@ -153,13 +146,13 @@
 [% RenderBlockEnd("Calendar") %]
 [% RenderBlockStart("CalendarNoDataRow") %]
                         <tr>
-                            <td colspan="8">
+                            <td colspan="7">
                                 [% Translate("No data found.") | html %]
                             </td>
                         </tr>
 [% RenderBlockEnd("CalendarNoDataRow") %]
                         <tr class="FilterMessage Hidden">
-                            <td colspan="8" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
+                            <td colspan="7" style="background-color: #fff !important;">[% Translate("No matches found.") | html %]</td>
                         </tr>
                     </tbody>
                 </table>
