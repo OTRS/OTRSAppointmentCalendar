@@ -359,8 +359,14 @@ sub _ColorPaletteGet {
     my ( $Self, %Param ) = @_;
 
     # get color palette
-    my $CalendarColors = $Kernel::OM->Get('Kernel::Config')->Get('AppointmentCalendar::CalendarColors') ||
-        [ '#3A87AD', '#EC9073', '#6BAD54', '#78A7FC', '#DFC01B', '#43B261', '#53758D' ];
+    my $CalendarColors = $Kernel::OM->Get('Kernel::Config')->Get('AppointmentCalendar::CalendarColors') || [
+        '#000000', '#1E1E1E', '#3A3A3A', '#545453', '#6E6E6E', '#878687', '#888787', '#A09FA0',
+        '#B8B8B8', '#D0D0D0', '#E8E8E8', '#FFFFFF', '#891100', '#894800', '#888501', '#458401',
+        '#028401', '#018448', '#008688', '#004A88', '#001888', '#491A88', '#891E88', '#891648',
+        '#FF2101', '#FF8802', '#FFFA03', '#83F902', '#05F802', '#03F987', '#00FDFF', '#008CFF',
+        '#002EFF', '#8931FF', '#FF39FF', '#FF2987', '#FF726E', '#FFCE6E', '#FFFB6D', '#CEFA6E',
+        '#68F96E', '#68FDFF', '#68FBD0', '#6ACFFF', '#6E76FF', '#D278FF', '#FF7AFF', '#FF7FD3',
+    ];
 
     return $CalendarColors;
 }
