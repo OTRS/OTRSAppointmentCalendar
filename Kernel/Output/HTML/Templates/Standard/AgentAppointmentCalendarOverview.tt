@@ -201,6 +201,7 @@ Core.Agent.AppointmentCalendar.Init({
                     CalendarID: [% Data.CalendarID | JSON %]
                 },
                 color: [% Data.Color | JSON %],
+                textColor: [% Data.TextColor | JSON %],
                 startParam: 'StartTime',
                 endParam: 'EndTime',
 

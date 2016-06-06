@@ -327,7 +327,7 @@ $Self->False(
     "CalendarPermissionGet #2",
 );
 
-# Ok
+# ok
 my $CalendarPermission3 = $CalendarObject->CalendarPermissionGet(
     CalendarID => $CalendarGet1{CalendarID},
     UserID     => $UserID,
@@ -336,6 +336,51 @@ $Self->Is(
     $CalendarPermission3,
     'rw',
     "CalendarPermissionGet #3",
+);
+
+# luminosity difference algorithm
+my $BestTextColor = $CalendarObject->GetTextColor(
+    Background => '#FFF',
+);
+$Self->Is(
+    $BestTextColor,
+    '#000',
+    'GetTextColor() - Background: #FFF',
+);
+
+$BestTextColor = $CalendarObject->GetTextColor(
+    Background => '#000',
+);
+$Self->Is(
+    $BestTextColor,
+    '#FFFFFF',
+    'GetTextColor() - Background: #000',
+);
+
+$BestTextColor = $CalendarObject->GetTextColor(
+    Background => '#808080',
+);
+$Self->Is(
+    $BestTextColor,
+    '#000',
+    'GetTextColor() - Background: #808080',
+);
+
+$BestTextColor = $CalendarObject->GetTextColor(
+    Background => '#797979',
+);
+$Self->Is(
+    $BestTextColor,
+    '#FFFFFF',
+    'GetTextColor() - Background: #797979',
+);
+
+$BestTextColor = $CalendarObject->GetTextColor(
+    Background => '#CCCCC',
+);
+$Self->False(
+    $BestTextColor,
+    'GetTextColor() - Background: #CCCCC (invalid)',
 );
 
 1;

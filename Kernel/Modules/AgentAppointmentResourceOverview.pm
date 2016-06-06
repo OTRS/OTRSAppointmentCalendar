@@ -161,6 +161,11 @@ sub Run {
                         },
                     );
 
+                    # calculate best text color
+                    $Param{TextColor} = $CalendarObject->GetTextColor(
+                        Background => $Calendar->{Color},
+                    ) || '#FFFFFF';
+
                     # calendar source (JSON)
                     $LayoutObject->Block(
                         Name => 'CalendarSource',
