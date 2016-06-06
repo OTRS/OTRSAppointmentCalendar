@@ -726,6 +726,7 @@ sub Run {
 
         # notification custom date selection
         $Param{NotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
+            Prefix           => 'Notification',
             Format           => 'DateInputFormatLong',
             YearPeriodPast   => $YearPeriodPast{Start},
             YearPeriodFuture => $YearPeriodFuture{Start},
@@ -830,7 +831,7 @@ sub Run {
             );
 
             # initialize datepickers for different date fields
-            for my $Prefix (qw(Start End RecurrenceUntil Reminder)) {
+            for my $Prefix (qw(Start End RecurrenceUntil Notification)) {
                 $LayoutObject->Block(
                     Name => 'DatepickerInit',
                     Data => {
