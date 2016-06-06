@@ -609,12 +609,12 @@ sub Run {
         my $DaysBefore    = $LayoutObject->{LanguageObject}->Translate('days before');
         my $WeekBefore    = $LayoutObject->{LanguageObject}->Translate('week before');
 
-        # system notification selection
-        $Param{SystemNotificationStrg} = $LayoutObject->BuildSelection(
+        # notification selection
+        $Param{NotificationStrg} = $LayoutObject->BuildSelection(
             Data => [
                 {
                     Key   => '0',
-                    Value => Translatable('No system notification'),
+                    Value => Translatable('No notification'),
                 },
                 {
                     Key   => 'Start',
@@ -661,8 +661,8 @@ sub Run {
                     Value => Translatable('Custom'),
                 },
             ],
-            SelectedID   => '0',                    # $SelectedSystemNotification
-            Name         => 'SystemNotification',
+            SelectedID   => '0',              # $SelectedNotification
+            Name         => 'Notification',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -670,8 +670,8 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # reminder custom units selection
-        $Param{SystemNotificationCustomUnitsStrg} = $LayoutObject->BuildSelection(
+        # notification custom units selection
+        $Param{NotificationCustomUnitsStrg} = $LayoutObject->BuildSelection(
             Data => [
                 {
                     Key   => 'minutes',
@@ -686,8 +686,8 @@ sub Run {
                     Value => Translatable('Days'),
                 },
             ],
-            SelectedID   => '0',                               # $SelectedSystemNotificationCustomUnits
-            Name         => 'SystemNotificationCustomUnits',
+            SelectedID   => '0',                         # $SelectedNotificationCustomUnits
+            Name         => 'NotificationCustomUnits',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -695,8 +695,8 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # reminder custom units selection
-        $Param{SystemNotificationCustomUnitsPointOfTimeStrg} = $LayoutObject->BuildSelection(
+        # notification custom units point of time selection
+        $Param{NotificationCustomUnitsPointOfTimeStrg} = $LayoutObject->BuildSelection(
             Data => [
                 {
                     Key   => 'beforestart',
@@ -715,90 +715,8 @@ sub Run {
                     Value => Translatable('after the appointment has been ended'),
                 },
             ],
-            SelectedID => '0',                                       # $SelectedSystemNotificationCustomUnitsPointOfTime
-            Name       => 'SystemNotificationCustomUnitsPointOfTime',
-            Multiple   => 0,
-            Class      => 'Modernize',
-            PossibleNone => 0,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
-        );
-
-        # start date string
-        $Param{SystemNotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
-
-            #            %GetParam,
-            #            %Appointment,
-            #            Prefix                   => 'Start',
-            #            StartHour                => $Appointment{StartHour} // $GetParam{StartHour},
-            #            StartMinute              => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Format => 'DateInputFormatLong',
-
-            #            ValidateDateBeforePrefix => 'End',
-            #            Validate                 => 1,
-            YearPeriodPast   => $YearPeriodPast{Start},
-            YearPeriodFuture => $YearPeriodFuture{Start},
-
-            # we are calculating this locally
-            OverrideTimeZone => 1,
-            Disabled         => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
-        );
-
-        # reminder selection
-        $Param{ReminderStrg} = $LayoutObject->BuildSelection(
-            Data => [
-                {
-                    Key   => '0',
-                    Value => Translatable('No reminder'),
-                },
-                {
-                    Key   => 'Start',
-                    Value => "0 $MinutesBefore",
-                },
-                {
-                    Key   => '300',
-                    Value => "5 $MinutesBefore",
-                },
-                {
-                    Key   => '900',
-                    Value => "15 $MinutesBefore",
-                },
-                {
-                    Key   => '1800',
-                    Value => "30 $MinutesBefore",
-                },
-                {
-                    Key   => '3600',
-                    Value => "1 $HourBefore",
-                },
-                {
-                    Key   => '7200',
-                    Value => "2 $HoursBefore",
-                },
-                {
-                    Key   => '43200',
-                    Value => "12 $HoursBefore",
-                },
-                {
-                    Key   => '86400',
-                    Value => "1 $DayBefore",
-                },
-                {
-                    Key   => '172800',
-                    Value => "2 $DaysBefore",
-                },
-                {
-                    Key   => '604800',
-                    Value => "1 $WeekBefore",
-                },
-                {
-                    Key   => 'Custom',
-                    Value => Translatable('Custom'),
-                },
-            ],
-            SelectedID   => '0',           # $SelectedReminder
-            Name         => 'Reminder',
+            SelectedID   => '0',                                    # $SelectedNotificationCustomUnitsPointOfTime
+            Name         => 'NotificationCustomUnitsPointOfTime',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -806,72 +724,9 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # reminder custom units selection
-        $Param{ReminderCustomUnitsStrg} = $LayoutObject->BuildSelection(
-            Data => [
-                {
-                    Key   => 'minutes',
-                    Value => Translatable('Minutes'),
-                },
-                {
-                    Key   => 'hours',
-                    Value => Translatable('Hours'),
-                },
-                {
-                    Key   => 'days',
-                    Value => Translatable('Days'),
-                },
-            ],
-            SelectedID   => '0',                     # $SelectedReminderCustomUnits
-            Name         => 'ReminderCustomUnits',
-            Multiple     => 0,
-            Class        => 'Modernize',
-            PossibleNone => 0,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
-        );
-
-        # reminder custom units selection
-        $Param{ReminderCustomUnitsPointOfTimeStrg} = $LayoutObject->BuildSelection(
-            Data => [
-                {
-                    Key   => 'beforestart',
-                    Value => Translatable('before the appointment starts'),
-                },
-                {
-                    Key   => 'afterstart',
-                    Value => Translatable('after the appointment has been started'),
-                },
-                {
-                    Key   => 'beforeend',
-                    Value => Translatable('before the appointment ends'),
-                },
-                {
-                    Key   => 'afterend',
-                    Value => Translatable('after the appointment has been ended'),
-                },
-            ],
-            SelectedID   => '0',                                # $SelectedReminderCustomUnitsPointOfTime
-            Name         => 'ReminderCustomUnitsPointOfTime',
-            Multiple     => 0,
-            Class        => 'Modernize',
-            PossibleNone => 0,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
-        );
-
-        # start date string
-        $Param{ReminderCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
-
-            #            %GetParam,
-            #            %Appointment,
-            #            Prefix                   => 'Start',
-            #            StartHour                => $Appointment{StartHour} // $GetParam{StartHour},
-            #            StartMinute              => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Format => 'DateInputFormatLong',
-
-            #            ValidateDateBeforePrefix => 'End',
-            #            Validate                 => 1,
+        # notification custom date selection
+        $Param{NotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
+            Format           => 'DateInputFormatLong',
             YearPeriodPast   => $YearPeriodPast{Start},
             YearPeriodFuture => $YearPeriodFuture{Start},
 

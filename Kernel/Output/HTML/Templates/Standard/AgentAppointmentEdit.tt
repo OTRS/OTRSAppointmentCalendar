@@ -295,66 +295,32 @@
 
         <fieldset class="TableLike">
 
-            <legend><span>[% Translate("System notification") | html %]</span></legend>
+            <legend><span>[% Translate("Notification") | html %]</span></legend>
 
-            <label for="SystemNotification">[% Translate("System notification") | html %]:</label>
+            <label for="Notification">[% Translate("Notification") | html %]:</label>
             <div class="Field">
-                [% Data.SystemNotificationStrg %]
+                [% Data.NotificationStrg %]
             </div>
             <div class="Clear"></div>
 
-            <div class="Field" id="SystemNotificationCustomStringDiv">
+            <div class="Field" id="NotificationCustomStringDiv">
 
-                <label for="SystemNotification">[% Translate("Relative point of time") | html %]:</label>
+                <label for="Notification">[% Translate("Relative point of time") | html %]:</label>
 
                 <div class="FieldExplanation">
-                    <input type="radio" name="SystemNotificationCustomRelativeInput" value="Vacation" id="SystemNotificationCustomRelativeInput" checked="checked">
-                    <input type="text" id="SystemNotificationCustomUnitCount" name="SystemNotificationCustomUnitCount" value="[% Data.SystemNotificationCustomUnitCount | html %]" size="1" maxlength="2" />
+                    <input type="radio" name="NotificationCustomRelativeInput" value="Vacation" id="NotificationCustomRelativeInput" checked="checked">
+                    <input type="text" id="NotificationCustomUnitCount" name="NotificationCustomUnitCount" value="[% Data.NotificationCustomUnitCount | html %]" size="1" maxlength="2" />
                     <div class="FieldInline">
-                        [% Data.ReminderCustomUnitsStrg %]
+                        [% Data.NotificationCustomUnitsStrg %]
                     </div>
-                    [% Data.ReminderCustomUnitsPointOfTimeStrg %]
+                    [% Data.NotificationCustomUnitsPointOfTimeStrg %]
                 </div>
 
-                <label for="SystemNotification">[% Translate("Date/Time") | html %]:</label>
+                <label for="Notification">[% Translate("Date/Time") | html %]:</label>
 
                 <div class="FieldExplanation">
-                    <input type="radio" name="SystemNotificationCustomDateTimeInput" value="Vacation" id="SystemNotificationCustomDateTimeInput">
-                    [% Data.ReminderCustomDateTimeStrg %]
-                </div>
-            </div>
-            <div class="Clear"></div>
-
-        </fieldset>
-
-        <fieldset class="TableLike">
-
-            <legend><span>[% Translate("Reminder") | html %]</span></legend>
-
-            <label for="Reminder">[% Translate("Reminder") | html %]:</label>
-            <div class="Field">
-                [% Data.ReminderStrg %]
-            </div>
-            <div class="Clear"></div>
-
-            <div class="Field" id="ReminderCustomStringDiv">
-
-                <label for="Reminder">[% Translate("Relative point of time") | html %]:</label>
-
-                <div class="FieldExplanation">
-                    <input type="radio" name="ReminderCustomRelativeInput" value="Vacation" id="ReminderCustomRelativeInput" checked="checked">
-                    <input type="text" id="ReminderCustomUnitCount" name="ReminderCustomUnitCount" value="[% Data.ReminderCustomUnitCount | html %]" size="1" maxlength="2" />
-                    <div class="FieldInline">
-                        [% Data.ReminderCustomUnitsStrg %]
-                    </div>
-                    [% Data.ReminderCustomUnitsPointOfTimeStrg %]
-                </div>
-
-                <label for="Reminder">[% Translate("Date/Time") | html %]:</label>
-
-                <div class="FieldExplanation">
-                    <input type="radio" name="ReminderCustomDateTimeInput" value="Vacation" id="ReminderCustomDateTimeInput">
-                    [% Data.ReminderCustomDateTimeStrg %]
+                    <input type="radio" name="NotificationCustomDateTimeInput" value="Vacation" id="NotificationCustomDateTimeInput">
+                    [% Data.NotificationCustomDateTimeStrg %]
                 </div>
             </div>
             <div class="Clear"></div>
@@ -416,14 +382,9 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
 
-Core.Agent.AppointmentCalendar.ReminderInit({
-    $Reminder: $('#Reminder'),
-    $ReminderCustomStringDiv: $('#ReminderCustomStringDiv')
-});
-
-Core.Agent.AppointmentCalendar.SystemNotificationInit({
-    $SystemNotification: $('#SystemNotification'),
-    $SystemNotificationCustomStringDiv: $('#SystemNotificationCustomStringDiv')
+Core.Agent.AppointmentCalendar.NotificationInit({
+    $Notification: $('#Notification'),
+    $NotificationCustomStringDiv: $('#NotificationCustomStringDiv')
 });
 
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'));

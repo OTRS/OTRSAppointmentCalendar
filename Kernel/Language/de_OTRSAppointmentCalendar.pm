@@ -138,16 +138,13 @@ sub Data {
     $Self->{Translation}->{'Yearly'} = 'jährlich';
     $Self->{Translation}->{'Every'} = 'Alle';
     $Self->{Translation}->{'On'} = 'Am';
-    $Self->{Translation}->{'Reminder'} = 'Erinnerung';
-    $Self->{Translation}->{'No reminder'} = 'Keine Erinnerung';
     $Self->{Translation}->{'minutes before'} = 'Minuten vorher';
     $Self->{Translation}->{'hour before'} = 'Stunde vorher';
     $Self->{Translation}->{'hours before'} = 'Stunden vorher';
     $Self->{Translation}->{'day before'} = 'Tag vorher';
     $Self->{Translation}->{'days before'} = 'Tage vorher';
     $Self->{Translation}->{'week before'} = 'Woche vorher';
-    $Self->{Translation}->{'System notification'} = 'Systembenachrichtigung';
-    $Self->{Translation}->{'No system notification'} = 'Keine Systembenachrichtigung';
+    $Self->{Translation}->{'No notification'} = 'Keine Benachrichtigung';
     $Self->{Translation}->{'Relative point of time'} = 'Relativer Zeitpunkt';
     $Self->{Translation}->{'before the appointment starts'} = 'bevor der Termin beginnt';
     $Self->{Translation}->{'after the appointment has been started'} = 'nachdem der Termin begonnen hat';

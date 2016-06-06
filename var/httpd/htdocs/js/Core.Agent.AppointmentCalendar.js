@@ -1084,20 +1084,20 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @name SystemNotificationInit
+     * @name NotificationInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Fields - Array with references to reminder fields.
-     * @param {jQueryObject} Fields.$SystemNotification - drop down with system notification selection.
-     * @param {jQueryObject} Fields.$SystemNotificationCustomStringDiv - custom selection of system notification date
+     * @param {jQueryObject} Fields.$Notification - drop down with system notification selection.
+     * @param {jQueryObject} Fields.$NotificationCustomStringDiv - custom selection of system notification date
      * @description
      *      This method initializes the reminder section behavior.
      */
-    TargetNS.SystemNotificationInit = function (Fields) {
+    TargetNS.NotificationInit = function (Fields) {
 
-        if (Fields.$SystemNotification.val() !== 'Custom') {
+        if (Fields.$Notification.val() !== 'Custom') {
 
             // hide the custom fields
-            Fields.$SystemNotificationCustomStringDiv.hide();
+            Fields.$NotificationCustomStringDiv.hide();
 
             // Skip validation of RecurrenceUntil fields
 //            Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
@@ -1105,7 +1105,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         else {
 
             // custom field is needed
-            Fields.$SystemNotificationCustomStringDiv.show();
+            Fields.$NotificationCustomStringDiv.show();
         }
 
         // Show/hide the start hour/minute and complete end time
@@ -1116,46 +1116,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 //        }
 
         // Register change event handler
-        Fields.$SystemNotification.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            TargetNS.SystemNotificationInit(Fields);
-        });
-    }
-
-    /**
-     * @name ReminderInit
-     * @memberof Core.Agent.AppointmentCalendar
-     * @param {Object} Fields - Array with references to reminder fields.
-     * @param {jQueryObject} Fields.$Reminder - drop down with reminder selection.
-     * @param {jQueryObject} Fields.$ReminderCustomStringDiv - custom selection of reminder date
-     * @description
-     *      This method initializes the reminder section behavior.
-     */
-    TargetNS.ReminderInit = function (Fields) {
-
-        if (Fields.$Reminder.val() !== 'Custom') {
-
-            // hide the custom fields
-            Fields.$ReminderCustomStringDiv.hide();
-
-            // Skip validation of RecurrenceUntil fields
-//            Fields.$RecurrenceUntilDay.addClass('ValidationIgnore');
-        }
-        else {
-
-            // custom field is needed
-            Fields.$ReminderCustomStringDiv.show();
-        }
-
-        // Show/hide the start hour/minute and complete end time
-//        if ($AllDay.prop('checked')) {
-//            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true);
-//        } else {
-//            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false);
-//        }
-
-        // Register change event handler
-        Fields.$Reminder.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
-            TargetNS.ReminderInit(Fields);
+        Fields.$Notification.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+            TargetNS.NotificationInit(Fields);
         });
     }
 
