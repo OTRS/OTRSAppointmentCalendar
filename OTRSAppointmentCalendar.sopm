@@ -182,6 +182,7 @@
             <Column Name="start_time" Required="true" Type="DATE"/>
             <Column Name="end_time" Required="true" Type="DATE"/>
             <Column Name="all_day" Type="SMALLINT"/>
+            <Column Name="notify_time" Type="DATE"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
             <Column Name="team_id" Size="3800" Type="VARCHAR"/>
             <Column Name="resource_id" Size="3800" Type="VARCHAR"/>

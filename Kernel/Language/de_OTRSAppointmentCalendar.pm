@@ -46,6 +46,8 @@ sub Data {
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Ein Kalender mit gleichem Namen existiert bereits.';
     $Self->{Translation}->{'Permission group'} = 'Berechtigungsgruppe';
     $Self->{Translation}->{'Color'} = 'Farbe';
+    $Self->{Translation}->{'More'} = 'Mehr';
+    $Self->{Translation}->{'Less'} = 'Weniger';
 
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Manage Calendars'} = 'Kalender verwalten';
