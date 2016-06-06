@@ -73,13 +73,18 @@
         padding: 4px 0;
     }
 
+    .ColorPaletteContainer.sp-container,
+    .ColorPaletteContainer.sp-container button,
+    .ColorPaletteContainer.sp-container input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
     .ColorPaletteContainer.sp-container {
         border-color: #C0C0C0 #C9C9C9 #C9C9C9;
         background-color: #FFF;
     }
 
     .ColorPaletteContainer.sp-container button {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         color: #333;
         cursor: pointer;
         font-size: 11px;
@@ -103,8 +108,14 @@
         color: #000;
     }
 
+    .ColorPaletteContainer.sp-container input {
+        border-radius: 0;
+    }
+    .ColorPaletteContainer.sp-container .sp-input.sp-validation-error {
+        background: #FFF;
+    }
+
     .ColorPaletteContainer.sp-container .sp-cancel {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         color: #F92 !important;
         font-size: 12px;
     }
