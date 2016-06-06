@@ -67,13 +67,21 @@
 [% END %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
-            <label>[% Translate("Start date") | html %]:</label>
+            <label for="StartDay">[% Translate("Start date") | html %]:</label>
             <div class="Field">
+                <div id="StartDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to value before End date.") | html %]</p>
+                </div>
                 [% Data.StartDateString %]
             </div>
             <div class="Clear"></div>
-            <label>[% Translate("End date") | html %]:</label>
+            <label for="EndDay">[% Translate("End date") | html %]:</label>
             <div class="Field">
+                <div id="EndDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to a value after start date.") | html %]</p>
+                </div>
                 [% Data.EndDateString %]
             </div>
             <div class="Clear"></div>
@@ -285,6 +293,10 @@
                 [% Data.RecurrenceLimitString %]
             </div>
             <div id="RecurrenceUntilDiv" class="Field Hidden">
+                <div id="RecurrenceUntilDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to value after start date.") | html %]</p>
+                </div>
                 [% Data.RecurrenceUntilString %]
             </div>
             <div id="RecurrenceCountDiv" class="Field Hidden">
