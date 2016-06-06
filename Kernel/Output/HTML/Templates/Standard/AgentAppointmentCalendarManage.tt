@@ -245,6 +245,7 @@ $('input#Color').spectrum({
     hideAfterPaletteSelect: true,
     preferredFormat: 'hex',
     replacerClassName: 'ColorPaletteButton',
+    showInput: true,
     showPalette: true,
     showPaletteOnly: true,
     showSelectionPalette: false,
