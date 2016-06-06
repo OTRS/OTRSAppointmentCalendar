@@ -78,8 +78,49 @@
         background-color: #FFF;
     }
 
-    .ColorPaletteContainer .sp-palette-container {
+    .ColorPaletteContainer.sp-container button {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #333;
+        cursor: pointer;
+        font-size: 11px;
+        line-height: 14px;
+        min-height: 12px;
+        padding: 3px;
+        background: #EEE;
+        border-radius: 0;
+        border: 1px solid #CCC;
+        border-bottom: 1px solid #BBB;
+        display: inline-block;
+        cursor: pointer;
+        transition: all ease-in 0.2s;
+        text-shadow: 0 1px 0 #EEE;
+    }
+
+    .ColorPaletteContainer.sp-container button:hover {
+        background-image: none;
+        background-color: #E5E5E5;
+        border-color: #999;
+        color: #000;
+    }
+
+    .ColorPaletteContainer.sp-container .sp-cancel {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #F92 !important;
+        font-size: 12px;
+    }
+
+    .ColorPaletteContainer.sp-container .sp-cancel:hover {
+        color: #F72 !important;
+        text-decoration: none;
+    }
+
+    .ColorPaletteContainer .sp-palette-container,
+    .ColorPaletteContainer .sp-picker-container {
         padding: 5px 5px 295px;
+    }
+
+    .ColorPaletteContainer .sp-palette-toggle {
+        margin-top: 3px;
     }
 
     .ColorPaletteContainer .sp-palette {

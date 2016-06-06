@@ -247,6 +247,12 @@ $('input#Color').spectrum({
     replacerClassName: 'ColorPaletteButton',
     showPalette: true,
     showPaletteOnly: true,
+    showSelectionPalette: false,
+    togglePaletteOnly: true,
+    togglePaletteMoreText: [% Translate("More") | JSON %],
+    togglePaletteLessText: [% Translate("Less") | JSON %],
+    chooseText: [% Translate("Confirm") | JSON %],
+    cancelText: [% Translate("Cancel") | JSON %],
     palette: [
         '[% Data.ColorPalette.join("','") %]'
     ]
