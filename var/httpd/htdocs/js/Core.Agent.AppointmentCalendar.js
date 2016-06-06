@@ -904,9 +904,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Show/hide the start hour/minute and complete end time
         if ($AllDay.prop('checked')) {
-            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true);
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true)
+                .prop('readonly', true);
         } else {
-            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false);
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false)
+                .prop('readonly', false);
         }
 
         // Register change event handler
