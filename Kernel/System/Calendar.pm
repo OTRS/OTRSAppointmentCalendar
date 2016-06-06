@@ -134,7 +134,7 @@ sub CalendarCreate {
     }
 
     # check color
-    if ( !( $Param{Color} =~ /#[A-Z0-9]{3,6}/i ) ) {
+    if ( !( $Param{Color} =~ /#[A-F0-9]{3,6}/i ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Color must be in hexadecimal RGB notation, eg. #FFFFFF.',
@@ -496,7 +496,7 @@ sub CalendarUpdate {
     }
 
     # check color
-    if ( !( $Param{Color} =~ /#[A-Z0-9]{3,6}/i ) ) {
+    if ( !( $Param{Color} =~ /#[A-F0-9]{3,6}/i ) ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Color must be in hexadecimal RGB notation, eg. #FFFFFF.',
@@ -698,6 +698,132 @@ sub GetRandomString {
     }
 
     return $Result;
+}
+
+=item GetTextColor()
+
+returns best text color for supplied background, based on luminosity difference algorithm.
+
+    my $BestTextColor = $CalendarObject->GetTextColor(
+        Background => '#FFF',    # (required) must be in valid hexadecimal RGB notation
+    );
+
+returns:
+    $BestTextColor = '#000';
+
+=cut
+
+sub GetTextColor {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Background)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # check color
+    if ( !( $Param{Background} =~ /#[A-F0-9]{3,6}/i ) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Background must be in hexadecimal RGB notation, eg. #FFFFFF.',
+        );
+        return;
+    }
+
+    # check if value is cached
+    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        Type => $Self->{CacheType} . 'GetTextColor',
+        Key  => $Param{Background},
+    );
+    return $Data if $Data;
+
+    # get RGB values
+    my @BackgroundColor;
+    my $RGBHex = substr( $Param{Background}, 1 );
+
+    # six character hexadecimal string (eg. #FFFFFF)
+    if ( length $RGBHex == 6 ) {
+        $BackgroundColor[0] = hex substr( $RGBHex, 0, 2 );
+        $BackgroundColor[1] = hex substr( $RGBHex, 2, 2 );
+        $BackgroundColor[2] = hex substr( $RGBHex, 4, 2 );
+    }
+
+    # three character hexadecimal string (eg. #FFF)
+    elsif ( length $RGBHex == 3 ) {
+        $BackgroundColor[0] = hex( substr( $RGBHex, 0, 1 ) . substr( $RGBHex, 0, 1 ) );
+        $BackgroundColor[1] = hex( substr( $RGBHex, 1, 1 ) . substr( $RGBHex, 1, 1 ) );
+        $BackgroundColor[2] = hex( substr( $RGBHex, 2, 1 ) . substr( $RGBHex, 1, 1 ) );
+    }
+
+    # invalid hexadecimal string
+    else {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Background must be in valid 3 or 6 character hexadecimal RGB notation, eg. #FFF or #FFFFFF.',
+        );
+        return;
+    }
+
+    # predefined text colors
+    my %TextColors = (
+        White => [ '255', '255', '255' ],
+        Gray  => [ '128', '128', '128' ],
+        Black => [ '0',   '0',   '0' ],
+    );
+
+    # calculate background luminosity
+    my $BackgroundLum =
+        0.2126 * ( $BackgroundColor[0] / 255**2.2 ) +
+        0.7152 * ( $BackgroundColor[1] / 255**2.2 ) +
+        0.0722 * ( $BackgroundColor[2] / 255**2.2 );
+
+    # calculate luminosity difference
+    my %LumDiff;
+    for my $TextColor ( sort keys %TextColors ) {
+        my $TextLum =
+            0.2126 * ( $TextColors{$TextColor}->[0] / 255**2.2 ) +
+            0.7152 * ( $TextColors{$TextColor}->[1] / 255**2.2 ) +
+            0.0722 * ( $TextColors{$TextColor}->[2] / 255**2.2 );
+
+        if ( $BackgroundLum > $TextLum ) {
+            $LumDiff{$TextColor} = ( $BackgroundLum + 0.05 ) / ( $TextLum + 0.05 );
+        }
+        else {
+            $LumDiff{$TextColor} = ( $TextLum + 0.05 ) / ( $BackgroundLum + 0.05 );
+        }
+    }
+
+    # get maximum luminosity difference
+    my ($MaxLumDiff) = sort { $b <=> $a } values %LumDiff;
+    return if !$MaxLumDiff;
+
+    # identify best suited color
+    my ($BestTextColor) = grep { $LumDiff{$_} eq $MaxLumDiff } keys %LumDiff;
+    return if !$BestTextColor;
+
+    # convert to hex string
+    my $TextColor = sprintf(
+        '#%X%X%X',
+        $TextColors{$BestTextColor}->[0],
+        $TextColors{$BestTextColor}->[1],
+        $TextColors{$BestTextColor}->[2],
+    );
+
+    # cache
+    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        Type  => $Self->{CacheType} . 'GetTextColor',
+        Key   => $Param{Background},
+        Value => $TextColor,
+        TTL   => $Self->{CacheTTL},
+    );
+
+    return $TextColor;
 }
 
 1;
