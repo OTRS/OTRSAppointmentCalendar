@@ -219,7 +219,7 @@ sub Run {
 
                 if ( $RecurrenceType eq 'CustomWeekly' ) {
 
-                    my $DayOffset = $Self->_DayOffetGet(
+                    my $DayOffset = $Self->_DayOffsetGet(
                         Time     => $Appointment{StartTime},
                         Timezone => $Appointment{TimezoneID},
                     );
@@ -245,7 +245,7 @@ sub Run {
                 }
                 elsif ( $RecurrenceType eq 'CustomMonthly' ) {
 
-                    my $DayOffset = $Self->_DayOffetGet(
+                    my $DayOffset = $Self->_DayOffsetGet(
                         Time     => $Appointment{StartTime},
                         Timezone => $Appointment{TimezoneID},
                     );
@@ -270,7 +270,7 @@ sub Run {
                 }
                 elsif ( $RecurrenceType eq 'CustomYearly' ) {
 
-                    my $DayOffset = $Self->_DayOffetGet(
+                    my $DayOffset = $Self->_DayOffsetGet(
                         Time     => $Appointment{StartTime},
                         Timezone => $Appointment{TimezoneID},
                     );
@@ -1067,6 +1067,12 @@ sub Run {
             }
         }
 
+        # notification
+        $GetParam{NotificationDate} = $Self->_NotificationDateGet(
+            Appointment => \%Appointment,
+            GetParams   => \%GetParam,
+        );
+
         # team
         if ( $GetParam{'TeamID[]'} ) {
             my @TeamIDs = $ParamObject->GetArray( Param => 'TeamID[]' );
@@ -1285,7 +1291,7 @@ sub Run {
     );
 }
 
-sub _DayOffetGet {
+sub _DayOffsetGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -1339,6 +1345,46 @@ sub _DayOffetGet {
     else {
         return 1;
     }
+}
+
+sub _NotificationDateGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Appointment GetParams)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    return '' if !$Param{GetParams}->{Notification};
+
+    # get a local calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    my $NotificationDate = '';
+
+    if ( $Param{GetParams}->{Notification} ne 'Custom' ) {
+
+        # offset template (before start datetime) used
+        my $Offset = $Param{GetParams}->{Notification};
+
+        # get a unix timestamp of appointment start time
+        my $StartLocalTime = $CalendarHelperObject->SystemTimeGet(
+            String => $Param{Appointment}->{StartTime},
+        );
+
+        # save the start time - offset as new notification datetime string
+        $NotificationDate = $CalendarHelperObject->TimestampGet(
+            SystemTime => ( $StartLocalTime - $Offset ),
+        );
+    }
+
+    return $NotificationDate;
 }
 
 1;
