@@ -493,17 +493,17 @@ $Selenium->RunTest(
             'Calendars are filtered correctly',
         );
 
-        # create new Appointment (with as root)
+        # create new Appointment (as root)
         my $StartTime       = $TimeObject->CurrentTimestamp();
         my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
             String => $StartTime,
         );
         $StartTime = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $StartTimeSystem + 24 * 60 * 60,    # next day
+            SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60,    # last week
         );
 
         my $EndTime = $TimeObject->SystemTime2TimeStamp(
-            SystemTime => $StartTimeSystem + 26 * 60 * 60,    # 2 hours after start time
+            SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60 + 2 * 60 * 60,    # 2 hours after start time
         );
 
         my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
@@ -543,6 +543,9 @@ $Selenium->RunTest(
         $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
         $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
+
+        # go to previous week in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
