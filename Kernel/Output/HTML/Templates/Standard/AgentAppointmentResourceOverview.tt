@@ -78,6 +78,14 @@
     <div class="ContentColumn">
         <div class="WidgetSimple CalendarWidget">
             <div class="Header">
+                <div class="ActionMenu">
+                    <div class="WidgetAction Settings">
+                        <a href="#" id="ShowContextSettingsDialog" title="[% Translate("Settings") | html %]">
+                            <i class="fa fa-cog"></i>
+                        </a>
+                    </div>
+                    <div class="Clear"></div>
+                </div>
                 <h2>[% Translate("Calendar") | html %]</h2>
             </div>
             <div class="Content ">
@@ -307,6 +315,92 @@ $('#Team').on('change', function() {
     $('#ChangeTeamForm').submit();
 });
 
+$('#ShowContextSettingsDialog').on('click', function (Event) {
+    Core.UI.Dialog.ShowContentDialog($('#ContextSettingsDialogContainer'), [% Translate("Settings") | JSON %], '10px', 'Center', true,
+        [
+            {
+                Label: [% Translate("Save") | JSON %],
+                Class: 'Primary',
+                Function: function () {
+                    var $ListContainer = $('.AllocationListContainer').find('.AssignedFields'),
+                        ShownResources = [],
+                        Data = {
+                            ChallengeToken: $('#ChallengeToken').val(),
+                            Action: 'AgentAppointmentEdit',
+                            Subaction: 'UpdatePreferences',
+                            OverviewScreen: 'ResourceOverview',
+                            TeamID: $('#Team').val()
+                        };
+
+                    if (isJQueryObject($ListContainer) && $ListContainer.length) {
+                        $.each($ListContainer.find('li'), function() {
+                            ShownResources.push($(this).attr('data-fieldname'));
+                        });
+                    }
+                    Data.ShownResources = JSON.stringify(ShownResources);
+
+                    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
+
+                    Core.AJAX.FunctionCall(
+                        Core.Config.Get('CGIHandle'),
+                        Data,
+                        function (Response) {
+                            if (!Response.Success) {
+                                Core.Debug.Log('Error updating user preferences!');
+                            }
+                            location.reload();
+                        }
+                    );
+                }
+            }
+        ], true);
+
+    Event.preventDefault();
+    Event.stopPropagation();
+
+    Core.Agent.TableFilters.SetAllocationList();
+
+    return false;
+});
+
+[% IF Data.RestoreDefaultSettings %]
+var $RestoreObj = $('<a />').attr('id', 'RestoreDefaultSettings')
+    .attr('href', '#')
+    .attr('title', [% Translate("Restore default settings") | JSON %])
+    .append($('<i />').addClass('fa fa-trash'));
+
+$('tr.fc-super + tr .fc-cell-content').append($RestoreObj);
+
+$RestoreObj.on('click', function (Event) {
+    Core.AJAX.FunctionCall(
+        Core.Config.Get('CGIHandle'),
+        {
+            ChallengeToken: $('#ChallengeToken').val(),
+            Action: 'AgentAppointmentEdit',
+            Subaction: 'UpdatePreferences',
+            OverviewScreen: 'ResourceOverview',
+            RestoreDefaultSettings: 'ShownResources',
+            TeamID: $('#Team').val()
+        },
+        function (Response) {
+            if (!Response.Success) {
+                Core.Debug.Log('Error updating user preferences!');
+            }
+            location.reload();
+        }
+    );
+
+    Event.preventDefault();
+    Event.stopPropagation();
+
+    return false;
+});
+[% END %]
+
+Core.Config.AddConfig({
+    [% FOREACH Key IN Data.TeamUserList.keys %]'Column[% Key %]': [% Data.TeamUserList.$Key | JSON %], [% END %]
+});
+
 //]]></script>
 [% END %]
 
@@ -314,6 +408,36 @@ $('#Team').on('change', function() {
         </div>
     </div>
     <div class="Clear"></div>
+
+    <div id="ContextSettingsDialogContainer" class="Hidden">
+        <form id="ContextSettingsDialogResourceOverview" class="WidgetSettingsForm">
+            <fieldset class="TableLike FixedLabelSmall">
+[% RenderBlockStart("ShownResourceSettings") %]
+                <input type="hidden" class="ColumnsEnabledJSON" value="[% Data.ColumnsEnabled | html %]" />
+                <input type="hidden" class="ColumnsAvailableJSON" value="[% Data.ColumnsAvailable | html %]" />
+                <label class="DontPrint">[% Translate("Shown resources") | html %]:</label>
+                <div class="Field DontPrint LayoutGrid AllocationListContainer">
+                    <div class="Size1of2">
+                        <ul class="Tablelike">
+                            <li class="Header">[% Translate("Available Resources") | html %]</li>
+                        </ul>
+                        <div class="FilterInputContainer">
+                            <input type="text" class="FilterAvailableFields" value="" title="[% Translate("Filter available resources") | html %]" placeholder="[% Translate("Filter available resources") | html %]..." />
+                        </div>
+                        <ul class="AllocationList Tablelike AvailableFields SettingsOverview" id="AvailableField-AgentAppointmentResourceOverview"></ul>
+                    </div>
+                    <div class="Size1of2">
+                        <ul class="Tablelike">
+                            <li class="Header">[% Translate("Visible Resources (order by drag & drop)") | html %]</li>
+                        </ul>
+                        <ul class="AllocationList Tablelike AssignedFields OrderNumbers SettingsOverview" id="AssignedFields-AgentAppointmentResourceOverview"></ul>
+                    </div>
+                </div>
+                <div class="Clear"></div>
+[% RenderBlockEnd("ShownResourceSettings") %]
+            </fieldset>
+        </form>
+    </div>
 
     <div id="AppointmentTooltipTemplate" class="Hidden">
         <fieldset>

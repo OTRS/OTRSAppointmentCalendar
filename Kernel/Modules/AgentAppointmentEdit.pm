@@ -1073,30 +1073,60 @@ sub Run {
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'UpdatePreferences' ) {
 
-        if ( $GetParam{OverviewScreen} && ( $GetParam{DefaultView} || $GetParam{CalendarSelection} ) ) {
+        my $Success = 0;
 
+        if (
+            $GetParam{OverviewScreen} && (
+                $GetParam{DefaultView} || $GetParam{CalendarSelection} ||
+                ( $GetParam{ShownResources} && $GetParam{TeamID} )
+            )
+            )
+        {
             my $PreferenceKey;
+            my $PreferenceKeySuffix = '';
+
             if ( $GetParam{DefaultView} ) {
                 $PreferenceKey = 'DefaultView';
             }
             elsif ( $GetParam{CalendarSelection} ) {
                 $PreferenceKey = 'CalendarSelection';
             }
+            elsif ( $GetParam{ShownResources} && $GetParam{TeamID} ) {
+                $PreferenceKey       = 'ShownResources';
+                $PreferenceKeySuffix = "-$GetParam{TeamID}";
+            }
 
             # set user preferences
-            my $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
-                Key    => 'User' . $GetParam{OverviewScreen} . $PreferenceKey,
+            $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+                Key    => 'User' . $GetParam{OverviewScreen} . $PreferenceKey . $PreferenceKeySuffix,
                 Value  => $GetParam{$PreferenceKey},
                 UserID => $Self->{UserID},
             );
+        }
 
-            # build JSON output
-            $JSON = $LayoutObject->JSONEncode(
-                Data => {
-                    Success => $Success,
-                },
+        elsif ( $GetParam{OverviewScreen} && $GetParam{RestoreDefaultSettings} ) {
+            my $PreferenceKey;
+            my $PreferenceKeySuffix = '';
+
+            if ( $GetParam{RestoreDefaultSettings} eq 'ShownResources' && $GetParam{TeamID} ) {
+                $PreferenceKey       = 'ShownResources';
+                $PreferenceKeySuffix = "-$GetParam{TeamID}";
+            }
+
+            # blank user preferences
+            $Success = $Kernel::OM->Get('Kernel::System::User')->SetPreferences(
+                Key    => 'User' . $GetParam{OverviewScreen} . $PreferenceKey . $PreferenceKeySuffix,
+                Value  => '',
+                UserID => $Self->{UserID},
             );
         }
+
+        # build JSON output
+        $JSON = $LayoutObject->JSONEncode(
+            Data => {
+                Success => $Success,
+            },
+        );
     }
 
     # ------------------------------------------------------------ #
