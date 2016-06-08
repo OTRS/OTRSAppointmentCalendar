@@ -260,6 +260,7 @@ Core.Agent.AppointmentCalendar.Init({
                 },
                 color: [% Data.Color | JSON %],
                 textColor: [% Data.TextColor | JSON %],
+                borderColor: 'rgba(0, 0, 0, 0.2)',
                 startParam: 'StartTime',
                 endParam: 'EndTime',
 
