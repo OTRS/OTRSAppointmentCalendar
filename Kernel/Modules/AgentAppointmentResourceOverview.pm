@@ -86,16 +86,18 @@ sub Run {
                 },
             );
 
-            my %TeamUserList = $TeamObject->TeamUserList(
+            my %TeamUserIDs = $TeamObject->TeamUserList(
                 TeamID => $Param{Team},
                 UserID => $Self->{UserID},
             );
 
-            if ( scalar keys %TeamUserList > 0 ) {
+            if ( scalar keys %TeamUserIDs > 0 ) {
 
                 # get needed objects
                 my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
                 my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
+                my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
+                my $JSONObject   = $Kernel::OM->Get('Kernel::System::JSON');
 
                 # new appointment dialog
                 if ( $Self->{Subaction} eq 'AppointmentCreate' ) {
@@ -128,8 +130,72 @@ sub Run {
                 );
 
                 # get user preferences
-                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                my %Preferences = $UserObject->GetPreferences(
                     UserID => $Self->{UserID},
+                );
+
+                # get resource names
+                my @TeamUserList;
+                for my $UserID ( sort keys %TeamUserIDs ) {
+                    my %User = $UserObject->GetUserData(
+                        UserID => $UserID,
+                    );
+                    push @TeamUserList, {
+                        UserID       => $User{UserID},
+                        Name         => $User{UserFullname},
+                        UserLastname => $User{UserLastname},
+                    };
+                }
+
+                # sort the list by last name
+                @TeamUserList = sort { $a->{UserLastname} cmp $b->{UserLastname} } @TeamUserList;
+                my @TeamUserIDs = map { $_->{UserID} } @TeamUserList;
+
+                # resource name lookup table
+                my %TeamUserList = map { $_->{UserID} => $_->{Name} } @TeamUserList;
+                $Param{TeamUserList} = \%TeamUserList;
+
+                # user preference key
+                my $ShownResourcesPrefKey = 'User' . $Self->{OverviewScreen} . 'ShownResources-' . $Param{Team};
+
+                # read preference if it exists
+                my @ShownResources;
+                if ( $Preferences{$ShownResourcesPrefKey} ) {
+                    my $ShownResourcesPrefVal = $JSONObject->Decode(
+                        Data => $Preferences{$ShownResourcesPrefKey},
+                    );
+
+                    # add only valid and unique users
+                    for my $UserID ( @{ $ShownResourcesPrefVal || [] } ) {
+                        if ( grep { $_ eq $UserID } @TeamUserIDs ) {
+                            push @ShownResources, $UserID
+                                if !grep { $_ eq $UserID } @ShownResources;
+                        }
+                    }
+
+                    # activate restore settings button
+                    $Param{RestoreDefaultSettings} = 1;
+                }
+
+                # set default if empty
+                @ShownResources = @TeamUserIDs if !scalar @ShownResources;
+
+                # calculate difference
+                my @AvailableResources;
+                for my $ColumnName (@TeamUserIDs) {
+                    if ( !grep { $_ eq $ColumnName } @ShownResources ) {
+                        push @AvailableResources, $ColumnName;
+                    }
+                }
+
+                # allocation list block
+                $LayoutObject->Block(
+                    Name => 'ShownResourceSettings',
+                    Data => {
+                        ColumnsEnabled   => $JSONObject->Encode( Data => \@ShownResources ),
+                        ColumnsAvailable => $JSONObject->Encode( Data => \@AvailableResources ),
+                        %Param,
+                    },
                 );
 
                 my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;

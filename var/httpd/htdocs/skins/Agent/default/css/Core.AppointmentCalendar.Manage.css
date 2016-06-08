@@ -31,10 +31,12 @@
     }
 
     .Color {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         display: inline-block;
         vertical-align: text-top;
+        border: 1px solid #BBB;
+        border: 1px solid rgba(0, 0, 0, 0.25);
     }
 
     .Invalid .Color {
@@ -64,6 +66,16 @@
         width: 16px;
         height: 16px;
         border: none;
+    }
+
+    .ColorPaletteButton .sp-preview-inner,
+    .ColorPaletteContainer .sp-thumb-inner {
+        border: 1px solid #BBB;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .ColorPaletteContainer .sp-thumb-inner:hover {
+        border-color: #F92;
     }
 
     .ColorPaletteButton .sp-dd {

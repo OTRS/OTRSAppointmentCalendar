@@ -72,13 +72,18 @@ sub Run {
                 # get user object
                 my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-                my @Data;
+                # get user preferences
+                my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
+                    UserID => $Self->{UserID},
+                );
 
+                # get resource names
+                my @TeamUserList;
                 for my $UserID ( sort keys %TeamUserIDs ) {
                     my %User = $UserObject->GetUserData(
                         UserID => $UserID,
                     );
-                    push @Data, {
+                    push @TeamUserList, {
                         id           => $User{UserID},
                         title        => $User{UserFullname},
                         TeamID       => $GetParam{TeamID},
@@ -87,9 +92,38 @@ sub Run {
                 }
 
                 # sort the list by last name
-                @Data = sort { $a->{UserLastname} cmp $b->{UserLastname} } @Data;
+                @TeamUserList = sort { $a->{UserLastname} cmp $b->{UserLastname} } @TeamUserList;
+                my @TeamUserIDs = map { $_->{id} } @TeamUserList;
 
-                push @Data, {
+                # resource name lookup table
+                my %TeamUserList = map { $_->{id} => $_->{title} } @TeamUserList;
+
+                # user preference key
+                my $ShownResourcesPrefKey = 'UserResourceOverviewShownResources-' . $GetParam{TeamID};
+
+                # read preference if it exists
+                my @ShownResources;
+                if ( $Preferences{$ShownResourcesPrefKey} ) {
+                    my $ShownResourcesPrefVal = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                        Data => $Preferences{$ShownResourcesPrefKey},
+                    );
+
+                    # add only valid and unique users
+                    for my $UserID ( @{ $ShownResourcesPrefVal || [] } ) {
+                        if ( grep { $_ eq $UserID } @TeamUserIDs ) {
+                            push @ShownResources, {
+                                id     => $UserID,
+                                title  => $TeamUserList{$UserID},
+                                TeamID => $GetParam{TeamID},
+                            } if !grep { $_->{id} eq $UserID } @ShownResources;
+                        }
+                    }
+                }
+
+                # set default if empty
+                @ShownResources = @TeamUserList if !scalar @ShownResources;
+
+                push @ShownResources, {
                     id     => 0,
                     title  => Translatable('Unassigned'),
                     TeamID => $GetParam{TeamID},
@@ -98,7 +132,7 @@ sub Run {
                 # build JSON output
                 $JSON = $LayoutObject->JSONEncode(
                     Data => (
-                        \@Data,
+                        \@ShownResources,
                     ),
                 );
             }

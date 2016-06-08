@@ -43,10 +43,12 @@
     }
 
     .CalendarColor {
+        width: 14px;
+        height: 14px;
         display: inline-block;
         vertical-align: text-top;
-        width: 16px;
-        height: 16px;
+        border: 1px solid #BBB;
+        border: 1px solid rgba(0, 0, 0, 0.25);
     }
 
     .AllDay:before {
@@ -311,10 +313,29 @@
         margin-left: 5px;
     }
 
+    #ContextSettingsDialogResourceOverview {
+        max-height: 600px;
+        width: 950px;
+    }
+
+    #RestoreDefaultSettings {
+        position: absolute;
+        right: 0;
+    }
+
+    tr:hover td a#RestoreDefaultSettings i {
+        color: #999;
+    }
+
+    tr td a#RestoreDefaultSettings:hover i {
+        color: #000;
+    }
+
 } /* end @media */
 
 @media only screen and (min-width: 0px) and (max-width: 1024px) {
 
+    #ContextSettingsDialogResourceOverview,
     #EditAppointmentForm {
         width: auto;
     }
