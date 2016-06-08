@@ -396,7 +396,17 @@ Core.Agent.AppointmentCalendar.RecurringInit({
 
 Core.Agent.AppointmentCalendar.NotificationInit({
     $Notification: $('#Notification'),
-    $NotificationCustomStringDiv: $('#NotificationCustomStringDiv')
+    $NotificationCustomStringDiv: $('#NotificationCustomStringDiv'),
+    $NotificationCustomRelativeInput: $('#NotificationCustomRelativeInput'),
+    $NotificationCustomUnitCount: $('#NotificationCustomUnitCount'),
+    $NotificationCustomUnits: $('#NotificationCustomUnits'),
+    $NotificationCustomUnitsPointOfTime: $('#NotificationCustomUnitsPointOfTime'),
+    $NotificationCustomDateTimeInput: $('#NotificationCustomDateTimeInput'),
+    $NotificationDay: $('#NotificationDay'),
+    $NotificationMonth: $('#NotificationMonth'),
+    $NotificationYear: $('#NotificationYear'),
+    $NotificationHour: $('#NotificationHour'),
+    $NotificationMinute: $('#NotificationMinute')
 });
 
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'));

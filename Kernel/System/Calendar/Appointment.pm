@@ -80,39 +80,43 @@ sub new {
 creates a new appointment.
 
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
-        ParentID             => 1,                                       # (optional) valid ParentID for recurring appointments
-        CalendarID           => 1,                                       # (required) valid CalendarID
-        UniqueID             => 'jwioji-fwjio',                          # (optional) provide desired UniqueID; if there is already existing Appointment
-                                                                         #            with same UniqueID, system will delete it
-        Title                => 'Webinar',                               # (required) Title
-        Description          => 'How to use Process tickets...',         # (optional) Description
-        Location             => 'Straubing',                             # (optional) Location
-        StartTime            => '2016-01-01 16:00:00',                   # (required)
-        EndTime              => '2016-01-01 17:00:00',                   # (required)
-        AllDay               => 0,                                       # (optional) default 0
-        TimezoneID           => 1,                                       # (optional) Timezone - it can be 0 (UTC)
-        TeamID               => [ 1 ],                                   # (optional) must be an array reference if supplied
-        ResourceID           => [ 1, 3 ],                                # (optional) must be an array reference if supplied
-        Recurring            => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        ParentID              => 1,                                       # (optional) valid ParentID for recurring appointments
+        CalendarID            => 1,                                       # (required) valid CalendarID
+        UniqueID              => 'jwioji-fwjio',                          # (optional) provide desired UniqueID; if there is already existing Appointment
+                                                                          #            with same UniqueID, system will delete it
+        Title                 => 'Webinar',                               # (required) Title
+        Description           => 'How to use Process tickets...',         # (optional) Description
+        Location              => 'Straubing',                             # (optional) Location
+        StartTime             => '2016-01-01 16:00:00',                   # (required)
+        EndTime               => '2016-01-01 17:00:00',                   # (required)
+        AllDay                => 0,                                       # (optional) default 0
+        TimezoneID            => 1,                                       # (optional) Timezone - it can be 0 (UTC)
+        TeamID                => [ 1 ],                                   # (optional) must be an array reference if supplied
+        ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
+        Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        RecurrenceType        => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
+                                                                          #           "CustomWeekly", "CustomMonthly", "CustomYearly"
 
-        RecurrenceType       => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
-                                                                         #           "CustomWeekly", "CustomMonthly", "CustomYearly"
-
-        RecurrenceFrequency  => [1, 3, 5],                               # (required if Custom Recurring) Recurrence pattern
-                                                                         #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
-                                                                         #           for CustomMonthly: 1-1st, 2-2nd,.., 31th
-                                                                         #           for CustomYearly: 1-Jan, 2-Feb,..., 12-Dec
-                                                                         # ...
-        RecurrenceCount      => 1,                                       # (optional) How many Appointments to create
-        RecurrenceInterval   => 2,                                       # (optional) Repeating interval (default 1)
-        RecurrenceUntil      => '2016-01-10 00:00:00',                   # (optional) Until date
-        RecurrenceID         => '2016-01-10 00:00:00',                   # (optional) Expected start time for this occurrence
-        RecurrenceExclude    => [                                        # (optional) Which specific occurrences to exclude
+        RecurrenceFrequency   => [1, 3, 5],                               # (required if Custom Recurring) Recurrence pattern
+                                                                          #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
+                                                                          #           for CustomMonthly: 1-1st, 2-2nd,.., 31th
+                                                                          #           for CustomYearly: 1-Jan, 2-Feb,..., 12-Dec
+                                                                          # ...
+        RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
+        RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
+        RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
+        RecurrenceID          => '2016-01-10 00:00:00',                   # (optional) Expected start time for this occurrence
+        RecurrenceExclude     => [                                        # (optional) Which specific occurrences to exclude
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
-
-        UserID               => 1,                                       # (required) UserID
+        NotificationTime                  => '2016-01-01 17:0:00',        # (optional) Point of time to execute the notification event
+        NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
+        NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
+        NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
+        NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
+                                                                          #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        UserID                => 1,                                       # (required) UserID
     );
 
 returns parent AppointmentID if successful
@@ -334,15 +338,18 @@ sub AppointmentCreate {
         \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
         \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
         \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},      \$Param{RecurrenceID},
-        \$Arrays{RecurrenceExclude}, \$Param{UserID},               \$Param{UserID};
+        \$Arrays{RecurrenceExclude}, \$Param{NotificationTime},     \$Param{NotificationTemplate},
+        \$Param{NotificationCustomUnitCount}, \$Param{NotificationCustomUnit},
+        \$Param{NotificationCustomUnitPointOfTime}, \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, create_time,
-            create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
+            notify_template, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
+            create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             current_timestamp, ?, current_timestamp, ?)
     ";
 
@@ -855,6 +862,11 @@ returns a hash:
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
+        NotificationTime                  => '2016-01-01 17:0:00',
+        NotificationTemplate              => 'Custom',
+        NotificationCustomUnitCount       => '12',
+        NotificationCustomUnit            => 'minutes',
+        NotificationCustomUnitPointOfTime => 'beforestart',
         CreateTime          => '2016-01-01 00:00:00',
         CreateBy            => 2,
         ChangeTime          => '2016-01-01 00:00:00',
@@ -900,8 +912,9 @@ sub AppointmentGet {
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, create_time,
-            create_by, change_time, change_by
+            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
+            notify_template, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
+            create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -938,31 +951,36 @@ sub AppointmentGet {
         # recurrence exclude
         my @RecurrenceExclude = $Row[20] ? split( ',', $Row[20] ) : undef;
 
-        $Result{AppointmentID}       = $Row[0];
-        $Result{ParentID}            = $Row[1];
-        $Result{CalendarID}          = $Row[2];
-        $Result{UniqueID}            = $Row[3];
-        $Result{Title}               = $Row[4];
-        $Result{Description}         = $Row[5];
-        $Result{Location}            = $Row[6];
-        $Result{StartTime}           = $Row[7];
-        $Result{EndTime}             = $Row[8];
-        $Result{AllDay}              = $Row[9];
-        $Result{TimezoneID}          = $Row[10];
-        $Result{TeamID}              = \@TeamID;
-        $Result{ResourceID}          = \@ResourceID;
-        $Result{Recurring}           = $Row[13];
-        $Result{RecurrenceType}      = $Row[14];
-        $Result{RecurrenceFrequency} = \@RecurrenceFrequency;
-        $Result{RecurrenceCount}     = $Row[16];
-        $Result{RecurrenceInterval}  = $Row[17];
-        $Result{RecurrenceUntil}     = $Row[18];
-        $Result{RecurrenceID}        = $Row[19];
-        $Result{RecurrenceExclude}   = \@RecurrenceExclude;
-        $Result{CreateTime}          = $Row[21];
-        $Result{CreateBy}            = $Row[22];
-        $Result{ChangeTime}          = $Row[23];
-        $Result{ChangeBy}            = $Row[24];
+        $Result{AppointmentID}                     = $Row[0];
+        $Result{ParentID}                          = $Row[1];
+        $Result{CalendarID}                        = $Row[2];
+        $Result{UniqueID}                          = $Row[3];
+        $Result{Title}                             = $Row[4];
+        $Result{Description}                       = $Row[5];
+        $Result{Location}                          = $Row[6];
+        $Result{StartTime}                         = $Row[7];
+        $Result{EndTime}                           = $Row[8];
+        $Result{AllDay}                            = $Row[9];
+        $Result{TimezoneID}                        = $Row[10];
+        $Result{TeamID}                            = \@TeamID;
+        $Result{ResourceID}                        = \@ResourceID;
+        $Result{Recurring}                         = $Row[13];
+        $Result{RecurrenceType}                    = $Row[14];
+        $Result{RecurrenceFrequency}               = \@RecurrenceFrequency;
+        $Result{RecurrenceCount}                   = $Row[16];
+        $Result{RecurrenceInterval}                = $Row[17];
+        $Result{RecurrenceUntil}                   = $Row[18];
+        $Result{RecurrenceID}                      = $Row[19];
+        $Result{RecurrenceExclude}                 = \@RecurrenceExclude;
+        $Result{NotificationTime}                  = $Row[21];
+        $Result{NotificationTemplate}              = $Row[22];
+        $Result{NotificationCustomUnitCount}       = $Row[23];
+        $Result{NotificationCustomUnit}            = $Row[24];
+        $Result{NotificationCustomUnitPointOfTime} = $Row[25];
+        $Result{CreateTime}                        = $Row[26];
+        $Result{CreateBy}                          = $Row[27];
+        $Result{ChangeTime}                        = $Row[28];
+        $Result{ChangeBy}                          = $Row[29];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -984,30 +1002,36 @@ sub AppointmentGet {
 updates an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentUpdate(
-        AppointmentID       => 2,                                       # (required)
-        CalendarID          => 1,                                       # (required) Valid CalendarID
-        Title               => 'Webinar',                               # (required) Title
-        Description         => 'How to use Process tickets...',         # (optional) Description
-        Location            => 'Straubing',                             # (optional) Location
-        StartTime           => '2016-01-01 16:00:00',                   # (required)
-        EndTime             => '2016-01-01 17:00:00',                   # (required)
-        AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => -2,                                      # (optional) Timezone - it can be 0 (UTC)
-        Team                => 1,                                       # (optional)
-        ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
-        Recurring           => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        AppointmentID         => 2,                                       # (required)
+        CalendarID            => 1,                                       # (required) Valid CalendarID
+        Title                 => 'Webinar',                               # (required) Title
+        Description           => 'How to use Process tickets...',         # (optional) Description
+        Location              => 'Straubing',                             # (optional) Location
+        StartTime             => '2016-01-01 16:00:00',                   # (required)
+        EndTime               => '2016-01-01 17:00:00',                   # (required)
+        AllDay                => 0,                                       # (optional) Default 0
+        TimezoneID            => -2,                                      # (optional) Timezone - it can be 0 (UTC)
+        Team                  => 1,                                       # (optional)
+        ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
+        Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
 
-        RecurrenceType      => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
-                                                                        #           "CustomWeekly", "CustomMonthly", "CustomYearly"
+        RecurrenceType        => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
+                                                                          #           "CustomWeekly", "CustomMonthly", "CustomYearly"
 
-        RecurrenceFrequency => 1,                                       # (required if Custom Recurring) Recurrence pattern
-                                                                        #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
-                                                                        #           for CustomMonthly: 1-Jan, 2-Feb,..., 12-Dec
-                                                                        # ...
-        RecurrenceCount     => 1,                                       # (optional) How many Appointments to create
-        RecurrenceInterval  => 2,                                       # (optional) Repeating interval (default 1)
-        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional) Until date
-        UserID              => 1,                                       # (required) UserID
+        RecurrenceFrequency   => 1,                                       # (required if Custom Recurring) Recurrence pattern
+                                                                          #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
+                                                                          #           for CustomMonthly: 1-Jan, 2-Feb,..., 12-Dec
+                                                                          # ...
+        RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
+        RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
+        RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
+        NotificationTime                  => '2016-01-01 17:0:00',        # (optional) Point of time to execute the notification event
+        NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
+        NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
+        NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
+        NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
+                                                                          #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        UserID                => 1,                                       # (required) UserID
     );
 
 returns 1 if successful:
@@ -1221,8 +1245,9 @@ sub AppointmentUpdate {
         SET
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
             timezone_id=?, team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?,
-            recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?,
-            change_time=current_timestamp, change_by=?
+            recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?,
+            notify_template=?, notify_custom_unit_count=?, notify_custom_unit=?,
+            notify_custom_unit_point=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -1234,7 +1259,10 @@ sub AppointmentUpdate {
             \$Param{StartTime},  \$Param{EndTime},     \$Param{AllDay},      \$Param{TimezoneID},
             \$Arrays{TeamID},    \$Arrays{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceType},
             \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{UserID}, \$Param{AppointmentID},
+            \$Param{RecurrenceUntil}, \$RecurrenceExclude, $Param{NotificationTime},
+            \$Param{NotificationTemplate},   \$Param{NotificationCustomUnitCount},
+            \$Param{NotificationCustomUnit}, \$Param{NotificationCustomUnitPointOfTime},
+            \$Param{UserID},                 \$Param{AppointmentID},
         ],
     );
 
@@ -1252,6 +1280,25 @@ sub AppointmentUpdate {
         UserID        => $Param{UserID},
         Seen          => 0,
     );
+
+    # handle notification entries
+    if ( $Param{NotificationTime} ) {
+
+        my $Success = $Self->_AppointmentNotificationDelete(
+            %Param,
+        );
+
+        $Success = $Self->_AppointmentNotificationCreate(
+            %Param,
+        );
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Could not update appointment notification for appointment id '$Param{AppointmentID}'!",
+            );
+        }
+    }
 
     # delete cache
     $CacheObject->Delete(
@@ -1366,6 +1413,18 @@ sub AppointmentDelete {
             Message  => 'Recurring appointments couldn\'t be deleted!',
         );
         return;
+    }
+
+    # handle notification entries
+    my $Success = $Self->_AppointmentNotificationDelete(
+        AppointmentID => $Param{AppointmentID},
+    );
+
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not delete appointment notification for appointment id '$Param{AppointmentID}'!",
+        );
     }
 
     # delete appointment
@@ -1956,6 +2015,36 @@ returns:
 =cut
 
 sub AppointmentNotification {
+    my ( $Self, %Param ) = @_;
+
+    return 1;
+}
+
+=begin Internal:
+
+=cut
+
+sub _AppointmentNotificationGet {
+    my ( $Self, %Param ) = @_;
+
+    return 1;
+}
+
+=begin Internal:
+
+=cut
+
+sub _AppointmentNotificationCreate {
+    my ( $Self, %Param ) = @_;
+
+    return 1;
+}
+
+=begin Internal:
+
+=cut
+
+sub AppointmentNotificationDelete {
     my ( $Self, %Param ) = @_;
 
     return 1;

@@ -1383,6 +1383,9 @@ sub _NotificationDateGet {
             SystemTime => ( $StartLocalTime - $Offset ),
         );
     }
+    else {
+
+    }
 
     return $NotificationDate;
 }
