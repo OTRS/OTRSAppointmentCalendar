@@ -358,9 +358,9 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDay: $('#RecurrenceUntilDay'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
-Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'));
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'), $('#ChallengeToken').val());
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
-Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'));
+Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'), $('#ChallengeToken').val());
 [% END %]
 
 Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) {
