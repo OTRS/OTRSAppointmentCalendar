@@ -273,6 +273,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventDragStart: function(CalEvent) {
                 CurrentAppointment.start = CalEvent.start;
                 CurrentAppointment.end = CalEvent.end;
+                CurrentAppointment.resourceIds = CalEvent.resourceIds;
             },
             eventMouseover: function(CalEvent, JSEvent) {
                 var $TooltipObj,
@@ -720,8 +721,21 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
             Recurring: AppointmentData.CalEvent.recurring ? '1' : '0',
             TeamID: AppointmentData.CalEvent.teamIds ? AppointmentData.CalEvent.teamIds : undefined,
-            ResourceID: AppointmentData.CalEvent.resourceId ? [ AppointmentData.CalEvent.resourceId ] : undefined
+            ResourceID: AppointmentData.CalEvent.resourceIds ? AppointmentData.CalEvent.resourceIds :
+                AppointmentData.CalEvent.resourceId ? [ AppointmentData.CalEvent.resourceId ] : undefined
         };
+
+        // Assigned resource didn't change
+        if (
+            AppointmentData.CalEvent.resourceId
+            && AppointmentData.PreviousAppointment.resourceIds
+            && $.inArray(
+                AppointmentData.CalEvent.resourceId,
+                AppointmentData.PreviousAppointment.resourceIds
+            ) !== -1
+        ) {
+            Data.ResourceID = AppointmentData.PreviousAppointment.resourceIds;
+        }
 
         function Update() {
             Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
@@ -730,7 +744,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (Data.Recurring === '1' || AppointmentData.CalEvent.allDay) {
+                        if (
+                            Data.Recurring === '1'
+                            || AppointmentData.CalEvent.allDay
+                            || AppointmentData.CalEvent.resourceId
+                            )
+                        {
                             $('#calendar').fullCalendar('refetchEvents');
                         }
                     } else {
