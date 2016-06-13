@@ -215,9 +215,8 @@ sub AppointmentCreate {
     }
 
     # check UniqueID
-    my $UniqueID = $Param{UniqueID};
-    if ( !$UniqueID ) {
-        $UniqueID = $Self->GetUniqueID(
+    if ( !$Param{UniqueID} ) {
+        $Param{UniqueID} = $Self->GetUniqueID(
             CalendarID => $Param{CalendarID},
             StartTime  => $StartTimeSystem,
             UserID     => $Param{UserID},
@@ -329,7 +328,7 @@ sub AppointmentCreate {
         delete $Param{RecurrenceUntil};
     }
 
-    push @Bind, \$Param{CalendarID}, \$UniqueID, \$Param{Title}, \$Param{Description},
+    push @Bind, \$Param{CalendarID}, \$Param{UniqueID}, \$Param{Title}, \$Param{Description},
         \$Param{Location},   \$Param{StartTime}, \$Param{EndTime},     \$Param{AllDay},
         \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
         \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
@@ -366,7 +365,7 @@ sub AppointmentCreate {
                 SELECT id FROM calendar_appointment
                 WHERE unique_id=? AND parent_id IS NULL
             ',
-            Bind  => [ \$UniqueID ],
+            Bind  => [ \$Param{UniqueID} ],
             Limit => 1,
         );
 
