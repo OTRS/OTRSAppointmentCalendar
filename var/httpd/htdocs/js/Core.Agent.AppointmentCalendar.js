@@ -297,8 +297,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
 
                 // Increase positions so the tooltip do not overlap with mouse pointer
-                PosX += 15;
-                PosY += 15;
+                PosX += 10;
+                PosY += 10;
 
                 if (TooltipHTML.length > 0) {
 
@@ -317,14 +317,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     // Re-calculate top position if needed
                     LastYPosition = PosY + $TooltipObj.height();
                     if (LastYPosition > DocumentVisibleTop) {
-                        PosY = PosY - (LastYPosition - DocumentVisibleTop) - 15;
+                        PosY = PosY - $TooltipObj.height();
                         $TooltipObj.css('top', PosY + 'px');
                     }
 
                     // Re-calculate left position if needed
                     LastXPosition = PosX + $TooltipObj.width();
                     if (LastXPosition > DocumentVisibleLeft) {
-                        PosX = PosX - (LastXPosition - DocumentVisibleLeft) - 15;
+                        PosX = PosX - $TooltipObj.width() - 30;
                         $TooltipObj.css('left', PosX + 'px');
                     }
 
