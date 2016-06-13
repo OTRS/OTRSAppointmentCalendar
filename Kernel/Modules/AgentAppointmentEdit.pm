@@ -1415,6 +1415,28 @@ sub _NotificationDateGet {
     }
     else {
 
+        # compute date of relative input
+        if ( $Param{GetParams}->{NotificationCustomRelativeInput} ) {
+
+            my $CustomUnitCount = $Param{GetParams}->{NotificationCustomUnitCount};
+            my $CustomUnit      = $Param{GetParams}->{NotificationCustomUnits};
+            my $CustomUnitPoint = $Param{GetParams}->{NotificationCustomUnitsPointOfTime};
+
+            # setup the count to compute for the offset
+            my %UnitOffsetCompute = (
+                minutes => 60,
+                hours   => 3600,
+                days    => 86400,
+            );
+
+            # setup the point of time to compute from
+            my %PointOfTimeOffsetCompute = (
+                minutes => 60,
+                hours   => 3600,
+                days    => 86400,
+            );
+
+        }
     }
 
     return $NotificationDate;

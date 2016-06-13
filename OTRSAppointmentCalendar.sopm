@@ -9,7 +9,6 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Filelist>
-        <File Permission="640" Location="Custom/Kernel/Modules/AdminNotificationEvent.pm"/>
         <File Permission="640" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml"/>
         <File Permission="640" Location="Kernel/cpan-lib/Class/ReturnValue.pm"/>
         <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor.pm"/>

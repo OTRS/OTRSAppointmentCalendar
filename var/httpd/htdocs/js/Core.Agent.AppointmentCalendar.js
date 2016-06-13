@@ -1111,11 +1111,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         if (Fields.$NotificationCustomRelativeInput.prop('checked')) {
 
             // enable relative date fields
+            Fields.$NotificationCustomRelativeInput.val(1);
             Fields.$NotificationCustomUnitCount.prop('disabled', false);
             Fields.$NotificationCustomUnits.prop('disabled', false);
             Fields.$NotificationCustomUnitsPointOfTime.prop('disabled', false);
 
             // disable the custom date time fields
+            Fields.$NotificationCustomDateTimeInput.val('');
             Fields.$NotificationDay.prop('disabled', true);
             Fields.$NotificationMonth.prop('disabled', true);
             Fields.$NotificationYear.prop('disabled', true);
@@ -1125,6 +1127,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         else {
 
             // enable the custom date time input
+            Fields.$NotificationCustomDateTimeInput.val(1);
             Fields.$NotificationCustomDateTimeInput.prop('checked', true);
             Fields.$NotificationDay.prop('disabled', false);
             Fields.$NotificationMonth.prop('disabled', false);
@@ -1133,6 +1136,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Fields.$NotificationMinute.prop('disabled', false);
 
             // disable relative date fields
+            Fields.$NotificationCustomRelativeInput.val('');
             Fields.$NotificationCustomRelativeInput.prop('checked', false);
             Fields.$NotificationCustomUnitCount.prop('disabled', true);
             Fields.$NotificationCustomUnits.prop('disabled', true);
