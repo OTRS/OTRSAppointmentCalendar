@@ -465,6 +465,90 @@ $Selenium->RunTest(
             "Delete yearly recurring appointments.",
         );
 
+        # Create appointment every second day
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+
+        # wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # enter some data
+        $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd day');
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar1{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # wait until js shows Interval
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+        );
+
+        # Set each 2nd day
+        $Selenium->execute_script(
+            "return \$('#RecurrenceInterval').val(2);"
+        );
+
+        # create 3 appointment
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
+
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+
+        # wait for dialog to close and AJAX to finish
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+        );
+
+        my @Appointments5 = $AppointmentObject->AppointmentList(
+            CalendarID => $Calendar1{CalendarID},
+            Result     => 'HASH',
+        );
+
+        # Make sure there are 3 appointments
+        $Self->Is(
+            scalar @Appointments5,
+            3,
+            "Create custom daily recurring appointment."
+        );
+
+        my @Appointment5StartTimes = (
+            $StartAppointment,
+            $CalendarHelperObject->TimestampGet(
+                SystemTime => $StartAppointmentSystem + 2 * 24 * 3600,
+            ),
+            $CalendarHelperObject->TimestampGet(
+                SystemTime => $StartAppointmentSystem + 4 * 24 * 3600,
+            ),
+        );
+
+        for my $Index ( 0 .. 2 ) {
+            $Self->Is(
+                $Appointments5[$Index]->{StartTime},
+                $Appointment5StartTimes[$Index],
+                "Check start time #$Index",
+            );
+        }
+
+        my $Delete5 = $AppointmentObject->AppointmentDelete(
+            AppointmentID => $Appointments5[0]->{AppointmentID},
+            UserID        => $UserID,
+        );
+
+        # Delete appointments
+        $Self->True(
+            $Delete5,
+            "Delete custom daily recurring appointments.",
+        );
+
         }
 );
 
