@@ -154,7 +154,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         width: 250px;
-        max-height: 4.2em;
+        max-height: 5.6em;
     }
 
     .AppointmentTooltip > fieldset > .Value:empty,

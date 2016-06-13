@@ -148,9 +148,10 @@ sub Run {
                         }
 
                         # truncate more than three elements
-                        if ( scalar @TeamNames > 3 ) {
+                        my $TeamCount = scalar @TeamNames;
+                        if ( $TeamCount > 4 ) {
                             splice @TeamNames, 3;
-                            $TeamNames[2] .= '...';
+                            push @TeamNames, sprintf( Translatable('+%d more'), $TeamCount - 3 );
                         }
 
                         $Appointment->{TeamNames} = join( '\n', @TeamNames );
@@ -168,9 +169,10 @@ sub Run {
                         }
 
                         # truncate more than three elements
-                        if ( scalar @ResourceNames > 3 ) {
+                        my $ResourceCount = scalar @ResourceNames;
+                        if ( $ResourceCount > 4 ) {
                             splice @ResourceNames, 3;
-                            $ResourceNames[2] .= '...';
+                            push @ResourceNames, sprintf( Translatable('+%d more'), $ResourceCount - 3 );
                         }
 
                         $Appointment->{ResourceNames} = join( '\n', @ResourceNames );
@@ -191,9 +193,10 @@ sub Run {
                     }
 
                     # truncate more than three elements
-                    if ( scalar @LinkArray > 3 ) {
+                    my $LinkCount = scalar @LinkArray;
+                    if ( $LinkCount > 4 ) {
                         splice @LinkArray, 3;
-                        $LinkArray[2] .= '...';
+                        push @LinkArray, sprintf( Translatable('+%d more'), $LinkCount - 3 );
                     }
 
                     $Appointment->{PluginData}->{$PluginKey} = join( '\n', @LinkArray );
