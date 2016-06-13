@@ -30,6 +30,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name Init
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with different config options.
+     * @param {String} Params.ChallengeToken - User challenge token.
      * @param {String} Params.AllDayText - Localized string for the word "All-day".
      * @param {Boolean} Params.IsRTL - Is current locale is right text based?
      * @param {Array} Params.MonthNames - Array containing the localized strings for each month.
@@ -90,10 +91,17 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 .insertAfter($('#calendar')),
             CurrentAppointment = [];
 
+        if (!Params.ChallengeToken) {
+            return;
+        }
+
         Params.Resources = Params.Resources || {
             ResourceColumns: null,
-            ResourceJSON: null,
-            ResourceText: null
+            ResourceText: null,
+            ResourceSettingsButton: null,
+            ResourceSettingsDialogContainer: null,
+            RestoreDefaultSettings: false,
+            ResourceJSON: null
         };
 
         // Initialize calendar
@@ -195,7 +203,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     Core.AJAX.FunctionCall(
                         Core.Config.Get('CGIHandle'),
                         {
-                            ChallengeToken: $('#ChallengeToken').val(),
+                            ChallengeToken: Params.ChallengeToken,
                             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
                             Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
                             OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
@@ -265,6 +273,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             eventDragStart: function(CalEvent) {
                 CurrentAppointment.start = CalEvent.start;
                 CurrentAppointment.end = CalEvent.end;
+                CurrentAppointment.resourceIds = CalEvent.resourceIds;
             },
             eventMouseover: function(CalEvent, JSEvent) {
                 var $TooltipObj,
@@ -288,8 +297,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
 
                 // Increase positions so the tooltip do not overlap with mouse pointer
-                PosX += 15;
-                PosY += 15;
+                PosX += 10;
+                PosY += 10;
 
                 if (TooltipHTML.length > 0) {
 
@@ -308,14 +317,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     // Re-calculate top position if needed
                     LastYPosition = PosY + $TooltipObj.height();
                     if (LastYPosition > DocumentVisibleTop) {
-                        PosY = PosY - (LastYPosition - DocumentVisibleTop) - 15;
+                        PosY = PosY - $TooltipObj.height();
                         $TooltipObj.css('top', PosY + 'px');
                     }
 
                     // Re-calculate left position if needed
                     LastXPosition = PosX + $TooltipObj.width();
                     if (LastXPosition > DocumentVisibleLeft) {
-                        PosX = PosX - (LastXPosition - DocumentVisibleLeft) - 15;
+                        PosX = PosX - $TooltipObj.width() - 30;
                         $TooltipObj.css('left', PosX + 'px');
                     }
 
@@ -394,6 +403,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         }
 
+        if (Params.Resources.ResourceSettingsButton) {
+            ResourceSettingsInit(Params);
+        }
+
         // Check each 5 seconds
         setInterval(function () {
             TargetNS.AppointmentReached(Params)
@@ -467,7 +480,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         var StartTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').startOf('month'),
             EndTime = $.fullCalendar.moment(Year + '-' + Month, 'YYYY-M').add(1, 'months').startOf('month'),
             Data = {
-                ChallengeToken: $('#ChallengeToken').val(),
+                ChallengeToken: Params.ChallengeToken,
                 Action: Params.Callbacks.ListAction,
                 Subaction: Params.Callbacks.DaysSubacton,
                 StartTime: StartTime.format('YYYY-MM-DD'),
@@ -592,7 +605,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function OpenEditDialog(Params, AppointmentData) {
         var Data = {
-            ChallengeToken: $('#ChallengeToken').val(),
+            ChallengeToken: Params.ChallengeToken,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditMaskSubaction ? Params.Callbacks.EditMaskSubaction : 'EditMask',
             AppointmentID: AppointmentData.CalEvent ? AppointmentData.CalEvent.id : null,
@@ -691,7 +704,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function UpdateAppointment(Params, AppointmentData) {
         var Data = {
-            ChallengeToken: $('#ChallengeToken').val(),
+            ChallengeToken: Params.ChallengeToken,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
             Subaction: Params.Callbacks.EditSubaction ? Params.Callbacks.EditSubaction : 'EditAppointment',
             AppointmentID: AppointmentData.CalEvent.id,
@@ -708,8 +721,21 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             AllDay: AppointmentData.CalEvent.end.hasTime() ? '0' : '1',
             Recurring: AppointmentData.CalEvent.recurring ? '1' : '0',
             TeamID: AppointmentData.CalEvent.teamIds ? AppointmentData.CalEvent.teamIds : undefined,
-            ResourceID: AppointmentData.CalEvent.resourceId ? [ AppointmentData.CalEvent.resourceId ] : undefined
+            ResourceID: AppointmentData.CalEvent.resourceIds ? AppointmentData.CalEvent.resourceIds :
+                AppointmentData.CalEvent.resourceId ? [ AppointmentData.CalEvent.resourceId ] : undefined
         };
+
+        // Assigned resource didn't change
+        if (
+            AppointmentData.CalEvent.resourceId
+            && AppointmentData.PreviousAppointment.resourceIds
+            && $.inArray(
+                AppointmentData.CalEvent.resourceId,
+                AppointmentData.PreviousAppointment.resourceIds
+            ) !== -1
+        ) {
+            Data.ResourceID = AppointmentData.PreviousAppointment.resourceIds;
+        }
 
         function Update() {
             Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
@@ -718,7 +744,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (Data.Recurring === '1' || AppointmentData.CalEvent.allDay) {
+                        if (
+                            Data.Recurring === '1'
+                            || AppointmentData.CalEvent.allDay
+                            || AppointmentData.CalEvent.resourceId
+                            )
+                        {
                             $('#calendar').fullCalendar('refetchEvents');
                         }
                     } else {
@@ -876,7 +907,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         Core.AJAX.FunctionCall(
             Core.Config.Get('CGIHandle'),
             {
-                ChallengeToken: $('#ChallengeToken').val(),
+                ChallengeToken: Params.ChallengeToken,
                 Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
                 Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
                 OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
@@ -1174,13 +1205,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $TeamIDObj - field with list of teams.
      * @param {jQueryObject} $ResourceIDObj - field with list of resources.
+     * @param {String} ChallengeToken - User challenge token.
      * @description
      *      This method initializes team fields behavior.
      */
-    TargetNS.TeamInit = function ($TeamIDObj, $ResourceIDObj) {
+    TargetNS.TeamInit = function ($TeamIDObj, $ResourceIDObj, ChallengeToken) {
         $TeamIDObj.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function () {
             var Data = {
-                ChallengeToken: $('#ChallengeToken').val(),
+                ChallengeToken: ChallengeToken,
                 Action: 'AgentAppointmentEdit',
                 Subaction: 'TeamUserList',
                 TeamID: $TeamIDObj.val()
@@ -1221,6 +1253,113 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
     /**
      * @private
+     * @name ResourceSettingsInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {Object} Params - Hash with different config options.
+     * @param {Array} Params.Callbacks - Array containing names of the callbacks.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
+     * @param {Array} Params.OverviewScreen - Name of the screen (ResourceOverview).
+     * @param {Object} Params.Resources - Object with resources parameters.
+     * @param {String} Params.Resources.ResourceSettingsButton - ID of the element for settings button.
+     * @param {String} Params.Resources.ResourceSettingsDialogContainer - ID of the element with dialog content.
+     * @param {Boolean} Params.Resources.RestoreDefaultSettings - whether to display restore settings button.
+     * @description
+     *      This method initializes resource settings behavior.
+     */
+    function ResourceSettingsInit (Params) {
+        var $ResourceSettingsObj = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsButton)),
+            $ResourceSettingsDialog = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsDialogContainer)),
+            $RestoreSettingsObj;
+
+        // Resource settings button
+        $ResourceSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
+            Core.UI.Dialog.ShowContentDialog($ResourceSettingsDialog, Core.Config.Get('AppointmentCalendarTranslationsSettings'), '10px', 'Center', true,
+                [
+                    {
+                        Label: Core.Config.Get('AppointmentCalendarTranslationsSave'),
+                        Class: 'Primary',
+                        Function: function () {
+                            var $ListContainer = $('.AllocationListContainer').find('.AssignedFields'),
+                                ShownResources = [],
+                                Data = {
+                                    ChallengeToken: Params.ChallengeToken,
+                                    Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+                                    Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
+                                    OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'ResourceOverview',
+                                    TeamID: $('#Team').val()
+                                };
+
+                            if (isJQueryObject($ListContainer) && $ListContainer.length) {
+                                $.each($ListContainer.find('li'), function() {
+                                    ShownResources.push($(this).attr('data-fieldname'));
+                                });
+                            }
+                            Data.ShownResources = JSON.stringify(ShownResources);
+
+                            Core.Agent.AppointmentCalendar.ShowWaitingDialog();
+
+                            Core.AJAX.FunctionCall(
+                                Core.Config.Get('CGIHandle'),
+                                Data,
+                                function (Response) {
+                                    if (!Response.Success) {
+                                        Core.Debug.Log('Error updating user preferences!');
+                                    }
+                                    location.reload();
+                                }
+                            );
+                        }
+                    }
+                ], true);
+
+            Event.preventDefault();
+            Event.stopPropagation();
+
+            Core.Agent.TableFilters.SetAllocationList();
+
+            return false;
+        });
+
+        // Restore settings button
+        if (Params.Resources.RestoreDefaultSettings) {
+            $RestoreSettingsObj = $('<a />').attr('id', 'RestoreDefaultSettings')
+                .attr('href', '#')
+                .attr('title', Core.Config.Get('AppointmentCalendarTranslationsRestore'))
+                .append($('<i />').addClass('fa fa-trash'));
+
+            // Add it to the column header
+            $('tr.fc-super + tr .fc-cell-content').append($RestoreSettingsObj);
+
+            $RestoreSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
+                Core.AJAX.FunctionCall(
+                    Core.Config.Get('CGIHandle'),
+                    {
+                        ChallengeToken: Params.ChallengeToken,
+                        Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+                        Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
+                        OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'ResourceOverview',
+                        RestoreDefaultSettings: 'ShownResources',
+                        TeamID: $('#Team').val()
+                    },
+                    function (Response) {
+                        if (!Response.Success) {
+                            Core.Debug.Log('Error updating user preferences!');
+                        }
+                        location.reload();
+                    }
+                );
+
+                Event.preventDefault();
+                Event.stopPropagation();
+
+                return false;
+            });
+        }
+    }
+
+    /**
+     * @private
      * @name ToggleAJAXLoader
      * @memberof Core.Agent.AppointmentCalendar
      * @function
@@ -1256,10 +1395,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @name PluginInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $PluginFields - fields with different plugin searches.
+     * @param {String} ChallengeToken - User challenge token.
      * @description
      *      This method initializes plugin fields behavior.
      */
-    TargetNS.PluginInit = function ($PluginFields) {
+    TargetNS.PluginInit = function ($PluginFields, ChallengeToken) {
 
         function InitRemoveButtons() {
             $('.RemoveButton').off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
@@ -1333,7 +1473,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     var URL = Core.Config.Get('CGIHandle'),
                         CurrentAJAXNumber = ++AJAXCounter,
                         Data = {
-                            ChallengeToken: $('#ChallengeToken').val(),
+                            ChallengeToken: ChallengeToken,
                             Action: 'AgentAppointmentPluginSearch',
                             PluginKey: PluginKey,
                             Term: Request.term + '*',
@@ -1534,7 +1674,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         }
 
         Data = {
-            ChallengeToken: $('#ChallengeToken').val(),
+            ChallengeToken: Params.ChallengeToken,
             Action: "AgentAppointmentList",
             Subaction: "AppointmentsStarted",
             AppointmentIDs: AppointmentIDs

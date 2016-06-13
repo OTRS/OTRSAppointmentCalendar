@@ -80,7 +80,7 @@
             <div class="Header">
                 <div class="ActionMenu">
                     <div class="WidgetAction Settings">
-                        <a href="#" id="ShowContextSettingsDialog" title="[% Translate("Settings") | html %]">
+                        <a href="#" id="ResourceSettingsButton" title="[% Translate("Settings") | html %]">
                             <i class="fa fa-cog"></i>
                         </a>
                     </div>
@@ -123,8 +123,16 @@ Core.Config.Set('AppointmentCalendarTranslationsLoading', [% Translate("Loading.
 Core.Config.Set('AppointmentCalendarTranslationsTooManyCalendarsHeadline', [% Translate("Too many active calendars") | JSON %]);
 Core.Config.Set('AppointmentCalendarTranslationsTooManyCalendarsText', [% Translate("Please either turn some off first or increase the limit in configuration.") | JSON %]);
 Core.Config.Set('AppointmentCalendarTranslationsYes', [% Translate("Yes") | JSON %]);
+Core.Config.Set('AppointmentCalendarTranslationsSettings', [% Translate("Settings") | JSON %]);
+Core.Config.Set('AppointmentCalendarTranslationsSave', [% Translate("Save") | JSON %]);
+Core.Config.Set('AppointmentCalendarTranslationsRestore', [% Translate("Restore default settings") | JSON %]);
+
+Core.Config.AddConfig({
+    [% FOREACH Key IN Data.TeamUserList.keys %]'Column[% Key %]': [% Data.TeamUserList.$Key | JSON %], [% END %]
+});
 
 Core.Agent.AppointmentCalendar.Init({
+    ChallengeToken: $("#ChallengeToken").val(),
     AllDayText: [% Translate("All-day") | JSON %],
     IsRTL: [% Data.IsRTLLanguage %],
     MonthNames: [
@@ -228,6 +236,9 @@ Core.Agent.AppointmentCalendar.Init({
                 field: 'title'
             }
         ],
+        ResourceSettingsButton: 'ResourceSettingsButton',
+        ResourceSettingsDialogContainer: 'ResourceSettingsDialogContainer',
+        RestoreDefaultSettings: [% Data.RestoreDefaultSettings | JSON %],
 [% RenderBlockStart("ResourceJSON") %]
         ResourceJSON: {
             url: Core.Config.Get('CGIHandle'),
@@ -316,92 +327,6 @@ $('#Team').on('change', function() {
     $('#ChangeTeamForm').submit();
 });
 
-$('#ShowContextSettingsDialog').on('click', function (Event) {
-    Core.UI.Dialog.ShowContentDialog($('#ContextSettingsDialogContainer'), [% Translate("Settings") | JSON %], '10px', 'Center', true,
-        [
-            {
-                Label: [% Translate("Save") | JSON %],
-                Class: 'Primary',
-                Function: function () {
-                    var $ListContainer = $('.AllocationListContainer').find('.AssignedFields'),
-                        ShownResources = [],
-                        Data = {
-                            ChallengeToken: $('#ChallengeToken').val(),
-                            Action: 'AgentAppointmentEdit',
-                            Subaction: 'UpdatePreferences',
-                            OverviewScreen: 'ResourceOverview',
-                            TeamID: $('#Team').val()
-                        };
-
-                    if (isJQueryObject($ListContainer) && $ListContainer.length) {
-                        $.each($ListContainer.find('li'), function() {
-                            ShownResources.push($(this).attr('data-fieldname'));
-                        });
-                    }
-                    Data.ShownResources = JSON.stringify(ShownResources);
-
-                    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
-
-                    Core.AJAX.FunctionCall(
-                        Core.Config.Get('CGIHandle'),
-                        Data,
-                        function (Response) {
-                            if (!Response.Success) {
-                                Core.Debug.Log('Error updating user preferences!');
-                            }
-                            location.reload();
-                        }
-                    );
-                }
-            }
-        ], true);
-
-    Event.preventDefault();
-    Event.stopPropagation();
-
-    Core.Agent.TableFilters.SetAllocationList();
-
-    return false;
-});
-
-[% IF Data.RestoreDefaultSettings %]
-var $RestoreObj = $('<a />').attr('id', 'RestoreDefaultSettings')
-    .attr('href', '#')
-    .attr('title', [% Translate("Restore default settings") | JSON %])
-    .append($('<i />').addClass('fa fa-trash'));
-
-$('tr.fc-super + tr .fc-cell-content').append($RestoreObj);
-
-$RestoreObj.on('click', function (Event) {
-    Core.AJAX.FunctionCall(
-        Core.Config.Get('CGIHandle'),
-        {
-            ChallengeToken: $('#ChallengeToken').val(),
-            Action: 'AgentAppointmentEdit',
-            Subaction: 'UpdatePreferences',
-            OverviewScreen: 'ResourceOverview',
-            RestoreDefaultSettings: 'ShownResources',
-            TeamID: $('#Team').val()
-        },
-        function (Response) {
-            if (!Response.Success) {
-                Core.Debug.Log('Error updating user preferences!');
-            }
-            location.reload();
-        }
-    );
-
-    Event.preventDefault();
-    Event.stopPropagation();
-
-    return false;
-});
-[% END %]
-
-Core.Config.AddConfig({
-    [% FOREACH Key IN Data.TeamUserList.keys %]'Column[% Key %]': [% Data.TeamUserList.$Key | JSON %], [% END %]
-});
-
 //]]></script>
 [% END %]
 
@@ -410,7 +335,7 @@ Core.Config.AddConfig({
     </div>
     <div class="Clear"></div>
 
-    <div id="ContextSettingsDialogContainer" class="Hidden">
+    <div id="ResourceSettingsDialogContainer" class="Hidden">
         <form id="ContextSettingsDialogResourceOverview" class="WidgetSettingsForm">
             <fieldset class="TableLike FixedLabelSmall">
 [% RenderBlockStart("ShownResourceSettings") %]

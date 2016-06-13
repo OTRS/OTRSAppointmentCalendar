@@ -43,13 +43,15 @@ sub Data {
     $Self->{Translation}->{'Create: users can create and delete appointments in the calendar.'} =
         'Kreiranje: operateri mogu kreirati i brisati termine u kalendaru.';
     $Self->{Translation}->{'Read/write: users can manage the calendar itself.'} = 'RW: operateri mogu administrirati i sam kalendar.';
-    $Self->{Translation}->{'Color'} = 'Boja';
     $Self->{Translation}->{'URL'} = 'Adresa';
     $Self->{Translation}->{'Export calendar'} = 'Izvezi kalendar';
     $Self->{Translation}->{'Copy public calendar URL'} = 'Iskopiraj javnu adresu kalendara (URL)';
     $Self->{Translation}->{'Calendar name'} = 'Naziv kalendara';
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Kalendar sa istim nazivom već postoji.';
+    $Self->{Translation}->{'Color'} = 'Boja';
     $Self->{Translation}->{'Permission group'} = 'Grupa pristupa';
+    $Self->{Translation}->{'More'} = 'Više';
+    $Self->{Translation}->{'Less'} = 'Manje';
 
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Manage Calendars'} = 'Upravljanje kalendarima';
@@ -86,10 +88,13 @@ sub Data {
     $Self->{Translation}->{'End time'} = 'Kraj';
 
     # Template: AgentAppointmentEdit
+    $Self->{Translation}->{'Please set this to value before End date.'} = 'Molimo postavite ovaj datum pre kraja.';
+    $Self->{Translation}->{'Please set this to a value after start date.'} = 'Molimo postavite ovaj datum posle početka.';
     $Self->{Translation}->{'This an ocurrence of a repeating appointment.'} = 'Ovo je termin koji se ponavlja.';
     $Self->{Translation}->{'Click here to edit the parent appointment.'} = 'Kliknite ovde za izmenu matičnog termina.';
     $Self->{Translation}->{'Frequency'} = 'Učestalost';
     $Self->{Translation}->{'Every'} = 'Svakog(e)';
+    $Self->{Translation}->{'Please set this to value after start date.'} = 'Molimo postavite ovaj datum posle početka.';
 
     # Template: AgentAppointmentResourceOverview
     $Self->{Translation}->{'Resource Overview'} = 'Pregled resursa';
@@ -100,7 +105,12 @@ sub Data {
         'Nijedan tim nije pronađen. Molimo prvo dodajte tim korišćenjeem ekrana Upravljanje timovima';
     $Self->{Translation}->{'No team agents found. Please assign agents to a team first by using Manage Team Agents page.'} =
         'Nijedan operater nije pronađen u timu. Molimo prvo dodajte operatera u tim korišćenjem Upravljanje operaterima u timovima.';
+    $Self->{Translation}->{'Restore default settings'} = 'Vratite podrazumevana podešavanja';
     $Self->{Translation}->{'Resources'} = 'Resursi';
+    $Self->{Translation}->{'Shown resources'} = 'Prikazani resursi';
+    $Self->{Translation}->{'Available Resources'} = 'Dostupni resursi';
+    $Self->{Translation}->{'Filter available resources'} = 'Filter za dostupne resurse';
+    $Self->{Translation}->{'Visible Resources (order by drag & drop)'} = 'Vidljivi resursi (redosled prema prevuci i pusti)';
 
     # Template: AgentAppointmentTeam
     $Self->{Translation}->{'Add Team'} = 'Dodaj tim';
