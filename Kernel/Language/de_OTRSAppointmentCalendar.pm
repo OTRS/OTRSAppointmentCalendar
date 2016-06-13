@@ -45,7 +45,8 @@ sub Data {
     $Self->{Translation}->{'Calendar name'} = 'Kalendername';
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Ein Kalender mit gleichem Namen existiert bereits.';
     $Self->{Translation}->{'Permission group'} = 'Berechtigungsgruppe';
-    $Self->{Translation}->{'Color'} = 'Farbe';
+    $Self->{Translation}->{'More'} = 'Mehr';
+    $Self->{Translation}->{'Less'} = 'Weniger';
 
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Manage Calendars'} = 'Kalender verwalten';
@@ -181,7 +182,6 @@ sub Data {
     $Self->{Translation}->{'Create new appointment.'} = 'Einen neuen Termin erstellen';
     $Self->{Translation}->{'Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.'} = 'Maximale Anzahl an aktiven Kalendern in der Kalenderübersicht oder Resourcenübersicht. Bitte beachten Sie, dass sich zuviele gleichzeitig aktive Kalender aufgrund vieler gleichzeitiger Anfragen auf die Performance des Systems auswirken kann.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Erstellt einen neuen Termin in einem Kalender, welcher direkt mit diesem Ticket verknüpft ist';
-
 }
 
 1;
