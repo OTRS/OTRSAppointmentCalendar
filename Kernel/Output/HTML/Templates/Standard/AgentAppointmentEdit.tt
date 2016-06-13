@@ -358,19 +358,19 @@ Core.Form.Validate.SetSubmitFunction($('#EditAppointmentForm'), function (Form) 
         Months = new Array();
 
     // serialize days
-    $("#RecurrenceCustomWeeklyFieldset button.fc-state-active").each(function(){
+    $("#RecurrenceCustomWeeklyDiv button.fc-state-active").each(function(){
         Days.push($(this).val());
     });
     $("input#Days").val(Days.join());
 
     // serialize month days
-    $("#RecurrenceCustomMonthlyFieldset button.fc-state-active").each(function(){
+    $("#RecurrenceCustomMonthlyDiv button.fc-state-active").each(function(){
         MonthDays.push($(this).val());
     });
     $("input#MonthDays").val(MonthDays.join());
 
     // serialize months
-    $("#RecurrenceCustomYearlyFieldset button.fc-state-active").each(function(){
+    $("#RecurrenceCustomYearlyDiv button.fc-state-active").each(function(){
         Months.push($(this).val());
     });
     $("input#Months").val(Months.join());
