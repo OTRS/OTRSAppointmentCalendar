@@ -147,27 +147,27 @@ sub Export {
         );
         $ICalEndTime->offset($Offset);
 
-        # recalculate for all day appointment
+        # recalculate for all day appointment, discard time data
         if ( $Appointment{AllDay} ) {
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year )
                 = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
                 SystemTime => $StartTime,
                 );
             $ICalStartTime = Date::ICal->new(
-                year  => $Year,
-                month => $Month,
-                day   => $Day,
+                year   => $Year,
+                month  => $Month,
+                day    => $Day,
+                offset => '+0000',    # UTC
             );
-            $ICalStartTime->offset($Offset);
             ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
                 SystemTime => $EndTime,
             );
             $ICalEndTime = Date::ICal->new(
-                year  => $Year,
-                month => $Month,
-                day   => $Day,
+                year   => $Year,
+                month  => $Month,
+                day    => $Day,
+                offset => '+0000',    # UTC
             );
-            $ICalEndTime->offset($Offset);
         }
 
         # create iCalendar event entry
