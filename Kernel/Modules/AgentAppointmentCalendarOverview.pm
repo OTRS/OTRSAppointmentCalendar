@@ -106,6 +106,12 @@ sub Run {
                 $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
             }
 
+            # get access tokens
+            $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
+                CalendarID => $Calendar->{CalendarID},
+                UserLogin  => $Self->{UserLogin},
+            );
+
             # calendar checkbox in the widget
             $LayoutObject->Block(
                 Name => 'CalendarSwitch',
@@ -267,7 +273,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

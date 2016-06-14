@@ -68,6 +68,7 @@ sub Data {
     $Self->{Translation}->{'Date/Time'} = 'Datum/Zeit';
     $Self->{Translation}->{'End date'} = 'Endzeitpunkt';
     $Self->{Translation}->{'Repeat'} = 'Wiederholung';
+    $Self->{Translation}->{'Copy public calendar URL'} = 'Öffentliche Kalender URL kopieren';
 
     # Template: AgentAppointmentCalendarOverviewSeen
     $Self->{Translation}->{'Following appointments have been started'} = 'Die folgenden Termine haben begonnen';

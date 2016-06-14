@@ -52,6 +52,10 @@
                             <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
                             [% Data.CalendarName | html %]
                         </label>
+                        <span class="CopyToClipboard" data-clipboard-text="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Copy public calendar URL") | html %]">
+                            <i class="fa fa-clipboard"></i>
+                            <span class="InvisibleText">[% Translate("Copy public calendar URL") | html %]</span>
+                        </span>
                     </div>
 [% RenderBlockEnd("CalendarSwitch") %]
                 </div>
@@ -60,6 +64,18 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
     Core.Agent.AppointmentCalendar.InitCalendarFilter($('#FilterCalendars'), $('#CalendarList'));
+
+    var ClipboardJS = new Clipboard('.CopyToClipboard');
+    ClipboardJS.on('success', function (Event) {
+        $(Event.trigger).hide()
+            .fadeIn();
+        Event.clearSelection();
+    });
+
+    ClipboardJS.on('error', function(Event) {
+        Core.Form.ErrorTooltips.InitTooltip($(Event.trigger), 'Press Ctrl+C (Cmd+C) to copy to clipboard');
+        $(Event.trigger).focus();
+    });
 //]]></script>
 [% END %]
 [% RenderBlockEnd("CalendarWidget") %]
