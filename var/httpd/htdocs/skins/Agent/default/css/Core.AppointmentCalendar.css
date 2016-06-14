@@ -33,7 +33,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 230px;
+        width: 210px;
         display: inline-block;
         vertical-align: middle;
     }
@@ -93,7 +93,7 @@
         border-bottom: 1px solid #BBB;
         display: inline-block;
         transition: all ease-in 0.2s;
-    	margin: 0;
+        margin: 0;
         padding: 3px 7px 6px;
         line-height: 14px;
         vertical-align: middle;
@@ -213,13 +213,13 @@
     }
 
     .fc-state-default.fc-corner-left {
-    	border-top-left-radius: 0;
-    	border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 
     .fc-state-default.fc-corner-right {
-    	border-top-right-radius: 0;
-    	border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
     .fc-state-hover,

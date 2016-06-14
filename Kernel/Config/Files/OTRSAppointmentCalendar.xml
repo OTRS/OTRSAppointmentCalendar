@@ -61,6 +61,7 @@
                     <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
+                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -96,6 +97,7 @@
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
+                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
