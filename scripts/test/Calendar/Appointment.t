@@ -608,7 +608,7 @@ my $AppointmentIDRec7 = $AppointmentObject->AppointmentCreate(
     RecurrenceType      => "CustomMonthly",
     RecurrenceInterval  => 2,                                        # each 2 months
     RecurrenceFrequency => [ 5, 10, 15 ],                            # Days in month
-    RecurrenceCount     => 3,                                        # 3 appointments
+    RecurrenceCount     => 6,                                        # 3 appointments
     UserID              => $UserID,
 );
 $Self->True(
@@ -1709,5 +1709,47 @@ for my $UniqueID (@UniqueIDs) {
         "UniqueID $UniqueID is unique",
     );
 }
+
+# Special use-case: Repeat each month starting on 30 April - all day.
+# System used to create 2 day appointment in May (30-31), which is not OK.
+
+# Create new calendar
+my %Calendar4 = $CalendarObject->CalendarCreate(
+    CalendarName => 'Test calendar 4',
+    Color        => '#6BAD00',
+    GroupID      => $GroupID,
+    UserID       => $UserID,
+);
+my $AppointmentID14 = $AppointmentObject->AppointmentCreate(
+    CalendarID      => $Calendar4{CalendarID},
+    Title           => 'Appointment #13',
+    Description     => 'How to use Process tickets...',
+    StartTime       => '2016-03-30 00:00:00',
+    EndTime         => '2016-04-01 00:00:00',
+    TimezoneID      => 0,
+    AllDay          => 1,
+    Recurring       => 1,
+    RecurrenceType  => 'Monthly',
+    RecurrenceCount => 3,
+    UserID          => $UserID,
+);
+
+my @Appointments14 = $AppointmentObject->AppointmentList(
+    CalendarID => $Calendar4{CalendarID},
+    Result     => 'HASH',
+);
+
+$Self->Is(
+    scalar @Appointments14,
+    3,
+    "Appointment #13 count",
+);
+
+# Enable later
+# $Self->Is(
+#     $Appointments13[1]->{EndTime},
+#     '2016-03-31 00:00:00',
+#     "Appointment #13 End time check",
+# );
 
 1;

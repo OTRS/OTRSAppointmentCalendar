@@ -15,61 +15,6 @@ use vars (qw($Self));
 # Get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
-my $ElementDisabled = sub {
-    my (%Param) = @_;
-
-    # Value is optional parameter
-    for my $Needed (qw(UnitTestObject Element)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    $Param{UnitTestObject}->Is(
-        $Selenium->execute_script(
-            "return \$('#" . $Param{Element} . ":disabled').length;"
-        ),
-        $Param{Value},
-        "$Param{Element} disabled ($Param{Value})",
-    );
-};
-
-my $ElementExists = sub {
-    my (%Param) = @_;
-
-    # Value is optional parameter
-    for my $Needed (qw(UnitTestObject Element)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my $Length = $Selenium->execute_script(
-        "return \$('#" . $Param{Element} . "').length;"
-    );
-
-    if ( $Param{Value} ) {
-        $Param{UnitTestObject}->True(
-            $Length,
-            "$Param{Element} exists",
-        );
-    }
-    else {
-        $Param{UnitTestObject}->False(
-            $Length,
-            "$Param{Element} not exists",
-        );
-    }
-};
-
 $Selenium->RunTest(
     sub {
 
@@ -81,11 +26,9 @@ $Selenium->RunTest(
         );
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-        my $SysConfigObject      = $Kernel::OM->Get('Kernel::System::SysConfig');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
         my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-        my $TimeObject           = $Kernel::OM->Get('Kernel::System::Time');
         my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
@@ -585,10 +528,50 @@ $Selenium->RunTest(
         # Deselect selected day
         $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button.fc-state-active', 'css' )->click();
 
-        # Now select Mon, Wed and Sun
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="1"]', 'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="3"]', 'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="7"]', 'css' )->click();
+        # Select Mon
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"1\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For1 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"1\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For1,
+            "Custom weekly appointment - check if Monday is selected."
+        );
+
+        # Select Wed
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"3\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For3 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For3,
+            "Custom weekly appointment - check if Wednesday is selected."
+        );
+
+        # Select Sun
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"7\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For7 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"7\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For7,
+            "Custom weekly appointment - check if Sunday is selected."
+        );
 
         # Set each 2nd week
         $Selenium->execute_script(
@@ -842,10 +825,50 @@ $Selenium->RunTest(
         # Deselect selected day
         $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button.fc-state-active', 'css' )->click();
 
-        # # Now select Mon, Wed and Sun
-        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button[value="3"]',  'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button[value="10"]', 'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button[value="31"]', 'css' )->click();
+        # Select 3th
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"3\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For3 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For3,
+            "Custom monthly appointment - check if 3 is selected."
+        );
+
+        # Select 10th
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"10\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For10 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For10,
+            "Custom monthly appointment - check if 10 is selected."
+        );
+
+        # Select 31
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"31\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For31 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"31\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For31,
+            "Custom monthly appointment - check if 31 is selected."
+        );
 
         # Set each 2nd week
         $Selenium->execute_script(
@@ -1091,15 +1114,49 @@ $Selenium->RunTest(
         # Deselect selected month
         $Selenium->find_element( '#RecurrenceCustomYearlyDiv button.fc-state-active', 'css' )->click();
 
-        # Now select Feb, Oct and Dec
+        # Select February
         $Selenium->execute_script(
-            "\$('#RecurrenceCustomYearlyDiv button[value=\"2\"]').trigger('click');"
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"2\"]').click();"
         );
-        $Selenium->execute_script(
-            "\$('#RecurrenceCustomYearlyDiv button[value=\"10\"]').trigger('click');"
+
+        # check if selected successful
+        my $Wait10For2 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"2\"]").hasClass("fc-state-active")'
         );
+        $Self->True(
+            $Wait10For2,
+            "Custom yearly appointment - check if February is selected."
+        );
+
+        # Select October
         $Selenium->execute_script(
-            "\$('#RecurrenceCustomYearlyDiv button[value=\"12\"]').trigger('click');"
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"10\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait10For10 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait10For10,
+            "Custom yearly appointment - check if October is selected."
+        );
+
+        # Select December
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"12\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait10For12 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"12\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait10For12,
+            "Custom yearly appointment - check if December is selected."
         );
 
         # Set each 2nd week
