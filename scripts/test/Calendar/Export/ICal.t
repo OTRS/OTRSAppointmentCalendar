@@ -130,18 +130,7 @@ my @Appointments = (
         UserID      => $UserID,
     },
 
-    # timezone
-    {
-        CalendarID  => $ExportCalendar{CalendarID},
-        StartTime   => '2016-03-01 12:00:00',
-        EndTime     => '2016-03-01 14:00:00',
-        TimezoneID  => 2,
-        Title       => 'TZ Appointment',
-        Description => 'Appointment with timezone offset',
-        UserID      => $UserID,
-    },
-
-    # all-day
+    # all-day with resource
     {
         CalendarID => $ExportCalendar{CalendarID},
         StartTime  => '2016-03-01 00:00:00',
@@ -341,5 +330,25 @@ $Self->Is(
     scalar @ExportedAppointments,
     'Imported appointment count'
 );
+
+my $Count = 1;
+for my $ImportedAppointment (@ImportedAppointments) {
+
+    # delete specific keys
+    delete $ImportedAppointment->{AppointmentID};
+    delete $ImportedAppointment->{CalendarID};
+    delete $ImportedAppointment->{UniqueID};
+    delete $ExportedAppointments[ $Count - 1 ]->{AppointmentID};
+    delete $ExportedAppointments[ $Count - 1 ]->{CalendarID};
+    delete $ExportedAppointments[ $Count - 1 ]->{UniqueID};
+
+    # compare imported and exported appointments
+    $Self->IsDeeply(
+        $ImportedAppointment,
+        $ExportedAppointments[ $Count - 1 ],
+        "Imported appointment $Count",
+    );
+    $Count++;
+}
 
 1;

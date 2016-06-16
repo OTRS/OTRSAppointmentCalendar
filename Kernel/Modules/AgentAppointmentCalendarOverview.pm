@@ -106,6 +106,12 @@ sub Run {
                 $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
             }
 
+            # get access tokens
+            $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
+                CalendarID => $Calendar->{CalendarID},
+                UserLogin  => $Self->{UserLogin},
+            );
+
             # calendar checkbox in the widget
             $LayoutObject->Block(
                 Name => 'CalendarSwitch',

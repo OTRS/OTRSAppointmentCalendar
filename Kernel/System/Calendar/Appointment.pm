@@ -2391,6 +2391,17 @@ sub _CalculateRecurrenceTime {
             Time   => $Param{OriginalTime},
             Months => $Param{Step},
         );
+
+        if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
+            my @OriginalDateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                SystemTime => $SystemTime,
+            );
+
+            if ( $OriginalDateInfo[3] == 1 ) {
+
+                # TODO:
+            }
+        }
     }
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Yearly' ) {
 

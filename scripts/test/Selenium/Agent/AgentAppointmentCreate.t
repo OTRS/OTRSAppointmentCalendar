@@ -15,61 +15,6 @@ use vars (qw($Self));
 # Get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
-my $ElementDisabled = sub {
-    my (%Param) = @_;
-
-    # Value is optional parameter
-    for my $Needed (qw(UnitTestObject Element)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    $Param{UnitTestObject}->Is(
-        $Selenium->execute_script(
-            "return \$('#" . $Param{Element} . ":disabled').length;"
-        ),
-        $Param{Value},
-        "$Param{Element} disabled ($Param{Value})",
-    );
-};
-
-my $ElementExists = sub {
-    my (%Param) = @_;
-
-    # Value is optional parameter
-    for my $Needed (qw(UnitTestObject Element)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my $Length = $Selenium->execute_script(
-        "return \$('#" . $Param{Element} . "').length;"
-    );
-
-    if ( $Param{Value} ) {
-        $Param{UnitTestObject}->True(
-            $Length,
-            "$Param{Element} exists",
-        );
-    }
-    else {
-        $Param{UnitTestObject}->False(
-            $Length,
-            "$Param{Element} not exists",
-        );
-    }
-};
-
 $Selenium->RunTest(
     sub {
 
@@ -81,11 +26,9 @@ $Selenium->RunTest(
         );
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-        my $SysConfigObject      = $Kernel::OM->Get('Kernel::System::SysConfig');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
         my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-        my $TimeObject           = $Kernel::OM->Get('Kernel::System::Time');
         my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
@@ -585,10 +528,50 @@ $Selenium->RunTest(
         # Deselect selected day
         $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button.fc-state-active', 'css' )->click();
 
-        # Now select Mon, Wed and Sun
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="1"]', 'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="3"]', 'css' )->click();
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button[value="7"]', 'css' )->click();
+        # Select Mon
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"1\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For1 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"1\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For1,
+            "Custom weekly appointment - check if Monday is selected."
+        );
+
+        # Select Wed
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"3\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For3 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For3,
+            "Custom weekly appointment - check if Wednesday is selected."
+        );
+
+        # Select Sun
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomWeeklyDiv button[value=\"7\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait6For7 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"7\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait6For7,
+            "Custom weekly appointment - check if Sunday is selected."
+        );
 
         # Set each 2nd week
         $Selenium->execute_script(
@@ -755,7 +738,7 @@ $Selenium->RunTest(
         my $LastCW7;
         my $DayOfWeek7;
 
-        while ( scalar @Appointment7StartTimes != 6 ) {
+        while ( scalar @Appointment7StartTimes != 3 ) {
             my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
                 SystemTime => $SystemTime7,
             );
@@ -804,6 +787,587 @@ $Selenium->RunTest(
         $Self->True(
             $Delete7,
             "Delete custom weekly recurring appointments.",
+        );
+
+        # Create custom monthly recurring appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+
+        # Wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # Enter some data
+        $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd month, on 3th, 10th and 31th of month.');
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar1{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait until js shows Interval
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+        );
+
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait for js
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
+        );
+
+        # Deselect selected day
+        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button.fc-state-active', 'css' )->click();
+
+        # Select 3th
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"3\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For3 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For3,
+            "Custom monthly appointment - check if 3 is selected."
+        );
+
+        # Select 10th
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"10\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For10 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For10,
+            "Custom monthly appointment - check if 10 is selected."
+        );
+
+        # Select 31
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomMonthlyDiv button[value=\"31\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait8For31 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"31\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait8For31,
+            "Custom monthly appointment - check if 31 is selected."
+        );
+
+        # Set each 2nd week
+        $Selenium->execute_script(
+            "return \$('#RecurrenceInterval').val(2);"
+        );
+
+        # Create 20 appointments
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('20');
+
+        # Click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+
+        # Wait for dialog to close and AJAX to finish
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+        );
+
+        my @Appointments8 = $AppointmentObject->AppointmentList(
+            CalendarID => $Calendar1{CalendarID},
+            Result     => 'HASH',
+        );
+
+        # Make sure there are 20 appointments
+        $Self->Is(
+            scalar @Appointments8,
+            20,
+            "Create custom monthly recurring appointment."
+        );
+
+        my @Appointment8StartTimes;
+        my $SystemTime8 = $CalendarHelperObject->SystemTimeGet(
+            String => "$DataDate 00:00:00",
+        );
+
+        my $LastMonth8;
+
+        while ( scalar @Appointment8StartTimes != 20 ) {
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime8,
+            );
+
+            if ( !$LastMonth8 ) {
+                push @Appointment8StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime8,
+                );
+                $LastMonth8 = $Month;
+            }
+            elsif (
+                ( grep { $Day == $_ } ( 3, 10, 31 ) )    # check if day is valid
+                && (
+                    ( $Month - $LastMonth8 ) % 2 == 0    # check if Interval matches
+                )
+                )
+            {
+                push @Appointment8StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime8,
+                );
+            }
+
+            # Add one day
+            $SystemTime8 += 24 * 3600;
+        }
+
+        for my $Index ( 0 .. 19 ) {
+            $Self->Is(
+                $Appointments8[$Index]->{StartTime},
+                $Appointment8StartTimes[$Index],
+                "Check start time #$Index",
+            );
+        }
+
+        my $Delete8 = $AppointmentObject->AppointmentDelete(
+            AppointmentID => $Appointments8[0]->{AppointmentID},
+            UserID        => $UserID,
+        );
+
+        # Delete appointments
+        $Self->True(
+            $Delete8,
+            "Delete custom monthly recurring appointments.",
+        );
+
+        # Create custom weekly recurring appointment(without anything selected)
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+
+        # Wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # Enter some data
+        $Selenium->find_element( 'Title', 'name' )->send_keys('Custom monthly without anything selected');
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar1{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait until js shows Interval
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+        );
+
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait for js
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
+        );
+
+        # Deselect selected day
+        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button.fc-state-active', 'css' )->click();
+
+        # Set each 2nd year
+        $Selenium->execute_script(
+            "return \$('#RecurrenceInterval').val(2);"
+        );
+
+        # Create 3 appointments
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
+
+        # Click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+
+        # Wait for dialog to close and AJAX to finish
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+        );
+
+        my @Appointments9 = $AppointmentObject->AppointmentList(
+            CalendarID => $Calendar1{CalendarID},
+            Result     => 'HASH',
+        );
+
+        # Make sure there are 3 appointments
+        $Self->Is(
+            scalar @Appointments9,
+            3,
+            "Create custom monthly recurring appointment(without any day selected)."
+        );
+
+        my @Appointment9StartTimes;
+        my $SystemTime9 = $CalendarHelperObject->SystemTimeGet(
+            String => "$DataDate 00:00:00",
+        );
+
+        my $LastMonth9;
+        my $Day9;
+
+        while ( scalar @Appointment9StartTimes != 3 ) {
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime9,
+            );
+
+            # Add current day
+            if ( !$LastMonth9 ) {
+                push @Appointment9StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime9,
+                );
+                $LastMonth9 = $Month;
+                $Day9       = $Day;
+            }
+            elsif (
+                ( $Day == $Day9 )    # check if day is valid
+                && ( ( $Month - $LastMonth9 ) % 2 == 0 )    # check if Interval matches
+                )
+            {
+                push @Appointment9StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime9,
+                );
+                $LastMonth9 = $Month;
+            }
+
+            # Add one day
+            $SystemTime9 += 24 * 3600;
+        }
+
+        for my $Index ( 0 .. 2 ) {
+            $Self->Is(
+                $Appointments9[$Index]->{StartTime},
+                $Appointment9StartTimes[$Index],
+                "Check start time #$Index",
+            );
+        }
+
+        my $Delete9 = $AppointmentObject->AppointmentDelete(
+            AppointmentID => $Appointments9[0]->{AppointmentID},
+            UserID        => $UserID,
+        );
+
+        # Delete appointments
+        $Self->True(
+            $Delete9,
+            "Delete custom weekly recurring appointments.",
+        );
+
+        # Create custom yearly recurring appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+
+        # Wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # Enter some data
+        $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd year, in February, October and December.');
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar1{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait until js shows Interval
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+        );
+
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait for js
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
+        );
+
+        # Deselect selected month
+        $Selenium->find_element( '#RecurrenceCustomYearlyDiv button.fc-state-active', 'css' )->click();
+
+        # Select February
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"2\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait10For2 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"2\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait10For2,
+            "Custom yearly appointment - check if February is selected."
+        );
+
+        # Select October
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"10\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait10For10 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait10For10,
+            "Custom yearly appointment - check if October is selected."
+        );
+
+        # Select December
+        $Selenium->execute_script(
+            "\$('#RecurrenceCustomYearlyDiv button[value=\"12\"]').click();"
+        );
+
+        # check if selected successful
+        my $Wait10For12 = $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"12\"]").hasClass("fc-state-active")'
+        );
+        $Self->True(
+            $Wait10For12,
+            "Custom yearly appointment - check if December is selected."
+        );
+
+        # Set each 2nd week
+        $Selenium->execute_script(
+            "return \$('#RecurrenceInterval').val(2);"
+        );
+
+        # Create 6 appointments
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('6');
+
+        # Click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+
+        # Wait for dialog to close and AJAX to finish
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+        );
+
+        my @Appointments10 = $AppointmentObject->AppointmentList(
+            CalendarID => $Calendar1{CalendarID},
+            Result     => 'HASH',
+        );
+
+        # Make sure there are 6 appointments
+        $Self->Is(
+            scalar @Appointments10,
+            6,
+            "Create custom yearly recurring appointment."
+        );
+
+        my @Appointment10StartTimes;
+        my $SystemTime10 = $CalendarHelperObject->SystemTimeGet(
+            String => "$DataDate 00:00:00",
+        );
+
+        my $LastYear10;
+        my $Day10;
+
+        while ( scalar @Appointment10StartTimes != 6 ) {
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime10,
+            );
+
+            if ( !$LastYear10 ) {
+                push @Appointment10StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime10,
+                );
+                $LastYear10 = $Year;
+                $Day10      = $Day;
+            }
+            elsif (
+                $Day == $Day10
+                && ( grep { $Month == $_ } ( 2, 10, 12 ) )    # check if day is valid
+                && ( ( $Year - $LastYear10 ) % 2 == 0 )       # check if Interval matches
+                )
+            {
+                push @Appointment10StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime10,
+                );
+            }
+
+            # Add one day
+            $SystemTime10 += 24 * 3600;
+        }
+
+        for my $Index ( 0 .. 5 ) {
+            $Self->Is(
+                $Appointments10[$Index]->{StartTime},
+                $Appointment10StartTimes[$Index],
+                "Check start time #$Index",
+            );
+        }
+
+        my $Delete10 = $AppointmentObject->AppointmentDelete(
+            AppointmentID => $Appointments10[0]->{AppointmentID},
+            UserID        => $UserID,
+        );
+
+        # Delete appointments
+        $Self->True(
+            $Delete10,
+            "Delete custom monthly recurring appointments.",
+        );
+
+        # Create custom weekly recurring appointment(without anything selected)
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+
+        # Wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # Enter some data
+        $Selenium->find_element( 'Title', 'name' )->send_keys('Custom yearly without anything selected');
+        $Selenium->execute_script(
+            "return \$('#CalendarID').val("
+                . $Calendar1{CalendarID}
+                . ").trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait until js shows Interval
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+        );
+
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # Wait for js
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
+        );
+
+        # Deselect selected month
+        $Selenium->find_element( '#RecurrenceCustomYearlyDiv button.fc-state-active', 'css' )->click();
+
+        # Set each 2nd year
+        $Selenium->execute_script(
+            "return \$('#RecurrenceInterval').val(2);"
+        );
+
+        # Create 3 appointments
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
+
+        # Click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+
+        # Wait for dialog to close and AJAX to finish
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+        );
+
+        my @Appointments11 = $AppointmentObject->AppointmentList(
+            CalendarID => $Calendar1{CalendarID},
+            Result     => 'HASH',
+        );
+
+        # Make sure there are 3 appointments
+        $Self->Is(
+            scalar @Appointments11,
+            3,
+            "Create custom yearly recurring appointment(without any month selected)."
+        );
+
+        my @Appointment11StartTimes;
+        my $SystemTime11 = $CalendarHelperObject->SystemTimeGet(
+            String => "$DataDate 00:00:00",
+        );
+
+        my $LastYear11;
+        my $Day11;
+        my $Month11;
+
+        while ( scalar @Appointment11StartTimes != 3 ) {
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime11,
+            );
+
+            # Add current day
+            if ( !$LastYear11 ) {
+                push @Appointment11StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime11,
+                );
+                $LastYear11 = $Year;
+                $Day11      = $Day;
+                $Month11    = $Month;
+            }
+            elsif (
+                ( $Day == $Day11 )    # check if day is valid
+                && $Month == $Month11
+                && ( ( $Year - $LastYear11 ) % 2 == 0 )    # check if Interval matches
+                )
+            {
+                push @Appointment11StartTimes, $CalendarHelperObject->TimestampGet(
+                    SystemTime => $SystemTime11,
+                );
+            }
+
+            # Add one day
+            $SystemTime11 += 24 * 3600;
+        }
+
+        for my $Index ( 0 .. 2 ) {
+            $Self->Is(
+                $Appointments11[$Index]->{StartTime},
+                $Appointment11StartTimes[$Index],
+                "Check start time #$Index",
+            );
+        }
+
+        my $Delete11 = $AppointmentObject->AppointmentDelete(
+            AppointmentID => $Appointments11[0]->{AppointmentID},
+            UserID        => $UserID,
+        );
+
+        # Delete appointments
+        $Self->True(
+            $Delete11,
+            "Delete custom yearly recurring appointments(without any month selected).",
         );
 
         }
