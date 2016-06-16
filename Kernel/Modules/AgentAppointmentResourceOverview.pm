@@ -67,6 +67,37 @@ sub Run {
 
         if ( scalar keys %TeamList > 0 ) {
 
+            # get a local user object
+            my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+
+            # get if it's needed to save a new team selection or get
+            # a previously selected team
+            if ( $GetParam{Team} && $TeamList{ $GetParam{Team} } ) {
+
+                # save the recently selected team
+                $UserObject->SetPreferences(
+                    Key    => 'LastAppointmentCalendarTeam',
+                    Value  => $GetParam{Team},
+                    UserID => $Self->{UserID},
+                );
+            }
+            else {
+
+                # get the team selection for the current user
+                my %UserPreferences = $UserObject->GetPreferences(
+                    UserID => $Self->{UserID},
+                );
+
+                if (
+                    IsHashRefWithData( \%UserPreferences )
+                    && $UserPreferences{LastAppointmentCalendarTeam}
+                    && $TeamList{ $UserPreferences{LastAppointmentCalendarTeam} }
+                    )
+                {
+                    $GetParam{Team} = $UserPreferences{LastAppointmentCalendarTeam};
+                }
+            }
+
             my @TeamIDs = sort keys %TeamList;
             $Param{Team} = $GetParam{Team} // $TeamIDs[0];
 
