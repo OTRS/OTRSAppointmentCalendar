@@ -2056,24 +2056,12 @@ sub _CalculateRecurrenceTime {
             # Calculate current delta
             my $CurrentDelta = $SystemTime - $Param{LastStartTime};
 
-# my $Test = "$Param{Appointment}->{StartTime} - $Param{Appointment}->{EndTime}";
-#             use Data::Dumper;
-#             my $Data2 = Dumper( \%Param );
-#             open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
-#             print $fh "\nOriginal: $OriginalDelta ($Test)\nCurrent: $CurrentDelta==========================\n" . $Data2;
-#             close $fh;
-
             # Compare
             while ( $CurrentDelta > $OriginalDelta + 23 * 3600 ) {
                 $SystemTime -= 24 * 3600;
 
                 $CurrentDelta = $SystemTime - $Param{LastStartTime};
             }
-
-            # if ( $CurrentDelta > $OriginalDelta + 23 * 3600 ) {
-            #     # Bugfix: Reduce by 1 day
-            #     $SystemTime -= 24 * 3600;
-            # }
         }
     }
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Yearly' ) {
