@@ -1722,10 +1722,10 @@ my %Calendar4 = $CalendarObject->CalendarCreate(
 );
 my $AppointmentID14 = $AppointmentObject->AppointmentCreate(
     CalendarID      => $Calendar4{CalendarID},
-    Title           => 'Appointment #13',
+    Title           => 'Appointment #14',
     Description     => 'How to use Process tickets...',
-    StartTime       => '2016-03-30 00:00:00',
-    EndTime         => '2016-04-01 00:00:00',
+    StartTime       => '2016-04-30 00:00:00',
+    EndTime         => '2016-05-01 00:00:00',
     TimezoneID      => 0,
     AllDay          => 1,
     Recurring       => 1,
@@ -1742,14 +1742,13 @@ my @Appointments14 = $AppointmentObject->AppointmentList(
 $Self->Is(
     scalar @Appointments14,
     3,
-    "Appointment #13 count",
+    "Appointment #14 count",
 );
 
-# Enable later
-# $Self->Is(
-#     $Appointments13[1]->{EndTime},
-#     '2016-03-31 00:00:00',
-#     "Appointment #13 End time check",
-# );
+$Self->Is(
+    $Appointments14[1]->{EndTime},
+    '2016-05-31 00:00:00',
+    "Appointment #14 End time check",
+);
 
 1;

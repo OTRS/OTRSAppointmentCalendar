@@ -1748,11 +1748,12 @@ sub _AppointmentRecurringCreate {
                 CurrentTime  => $StartTimeSystem,
             );
             $EndTimeSystem = $Self->_CalculateRecurrenceTime(
-                Appointment  => $Param{Appointment},
-                Step         => $Step,
-                OriginalTime => $OriginalEndTime,
-                CurrentTime  => $EndTimeSystem,
-                IsEndTime    => 1,
+                Appointment   => $Param{Appointment},
+                Step          => $Step,
+                OriginalTime  => $OriginalEndTime,
+                CurrentTime   => $EndTimeSystem,
+                IsEndTime     => 1,
+                LastStartTime => $StartTimeSystem,
             );
 
             last UNTIL_TIME if !$StartTimeSystem;
@@ -1803,11 +1804,12 @@ sub _AppointmentRecurringCreate {
                 CurrentTime  => $StartTimeSystem,
             );
             $EndTimeSystem = $Self->_CalculateRecurrenceTime(
-                Appointment  => $Param{Appointment},
-                Step         => $Step,
-                OriginalTime => $OriginalEndTime,
-                CurrentTime  => $EndTimeSystem,
-                IsEndTime    => 1,
+                Appointment   => $Param{Appointment},
+                Step          => $Step,
+                OriginalTime  => $OriginalEndTime,
+                CurrentTime   => $EndTimeSystem,
+                IsEndTime     => 1,
+                LastStartTime => $StartTimeSystem,
             );
 
             last COUNT if !$StartTimeSystem;
@@ -2015,6 +2017,8 @@ sub _CalculateRecurrenceTime {
         }
     }
 
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
     my $SystemTime = $Param{CurrentTime};
 
     if ( $Param{Appointment}->{RecurrenceType} eq 'Daily' ) {
@@ -2036,14 +2040,41 @@ sub _CalculateRecurrenceTime {
         );
 
         if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
-            my @OriginalDateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
-                SystemTime => $SystemTime,
+
+            # Get Original StartTime
+            my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
+                String => $Param{Appointment}->{StartTime},
             );
 
-            if ( $OriginalDateInfo[3] == 1 ) {
+            # Get Original EndTime
+            my $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
+                String => $Param{Appointment}->{EndTime},
+            );
 
-                # TODO:
+            # Calculate delta (EndTime-StartTime)
+            my $OriginalDelta = $EndTimeSystem - $StartTimeSystem;
+
+            # Calculate current delta
+            my $CurrentDelta = $SystemTime - $Param{LastStartTime};
+
+# my $Test = "$Param{Appointment}->{StartTime} - $Param{Appointment}->{EndTime}";
+#             use Data::Dumper;
+#             my $Data2 = Dumper( \%Param );
+#             open(my $fh, '>>', '/opt/otrs-test/data.txt') or die 'Could not open file ';
+#             print $fh "\nOriginal: $OriginalDelta ($Test)\nCurrent: $CurrentDelta==========================\n" . $Data2;
+#             close $fh;
+
+            # Compare
+            while ( $CurrentDelta > $OriginalDelta + 23 * 3600 ) {
+                $SystemTime -= 24 * 3600;
+
+                $CurrentDelta = $SystemTime - $Param{LastStartTime};
             }
+
+            # if ( $CurrentDelta > $OriginalDelta + 23 * 3600 ) {
+            #     # Bugfix: Reduce by 1 day
+            #     $SystemTime -= 24 * 3600;
+            # }
         }
     }
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Yearly' ) {
