@@ -579,8 +579,13 @@ sub Import {
 
         my $Success;
 
-        # appointment exists, update it
-        if ( %Appointment && $Appointment{AppointmentID} ) {
+        # appointment exists in same Calendar, update it
+        if (
+            %Appointment
+            && $Appointment{AppointmentID}
+            && $Param{CalendarID} == $Appointment{CalendarID}
+            )
+        {
             $Success = $AppointmentObject->AppointmentUpdate(
                 CalendarID    => $Param{CalendarID},
                 AppointmentID => $Appointment{AppointmentID},
@@ -592,6 +597,8 @@ sub Import {
 
         # there is no appointment, create new one
         else {
+            delete $Parameters{UniqueID};
+
             $Success = $AppointmentObject->AppointmentCreate(
                 CalendarID => $Param{CalendarID},
                 UserID     => $Param{UserID},
