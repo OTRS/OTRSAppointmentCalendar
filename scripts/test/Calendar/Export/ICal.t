@@ -338,9 +338,11 @@ for my $ImportedAppointment (@ImportedAppointments) {
     delete $ImportedAppointment->{AppointmentID};
     delete $ImportedAppointment->{CalendarID};
     delete $ImportedAppointment->{UniqueID};
+    delete $ImportedAppointment->{ParentID};
     delete $ExportedAppointments[ $Count - 1 ]->{AppointmentID};
     delete $ExportedAppointments[ $Count - 1 ]->{CalendarID};
     delete $ExportedAppointments[ $Count - 1 ]->{UniqueID};
+    delete $ExportedAppointments[ $Count - 1 ]->{ParentID};
 
     # compare imported and exported appointments
     $Self->IsDeeply(
