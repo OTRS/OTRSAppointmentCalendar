@@ -840,7 +840,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType}    eq 'Daily'
+                $GetParam{RecurrenceType} eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -908,8 +908,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear} &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
