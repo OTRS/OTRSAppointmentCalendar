@@ -80,7 +80,7 @@
             <div class="Field">
                 <div id="EndDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
-                    <p>[% Translate("Please set this to a value after start date.") | html %]</p>
+                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
                 </div>
                 [% Data.EndDateString %]
             </div>
@@ -295,7 +295,7 @@
             <div id="RecurrenceUntilDiv" class="Field Hidden">
                 <div id="RecurrenceUntilDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
-                    <p>[% Translate("Please set this to value after start date.") | html %]</p>
+                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
                 </div>
                 [% Data.RecurrenceUntilString %]
             </div>
