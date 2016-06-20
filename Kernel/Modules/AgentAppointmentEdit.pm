@@ -466,7 +466,7 @@ sub Run {
             Data => [
                 {
                     Key   => '0',
-                    Value => Translatable('None'),
+                    Value => Translatable('Never'),
                 },
                 {
                     Key   => 'Daily',
