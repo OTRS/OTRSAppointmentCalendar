@@ -59,6 +59,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .RecurringParent:before {
@@ -69,6 +70,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .RecurringChild:before {
@@ -79,6 +81,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .AllDay .fc-content,
