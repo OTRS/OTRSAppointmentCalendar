@@ -19,29 +19,44 @@
         <input type="hidden" id="RecurrenceMonthDays" name="RecurrenceMonthDays" value="[% Data.RecurrenceMonthDays | html %]"/>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
-            <label class="Mandatory" for="Title"><span class="Marker">*</span> [% Translate("Title") | html %]:</label>
+            <label for="Title"[% IF Data.PermissionLevel >= 2 %] class="Mandatory"[% END %]>[% IF Data.PermissionLevel >= 2 %]<span class="Marker">*</span> [% END %][% Translate("Title") | html %]:</label>
             <div class="Field">
-                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+[% IF Data.PermissionLevel < 2 %]
+                <p id="Title" class="ReadOnlyValue">[% Data.Title | html %]</p>
+[% ELSE %]
+                <input type="text" id="Title" name="Title" value="[% Data.Title | html %]" class="W75pc Validate_Required" />
                 <div id="TitleError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
                 <div id="TitleServerError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="Description">[% Translate("Description") | html %]:</label>
             <div class="Field">
-                <textarea id="Description" name="Description" class="W75pc" rows="4"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %]>[% Data.Description | html %]</textarea>
+[% IF Data.PermissionLevel < 2 %]
+                <p id="Description" class="ReadOnlyValue">[% Data.Description | html %]</p>
+[% ELSE %]
+                <textarea id="Description" name="Description" class="W75pc" rows="4">[% Data.Description | html %]</textarea>
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
-                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc"[% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+[% IF Data.PermissionLevel < 2 %]
+                <p id="Location" class="ReadOnlyValue">[% Data.Location | html %]</p>
+[% ELSE %]
+                <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
+[% END %]
             </div>
             <div class="Clear"></div>
-            <label for="CalendarID" class="Mandatory"><span class="Marker">*</span> [% Translate("Calendar") | html %]:</label>
+            <label for="CalendarID"[% IF Data.PermissionLevel >= 3 %] class="Mandatory"[% END %]>[% IF Data.PermissionLevel >= 3 %]<span class="Marker">*</span> [% END %][% Translate("Calendar") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 3 %]
+                <p id="CalendarID" class="ReadOnlyValue">[% Data.CalendarName | html %]</p>
+[% ELSE %]
                 [% Data.CalendarIDStrg %]
                 <div id="CalendarIDError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
@@ -49,6 +64,7 @@
                 <div id="CalendarIDServerError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
+[% END %]
             </div>
         </fieldset>
 [% IF Data.TeamIDStrg %]
@@ -56,12 +72,20 @@
             <legend><span>[% Translate("Resource") | html %]</span></legend>
             <label for="TeamID">[% Translate("Team") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 2 %]
+                <p id="TeamID" class="ReadOnlyValue">[% Data.TeamNames %]</p>
+[% ELSE %]
                 [% Data.TeamIDStrg %]
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="ResourceID">[% Translate("Agent") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 2 %]
+                <p id="ResourceID" class="ReadOnlyValue">[% Data.ResourceNames %]</p>
+[% ELSE %]
                 [% Data.ResourceIDStrg %]
+[% END %]
             </div>
         </fieldset>
 [% END %]
@@ -69,28 +93,45 @@
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
             <label for="StartDay">[% Translate("Start date") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 2 %]
+                <p id="StartDay" class="ReadOnlyValue">[% Data.StartDate | html %]</p>
+[% ELSE %]
                 <div id="StartDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
                     <p>[% Translate("Please set this to value before End date.") | html %]</p>
                 </div>
                 [% Data.StartDateString %]
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="EndDay">[% Translate("End date") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 2 %]
+                <p id="EndDay" class="ReadOnlyValue">[% Data.EndDate | html %]</p>
+[% ELSE %]
                 <div id="EndDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
                     <p>[% Translate("Please set this to value after Start date.") | html %]</p>
                 </div>
                 [% Data.EndDateString %]
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="AllDay">[% Translate("All-day") | html %]:</label>
             <div class="Field">
-                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %][% IF Data.PermissionLevel < 2 %] disabled="disabled" readonly="readonly"[% END %] />
+[% IF Data.PermissionLevel < 2 %]
+                <p id="AllDay" class="ReadOnlyValue">[% Translate(Data.AllDayString) | html %]</p>
+[% ELSE %]
+                <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
+[% END %]
             </div>
             <div class="Clear"></div>
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
+[% IF Data.PermissionLevel < 2 %]
+            <div class="Field">
+                <p id="RecurrenceType" class="ReadOnlyValue">[% Data.RecurrenceValue | html %]</p>
+            </div>
+[% ELSE %]
 [% IF Data.ParentID %]
             <div class="Field">
                 [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
@@ -303,6 +344,7 @@
                 <input type="text" id="RecurrenceCount" name="RecurrenceCount" value="[% Data.RecurrenceCount | html %]" size="1" maxlength="2" />
             </div>
 [% END %]
+[% END %]
         </fieldset>
 [% IF Data.PluginList %]
         <fieldset class="TableLike">
@@ -314,8 +356,11 @@
                 <input type="text" data-plugin-key="[% Key | html %]" data-plugin-url="[% Data.PluginList.$Key.PluginURL | html %]" class="PluginField W75pc" />
 [% END %]
                 <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList || "[]" %]' />
+[% IF Data.PluginData.$Key.size == 0 %]
+                <p class="ReadOnlyValue">[% Translate("None") | html %]</p>
+[% END %]
 # keep following block on a single line, so :empty CSS selector would work!
-                <div id="PluginContainer_[% Key | html %]" class="PluginContainer">[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">
+                <div id="PluginContainer_[% Key | html %]"[% IF Data.PermissionLevel >= 2 %] class="PluginContainer"[% END %]>[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">
                     <a target="_blank" href="[% Link.LinkURL %]">[% Link.LinkName | html %]</a>[% IF Data.PermissionLevel >= 2 %]<a class="RemoveButton" href="#" data-plugin-key="[% Key | html %]" data-link-id="[% Link.LinkID | html %]" title="[% Translate("Remove entry") | html %]"><i class="fa fa-minus-square-o"></i><span class="InvisibleText">[% Translate("Remove") | html %]</span></a>[% END %]
                 </div>[% END %]</div>
             </div>
@@ -358,7 +403,7 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDay: $('#RecurrenceUntilDay'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
-Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'), $('#ChallengeToken').val());
+Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'), $('#ChallengeToken').val(), $('label[for="TeamID"] + div.Field p.ReadOnlyValue'), $('label[for="ResourceID"] + div.Field p.ReadOnlyValue'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'), $('#ChallengeToken').val());
 [% END %]
