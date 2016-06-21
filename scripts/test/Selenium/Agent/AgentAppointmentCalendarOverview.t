@@ -15,7 +15,7 @@ use vars (qw($Self));
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
-my $ElementDisabled = sub {
+my $ElementReadOnly = sub {
     my (%Param) = @_;
 
     # Value is optional parameter
@@ -31,10 +31,10 @@ my $ElementDisabled = sub {
 
     $Param{UnitTestObject}->Is(
         $Selenium->execute_script(
-            "return \$('#" . $Param{Element} . ":disabled').length;"
+            "return \$('#$Param{Element}.ReadOnlyValue').length;"
         ),
         $Param{Value},
-        "$Param{Element} disabled ($Param{Value})",
+        "$Param{Element} read only ($Param{Value})",
     );
 };
 
@@ -560,12 +560,12 @@ $Selenium->RunTest(
 
         # check if fields are disabled
         for my $Element (
-            qw(Title Description Location CalendarID TeamID ResourceID StartMonth StartDay StartYear
-            StartHour StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
+            qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
+            RecurrenceType
             )
             )
         {
-            $ElementDisabled->(
+            $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
                 Value          => 1,
@@ -573,7 +573,7 @@ $Selenium->RunTest(
         }
 
         # elements that are not allowed on page
-        for my $Element (qw( EditFormSubmit EditFormDelete EditFormCopy )) {
+        for my $Element (qw(EditFormSubmit EditFormDelete EditFormCopy)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -582,7 +582,7 @@ $Selenium->RunTest(
         }
 
         # elements that should be on page
-        for my $Element (qw( EditFormCancel )) {
+        for my $Element (qw(EditFormCancel)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -614,7 +614,7 @@ $Selenium->RunTest(
 
         # check if fields are disabled
         for my $Element (qw( CalendarID )) {
-            $ElementDisabled->(
+            $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
                 Value          => 1,
@@ -623,12 +623,10 @@ $Selenium->RunTest(
 
         # check if fields are enabled
         for my $Element (
-            qw( Title Description Location TeamID ResourceID StartMonth StartDay StartYear StartHour
-            StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay RecurrenceType
-            )
+            qw(Title Description Location TeamID ResourceID StartDay EndDay AllDay RecurrenceType)
             )
         {
-            $ElementDisabled->(
+            $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
                 Value          => 0,
@@ -636,7 +634,7 @@ $Selenium->RunTest(
         }
 
         # elements that are not allowed on page
-        for my $Element (qw( EditFormDelete EditFormCopy)) {
+        for my $Element (qw(EditFormDelete EditFormCopy)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -645,7 +643,7 @@ $Selenium->RunTest(
         }
 
         # elements that should be on page
-        for my $Element (qw( EditFormSubmit EditFormCancel )) {
+        for my $Element (qw(EditFormSubmit EditFormCancel)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -678,13 +676,12 @@ $Selenium->RunTest(
 
         # check if fields are enabled
         for my $Element (
-            qw( Title Description Location CalendarID TeamID ResourceID StartMonth StartDay
-            StartYear StartHour StartMinute EndMonth EndDay EndYear EndHour EndMinute AllDay
+            qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
             RecurrenceType
             )
             )
         {
-            $ElementDisabled->(
+            $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
                 Value          => 0,
@@ -692,7 +689,7 @@ $Selenium->RunTest(
         }
 
         # elements that should be on page
-        for my $Element (qw( EditFormCopy EditFormSubmit EditFormDelete EditFormCancel )) {
+        for my $Element (qw(EditFormCopy EditFormSubmit EditFormDelete EditFormCancel)) {
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,

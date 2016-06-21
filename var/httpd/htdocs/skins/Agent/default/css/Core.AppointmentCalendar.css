@@ -170,6 +170,10 @@
         margin-top: 10px;
     }
 
+    .ReadOnlyValue {
+        margin-top: 5px;
+    }
+
     #RecurrenceCustomTypeStringDiv .FieldExplanation:nth-child(2) {
         margin-bottom: 0;
     }
