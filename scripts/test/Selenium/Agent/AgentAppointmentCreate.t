@@ -526,7 +526,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected day
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomWeeklyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected6 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomWeeklyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected6,
+            "Check if nothing is selected (#6)."
+        );
 
         # Select Mon
         $Selenium->execute_script(
@@ -696,7 +708,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected day
-        $Selenium->find_element( '#RecurrenceCustomWeeklyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomWeeklyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected7 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomWeeklyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected7,
+            "Check if nothing is selected (#7)."
+        );
 
         # Set each 2nd week
         $Selenium->execute_script(
@@ -823,7 +847,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected day
-        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomMonthlyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected8 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomMonthlyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected8,
+            "Check if nothing is selected (#8)."
+        );
 
         # Select 3th
         $Selenium->execute_script(
@@ -989,7 +1025,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected day
-        $Selenium->find_element( '#RecurrenceCustomMonthlyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomMonthlyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected9 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomMonthlyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected9,
+            "Check if nothing is selected (#9)."
+        );
 
         # Set each 2nd year
         $Selenium->execute_script(
@@ -1112,7 +1160,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected month
-        $Selenium->find_element( '#RecurrenceCustomYearlyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomYearlyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected10 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomYearlyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected10,
+            "Check if nothing is selected (#10)."
+        );
 
         # Select February
         $Selenium->execute_script(
@@ -1279,7 +1339,19 @@ $Selenium->RunTest(
         );
 
         # Deselect selected month
-        $Selenium->find_element( '#RecurrenceCustomYearlyDiv button.fc-state-active', 'css' )->click();
+        $Selenium->execute_script(
+            "return \$('#RecurrenceCustomYearlyDiv button.fc-state-active').click();"
+        );
+
+        # Make sure it's deselected
+        my $Deselected11 = $Selenium->WaitFor(
+            JavaScript =>
+                'return !$("#RecurrenceCustomYearlyDiv button.fc-state-active").length;'
+        );
+        $Self->True(
+            $Deselected11,
+            "Check if nothing is selected (#11)."
+        );
 
         # Set each 2nd year
         $Selenium->execute_script(
