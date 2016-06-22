@@ -25,6 +25,8 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    $Self->{EmptyString} = '-';
+
     return $Self;
 }
 
@@ -458,7 +460,7 @@ sub Run {
                 $Param{TeamNames} = join( '<br>', @TeamNames );
             }
             else {
-                $Param{TeamNames} = $LayoutObject->{LanguageObject}->Translate('None');
+                $Param{TeamNames} = $Self->{EmptyString};
             }
 
             # team list string
@@ -503,7 +505,7 @@ sub Run {
                 $Param{ResourceNames} = join( '<br>', @ResourceNames );
             }
             else {
-                $Param{ResourceNames} = $LayoutObject->{LanguageObject}->Translate('None');
+                $Param{ResourceNames} = $Self->{EmptyString};
             }
 
             # team user list string
