@@ -150,28 +150,28 @@ $Selenium->RunTest(
 
         # create a few test calendars
         my %Calendar1 = $CalendarObject->CalendarCreate(
-            CalendarName => "My Calendar $RandomID",
+            CalendarName => "Calendar1 $RandomID",
             Color        => '#3A87AD',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar2 = $CalendarObject->CalendarCreate(
-            CalendarName => "Another Calendar $RandomID",
+            CalendarName => "Calendar2 $RandomID",
             Color        => '#EC9073',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar3 = $CalendarObject->CalendarCreate(
-            CalendarName => "Yet Another Calendar $RandomID",
+            CalendarName => "Calendar3 $RandomID",
             Color        => '#6BAD54',
             GroupID      => $GroupID,
             UserID       => $UserID,
             ValidID      => 1,
         );
         my %Calendar4 = $CalendarObject->CalendarCreate(
-            CalendarName => "Calendar for permissions check $RandomID",
+            CalendarName => "Calendar4 $RandomID",
             Color        => '#78A7FC',
             GroupID      => $GroupID2,
             UserID       => 1,
@@ -477,12 +477,10 @@ $Selenium->RunTest(
         $Selenium->find_element( 'div#DatepickerOverlay', 'css' )->click();
 
         # filter just third calendar
-        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys("Yet Another Calendar $RandomID");
+        $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Calendar3');
 
         # wait for filter to finish
-        $Selenium->WaitFor(
-            JavaScript => 'return typeof($) === "function" && !$("input#FilterCalendars.Filtering").length'
-        );
+        sleep 1;
 
         # verify only one calendar is shown in the list
         $Self->Is(

@@ -31,29 +31,49 @@
             </div>
             <div class="Content">
                 <input type="text" id="FilterCalendars" class="FilterBox" placeholder="[% Translate("Just start typing to filter...") | html %]" name="FilterCalendars" value="" title="[% Translate("Filter for calendars") | html %]">
-                <div id="CalendarList" class="SpacingTopSmall">
-                    <div class="FilterMessage Hidden">
-                        [% Translate("No matches found.") | html %]
-                    </div>
+                <table class="DataTable SpacingTopSmall" id="Calendars">
+                    <thead>
+                        <tr>
+                            <th class="W10pc"></th>
+                            <th class="W10pc"></th>
+                            <th>[% Translate("Name") | html %]</th>
+                            <th class="Center W10pc">[% Translate("URL") | html %]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 [% RenderBlockStart("CalendarSwitch") %]
-                    <div class="CalendarSwitch">
-                        <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" data-id="[% Data.CalendarID | html %]" [% Data.Checked %]/>
-                        <label for="Calendar[% Data.CalendarID | html %]">
-                            <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
-                            [% Data.CalendarName | html %]
-                        </label>
-                        <span class="CopyToClipboard" data-clipboard-text="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Copy public calendar URL") | html %]">
-                            <i class="fa fa-clipboard"></i>
-                            <span class="InvisibleText">[% Translate("Copy public calendar URL") | html %]</span>
-                        </span>
-                    </div>
+                        <tr class="CalendarSwitch">
+                            <td class="Center">
+                                <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" data-id="[% Data.CalendarID | html %]" [% Data.Checked %]/>
+                            </td>
+                            <td class="Center">
+                                <label for="Calendar[% Data.CalendarID | html %]">
+                                    <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <label for="Calendar[% Data.CalendarID | html %]" title="[% Data.CalendarName | html %]">
+                                    [% Data.CalendarName | truncate(21) | html %]
+                                </label>
+                            </td>
+                            <td class="Center">
+                                <span class="CopyToClipboard InlineButton" data-clipboard-text="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Copy public calendar URL") | html %]">
+                                    <i class="fa fa-clipboard"></i>
+                                    <span class="InvisibleText">[% Translate("Copy public calendar URL") | html %]</span>
+                                </span>
+                            </td>
+                        </tr>
 [% RenderBlockEnd("CalendarSwitch") %]
-                </div>
+                        <tr class="FilterMessage Hidden">
+                            <td colspan="4">[% Translate("No matches found.") | html %]</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-    Core.Agent.AppointmentCalendar.InitCalendarFilter($('#FilterCalendars'), $('#CalendarList'));
+    Core.UI.Table.InitTableFilter($('#FilterCalendars'), $('#Calendars'));
 
     var ClipboardJS = new Clipboard('.CopyToClipboard');
     ClipboardJS.on('success', function (Event) {
