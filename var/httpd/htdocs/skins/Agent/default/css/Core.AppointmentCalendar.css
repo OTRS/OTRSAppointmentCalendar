@@ -15,31 +15,15 @@
         width: 560px;
     }
 
-    #CalendarList {
-        width: 100%;
-        max-height: 360px;
-        overflow-y: auto;
+    .InlineButton {
+        background: transparent;
+        cursor: pointer;
+        border: none;
+        padding: 0;
     }
 
-    .CalendarSwitch {
-        margin-top: 2px;
-    }
-
-    .CalendarSwitch input[type="checkbox"] {
-        vertical-align: middle;
-    }
-
-    .CalendarSwitch label {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        width: 210px;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    #CalendarList .CalendarSwitch:last-child {
-        margin-bottom: 0;
+    .FilterMessage td {
+        background-color: #FFF !important;
     }
 
     .CalendarColor {
