@@ -1195,8 +1195,9 @@ sub Run {
 
         if (
             $GetParam{OverviewScreen} && (
-                $GetParam{DefaultView} || $GetParam{CalendarSelection} ||
-                ( $GetParam{ShownResources} && $GetParam{TeamID} )
+                $GetParam{DefaultView} || $GetParam{CalendarSelection}
+                || ( $GetParam{ShownResources} && $GetParam{TeamID} )
+                || $GetParam{ShownAppointments}
             )
             )
         {
@@ -1212,6 +1213,9 @@ sub Run {
             elsif ( $GetParam{ShownResources} && $GetParam{TeamID} ) {
                 $PreferenceKey       = 'ShownResources';
                 $PreferenceKeySuffix = "-$GetParam{TeamID}";
+            }
+            elsif ( $GetParam{ShownAppointments} ) {
+                $PreferenceKey = 'ShownAppointments';
             }
 
             # set user preferences
