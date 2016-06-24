@@ -121,7 +121,12 @@
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
 [% IF Data.PermissionLevel < 2 %]
             <div class="Field">
+[% IF Data.ParentID %]
+                [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
+                <a href="#" id="EditParent">[% Translate("Click here to see the parent appointment.") | html %]</a>
+[% ELSE %]
                 <p id="RecurrenceType" class="ReadOnlyValue">[% Data.RecurrenceValue | html %]</p>
+[% END %]
             </div>
 [% ELSE %]
 [% IF Data.ParentID %]
@@ -342,10 +347,11 @@
             <div class="Field">
 [% IF Data.PermissionLevel >= 2 %]
                 <input type="text" data-plugin-key="[% Key | html %]" data-plugin-url="[% Data.PluginList.$Key.PluginURL | html %]" class="PluginField W75pc" />
-[% END %]
                 <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList || "[]" %]' />
+[% ELSE %]
 [% IF Data.PluginData.$Key.size == 0 %]
                 <p class="ReadOnlyValue">-</p>
+[% END %]
 [% END %]
 # keep following block on a single line, so :empty CSS selector would work!
                 <div id="PluginContainer_[% Key | html %]"[% IF Data.PermissionLevel >= 2 %] class="PluginContainer"[% END %]>[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">
