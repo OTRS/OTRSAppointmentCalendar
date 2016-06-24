@@ -93,6 +93,7 @@ sub Run {
 
         # user preference key
         my $ShownAppointmentsPrefKey = 'User' . $Self->{OverviewScreen} . 'ShownAppointments';
+        my $ShownAppointmentsPrefVal = $Preferences{$ShownAppointmentsPrefKey} || 1;
 
         # shown appointments selection
         $Param{ShownAppointmentsString} = $LayoutObject->BuildSelection(
@@ -103,12 +104,12 @@ sub Run {
             Name         => 'ShownAppointments',
             ID           => 'ShownAppointments',
             Class        => 'Modernize',
-            SelectedID   => $Preferences{$ShownAppointmentsPrefKey} || 1,
+            SelectedID   => $ShownAppointmentsPrefVal,
             PossibleNone => 0,
         );
 
         # show only assigned appointments to current user
-        if ( $Preferences{$ShownAppointmentsPrefKey} == 2 ) {
+        if ( $ShownAppointmentsPrefVal == 2 ) {
             $Param{ResourceID} = $Self->{UserID};
 
             # display notify line
