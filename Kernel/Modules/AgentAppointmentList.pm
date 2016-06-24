@@ -89,36 +89,38 @@ sub Run {
             for my $Appointment (@Appointments) {
 
                 # calculate local times
-                $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? $Appointment->{TimezoneID} : 0;
+                if ( !$Appointment->{AllDay} ) {
+                    $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? $Appointment->{TimezoneID} : 0;
 
-                my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                    String => $Appointment->{StartTime},
-                );
-                $StartTime -= $Appointment->{TimezoneID} * 3600;
-                $StartTime += $Self->{UserTimeZone} * 3600;
-                $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
-                    SystemTime => $StartTime,
-                );
-
-                my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                    String => $Appointment->{EndTime},
-                );
-                $EndTime -= $Appointment->{TimezoneID} * 3600;
-                $EndTime += $Self->{UserTimeZone} * 3600;
-                $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
-                    SystemTime => $EndTime,
-                );
-
-                if ( $Appointment->{RecurrenceUntil} ) {
-                    my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                        String => $Appointment->{RecurrenceUntil},
+                    my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        String => $Appointment->{StartTime},
                     );
-                    $RecurrenceUntil -= $Appointment->{TimezoneID} * 3600;
-                    $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
-                    $Appointment->{RecurrenceUntil}
-                        = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
-                        SystemTime => $RecurrenceUntil,
+                    $StartTime -= $Appointment->{TimezoneID} * 3600;
+                    $StartTime += $Self->{UserTimeZone} * 3600;
+                    $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                        SystemTime => $StartTime,
+                    );
+
+                    my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        String => $Appointment->{EndTime},
+                    );
+                    $EndTime -= $Appointment->{TimezoneID} * 3600;
+                    $EndTime += $Self->{UserTimeZone} * 3600;
+                    $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                        SystemTime => $EndTime,
+                    );
+
+                    if ( $Appointment->{RecurrenceUntil} ) {
+                        my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                            String => $Appointment->{RecurrenceUntil},
                         );
+                        $RecurrenceUntil -= $Appointment->{TimezoneID} * 3600;
+                        $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
+                        $Appointment->{RecurrenceUntil}
+                            = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                            SystemTime => $RecurrenceUntil,
+                            );
+                    }
                 }
 
                 # include resource data
