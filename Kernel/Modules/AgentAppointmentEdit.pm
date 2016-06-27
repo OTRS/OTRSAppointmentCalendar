@@ -96,6 +96,11 @@ sub Run {
             }
         } @Calendars;
 
+        # transform data for ID lookup
+        my %CalendarLookup = map {
+            $_->{CalendarID} => $_->{CalendarName},
+        } @Calendars;
+
         for my $Calendar (@CalendarData) {
 
             # check permissions
@@ -314,17 +319,73 @@ sub Run {
         # set month if not set
         $Appointment{Months} = $DateInfo[4] if !$Appointment{Months};
 
+        # calendar ID selection
+        my $CalendarID = $Appointment{CalendarID} // $GetParam{CalendarID};
+
+        # calendar name
+        if ($CalendarID) {
+            $Param{CalendarName} = $CalendarLookup{$CalendarID};
+        }
+
         # calendar selection
         $Param{CalendarIDStrg} = $LayoutObject->BuildSelection(
             Data         => \@CalendarData,
-            SelectedID   => $Appointment{CalendarID} // $GetParam{CalendarID},
+            SelectedID   => $CalendarID,
             Name         => 'CalendarID',
             Multiple     => 0,
             Class        => 'Modernize Validate_Required',
             PossibleNone => 1,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 3 ) ? 1 : 0,    # disable if permissions are below create
         );
+
+        # all day
+        if (
+            $GetParam{AllDay} ||
+            ( $GetParam{AppointmentID} && $Appointment{AllDay} )
+            )
+        {
+            $Param{AllDayString}  = Translatable('Yes');
+            $Param{AllDayChecked} = 'checked="checked"';
+
+            # start date
+            $Param{StartDate} = sprintf(
+                "%04d-%02d-%02d",
+                $Appointment{StartYear}  // $GetParam{StartYear},
+                $Appointment{StartMonth} // $GetParam{StartMonth},
+                $Appointment{StartDay}   // $GetParam{StartDay},
+            );
+
+            # end date
+            $Param{EndDate} = sprintf(
+                "%04d-%02d-%02d",
+                $Appointment{EndYear}  // $GetParam{EndYear},
+                $Appointment{EndMonth} // $GetParam{EndMonth},
+                $Appointment{EndDay}   // $GetParam{EndDay},
+            );
+        }
+        else {
+            $Param{AllDayString}  = Translatable('No');
+            $Param{AllDayChecked} = '';
+
+            # start date
+            $Param{StartDate} = sprintf(
+                "%04d-%02d-%02d %02d:%02d:00",
+                $Appointment{StartYear}   // $GetParam{StartYear},
+                $Appointment{StartMonth}  // $GetParam{StartMonth},
+                $Appointment{StartDay}    // $GetParam{StartDay},
+                $Appointment{StartHour}   // $GetParam{StartHour},
+                $Appointment{StartMinute} // $GetParam{StartMinute},
+            );
+
+            # end date
+            $Param{EndDate} = sprintf(
+                "%04d-%02d-%02d %02d:%02d:00",
+                $Appointment{EndYear}   // $GetParam{EndYear},
+                $Appointment{EndMonth}  // $GetParam{EndMonth},
+                $Appointment{EndDay}    // $GetParam{EndDay},
+                $Appointment{EndHour}   // $GetParam{EndHour},
+                $Appointment{EndMinute} // $GetParam{EndMinute},
+            );
+        }
 
         # start date string
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
@@ -341,8 +402,6 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
-            Disabled         => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # end date string
@@ -360,8 +419,6 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
-            Disabled         => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         # get main object
@@ -392,6 +449,18 @@ sub Run {
                 UserID       => $Self->{UserID},
             );
 
+            # team names
+            my @TeamNames;
+            for my $TeamID ( @{$TeamIDs} ) {
+                push @TeamNames, $TeamList{$TeamID} if $TeamList{$TeamID};
+            }
+            if ( scalar @TeamNames ) {
+                $Param{TeamNames} = join( '<br>', @TeamNames );
+            }
+            else {
+                $Param{TeamNames} = $LayoutObject->{LanguageObject}->Translate('None');
+            }
+
             # team list string
             $Param{TeamIDStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamList,
@@ -400,8 +469,6 @@ sub Run {
                 Multiple     => 1,
                 Class        => 'Modernize',
                 PossibleNone => 1,
-                Disabled     => $Permissions
-                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
             );
 
             # iterate through selected teams
@@ -427,6 +494,18 @@ sub Run {
                 %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
             }
 
+            # resource names
+            my @ResourceNames;
+            for my $ResourceID ( @{$ResourceIDs} ) {
+                push @ResourceNames, $TeamUserListAll{$ResourceID} if $TeamUserListAll{$ResourceID};
+            }
+            if ( scalar @ResourceNames ) {
+                $Param{ResourceNames} = join( '<br>', @ResourceNames );
+            }
+            else {
+                $Param{ResourceNames} = $LayoutObject->{LanguageObject}->Translate('None');
+            }
+
             # team user list string
             $Param{ResourceIDStrg} = $LayoutObject->BuildSelection(
                 Data         => \%TeamUserListAll,
@@ -435,21 +514,7 @@ sub Run {
                 Multiple     => 1,
                 Class        => 'Modernize',
                 PossibleNone => 1,
-                Disabled     => $Permissions
-                    && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
             );
-        }
-
-        # all day
-        if (
-            $GetParam{AllDay} ||
-            ( $GetParam{AppointmentID} && $Appointment{AllDay} )
-            )
-        {
-            $Param{AllDayChecked} = 'checked="checked"';
-        }
-        else {
-            $Param{AllDayChecked} = '';
         }
 
         my $SelectedRecurrenceType       = 0;
@@ -465,71 +530,110 @@ sub Run {
             }
         }
 
+        # recurrence type
+        my @RecurrenceTypes = (
+            {
+                Key   => '0',
+                Value => Translatable('Never'),
+            },
+            {
+                Key   => 'Daily',
+                Value => Translatable('Every Day'),
+            },
+            {
+                Key   => 'Weekly',
+                Value => Translatable('Every Week'),
+            },
+            {
+                Key   => 'Monthly',
+                Value => Translatable('Every Month'),
+            },
+            {
+                Key   => 'Yearly',
+                Value => Translatable('Every Year'),
+            },
+            {
+                Key   => 'Custom',
+                Value => Translatable('Custom'),
+            },
+        );
+        my %RecurrenceTypeLookup = map {
+            $_->{Key} => $_->{Value},
+        } @RecurrenceTypes;
+        $Param{RecurrenceValue} = $LayoutObject->{LanguageObject}->Translate(
+            $RecurrenceTypeLookup{$SelectedRecurrenceType},
+        );
+
         # recurrence type selection
         $Param{RecurrenceTypeString} = $LayoutObject->BuildSelection(
-            Data => [
-                {
-                    Key   => '0',
-                    Value => Translatable('None'),
-                },
-                {
-                    Key   => 'Daily',
-                    Value => Translatable('Every Day'),
-                },
-                {
-                    Key   => 'Weekly',
-                    Value => Translatable('Every Week'),
-                },
-                {
-                    Key   => 'Monthly',
-                    Value => Translatable('Every Month'),
-                },
-                {
-                    Key   => 'Yearly',
-                    Value => Translatable('Every Year'),
-                },
-                {
-                    Key   => 'Custom',
-                    Value => Translatable('Custom'),
-                },
-            ],
+            Data         => \@RecurrenceTypes,
             SelectedID   => $SelectedRecurrenceType,
             Name         => 'RecurrenceType',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
+
+        # recurrence custom type
+        my @RecurrenceCustomTypes = (
+            {
+                Key   => 'CustomDaily',
+                Value => Translatable('Daily'),
+            },
+            {
+                Key   => 'CustomWeekly',
+                Value => Translatable('Weekly'),
+            },
+            {
+                Key   => 'CustomMonthly',
+                Value => Translatable('Monthly'),
+            },
+            {
+                Key   => 'CustomYearly',
+                Value => Translatable('Yearly'),
+            },
+        );
+        my %RecurrenceCustomTypeLookup = map {
+            $_->{Key} => $_->{Value},
+        } @RecurrenceCustomTypes;
+        my $RecurrenceCustomType = $RecurrenceCustomTypeLookup{$SelectedRecurrenceCustomType};
+        $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
+            lc $RecurrenceCustomType,
+        ) if $RecurrenceCustomType && $SelectedRecurrenceType eq 'Custom';
 
         # recurrence custom type selection
         $Param{RecurrenceCustomTypeString} = $LayoutObject->BuildSelection(
-            Data => [
-                {
-                    Key   => 'CustomDaily',
-                    Value => Translatable('Daily'),
-                },
-                {
-                    Key   => 'CustomWeekly',
-                    Value => Translatable('Weekly'),
-                },
-                {
-                    Key   => 'CustomMonthly',
-                    Value => Translatable('Monthly'),
-                },
-                {
-                    Key   => 'CustomYearly',
-                    Value => Translatable('Yearly'),
-                },
-            ],
+            Data       => \@RecurrenceCustomTypes,
             SelectedID => $SelectedRecurrenceCustomType,
             Name       => 'RecurrenceCustomType',
             Class      => 'Modernize',
         );
 
+        # recurrence interval
         my $SelectedInterval = $GetParam{RecurrenceInterval} || $Appointment{RecurrenceInterval} || 1;
+        if ( $Appointment{RecurrenceInterval} ) {
+            my %RecurrenceIntervalLookup = (
+                'CustomDaily' => $LayoutObject->{LanguageObject}->Translate(
+                    'day(s)',
+                ),
+                'CustomWeekly' => $LayoutObject->{LanguageObject}->Translate(
+                    'week(s)',
+                ),
+                'CustomMonthly' => $LayoutObject->{LanguageObject}->Translate(
+                    'month(s)',
+                ),
+                'CustomYearly' => $LayoutObject->{LanguageObject}->Translate(
+                    'year(s)',
+                ),
+            );
+            $Param{RecurrenceValue} .= ', '
+                . $LayoutObject->{LanguageObject}->Translate('every')
+                . ' ' . $Appointment{RecurrenceInterval} . ' '
+                . $RecurrenceIntervalLookup{$SelectedRecurrenceCustomType}
+                if $RecurrenceCustomType && $SelectedRecurrenceType eq 'Custom';
+        }
 
-        # add Interval selection (1-31)
+        # add interval selection (1-31)
         my @RecurrenceCustomInterval;
         for ( my $DayNumber = 1; $DayNumber < 32; $DayNumber++ ) {
             push @RecurrenceCustomInterval, {
@@ -543,11 +647,16 @@ sub Run {
             Name       => 'RecurrenceInterval',
         );
 
-        # recurrence limit string
+        # recurrence limit
         my $RecurrenceLimit = 1;
         if ( $Appointment{RecurrenceCount} ) {
             $RecurrenceLimit = 2;
+            $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
+                'for %s time(s)', $Appointment{RecurrenceCount},
+            ) if $SelectedRecurrenceType;
         }
+
+        # recurrence limit string
         $Param{RecurrenceLimitString} = $LayoutObject->BuildSelection(
             Data => [
                 {
@@ -564,8 +673,6 @@ sub Run {
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
-            Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         my $RecurrenceUntilDiffTime = 0;
@@ -583,6 +690,17 @@ sub Run {
             );
             $RecurrenceUntilDiffTime = $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
         }
+        else {
+            $Param{RecurrenceUntil} = sprintf(
+                "%04d-%02d-%02d",
+                $Appointment{RecurrenceUntilYear},
+                $Appointment{RecurrenceUntilMonth},
+                $Appointment{RecurrenceUntilDay},
+            );
+            $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
+                'until %s', $Param{RecurrenceUntil},
+            ) if $SelectedRecurrenceType;
+        }
 
         # recurrence until date string
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
@@ -598,8 +716,6 @@ sub Run {
 
             # we are calculating this locally
             OverrideTimeZone => 1,
-            Disabled         => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
         my $MinutesBefore = $LayoutObject->{LanguageObject}->Translate('minutes before');
@@ -799,10 +915,10 @@ sub Run {
         $LayoutObject->Block(
             Name => 'EditMask',
             Data => {
-                PermissionLevel => $PermissionLevel{$Permissions},
                 %Param,
                 %GetParam,
                 %Appointment,
+                PermissionLevel => $PermissionLevel{$Permissions},
             },
         );
 
@@ -980,7 +1096,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType} eq 'Daily'
+                $GetParam{RecurrenceType}    eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1048,8 +1164,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {

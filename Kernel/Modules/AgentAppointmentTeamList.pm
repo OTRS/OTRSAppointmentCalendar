@@ -125,7 +125,7 @@ sub Run {
 
                 push @ShownResources, {
                     id     => 0,
-                    title  => Translatable('Unassigned'),
+                    title  => $LayoutObject->{LanguageObject}->Translate('Unassigned'),
                     TeamID => $GetParam{TeamID},
                 };
 

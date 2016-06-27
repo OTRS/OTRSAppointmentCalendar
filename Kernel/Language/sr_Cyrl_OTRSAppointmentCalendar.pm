@@ -63,9 +63,9 @@ sub Data {
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Или прво искључите приказ неког календара или повећајте лимит у конфигурацији.';
     $Self->{Translation}->{'Week'} = 'Седмица';
-    $Self->{Translation}->{'Timeline Month'} = 'Месечна временска оса';
-    $Self->{Translation}->{'Timeline Week'} = 'Седмична временска оса';
-    $Self->{Translation}->{'Timeline Day'} = 'Дневна временска оса';
+    $Self->{Translation}->{'Timeline Month'} = 'Месечна оса';
+    $Self->{Translation}->{'Timeline Week'} = 'Седмична оса';
+    $Self->{Translation}->{'Timeline Day'} = 'Дневна оса';
     $Self->{Translation}->{'Jump'} = 'Скочи';
     $Self->{Translation}->{'Appointment'} = 'Термин';
     $Self->{Translation}->{'This is a repeating appointment'} = 'Овај термин се понавља';
@@ -89,12 +89,12 @@ sub Data {
 
     # Template: AgentAppointmentEdit
     $Self->{Translation}->{'Please set this to value before End date.'} = 'Молимо поставите овај датум пре краја.';
-    $Self->{Translation}->{'Please set this to a value after start date.'} = 'Молимо поставите овај датум после почетка.';
+    $Self->{Translation}->{'Please set this to value after Start date.'} = 'Молимо поставите овај датум после почетка.';
     $Self->{Translation}->{'This an ocurrence of a repeating appointment.'} = 'Ово је термин који се понавља.';
     $Self->{Translation}->{'Click here to edit the parent appointment.'} = 'Кликните овде за измену матичног термина.';
     $Self->{Translation}->{'Frequency'} = 'Учесталост';
     $Self->{Translation}->{'Every'} = 'Сваког(е)';
-    $Self->{Translation}->{'Please set this to value after start date.'} = 'Молимо поставите овај датум после почетка.';
+    $Self->{Translation}->{'Never'} = 'Никада';
 
     # Template: AgentAppointmentResourceOverview
     $Self->{Translation}->{'Resource Overview'} = 'Преглед ресурса';

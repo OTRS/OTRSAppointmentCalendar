@@ -329,7 +329,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     }
 
                     // Show the tooltip
-                    $TooltipObj.fadeIn("fast");
+                    $TooltipObj.fadeIn('fast');
 
                     // Collapse fieldset legend elements
                     $TooltipObj.find('fieldset').each(function (Index, Fieldset) {
@@ -442,7 +442,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             .css({
                 left: parseInt($JumpButton.offset().left - $DatepickerObj.outerWidth() + $JumpButton.outerWidth(), 10),
                 top: parseInt($JumpButton.offset().top - $DatepickerObj.outerHeight() + $JumpButton.outerHeight(), 10)
-            }).fadeIn(150);
+            }).fadeIn('fast');
     }
 
     /**
@@ -971,26 +971,36 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     TargetNS.RecurringInit = function (Fields) {
 
         function RecInit(Fields) {
-            var Days = $("input#Days").val().split(","),
-                MonthDays = $("input#MonthDays").val().split(","),
-                Months = $("input#Months").val().split(","),
+            var Days = [],
+                MonthDays = [],
+                Months = [],
                 Index;
 
-            for(Index = 0; Index < Days.length; Index++) {
+            if ($('input#Days').length) {
+                Days = $('input#Days').val().split(',');
+            }
+            if ($('input#MonthDays').length) {
+                MonthDays = $('input#MonthDays').val().split(',');
+            }
+            if ($('input#MonthDays').length) {
+                Months = $('input#Months').val().split(',');
+            }
+
+            for (Index = 0; Index < Days.length; Index++) {
                 if (Days[Index] != "") {
                     $("#RecurrenceCustomWeeklyDiv button[value=" + Days[Index] + "]")
                         .addClass("fc-state-active");
                 }
             }
 
-            for(Index = 0; Index < MonthDays.length; Index++) {
+            for (Index = 0; Index < MonthDays.length; Index++) {
                 if (MonthDays[Index] != "") {
                     $("#RecurrenceCustomMonthlyDiv button[value=" + MonthDays[Index] + "]")
                         .addClass("fc-state-active");
                 }
             }
 
-            for(Index = 0; Index < Months.length; Index++) {
+            for (Index = 0; Index < Months.length; Index++) {
                 if (Months[Index] != "") {
                     $("#RecurrenceCustomYearlyDiv button[value=" + Months[Index] + "]")
                         .addClass("fc-state-active");
@@ -1206,10 +1216,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {jQueryObject} $TeamIDObj - field with list of teams.
      * @param {jQueryObject} $ResourceIDObj - field with list of resources.
      * @param {String} ChallengeToken - User challenge token.
+     * @param {jQueryObject} $TeamValueObj - field with read only values for team.
+     * @param {jQueryObject} $ResourceValueObj - field with read only values for resources.
      * @description
      *      This method initializes team fields behavior.
      */
-    TargetNS.TeamInit = function ($TeamIDObj, $ResourceIDObj, ChallengeToken) {
+    TargetNS.TeamInit = function ($TeamIDObj, $ResourceIDObj, ChallengeToken, $TeamValueObj, $ResourceValueObj) {
         $TeamIDObj.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function () {
             var Data = {
                 ChallengeToken: ChallengeToken,
@@ -1249,6 +1261,99 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             );
         });
+
+        function CollapseValues($ValueObj, Values) {
+            $ValueObj.html('');
+            $.each(Values, function (Index, Value) {
+                var Count = Values.length;
+
+                if (Index < 2) {
+                    $ValueObj.html($ValueObj.html() + Value + '<br>');
+                } else {
+                    Values.splice(-Count, 2);
+                    $('<a />').attr('href', '#')
+                        .addClass('DialogTooltipLink')
+                        .text('+' + (Count-2) + ' more')
+                        .off('click.AppointmentCalendar')
+                        .on('click.AppointmentCalendar', function (Event) {
+                            var $TooltipObj,
+                                PosX = 0,
+                                PosY = 0,
+                                TooltipHTML = '<p>' + Values.join('<br>') + '</p>',
+                                DocumentVisibleLeft = $(document).scrollLeft() + $(window).width(),
+                                DocumentVisibleTop = $(document).scrollTop() + $(window).height(),
+                                LastXPosition,
+                                LastYPosition;
+
+                            // Close existing tooltips
+                            $('.DialogTooltip').remove();
+
+                            if (Event.pageX || Event.pageY) {
+                                PosX = Event.pageX;
+                                PosY = Event.pageY;
+                            } else if (Event.clientX || Event.clientY) {
+                                PosX = Event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                                PosY = Event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+                            }
+
+                            // Increase positions so the tooltip do not overlap with mouse pointer
+                            PosX += 10;
+                            PosY += 5;
+
+                            // Create tooltip object
+                            $TooltipObj = $('<div/>').addClass('AppointmentTooltip DialogTooltip Hidden')
+                                .offset({
+                                    top: PosY,
+                                    left: PosX
+                                })
+                                .html(TooltipHTML)
+                                .css('z-index', 4000)
+                                .css('width', 'auto')
+                                .off('click.AppointmentCalendar')
+                                .on('click.AppointmentCalendar', function (Event) {
+                                    Event.stopPropagation();
+                                })
+                                .appendTo('body');
+
+                            // Re-calculate top position if needed
+                            LastYPosition = PosY + $TooltipObj.height();
+                            if (LastYPosition > DocumentVisibleTop) {
+                                PosY = PosY - $TooltipObj.height();
+                                $TooltipObj.css('top', PosY + 'px');
+                            }
+
+                            // Re-calculate left position if needed
+                            LastXPosition = PosX + $TooltipObj.width();
+                            if (LastXPosition > DocumentVisibleLeft) {
+                                PosX = PosX - $TooltipObj.width() - 30;
+                                $TooltipObj.css('left', PosX + 'px');
+                            }
+
+                            // Show the tooltip
+                            $TooltipObj.fadeIn('fast');
+
+                            // Close tooltip on any outside click
+                            $(document).off('click.AppointmentCalendar')
+                                .on('click.AppointmentCalendar', function (Event) {
+                                    if (!$(Event.target).closest('.DialogTooltipLink').length) {
+                                        $('.DialogTooltip').remove();
+                                        $(document).off('click.AppointmentCalendar');
+                                    }
+                                });
+                        })
+                        .appendTo($ValueObj);
+                    return false;
+                }
+            });
+        }
+
+        // Collapse read only values
+        if ($TeamValueObj.length) {
+            CollapseValues($TeamValueObj, $TeamValueObj.html().split('<br>'));
+        }
+        if ($ResourceValueObj.length) {
+            CollapseValues($ResourceValueObj, $ResourceValueObj.html().split('<br>'));
+        }
     }
 
     /**
@@ -1553,84 +1658,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             }
         );
-    };
-
-    /**
-     * @name InitCalendarFilter
-     * @memberof Core.Agent.AppointmentCalendar
-     * @function
-     * @param {jQueryObject} $FilterInput - Filter input element.
-     * @param {jQueryObject} $Container - Container of calendar switches to be filtered.
-     * @description
-     *      This function initializes a filter input field which can be used to dynamically filter
-     *      a list of calendar switches in calendar overview.
-     */
-    TargetNS.InitCalendarFilter = function ($FilterInput, $Container) {
-        var Timeout,
-            $Rows = $Container.find('.CalendarSwitch'),
-            $Elements = $Rows.find('label');
-
-        $FilterInput.unbind('keydown.FilterInput').bind('keydown.FilterInput', function () {
-
-            $FilterInput.addClass('Filtering');
-            window.clearTimeout(Timeout);
-            Timeout = window.setTimeout(function () {
-
-                var FilterText = ($FilterInput.val() || '').toLowerCase();
-
-                /**
-                 * @private
-                 * @name CheckText
-                 * @memberof Core.Agent.AppointmentCalendar
-                 * @function
-                 * @returns {Boolean} True if text was found, false otherwise.
-                 * @param {jQueryObject} $Element - Element that will be checked.
-                 * @param {String} Filter - The current filter text.
-                 * @description
-                 *      Check if a text exist inside an element.
-                 */
-                function CheckText($Element, Filter) {
-                    var Text;
-
-                    Text = $Element.text();
-                    if (Text && Text.toLowerCase().indexOf(Filter) > -1){
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                if (FilterText.length) {
-                    $Rows.hide();
-                    $Elements.each(function () {
-                        if (CheckText($(this), FilterText)) {
-                            $(this).parent().show();
-                        }
-                    });
-                }
-                else {
-                    $Rows.show();
-                }
-
-                if ($Rows.filter(':visible').length) {
-                    $Container.find('.FilterMessage').hide();
-                }
-                else {
-                    $Container.find('.FilterMessage').show();
-                }
-
-                Core.App.Publish('Event.AppointmentCalendar.CalendarWidget.InitCalendarFilter.Change', [$FilterInput, $Container]);
-                $FilterInput.removeClass('Filtering');
-
-            }, 100);
-        });
-
-        // Prevent submit when the Return key was pressed
-        $FilterInput.unbind('keypress.FilterInput').bind('keypress.FilterInput', function (Event) {
-            if ((Event.charCode || Event.keyCode) === 13) {
-                Event.preventDefault();
-            }
-        });
     };
 
     /**

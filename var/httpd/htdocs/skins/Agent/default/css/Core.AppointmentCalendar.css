@@ -15,31 +15,15 @@
         width: 560px;
     }
 
-    #CalendarList {
-        width: 100%;
-        max-height: 360px;
-        overflow-y: auto;
+    .InlineButton {
+        background: transparent;
+        cursor: pointer;
+        border: none;
+        padding: 0;
     }
 
-    .CalendarSwitch {
-        margin-top: 2px;
-    }
-
-    .CalendarSwitch input[type="checkbox"] {
-        vertical-align: middle;
-    }
-
-    .CalendarSwitch label {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        width: 210px;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    #CalendarList .CalendarSwitch:last-child {
-        margin-bottom: 0;
+    .FilterMessage td {
+        background-color: #FFF !important;
     }
 
     .CalendarColor {
@@ -59,6 +43,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .RecurringParent:before {
@@ -69,6 +54,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .RecurringChild:before {
@@ -79,6 +65,7 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
     }
 
     .AllDay .fc-content,
@@ -165,6 +152,10 @@
 
     .CalendarWidget .ui-datepicker-trigger {
         margin-top: 10px;
+    }
+
+    .ReadOnlyValue {
+        margin-top: 5px;
     }
 
     #RecurrenceCustomTypeStringDiv .FieldExplanation:nth-child(2) {
@@ -284,6 +275,10 @@
 
     .fc-time-area .fc-event-container {
         top: 2px;
+    }
+
+    .fc .fc-today {
+        background-color: #FFF1AB;
     }
 
     .ui-autocomplete {
