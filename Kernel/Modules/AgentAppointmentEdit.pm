@@ -1104,7 +1104,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType}    eq 'Daily'
+                $GetParam{RecurrenceType} eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1172,8 +1172,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear} &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -1550,6 +1550,8 @@ sub _NotificationDateGet {
             my $CustomUnit      = $Param{GetParams}->{NotificationCustomUnits};
             my $CustomUnitPoint = $Param{GetParams}->{NotificationCustomUnitsPointOfTime};
 
+            return '' if !$CustomUnitCount;
+
             # setup the count to compute for the offset
             my %UnitOffsetCompute = (
                 minutes => 60,
@@ -1557,13 +1559,72 @@ sub _NotificationDateGet {
                 days    => 86400,
             );
 
-            # setup the point of time to compute from
-            my %PointOfTimeOffsetCompute = (
-                minutes => 60,
-                hours   => 3600,
-                days    => 86400,
-            );
+            my $NotificationLocalTime;
 
+            # compute from start time
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'afterstart' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Appointment}->{StartTime},
+                );
+            }
+
+            # compute from end time
+            elsif ( $CustomUnitPoint eq 'beforeend' || $CustomUnitPoint eq 'afterend' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Appointment}->{EndTime},
+                );
+            }
+
+            # not supported point of time
+            else {
+                return '';
+            }
+
+            # compute the offset to be used
+            my $Offset = ( $CustomUnitCount * $UnitOffsetCompute{$CustomUnit} );
+
+            # save the newly computed notification datetime string
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'beforeend' ) {
+                $NotificationDate = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime - $Offset ),
+                );
+            }
+            else {
+                $NotificationDate = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime + $Offset ),
+                );
+            }
+        }
+
+        # save date time input
+        elsif ( $Param{GetParams}->{NotificationCustomDateTimeInput} ) {
+
+            # validation
+            if (
+                !IsStringWithData( $Param{GetParams}->{NotificationYear} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationMonth} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationDay} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationHour} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationMinute} )
+                )
+            {
+                return '';
+            }
+
+            # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
+            $NotificationDate =
+                $Param{GetParams}->{NotificationYear}
+                . '-'
+                . $Param{GetParams}->{NotificationMonth}
+                . '-'
+                . $Param{GetParams}->{NotificationDay}
+                . ' '
+                . $Param{GetParams}->{NotificationHour}
+                . ':'
+                . $Param{GetParams}->{NotificationMinute}
+                . ':00';
         }
     }
 

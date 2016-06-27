@@ -140,6 +140,12 @@ sub AppointmentCreate {
         }
     }
 
+    $Param{NotificationTime}                  ||= '';
+    $Param{NotificationTemplate}              ||= '';
+    $Param{NotificationCustomUnitCount}       ||= '';
+    $Param{NotificationCustomUnit}            ||= '';
+    $Param{NotificationCustomUnitPointOfTime} ||= '';
+
     # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
@@ -165,7 +171,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -1060,6 +1066,12 @@ sub AppointmentUpdate {
         }
     }
 
+    $Param{NotificationTime}                  ||= '';
+    $Param{NotificationTemplate}              ||= '';
+    $Param{NotificationCustomUnitCount}       ||= '';
+    $Param{NotificationCustomUnit}            ||= '';
+    $Param{NotificationCustomUnitPointOfTime} ||= '';
+
     # needed objects
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
@@ -1085,7 +1097,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
