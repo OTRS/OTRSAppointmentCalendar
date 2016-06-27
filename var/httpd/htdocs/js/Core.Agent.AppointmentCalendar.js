@@ -58,6 +58,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.DialogText.OccurrenceJustThis - Text of 'just this' button in occurrence dialog.
      * @param {String} Params.DialogText.Dismiss - Text of 'Dismiss' button in dialog.
      * @param {Array} Params.OverviewScreen - Name of the screen (CalendarOverview|ResourceOverview).
+     * @param {String} Params.CalendarSettingsButton - ID of the settings button.
+     * @param {String} Params.CalendarSettingsDialogContainer - ID of the settings dialog container.
+     * @param {String} Params.CalendarSettingsShow - Show the settings dialog immediately.
      * @param {Array} Params.Callbacks - Array containing names of the callbacks.
      * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
      * @param {Array} Params.Callbacks.EditMaskSubaction - Name of the edit mask subaction.
@@ -401,6 +404,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             else if (Params.Appointment.AppointmentID) {
                 OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
             }
+        }
+
+        if (Params.CalendarSettingsButton) {
+            CalendarSettingsInit(Params);
         }
 
         if (Params.Resources.ResourceSettingsButton) {
@@ -1358,6 +1365,70 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
     /**
      * @private
+     * @name CalendarSettingsInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {Object} Params - Hash with different config options.
+     * @param {Array} Params.Callbacks - Array containing names of the callbacks.
+     * @param {Array} Params.Callbacks.EditAction - Name of the edit action.
+     * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
+     * @param {Array} Params.OverviewScreen - Name of the screen (ResourceOverview).
+     * @param {String} Params.CalendarSettingsButton - ID of the settings button.
+     * @param {String} Params.CalendarSettingsDialogContainer - ID of the settings dialog container.
+     * @param {String} Params.CalendarSettingsShow - Show the settings dialog immediately.
+     * @description
+     *      This method initializes calendar settings behavior.
+     */
+    function CalendarSettingsInit(Params) {
+        var $CalendarSettingsObj = $('#' + Core.App.EscapeSelector(Params.CalendarSettingsButton)),
+            $CalendarSettingsDialog = $('#' + Core.App.EscapeSelector(Params.CalendarSettingsDialogContainer));
+
+        // Calendar settings button
+        $CalendarSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
+            Core.UI.Dialog.ShowContentDialog($CalendarSettingsDialog, Core.Config.Get('AppointmentCalendarTranslationsSettings'), '10px', 'Center', true,
+                [
+                    {
+                        Label: Core.Config.Get('AppointmentCalendarTranslationsSave'),
+                        Class: 'Primary',
+                        Function: function () {
+                            var $ShownAppointments = $('#ShownAppointments'),
+                                Data = {
+                                    ChallengeToken: Params.ChallengeToken,
+                                    Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
+                                    Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
+                                    OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview',
+                                    ShownAppointments: $ShownAppointments.val()
+                                };
+
+                            Core.Agent.AppointmentCalendar.ShowWaitingDialog();
+
+                            Core.AJAX.FunctionCall(
+                                Core.Config.Get('CGIHandle'),
+                                Data,
+                                function (Response) {
+                                    if (!Response.Success) {
+                                        Core.Debug.Log('Error updating user preferences!');
+                                    }
+                                    window.location.href = Core.Config.Get('Baselink') + 'Action=AgentAppointment' + (Params.OverviewScreen ? Params.OverviewScreen : 'CalendarOverview');
+                                }
+                            );
+                        }
+                    }
+                ], true);
+
+            Event.preventDefault();
+            Event.stopPropagation();
+
+            return false;
+        });
+
+        // Show settings dialog immediately
+        if (Params.CalendarSettingsShow) {
+            $CalendarSettingsObj.trigger('click.AppointmentCalendar');
+        }
+    }
+
+    /**
+     * @private
      * @name ResourceSettingsInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with different config options.
@@ -1372,7 +1443,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @description
      *      This method initializes resource settings behavior.
      */
-    function ResourceSettingsInit (Params) {
+    function ResourceSettingsInit(Params) {
         var $ResourceSettingsObj = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsButton)),
             $ResourceSettingsDialog = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsDialogContainer)),
             $RestoreSettingsObj;

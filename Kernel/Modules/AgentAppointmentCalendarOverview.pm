@@ -64,6 +64,11 @@ sub Run {
             );
         }
 
+        # show settings dialog
+        elsif ( $Self->{Subaction} eq 'CalendarSettingsShow' ) {
+            $Param{CalendarSettingsShow} = 1;
+        }
+
         # edit appointment dialog
         else {
             $Param{AppointmentID} = $ParamObject->GetParam( Param => 'AppointmentID' ) // undef;
@@ -85,6 +90,37 @@ sub Run {
         my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
             UserID => $Self->{UserID},
         );
+
+        # user preference key
+        my $ShownAppointmentsPrefKey = 'User' . $Self->{OverviewScreen} . 'ShownAppointments';
+        my $ShownAppointmentsPrefVal = $Preferences{$ShownAppointmentsPrefKey} || 1;
+
+        # shown appointments selection
+        $Param{ShownAppointmentsString} = $LayoutObject->BuildSelection(
+            Data => {
+                1 => $LayoutObject->{LanguageObject}->Translate('All appointments'),
+                2 => $LayoutObject->{LanguageObject}->Translate('Appointments assigned to me'),
+            },
+            Name         => 'ShownAppointments',
+            ID           => 'ShownAppointments',
+            Class        => 'Modernize',
+            SelectedID   => $ShownAppointmentsPrefVal,
+            PossibleNone => 0,
+        );
+
+        # show only assigned appointments to current user
+        if ( $ShownAppointmentsPrefVal == 2 ) {
+            $Param{ResourceID} = $Self->{UserID};
+
+            # display notify line
+            $Param{NotifyLine} = {
+                Priority => 'Warning',
+                Data     => Translatable('Showing only appointments assigned to you! Change settings'),
+                Link =>
+                    $LayoutObject->{Baselink}
+                    . 'Action=AgentAppointmentCalendarOverview;Subaction=CalendarSettingsShow',
+            };
+        }
 
         my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
         my $CalendarSelection = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
@@ -186,6 +222,13 @@ sub Run {
     # output page
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
+
+    if ( $Param{NotifyLine} ) {
+        $Output .= $LayoutObject->Notify(
+            %{ $Param{NotifyLine} },
+        );
+    }
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarOverview',
         Data         => {
@@ -273,7 +316,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

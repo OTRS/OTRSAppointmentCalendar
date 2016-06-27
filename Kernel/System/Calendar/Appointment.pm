@@ -165,7 +165,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -427,6 +427,7 @@ get a hash of Appointments.
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
         TeamID              => 1,                                       # (optional) Filter by team
+        ResourceID          => 2,                                       # (optional) Filter by resource
         Result              => 'HASH',                                  # (optional), HASH|ARRAY
     );
 
@@ -490,15 +491,16 @@ sub AppointmentList {
     $Param{Result} = $Param{Result} || 'HASH';
 
     # cache keys
-    my $CacheType     = $Self->{CacheType} . 'List' . $Param{CalendarID};
-    my $CacheKeyStart = $Param{StartTime} || 'any';
-    my $CacheKeyEnd   = $Param{EndTime} || 'any';
-    my $CacheKeyTeam  = $Param{TeamID} || 'any';
+    my $CacheType        = $Self->{CacheType} . 'List' . $Param{CalendarID};
+    my $CacheKeyStart    = $Param{StartTime} || 'any';
+    my $CacheKeyEnd      = $Param{EndTime} || 'any';
+    my $CacheKeyTeam     = $Param{TeamID} || 'any';
+    my $CacheKeyResource = $Param{ResourceID} || 'any';
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$Param{Result}",
+        Key  => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -596,6 +598,9 @@ sub AppointmentList {
         # resource id
         $Row[11] = $Row[11] ? $Row[11] : 0;
         my @ResourceID = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : ( $Row[11] );
+        if ( $Param{ResourceID} ) {
+            next ROW if !grep { $_ == $Param{ResourceID} } @ResourceID;
+        }
 
         my %Appointment = (
             AppointmentID => $Row[0],
@@ -628,7 +633,7 @@ sub AppointmentList {
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
         Type  => $CacheType,
-        Key   => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$Param{Result}",
+        Key   => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );
@@ -1080,7 +1085,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )

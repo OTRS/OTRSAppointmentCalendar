@@ -37,7 +37,7 @@
             <label for="Description">[% Translate("Description") | html %]:</label>
             <div class="Field">
 [% IF Data.PermissionLevel < 2 %]
-                <p id="Description" class="ReadOnlyValue">[% Data.Description | html %]</p>
+                <p id="Description" class="ReadOnlyValue">[% Data.Description || "-" | html %]</p>
 [% ELSE %]
                 <textarea id="Description" name="Description" class="W75pc" rows="4">[% Data.Description | html %]</textarea>
 [% END %]
@@ -46,7 +46,7 @@
             <label for="Location">[% Translate("Location") | html %]:</label>
             <div class="Field">
 [% IF Data.PermissionLevel < 2 %]
-                <p id="Location" class="ReadOnlyValue">[% Data.Location | html %]</p>
+                <p id="Location" class="ReadOnlyValue">[% Data.Location || "-" | html %]</p>
 [% ELSE %]
                 <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
 [% END %]
@@ -129,7 +129,12 @@
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
 [% IF Data.PermissionLevel < 2 %]
             <div class="Field">
+[% IF Data.ParentID %]
+                [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
+                <a href="#" id="EditParent">[% Translate("Click here to see the parent appointment.") | html %]</a>
+[% ELSE %]
                 <p id="RecurrenceType" class="ReadOnlyValue">[% Data.RecurrenceValue | html %]</p>
+[% END %]
             </div>
 [% ELSE %]
 [% IF Data.ParentID %]
@@ -389,10 +394,11 @@
             <div class="Field">
 [% IF Data.PermissionLevel >= 2 %]
                 <input type="text" data-plugin-key="[% Key | html %]" data-plugin-url="[% Data.PluginList.$Key.PluginURL | html %]" class="PluginField W75pc" />
-[% END %]
                 <input type="hidden" id="Plugin_[% Key | html %]" name="Plugin_[% Key | html %]" value='[% Data.PluginList.$Key.LinkList || "[]" %]' />
+[% ELSE %]
 [% IF Data.PluginData.$Key.size == 0 %]
-                <p class="ReadOnlyValue">[% Translate("None") | html %]</p>
+                <p class="ReadOnlyValue">-</p>
+[% END %]
 [% END %]
 # keep following block on a single line, so :empty CSS selector would work!
                 <div id="PluginContainer_[% Key | html %]"[% IF Data.PermissionLevel >= 2 %] class="PluginContainer"[% END %]>[% FOREACH Link IN Data.PluginData.$Key %]<div class="Link_[% Link.LinkID | html %]">

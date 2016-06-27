@@ -104,6 +104,14 @@
     <div class="ContentColumn">
         <div class="WidgetSimple CalendarWidget">
             <div class="Header">
+                <div class="ActionMenu">
+                    <div class="WidgetAction Settings">
+                        <a href="#" id="CalendarSettingsButton" title="[% Translate("Settings") | html %]">
+                            <i class="fa fa-cog"></i>
+                        </a>
+                    </div>
+                    <div class="Clear"></div>
+                </div>
                 <h2>[% Translate("Calendar") | html %]</h2>
             </div>
             <div class="Content ">
@@ -123,6 +131,8 @@ Core.Config.Set('AppointmentCalendarTranslationsLoading', [% Translate("Loading.
 Core.Config.Set('AppointmentCalendarTranslationsTooManyCalendarsHeadline', [% Translate("Too many active calendars") | JSON %]);
 Core.Config.Set('AppointmentCalendarTranslationsTooManyCalendarsText', [% Translate("Please either turn some off first or increase the limit in configuration.") | JSON %]);
 Core.Config.Set('AppointmentCalendarTranslationsYes', [% Translate("Yes") | JSON %]);
+Core.Config.Set('AppointmentCalendarTranslationsSettings', [% Translate("Settings") | JSON %]);
+Core.Config.Set('AppointmentCalendarTranslationsSave', [% Translate("Save") | JSON %]);
 
 Core.Agent.AppointmentCalendar.Init({
     ChallengeToken: $("#ChallengeToken").val(),
@@ -212,6 +222,9 @@ Core.Agent.AppointmentCalendar.Init({
         Dismiss: [% Translate("Dismiss") | JSON %]
     },
     OverviewScreen: 'CalendarOverview',
+    CalendarSettingsButton: 'CalendarSettingsButton',
+    CalendarSettingsDialogContainer: 'CalendarSettingsDialogContainer',
+    CalendarSettingsShow: [% Data.CalendarSettingsShow | JSON %],
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
         EditMaskSubaction: [% Data.EditMaskSubaction | JSON %],
@@ -235,7 +248,8 @@ Core.Agent.AppointmentCalendar.Init({
                     ChallengeToken: $("#ChallengeToken").val(),
                     Action: 'AgentAppointmentList',
                     Subaction: 'ListAppointments',
-                    CalendarID: [% Data.CalendarID | JSON %]
+                    CalendarID: [% Data.CalendarID | JSON %],
+                    ResourceID: [% Data.ResourceID | JSON %]
                 },
                 color: [% Data.Color | JSON %],
                 textColor: [% Data.TextColor | JSON %],
@@ -298,6 +312,18 @@ Core.Agent.AppointmentCalendar.Init({
         </div>
     </div>
     <div class="Clear"></div>
+
+    <div id="CalendarSettingsDialogContainer" class="Hidden">
+        <form id="ContextSettingsDialogCalendarOverview" class="">
+            <fieldset class="TableLike FixedLabelSmall">
+                <label for="ShownAppointments">[% Translate("Show") | html %]:</label>
+                <div class="Field">
+                    [% Data.ShownAppointmentsString %]
+                </div>
+                <div class="Clear"></div>
+            </fieldset>
+        </form>
+    </div>
 
     <div id="AppointmentTooltipTemplate" class="Hidden">
         <fieldset>

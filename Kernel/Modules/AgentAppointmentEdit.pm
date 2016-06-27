@@ -25,6 +25,8 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    $Self->{EmptyString} = '-';
+
     return $Self;
 }
 
@@ -159,9 +161,12 @@ sub Run {
             my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
-            $StartTime -= $Appointment{TimezoneID} * 3600;
 
-            $StartTime += $Offset * 3600;
+            if ( !$Appointment{AllDay} ) {
+                $StartTime -= $Appointment{TimezoneID} * 3600;
+                $StartTime += $Offset * 3600;
+            }
+
             (
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
@@ -172,11 +177,14 @@ sub Run {
             my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{EndTime},
             );
-            $EndTime -= $Appointment{TimezoneID} * 3600;
-            $EndTime += $Offset * 3600;
+
+            if ( !$Appointment{AllDay} ) {
+                $EndTime -= $Appointment{TimezoneID} * 3600;
+                $EndTime += $Offset * 3600;
+            }
 
             # end times for all day appointments are inclusive, subtract whole day
-            if ( $Appointment{AllDay} ) {
+            else {
                 $EndTime -= 86400;
                 if ( $EndTime < $StartTime ) {
                     $EndTime = $StartTime;
@@ -458,7 +466,7 @@ sub Run {
                 $Param{TeamNames} = join( '<br>', @TeamNames );
             }
             else {
-                $Param{TeamNames} = $LayoutObject->{LanguageObject}->Translate('None');
+                $Param{TeamNames} = $Self->{EmptyString};
             }
 
             # team list string
@@ -503,7 +511,7 @@ sub Run {
                 $Param{ResourceNames} = join( '<br>', @ResourceNames );
             }
             else {
-                $Param{ResourceNames} = $LayoutObject->{LanguageObject}->Translate('None');
+                $Param{ResourceNames} = $Self->{EmptyString};
             }
 
             # team user list string
@@ -1334,8 +1342,9 @@ sub Run {
 
         if (
             $GetParam{OverviewScreen} && (
-                $GetParam{DefaultView} || $GetParam{CalendarSelection} ||
-                ( $GetParam{ShownResources} && $GetParam{TeamID} )
+                $GetParam{DefaultView} || $GetParam{CalendarSelection}
+                || ( $GetParam{ShownResources} && $GetParam{TeamID} )
+                || $GetParam{ShownAppointments}
             )
             )
         {
@@ -1351,6 +1360,9 @@ sub Run {
             elsif ( $GetParam{ShownResources} && $GetParam{TeamID} ) {
                 $PreferenceKey       = 'ShownResources';
                 $PreferenceKeySuffix = "-$GetParam{TeamID}";
+            }
+            elsif ( $GetParam{ShownAppointments} ) {
+                $PreferenceKey = 'ShownAppointments';
             }
 
             # set user preferences
