@@ -1764,10 +1764,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Data,
             Index,
             Appointments = $('#calendar').fullCalendar('clientEvents'),
-            DateCurrent = moment(); // eslint-disable-line no-undef
+            DateCurrent = $.fullCalendar.moment();
 
+        // There is no need to check, since times are rounded to minutes
         if (DateCurrent.second() > 6 && this.Initialized != null) {
-            // There is no need to check, since times are rounded to minutes
             return;
         }
 
@@ -1778,17 +1778,26 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         this.Initialized = true;
 
-        // Itterate through all Appointments
+        // Iterate through all appointments
         for (Index = 0; Index < Appointments.length; Index++) {
             if (Appointments[Index].start.isBefore(DateCurrent) &&
                 DateCurrent.isBefore(Appointments[Index].end)
             ) {
-                if (Appointments[Index].shown != null) {
+                if (
+                    Appointments[Index].shown != null
+                    || Appointments[Index].id === 'workingHours'
+                    )
+                {
                     continue;
                 }
 
                 AppointmentIDs.push(Appointments[Index].id);
             }
+        }
+
+        // Give up if no appointments found
+        if (AppointmentIDs.length === 0) {
+            return;
         }
 
         Data = {
