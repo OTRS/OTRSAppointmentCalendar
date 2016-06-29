@@ -1202,8 +1202,9 @@ sub Run {
             $GetParam{NotificationCustom} = 'datetime';
         }
 
-        # get notification date
-        $GetParam{NotificationDate} = $Self->_NotificationDateGet(
+        # prepare notification information
+        #        $GetParam{NotificationDate} = $Self->_NotificationPrepare(
+        $Self->_NotificationPrepare(
             Appointment => \%Appointment,
             GetParams   => \%GetParam,
         );
@@ -1516,7 +1517,7 @@ sub _DayOffsetGet {
     }
 }
 
-sub _NotificationDateGet {
+sub _NotificationPrepare {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -1530,12 +1531,38 @@ sub _NotificationDateGet {
         }
     }
 
-    return '' if !$Param{GetParams}->{NotificationTemplate};
+    # pre-define notification date
+    $Param{GetParams}->{NotificationDate} = '';
+
+    # prepare custom datetime string
+    if (
+        IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeYear} )
+        && IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeMonth} )
+        && IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeDay} )
+        && IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeHour} )
+        && IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeMinute} )
+        )
+    {
+        $Param{GetParams}->{NotificationCustomDateTime} =
+            $Param{GetParams}->{NotificationCustomDateTimeYear}
+            . '-'
+            . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeMonth} )
+            . '-'
+            . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeDay} )
+            . ' '
+            . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeHour} )
+            . ':'
+            . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeMinute} )
+            . ':00';
+    }
+    else {
+        $Param{GetParams}->{NotificationCustomDateTime} = '';
+    }
+
+    return if !$Param{GetParams}->{NotificationTemplate};
 
     # get a local calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-
-    my $NotificationDate = '';
 
     if ( $Param{GetParams}->{NotificationTemplate} ne 'Custom' ) {
 
@@ -1548,7 +1575,7 @@ sub _NotificationDateGet {
         );
 
         # save the start time - offset as new notification datetime string
-        $NotificationDate = $CalendarHelperObject->TimestampGet(
+        $Param{GetParams}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
             SystemTime => ( $StartLocalTime - $Offset ),
         );
     }
@@ -1598,12 +1625,12 @@ sub _NotificationDateGet {
 
             # save the newly computed notification datetime string
             if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'beforeend' ) {
-                $NotificationDate = $CalendarHelperObject->TimestampGet(
+                $Param{GetParams}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
                     SystemTime => ( $NotificationLocalTime - $Offset ),
                 );
             }
             else {
-                $NotificationDate = $CalendarHelperObject->TimestampGet(
+                $Param{GetParams}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
                     SystemTime => ( $NotificationLocalTime + $Offset ),
                 );
             }
@@ -1625,7 +1652,7 @@ sub _NotificationDateGet {
             }
 
             # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
-            $NotificationDate =
+            $Param{GetParams}->{NotificationDate} =
                 $Param{GetParams}->{NotificationCustomDateTimeYear}
                 . '-'
                 . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeMonth} )
@@ -1639,7 +1666,7 @@ sub _NotificationDateGet {
         }
     }
 
-    return $NotificationDate;
+    return 1;
 }
 
 1;

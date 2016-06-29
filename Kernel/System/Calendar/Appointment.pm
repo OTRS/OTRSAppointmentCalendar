@@ -140,11 +140,14 @@ sub AppointmentCreate {
         }
     }
 
-    $Param{NotificationTime}                  ||= '';
-    $Param{NotificationTemplate}              ||= '';
-    $Param{NotificationCustomUnitCount}       ||= '';
-    $Param{NotificationCustomUnit}            ||= '';
-    $Param{NotificationCustomUnitPointOfTime} ||= '';
+    # prepare possible notification params
+    $Param{NotificationDate}                      ||= '';
+    $Param{NotificationTemplate}                  ||= '';
+    $Param{NotificationCustom}                    ||= '';
+    $Param{NotificationCustomRelativeUnitCount}   ||= '';
+    $Param{NotificationCustomRelativeUnit}        ||= '';
+    $Param{NotificationCustomRelativePointOfTime} ||= '';
+    $Param{NotificationCustomDateTime}            ||= '';
 
     # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -343,18 +346,19 @@ sub AppointmentCreate {
         \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
         \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
         \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},      \$Param{RecurrenceID},
-        \$Arrays{RecurrenceExclude}, \$Param{NotificationTime},     \$Param{NotificationTemplate},
-        \$Param{NotificationCustomUnitCount}, \$Param{NotificationCustomUnit},
-        \$Param{NotificationCustomUnitPointOfTime}, \$Param{UserID}, \$Param{UserID};
+        \$Arrays{RecurrenceExclude}, \$Param{NotificationDate},     \$Param{NotificationTemplate},
+        \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
+        \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
+        \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
             recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
-            notify_template, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             current_timestamp, ?, current_timestamp, ?)
     ";
 
@@ -1082,31 +1086,7 @@ sub AppointmentUpdate {
     $Param{NotificationCustomRelativeUnitCount}   ||= '';
     $Param{NotificationCustomRelativeUnit}        ||= '';
     $Param{NotificationCustomRelativePointOfTime} ||= '';
-
-    # prepare custom datetime string
-    if (
-        IsStringWithData( $Param{NotificationCustomDateTimeYear} )
-        && IsStringWithData( $Param{NotificationCustomDateTimeMonth} )
-        && IsStringWithData( $Param{NotificationCustomDateTimeDay} )
-        && IsStringWithData( $Param{NotificationCustomDateTimeHour} )
-        && IsStringWithData( $Param{NotificationCustomDateTimeMinute} )
-        )
-    {
-        $Param{NotificationCustomDateTime} =
-            $Param{NotificationCustomDateTimeYear}
-            . '-'
-            . sprintf( "%02d", $Param{NotificationCustomDateTimeMonth} )
-            . '-'
-            . sprintf( "%02d", $Param{NotificationCustomDateTimeDay} )
-            . ' '
-            . sprintf( "%02d", $Param{NotificationCustomDateTimeHour} )
-            . ':'
-            . sprintf( "%02d", $Param{NotificationCustomDateTimeMinute} )
-            . ':00';
-    }
-    else {
-        $Param{NotificationCustomDateTime} = '';
-    }
+    $Param{NotificationCustomDateTime}            ||= '';
 
     # needed objects
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
