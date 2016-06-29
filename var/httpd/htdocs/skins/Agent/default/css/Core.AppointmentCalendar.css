@@ -68,9 +68,57 @@
         opacity: 0.5;
     }
 
+    .NotificationAllDay:before {
+        content: "\F185 \F0F3";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
+    }
+
+    .NotificationRecurringParent:before {
+        content: "\F01E \F0F3";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
+    }
+
+    .NotificationRecurringChild:before {
+        content: "\F0C1 \F0F3";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
+    }
+
+    .Notification:before {
+        content: "\F0F3";
+        float: right;
+        font: normal normal normal 13px/1 FontAwesome;
+        margin-right: 2px;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        opacity: 0.5;
+    }
+
     .AllDay .fc-content,
     .RecurringParent .fc-content,
-    .RecurringChild .fc-content {
+    .RecurringChild .fc-content
+    .NotificationAllDay .fc-content
+    .NotificationRecurringParent .fc-content
+    .NotificationRecurringChild .fc-content
+    .Notification .fc-content {
         margin-right: 16px;
     }
 

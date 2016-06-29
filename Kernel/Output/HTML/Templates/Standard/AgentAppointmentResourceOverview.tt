@@ -325,6 +325,7 @@ Core.Agent.AppointmentCalendar.Init({
                         calendarId: AppointmentData.CalendarID,
                         allDay: parseInt(AppointmentData.AllDay, 10) ? true : false,
                         recurring: parseInt(AppointmentData.Recurring, 10) ? true : false,
+                        notification: AppointmentData.NotificationDate.length ? true : false,
                         teamIds: AppointmentData.TeamID,
                         teamNames: AppointmentData.TeamNames,
                         resourceIds: AppointmentData.ResourceID,

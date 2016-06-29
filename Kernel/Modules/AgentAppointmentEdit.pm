@@ -785,8 +785,8 @@ sub Run {
                     Value => Translatable('Custom'),
                 },
             ],
-            SelectedID   => '0',              # $SelectedNotification
-            Name         => 'Notification',
+            SelectedID   => '0',                      # $SelectedNotification
+            Name         => 'NotificationTemplate',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -810,8 +810,8 @@ sub Run {
                     Value => Translatable('Days'),
                 },
             ],
-            SelectedID   => '0',                         # $SelectedNotificationCustomUnits
-            Name         => 'NotificationCustomUnits',
+            SelectedID   => '0',                                # $SelectedNotificationCustomUnits
+            Name         => 'NotificationCustomRelativeUnit',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
@@ -839,18 +839,18 @@ sub Run {
                     Value => Translatable('after the appointment has been ended'),
                 },
             ],
-            SelectedID   => '0',                                    # $SelectedNotificationCustomUnitsPointOfTime
-            Name         => 'NotificationCustomUnitsPointOfTime',
+            SelectedID   => '0',                                       # $SelectedNotificationCustomUnitsPointOfTime
+            Name         => 'NotificationCustomRelativePointOfTime',
             Multiple     => 0,
             Class        => 'Modernize',
             PossibleNone => 0,
             Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,     # disable if permissions are below move_into
         );
 
         # notification custom date selection
         $Param{NotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
-            Prefix           => 'Notification',
+            Prefix           => 'NotificationCustomDateTime',
             Format           => 'DateInputFormatLong',
             YearPeriodPast   => $YearPeriodPast{Start},
             YearPeriodFuture => $YearPeriodFuture{Start},
@@ -955,7 +955,7 @@ sub Run {
             );
 
             # initialize datepickers for different date fields
-            for my $Prefix (qw(Start End RecurrenceUntil Notification)) {
+            for my $Prefix (qw(Start End RecurrenceUntil NotificationCustomDateTime)) {
                 $LayoutObject->Block(
                     Name => 'DatepickerInit',
                     Data => {
@@ -1191,7 +1191,18 @@ sub Run {
             }
         }
 
-        # notification
+        # determine notification custom type
+        if ( $GetParam{NotificationTemplate} ne 'Custom' ) {
+            $GetParam{NotificationCustom} = '';
+        }
+        elsif ( $GetParam{NotificationCustomRelativeInput} ) {
+            $GetParam{NotificationCustom} = 'relative';
+        }
+        elsif ( $GetParam{NotificationCustomDateTimeInput} ) {
+            $GetParam{NotificationCustom} = 'datetime';
+        }
+
+        # get notification date
         $GetParam{NotificationDate} = $Self->_NotificationDateGet(
             Appointment => \%Appointment,
             GetParams   => \%GetParam,
@@ -1519,17 +1530,17 @@ sub _NotificationDateGet {
         }
     }
 
-    return '' if !$Param{GetParams}->{Notification};
+    return '' if !$Param{GetParams}->{NotificationTemplate};
 
     # get a local calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     my $NotificationDate = '';
 
-    if ( $Param{GetParams}->{Notification} ne 'Custom' ) {
+    if ( $Param{GetParams}->{NotificationTemplate} ne 'Custom' ) {
 
         # offset template (before start datetime) used
-        my $Offset = $Param{GetParams}->{Notification};
+        my $Offset = $Param{GetParams}->{NotificationTemplate};
 
         # get a unix timestamp of appointment start time
         my $StartLocalTime = $CalendarHelperObject->SystemTimeGet(
@@ -1546,9 +1557,9 @@ sub _NotificationDateGet {
         # compute date of relative input
         if ( $Param{GetParams}->{NotificationCustomRelativeInput} ) {
 
-            my $CustomUnitCount = $Param{GetParams}->{NotificationCustomUnitCount};
-            my $CustomUnit      = $Param{GetParams}->{NotificationCustomUnits};
-            my $CustomUnitPoint = $Param{GetParams}->{NotificationCustomUnitsPointOfTime};
+            my $CustomUnitCount = $Param{GetParams}->{NotificationCustomRelativeUnitCount};
+            my $CustomUnit      = $Param{GetParams}->{NotificationCustomRelativeUnit};
+            my $CustomUnitPoint = $Param{GetParams}->{NotificationCustomRelativePointOfTime};
 
             return '' if !$CustomUnitCount;
 
@@ -1603,11 +1614,11 @@ sub _NotificationDateGet {
 
             # validation
             if (
-                !IsStringWithData( $Param{GetParams}->{NotificationYear} )
-                || !IsStringWithData( $Param{GetParams}->{NotificationMonth} )
-                || !IsStringWithData( $Param{GetParams}->{NotificationDay} )
-                || !IsStringWithData( $Param{GetParams}->{NotificationHour} )
-                || !IsStringWithData( $Param{GetParams}->{NotificationMinute} )
+                !IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeYear} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeMonth} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeDay} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeHour} )
+                || !IsStringWithData( $Param{GetParams}->{NotificationCustomDateTimeMinute} )
                 )
             {
                 return '';
@@ -1615,15 +1626,15 @@ sub _NotificationDateGet {
 
             # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
             $NotificationDate =
-                $Param{GetParams}->{NotificationYear}
+                $Param{GetParams}->{NotificationCustomDateTimeYear}
                 . '-'
-                . $Param{GetParams}->{NotificationMonth}
+                . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeMonth} )
                 . '-'
-                . $Param{GetParams}->{NotificationDay}
+                . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeDay} )
                 . ' '
-                . $Param{GetParams}->{NotificationHour}
+                . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeHour} )
                 . ':'
-                . $Param{GetParams}->{NotificationMinute}
+                . sprintf( "%02d", $Param{GetParams}->{NotificationCustomDateTimeMinute} )
                 . ':00';
         }
     }

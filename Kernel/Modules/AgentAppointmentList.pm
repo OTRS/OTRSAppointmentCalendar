@@ -90,6 +90,15 @@ sub Run {
             # go through all appointments
             for my $Appointment (@Appointments) {
 
+                # check for notification date
+                if (
+                    !$Appointment->{NotificationDate}
+                    || $Appointment->{NotificationDate} eq '0000-00-00 00:00:00'
+                    )
+                {
+                    $Appointment->{NotificationDate} = '';
+                }
+
                 # calculate local times
                 if ( !$Appointment->{AllDay} ) {
                     $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? $Appointment->{TimezoneID} : 0;

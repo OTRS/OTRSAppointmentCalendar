@@ -356,7 +356,7 @@
 
             <legend><span>[% Translate("Notification") | html %]</span></legend>
 
-            <label for="Notification">[% Translate("Notification") | html %]:</label>
+            <label for="NotificationTemplate">[% Translate("Notification") | html %]:</label>
             <div class="Field">
                 [% Data.NotificationStrg %]
             </div>
@@ -368,7 +368,7 @@
 
                 <div class="FieldExplanation">
                     <input type="radio" name="NotificationCustomRelativeInput" value="" id="NotificationCustomRelativeInput" checked="checked">
-                    <input type="text" id="NotificationCustomUnitCount" name="NotificationCustomUnitCount" value="[% Data.NotificationCustomUnitCount | html %]" size="1" maxlength="2" />
+                    <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
                     <div class="FieldInline">
                         [% Data.NotificationCustomUnitsStrg %]
                     </div>
@@ -446,18 +446,18 @@ Core.Agent.AppointmentCalendar.RecurringInit({
 });
 
 Core.Agent.AppointmentCalendar.NotificationInit({
-    $Notification: $('#Notification'),
+    $NotificationTemplate: $('#NotificationTemplate'),
     $NotificationCustomStringDiv: $('#NotificationCustomStringDiv'),
     $NotificationCustomRelativeInput: $('#NotificationCustomRelativeInput'),
-    $NotificationCustomUnitCount: $('#NotificationCustomUnitCount'),
-    $NotificationCustomUnits: $('#NotificationCustomUnits'),
-    $NotificationCustomUnitsPointOfTime: $('#NotificationCustomUnitsPointOfTime'),
+    $NotificationCustomRelativeUnitCount: $('#NotificationCustomRelativeUnitCount'),
+    $NotificationCustomRelativeUnit: $('#NotificationCustomRelativeUnit'),
+    $NotificationCustomRelativePointOfTime: $('#NotificationCustomRelativePointOfTime'),
     $NotificationCustomDateTimeInput: $('#NotificationCustomDateTimeInput'),
-    $NotificationDay: $('#NotificationDay'),
-    $NotificationMonth: $('#NotificationMonth'),
-    $NotificationYear: $('#NotificationYear'),
-    $NotificationHour: $('#NotificationHour'),
-    $NotificationMinute: $('#NotificationMinute')
+    $NotificationCustomDateTimeDay: $('#NotificationCustomDateTimeDay'),
+    $NotificationCustomDateTimeMonth: $('#NotificationCustomDateTimeMonth'),
+    $NotificationCustomDateTimeYear: $('#NotificationCustomDateTimeYear'),
+    $NotificationCustomDateTimeHour: $('#NotificationCustomDateTimeHour'),
+    $NotificationCustomDateTimeMinute: $('#NotificationCustomDateTimeMinute')
 });
 
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'), $('#ChallengeToken').val(), $('label[for="TeamID"] + div.Field p.ReadOnlyValue'), $('label[for="ResourceID"] + div.Field p.ReadOnlyValue'));

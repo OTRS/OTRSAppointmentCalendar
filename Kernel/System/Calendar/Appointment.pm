@@ -552,7 +552,7 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, timezone_id, team_id, resource_id, all_day, recurring
+            end_time, timezone_id, team_id, resource_id, all_day, recurring, notify_time
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -609,20 +609,21 @@ sub AppointmentList {
         }
 
         my %Appointment = (
-            AppointmentID => $Row[0],
-            ParentID      => $Row[1],
-            CalendarID    => $Row[2],
-            UniqueID      => $Row[3],
-            Title         => $Row[4],
-            Description   => $Row[5],
-            Location      => $Row[6],
-            StartTime     => $Row[7],
-            EndTime       => $Row[8],
-            TimezoneID    => $Row[9],
-            TeamID        => \@TeamID,
-            ResourceID    => \@ResourceID,
-            AllDay        => $Row[12],
-            Recurring     => $Row[13],
+            AppointmentID    => $Row[0],
+            ParentID         => $Row[1],
+            CalendarID       => $Row[2],
+            UniqueID         => $Row[3],
+            Title            => $Row[4],
+            Description      => $Row[5],
+            Location         => $Row[6],
+            StartTime        => $Row[7],
+            EndTime          => $Row[8],
+            TimezoneID       => $Row[9],
+            TeamID           => \@TeamID,
+            ResourceID       => \@ResourceID,
+            AllDay           => $Row[12],
+            Recurring        => $Row[13],
+            NotificationDate => $Row[14],
         );
         push @Result, \%Appointment;
     }
@@ -1035,12 +1036,20 @@ updates an existing appointment.
         RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
         RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
         RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
-        NotificationTime                  => '2016-01-01 17:0:00',        # (optional) Point of time to execute the notification event
-        NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
-        NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
-        NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
-        NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
+
+        NotificationDate                      => '2016-01-01 17:0:00',    # (optional) Point of time to execute the notification event
+        NotificationTemplate                  => 'Custom',                # (optional) Template to be used for notification point of time
+        NotificationCustom                    => '12',                    # (optional) minutes, hours or days count for custom template
+        NotificationCustomRelativeUnitCount   => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomRelativeUnit        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomRelativePointOfTime => 'beforestart',           # (optional) Point of execute for custom templates
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        NotificationCustomDateTimeYear        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeMonth       => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeDay         => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeHour        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeMinute      => 'minutes',               # (optional) minutes, hours or days unit for custom template
+
         UserID                => 1,                                       # (required) UserID
     );
 
@@ -1066,11 +1075,38 @@ sub AppointmentUpdate {
         }
     }
 
-    $Param{NotificationTime}                  ||= '';
-    $Param{NotificationTemplate}              ||= '';
-    $Param{NotificationCustomUnitCount}       ||= '';
-    $Param{NotificationCustomUnit}            ||= '';
-    $Param{NotificationCustomUnitPointOfTime} ||= '';
+    # prepare possible notification params
+    $Param{NotificationDate}                      ||= '';
+    $Param{NotificationTemplate}                  ||= '';
+    $Param{NotificationCustom}                    ||= '';
+    $Param{NotificationCustomRelativeUnitCount}   ||= '';
+    $Param{NotificationCustomRelativeUnit}        ||= '';
+    $Param{NotificationCustomRelativePointOfTime} ||= '';
+
+    # prepare custom datetime string
+    if (
+        IsStringWithData( $Param{NotificationCustomDateTimeYear} )
+        && IsStringWithData( $Param{NotificationCustomDateTimeMonth} )
+        && IsStringWithData( $Param{NotificationCustomDateTimeDay} )
+        && IsStringWithData( $Param{NotificationCustomDateTimeHour} )
+        && IsStringWithData( $Param{NotificationCustomDateTimeMinute} )
+        )
+    {
+        $Param{NotificationCustomDateTime} =
+            $Param{NotificationCustomDateTimeYear}
+            . '-'
+            . sprintf( "%02d", $Param{NotificationCustomDateTimeMonth} )
+            . '-'
+            . sprintf( "%02d", $Param{NotificationCustomDateTimeDay} )
+            . ' '
+            . sprintf( "%02d", $Param{NotificationCustomDateTimeHour} )
+            . ':'
+            . sprintf( "%02d", $Param{NotificationCustomDateTimeMinute} )
+            . ':00';
+    }
+    else {
+        $Param{NotificationCustomDateTime} = '';
+    }
 
     # needed objects
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -1262,8 +1298,8 @@ sub AppointmentUpdate {
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
             timezone_id=?, team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?,
             recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?,
-            notify_template=?, notify_custom_unit_count=?, notify_custom_unit=?,
-            notify_custom_unit_point=?, change_time=current_timestamp, change_by=?
+            notify_template=?, notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
+            notify_custom_unit_point=?, notify_custom_date=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -1275,10 +1311,10 @@ sub AppointmentUpdate {
             \$Param{StartTime},  \$Param{EndTime},     \$Param{AllDay},      \$Param{TimezoneID},
             \$Arrays{TeamID},    \$Arrays{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceType},
             \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil}, \$RecurrenceExclude, $Param{NotificationTime},
-            \$Param{NotificationTemplate},   \$Param{NotificationCustomUnitCount},
-            \$Param{NotificationCustomUnit}, \$Param{NotificationCustomUnitPointOfTime},
-            \$Param{UserID},                 \$Param{AppointmentID},
+            \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{NotificationDate},
+            \$Param{NotificationTemplate}, \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
+            \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
+            \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
 
@@ -1300,7 +1336,7 @@ sub AppointmentUpdate {
     # handle notification entries
     if ( $Param{NotificationTime} ) {
 
-        my $Success = $Self->_AppointmentNotificationDelete(
+        my $Success = $Self->AppointmentNotificationDelete(
             %Param,
         );
 
@@ -1432,7 +1468,7 @@ sub AppointmentDelete {
     }
 
     # handle notification entries
-    my $Success = $Self->_AppointmentNotificationDelete(
+    my $Success = $Self->AppointmentNotificationDelete(
         AppointmentID => $Param{AppointmentID},
     );
 

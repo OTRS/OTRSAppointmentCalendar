@@ -265,8 +265,28 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
                 if (CalEvent.recurring) {
                     $Element.addClass('RecurringParent');
-                } else if (CalEvent.parentId) {
+                }
+                else if (CalEvent.parentId) {
                     $Element.addClass('RecurringChild');
+                }
+
+                if (CalEvent.notification) {
+
+                    // check for already existing font-awesome
+                    // classes to prevent overwriting css-contents
+                    // on pseudo elements like .Class:before
+                    if ($Element.hasClass('AllDay')) {
+                        $Element.addClass('NotificationAllDay');
+                    }
+                    else if ($Element.hasClass('RecurringParent')) {
+                        $Element.addClass('NotificationRecurringParent');
+                    }
+                    else if ($Element.hasClass('RecurringChild')) {
+                        $Element.addClass('NotificationRecurringChild');
+                    }
+                    else {
+                        $Element.addClass('Notification');
+                    }
                 }
             },
             eventResizeStart: function(CalEvent) {
@@ -1144,7 +1164,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     TargetNS.NotificationInit = function (Fields) {
 
-        if (Fields.$Notification.val() !== 'Custom') {
+        if (Fields.$NotificationTemplate.val() !== 'Custom') {
 
             // hide the custom fields
             Fields.$NotificationCustomStringDiv.hide();
@@ -1160,39 +1180,39 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // enable relative date fields
             Fields.$NotificationCustomRelativeInput.val(1);
-            Fields.$NotificationCustomUnitCount.prop('disabled', false);
-            Fields.$NotificationCustomUnits.prop('disabled', false);
-            Fields.$NotificationCustomUnitsPointOfTime.prop('disabled', false);
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', false);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false);
 
             // disable the custom date time fields
             Fields.$NotificationCustomDateTimeInput.val('');
-            Fields.$NotificationDay.prop('disabled', true);
-            Fields.$NotificationMonth.prop('disabled', true);
-            Fields.$NotificationYear.prop('disabled', true);
-            Fields.$NotificationHour.prop('disabled', true);
-            Fields.$NotificationMinute.prop('disabled', true);
+            Fields.$NotificationCustomDateTimeDay.prop('disabled', true);
+            Fields.$NotificationCustomDateTimeMonth.prop('disabled', true);
+            Fields.$NotificationCustomDateTimeYear.prop('disabled', true);
+            Fields.$NotificationCustomDateTimeHour.prop('disabled', true);
+            Fields.$NotificationCustomDateTimeMinute.prop('disabled', true);
         }
         else {
 
             // enable the custom date time input
             Fields.$NotificationCustomDateTimeInput.val(1);
             Fields.$NotificationCustomDateTimeInput.prop('checked', true);
-            Fields.$NotificationDay.prop('disabled', false);
-            Fields.$NotificationMonth.prop('disabled', false);
-            Fields.$NotificationYear.prop('disabled', false);
-            Fields.$NotificationHour.prop('disabled', false);
-            Fields.$NotificationMinute.prop('disabled', false);
+            Fields.$NotificationCustomDateTimeDay.prop('disabled', false);
+            Fields.$NotificationCustomDateTimeMonth.prop('disabled', false);
+            Fields.$NotificationCustomDateTimeYear.prop('disabled', false);
+            Fields.$NotificationCustomDateTimeHour.prop('disabled', false);
+            Fields.$NotificationCustomDateTimeMinute.prop('disabled', false);
 
             // disable relative date fields
             Fields.$NotificationCustomRelativeInput.val('');
             Fields.$NotificationCustomRelativeInput.prop('checked', false);
-            Fields.$NotificationCustomUnitCount.prop('disabled', true);
-            Fields.$NotificationCustomUnits.prop('disabled', true);
-            Fields.$NotificationCustomUnitsPointOfTime.prop('disabled', true);
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', true);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true);
         }
 
         // Register change event handler
-        Fields.$Notification.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
+        Fields.$NotificationTemplate.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
             TargetNS.NotificationInit(Fields);
         });
 
