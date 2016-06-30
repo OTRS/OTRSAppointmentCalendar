@@ -344,201 +344,237 @@ $Self->Is(
 # notifications
 # -------------
 
-# add appointment with notifications disabled explicitly
-my $AppointmentIDNotify1 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 1',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 0,
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify1,
-    'Notification appointment #1 created - no notification',
+# notification test definition
+my @NotificationTests = (
+
+    # add appointment with notifications disabled explicitly
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 1',
+            Description          => 'no notification',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 0,
+            UserID               => $UserID,
+        },
+        Result => '0000-00-00 00:00:00',
+    },
+
+    # add appointment with wrong notification template
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 2',
+            Description          => 'wrong notification template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'WrongNotificationTemplate',
+            UserID               => $UserID,
+        },
+        Result => '0000-00-00 00:00:00',
+    },
+
+    # add appointment with notification 0 minute template (AppointmentStart)
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 3',
+            Description          => 'notification template start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Start',
+            UserID               => $UserID,
+        },
+        Result => '2016-09-01 00:00:00',
+    },
+
+    # add appointment with notification 30 minutes template
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 4',
+            Description          => 'notification template 30 minutes before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 1800,
+            UserID               => $UserID,
+        },
+        Result => '2016-08-31 23:30:00',
+    },
+
+    # add appointment with notification 12 hours template
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 5',
+            Description          => 'notification template 12 hours before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 43200,
+            UserID               => $UserID,
+        },
+        Result => '2016-08-31 12:00:00',
+    },
+
+    # add appointment with notification 2 days template
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 6',
+            Description          => 'notification template 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 172800,
+            UserID               => $UserID,
+        },
+        Result => '2016-08-30 00:00:00',
+    },
+
+    # add appointment with notification 1 week template
+    {
+        Data => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Notification appointment 7',
+            Description          => 'notification template 1 week before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 604800,
+            UserID               => $UserID,
+        },
+        Result => '2016-08-25 00:00:00',
+    },
+
+    # add appointment with custom relative notification 2 minutes before start
+    {
+        Data => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Notification appointment 8',
+            Description                           => 'notification custom 2 minutes before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => '2016-08-31 23:58:00',
+    },
+
+    # add appointment with custom relative notification 2 hours before start
+    {
+        Data => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Notification appointment 9',
+            Description                           => 'notification custom 2 hours before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'hours',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => '2016-08-31 22:00:00',
+    },
+
+    # add appointment with custom relative notification 2 days before start
+    {
+        Data => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Notification appointment 10',
+            Description                           => 'notification custom 2 days before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => '2016-08-30 00:00:00',
+    },
+
+    # add appointment with custom relative notification 2 minutes after start
+    {
+        Data => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Notification appointment 11',
+            Description                           => 'notification date 2 minutes after start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'afterstart',
+            UserID                                => $UserID,
+        },
+        Result => '2016-09-01 00:02:00',
+    },
 );
 
-my %AppointmentNotify1 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify1,
-);
+# notification test execution
+for my $Test (@NotificationTests) {
 
-$Self->Is(
-    $AppointmentNotify1{NotificationDate},
-    '0000-00-00 00:00:00',
-    'Notification appointment #1 - no notification date',
-);
+    # create appointment
+    my $AppointmentIDNotify = $AppointmentObject->AppointmentCreate(
+        %{ $Test->{Data} },
+        UserID => $UserID,
+    );
 
-# add appointment with wrong notification template
-my $AppointmentIDNotify2 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 2',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 'WrongNotificationTemplate',
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify2,
-    'Notification appointment #2 created - wrong notification template',
-);
+    $Self->True(
+        $AppointmentIDNotify,
+        'Notification appointment created - ' . $Test->{Data}->{Description},
+    );
 
-my %AppointmentNotify2 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify2,
-);
+    my %AppointmentNotify = $AppointmentObject->AppointmentGet(
+        AppointmentID => $AppointmentIDNotify,
+    );
 
-$Self->Is(
-    $AppointmentNotify2{NotificationDate},
-    '0000-00-00 00:00:00',
-    'Notification appointment #2 - no notification date on wrong template',
-);
-
-# add appointment with notification 0 minute template (AppointmentStart)
-my $AppointmentIDNotify3 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 3',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 'Start',
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify3,
-    'Notification appointment #3 created - notification template start',
-);
-
-my %AppointmentNotify3 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify3,
-);
-
-$Self->Is(
-    $AppointmentNotify3{NotificationDate},
-    '2016-09-01 00:00:00',
-    'Notification appointment #3 - notification date on appointment start',
-);
-
-# add appointment with notification 30 minutes template
-my $AppointmentIDNotify4 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 4',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 1800,
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify4,
-    'Notification appointment #4 created - notification template 30 minutes before start',
-);
-
-my %AppointmentNotify4 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify4,
-);
-
-$Self->Is(
-    $AppointmentNotify4{NotificationDate},
-    '2016-08-31 23:30:00',
-    'Notification appointment #4 - notification date 30 minutes before start',
-);
-
-# add appointment with notification 12 hours template
-my $AppointmentIDNotify5 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 5',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 43200,
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify5,
-    'Notification appointment #5 created - notification template 12 hours before start',
-);
-
-my %AppointmentNotify5 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify5,
-);
-
-$Self->Is(
-    $AppointmentNotify5{NotificationDate},
-    '2016-08-31 12:00:00',
-    'Notification appointment #5 - notification date 12 hours before start',
-);
-
-# add appointment with notification 2 days template
-my $AppointmentIDNotify6 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 6',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 172800,
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify6,
-    'Notification appointment #6 created - notification template 2 days before start',
-);
-
-my %AppointmentNotify6 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify6,
-);
-
-$Self->Is(
-    $AppointmentNotify6{NotificationDate},
-    '2016-08-30 00:00:00',
-    'Notification appointment #6 - notification date 2 days before start',
-);
-
-# add appointment with notification 1 week template
-my $AppointmentIDNotify7 = $AppointmentObject->AppointmentCreate(
-    CalendarID           => $Calendar1{CalendarID},
-    Title                => 'Notification appointment 7',
-    Description          => 'Description',
-    Location             => 'Germany',
-    StartTime            => '2016-09-01 00:00:00',
-    EndTime              => '2016-09-02 00:00:00',
-    AllDay               => 1,
-    TimezoneID           => 1,
-    NotificationTemplate => 604800,
-    UserID               => $UserID,
-);
-$Self->True(
-    $AppointmentIDNotify7,
-    'Notification appointment #7 created - notification template 1 week before start',
-);
-
-my %AppointmentNotify7 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentIDNotify7,
-);
-
-$Self->Is(
-    $AppointmentNotify7{NotificationDate},
-    '2016-08-25 00:00:00',
-    'Notification appointment #7 - notification date 1 week before start',
-);
+    $Self->Is(
+        $AppointmentNotify{NotificationDate},
+        $Test->{Result},
+        'Notification appointment - ' . $Test->{Data}->{Description},
+    );
+}
 
 # ---------
 # recurring

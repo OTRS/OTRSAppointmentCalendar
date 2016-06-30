@@ -2133,6 +2133,8 @@ sub _AppointmentNotificationPrepare {
         # compute date of relative input
         if ( $Param{Data}->{NotificationCustomRelativeInput} ) {
 
+            $Param{Data}->{NotificationCustom} = 'relative';
+
             my $CustomUnitCount = $Param{Data}->{NotificationCustomRelativeUnitCount};
             my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
             my $CustomUnitPoint = $Param{Data}->{NotificationCustomRelativePointOfTime};
@@ -2187,6 +2189,8 @@ sub _AppointmentNotificationPrepare {
 
         # save date time input
         elsif ( $Param{Data}->{NotificationCustomDateTimeInput} ) {
+
+            $Param{Data}->{NotificationCustom} = 'datetime';
 
             # validation
             if (
