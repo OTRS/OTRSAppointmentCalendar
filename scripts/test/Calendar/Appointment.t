@@ -12,6 +12,8 @@ use utf8;
 
 use vars (qw($Self));
 
+use Kernel::System::VariableCheck qw(:all);
+
 # get needed objects
 my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
@@ -361,7 +363,15 @@ my @NotificationTests = (
             NotificationTemplate => 0,
             UserID               => $UserID,
         },
-        Result => '0000-00-00 00:00:00',
+        Result => {
+            NotificationDate                      => '0000-00-00 00:00:00',
+            NotificationTemplate                  => '',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with wrong notification template
@@ -378,7 +388,15 @@ my @NotificationTests = (
             NotificationTemplate => 'WrongNotificationTemplate',
             UserID               => $UserID,
         },
-        Result => '0000-00-00 00:00:00',
+        Result => {
+            NotificationDate                      => '0000-00-00 00:00:00',
+            NotificationTemplate                  => 'WrongNotificationTemplate',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with notification 0 minute template (AppointmentStart)
@@ -395,7 +413,15 @@ my @NotificationTests = (
             NotificationTemplate => 'Start',
             UserID               => $UserID,
         },
-        Result => '2016-09-01 00:00:00',
+        Result => {
+            NotificationDate                      => '2016-09-01 00:00:00',
+            NotificationTemplate                  => 'Start',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with notification 30 minutes template
@@ -412,7 +438,15 @@ my @NotificationTests = (
             NotificationTemplate => 1800,
             UserID               => $UserID,
         },
-        Result => '2016-08-31 23:30:00',
+        Result => {
+            NotificationDate                      => '2016-08-31 23:30:00',
+            NotificationTemplate                  => 1800,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with notification 12 hours template
@@ -429,7 +463,15 @@ my @NotificationTests = (
             NotificationTemplate => 43200,
             UserID               => $UserID,
         },
-        Result => '2016-08-31 12:00:00',
+        Result => {
+            NotificationDate                      => '2016-08-31 12:00:00',
+            NotificationTemplate                  => 43200,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with notification 2 days template
@@ -446,7 +488,15 @@ my @NotificationTests = (
             NotificationTemplate => 172800,
             UserID               => $UserID,
         },
-        Result => '2016-08-30 00:00:00',
+        Result => {
+            NotificationDate                      => '2016-08-30 00:00:00',
+            NotificationTemplate                  => 172800,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with notification 1 week template
@@ -463,7 +513,15 @@ my @NotificationTests = (
             NotificationTemplate => 604800,
             UserID               => $UserID,
         },
-        Result => '2016-08-25 00:00:00',
+        Result => {
+            NotificationDate                      => '2016-08-25 00:00:00',
+            NotificationTemplate                  => 604800,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with custom relative notification 2 minutes before start
@@ -484,7 +542,15 @@ my @NotificationTests = (
             NotificationCustomRelativePointOfTime => 'beforestart',
             UserID                                => $UserID,
         },
-        Result => '2016-08-31 23:58:00',
+        Result => {
+            NotificationDate                      => '2016-08-31 23:58:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with custom relative notification 2 hours before start
@@ -505,7 +571,15 @@ my @NotificationTests = (
             NotificationCustomRelativePointOfTime => 'beforestart',
             UserID                                => $UserID,
         },
-        Result => '2016-08-31 22:00:00',
+        Result => {
+            NotificationDate                      => '2016-08-31 22:00:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'hours',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with custom relative notification 2 days before start
@@ -526,7 +600,15 @@ my @NotificationTests = (
             NotificationCustomRelativePointOfTime => 'beforestart',
             UserID                                => $UserID,
         },
-        Result => '2016-08-30 00:00:00',
+        Result => {
+            NotificationDate                      => '2016-08-30 00:00:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 
     # add appointment with custom relative notification 2 minutes after start
@@ -547,7 +629,15 @@ my @NotificationTests = (
             NotificationCustomRelativePointOfTime => 'afterstart',
             UserID                                => $UserID,
         },
-        Result => '2016-09-01 00:02:00',
+        Result => {
+            NotificationDate                      => '2016-09-01 00:02:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'afterstart',
+            NotificationCustomDateTime            => '0000-00-00',
+        },
     },
 );
 
@@ -555,25 +645,38 @@ my @NotificationTests = (
 for my $Test (@NotificationTests) {
 
     # create appointment
-    my $AppointmentIDNotify = $AppointmentObject->AppointmentCreate(
+    my $AppointmentID = $AppointmentObject->AppointmentCreate(
         %{ $Test->{Data} },
         UserID => $UserID,
     );
 
+    # verify appointment creation
     $Self->True(
-        $AppointmentIDNotify,
+        $AppointmentID,
         'Notification appointment created - ' . $Test->{Data}->{Description},
     );
 
-    my %AppointmentNotify = $AppointmentObject->AppointmentGet(
-        AppointmentID => $AppointmentIDNotify,
+    # retrieve stored appointment information
+    my %AppointmentData = $AppointmentObject->AppointmentGet(
+        AppointmentID => $AppointmentID,
     );
 
-    $Self->Is(
-        $AppointmentNotify{NotificationDate},
-        $Test->{Result},
-        'Notification appointment - ' . $Test->{Data}->{Description},
+    # verify appointment data get
+    my $Created = IsHashRefWithData( \%AppointmentData );
+    $Self->True(
+        $Created,
+        'Notification appointment data retrieved - ' . $Test->{Data}->{Description},
     );
+
+    # verify results
+    for my $ResultKey ( sort keys %{ $Test->{Result} } ) {
+
+        $Self->Is(
+            $AppointmentData{$ResultKey},
+            $Test->{Result}->{$ResultKey},
+            'Notification appointment result: ' . $ResultKey . ' - ' . $Test->{Data}->{Description},
+        );
+    }
 }
 
 # ---------
