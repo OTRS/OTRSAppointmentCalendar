@@ -141,13 +141,9 @@ sub AppointmentCreate {
     }
 
     # prepare possible notification params
-    $Param{NotificationDate}                      ||= '';
-    $Param{NotificationTemplate}                  ||= '';
-    $Param{NotificationCustom}                    ||= '';
-    $Param{NotificationCustomRelativeUnitCount}   ||= '';
-    $Param{NotificationCustomRelativeUnit}        ||= '';
-    $Param{NotificationCustomRelativePointOfTime} ||= '';
-    $Param{NotificationCustomDateTime}            ||= '';
+    $Self->_AppointmentNotificationPrepare(
+        Data => \%Param,
+    );
 
     # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -928,8 +924,8 @@ sub AppointmentGet {
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
             recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
-            notify_template, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            create_time, create_by, change_time, change_by
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -966,36 +962,38 @@ sub AppointmentGet {
         # recurrence exclude
         my @RecurrenceExclude = $Row[20] ? split( ',', $Row[20] ) : undef;
 
-        $Result{AppointmentID}                     = $Row[0];
-        $Result{ParentID}                          = $Row[1];
-        $Result{CalendarID}                        = $Row[2];
-        $Result{UniqueID}                          = $Row[3];
-        $Result{Title}                             = $Row[4];
-        $Result{Description}                       = $Row[5];
-        $Result{Location}                          = $Row[6];
-        $Result{StartTime}                         = $Row[7];
-        $Result{EndTime}                           = $Row[8];
-        $Result{AllDay}                            = $Row[9];
-        $Result{TimezoneID}                        = $Row[10];
-        $Result{TeamID}                            = \@TeamID;
-        $Result{ResourceID}                        = \@ResourceID;
-        $Result{Recurring}                         = $Row[13];
-        $Result{RecurrenceType}                    = $Row[14];
-        $Result{RecurrenceFrequency}               = \@RecurrenceFrequency;
-        $Result{RecurrenceCount}                   = $Row[16];
-        $Result{RecurrenceInterval}                = $Row[17];
-        $Result{RecurrenceUntil}                   = $Row[18];
-        $Result{RecurrenceID}                      = $Row[19];
-        $Result{RecurrenceExclude}                 = \@RecurrenceExclude;
-        $Result{NotificationTime}                  = $Row[21];
-        $Result{NotificationTemplate}              = $Row[22];
-        $Result{NotificationCustomUnitCount}       = $Row[23];
-        $Result{NotificationCustomUnit}            = $Row[24];
-        $Result{NotificationCustomUnitPointOfTime} = $Row[25];
-        $Result{CreateTime}                        = $Row[26];
-        $Result{CreateBy}                          = $Row[27];
-        $Result{ChangeTime}                        = $Row[28];
-        $Result{ChangeBy}                          = $Row[29];
+        $Result{AppointmentID}                         = $Row[0];
+        $Result{ParentID}                              = $Row[1];
+        $Result{CalendarID}                            = $Row[2];
+        $Result{UniqueID}                              = $Row[3];
+        $Result{Title}                                 = $Row[4];
+        $Result{Description}                           = $Row[5];
+        $Result{Location}                              = $Row[6];
+        $Result{StartTime}                             = $Row[7];
+        $Result{EndTime}                               = $Row[8];
+        $Result{AllDay}                                = $Row[9];
+        $Result{TimezoneID}                            = $Row[10];
+        $Result{TeamID}                                = \@TeamID;
+        $Result{ResourceID}                            = \@ResourceID;
+        $Result{Recurring}                             = $Row[13];
+        $Result{RecurrenceType}                        = $Row[14];
+        $Result{RecurrenceFrequency}                   = \@RecurrenceFrequency;
+        $Result{RecurrenceCount}                       = $Row[16];
+        $Result{RecurrenceInterval}                    = $Row[17];
+        $Result{RecurrenceUntil}                       = $Row[18];
+        $Result{RecurrenceID}                          = $Row[19];
+        $Result{RecurrenceExclude}                     = \@RecurrenceExclude;
+        $Result{NotificationDate}                      = $Row[21];
+        $Result{NotificationTemplate}                  = $Row[22];
+        $Result{NotificationCustom}                    = $Row[23];
+        $Result{NotificationCustomRelativeUnitCount}   = $Row[24];
+        $Result{NotificationCustomRelativeUnit}        = $Row[25];
+        $Result{NotificationCustomRelativePointOfTime} = $Row[26];
+        $Result{NotificationCustomDateTime}            = $Row[27];
+        $Result{CreateTime}                            = $Row[28];
+        $Result{CreateBy}                              = $Row[29];
+        $Result{ChangeTime}                            = $Row[30];
+        $Result{ChangeBy}                              = $Row[31];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -1080,13 +1078,9 @@ sub AppointmentUpdate {
     }
 
     # prepare possible notification params
-    $Param{NotificationDate}                      ||= '';
-    $Param{NotificationTemplate}                  ||= '';
-    $Param{NotificationCustom}                    ||= '';
-    $Param{NotificationCustomRelativeUnitCount}   ||= '';
-    $Param{NotificationCustomRelativeUnit}        ||= '';
-    $Param{NotificationCustomRelativePointOfTime} ||= '';
-    $Param{NotificationCustomDateTime}            ||= '';
+    $Self->_AppointmentNotificationPrepare(
+        Data => \%Param,
+    );
 
     # needed objects
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -2028,6 +2022,196 @@ sub AppointmentFutureTasksUpdate {
                     "Could not schedule future task for AppointmentID $UpcomingAppointment{$TaskType}->{AppointmentID} ! Type: $TaskType !",
             );
             return;
+        }
+    }
+
+    return 1;
+}
+
+=item _AppointmentNotificationPrepare()
+
+Prepare appointment notification data.
+
+    my $Success = $AppointmentObject->_AppointmentNotificationPrepare();
+
+returns:
+
+    True if preparation was successful, otherwise false.
+
+=cut
+
+sub _AppointmentNotificationPrepare {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Data)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # prepare possible notification params
+    for my $PossibleParam (
+        qw(
+        NotificationDate NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
+        NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime NotificationCustomDateTime
+        )
+        )
+    {
+        $Param{Data}->{$PossibleParam} ||= '';
+    }
+
+    # prepare custom datetime string
+    if (
+        IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
+        )
+    {
+        $Param{Data}->{NotificationCustomDateTime} =
+            $Param{Data}->{NotificationCustomDateTimeYear}
+            . '-'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
+            . '-'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
+            . ' '
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
+            . ':'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
+            . ':00';
+    }
+    else {
+        $Param{Data}->{NotificationCustomDateTime} = '';
+    }
+
+    return if !$Param{Data}->{NotificationTemplate};
+
+    # get a local calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # --------------
+    # template Start
+    # --------------
+    if ( $Param{Data}->{NotificationTemplate} eq 'Start' ) {
+
+        # setup the appointment start date as notification date
+        $Param{Data}->{NotificationDate} = $Param{Data}->{StartTime};
+    }
+
+    # --------------------------
+    # template time before start
+    # --------------------------
+    elsif ( $Param{Data}->{NotificationTemplate} ne 'Custom' ) {
+
+        return if !IsNumber( $Param{Data}->{NotificationTemplate} );
+
+        # offset template (before start datetime) used
+        my $Offset = $Param{Data}->{NotificationTemplate};
+
+        # get a unix timestamp of appointment start time
+        my $StartLocalTime = $CalendarHelperObject->SystemTimeGet(
+            String => $Param{Data}->{StartTime},
+        );
+
+        # save the start time - offset as new notification datetime string
+        $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+            SystemTime => ( $StartLocalTime - $Offset ),
+        );
+    }
+
+    # ---------------
+    # template Custom
+    # ---------------
+    else {
+
+        # compute date of relative input
+        if ( $Param{Data}->{NotificationCustomRelativeInput} ) {
+
+            my $CustomUnitCount = $Param{Data}->{NotificationCustomRelativeUnitCount};
+            my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
+            my $CustomUnitPoint = $Param{Data}->{NotificationCustomRelativePointOfTime};
+
+            return if !$CustomUnitCount;
+
+            # setup the count to compute for the offset
+            my %UnitOffsetCompute = (
+                minutes => 60,
+                hours   => 3600,
+                days    => 86400,
+            );
+
+            my $NotificationLocalTime;
+
+            # compute from start time
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'afterstart' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Data}->{StartTime},
+                );
+            }
+
+            # compute from end time
+            elsif ( $CustomUnitPoint eq 'beforeend' || $CustomUnitPoint eq 'afterend' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Data}->{EndTime},
+                );
+            }
+
+            # not supported point of time
+            else {
+                return;
+            }
+
+            # compute the offset to be used
+            my $Offset = ( $CustomUnitCount * $UnitOffsetCompute{$CustomUnit} );
+
+            # save the newly computed notification datetime string
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'beforeend' ) {
+                $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime - $Offset ),
+                );
+            }
+            else {
+                $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime + $Offset ),
+                );
+            }
+        }
+
+        # save date time input
+        elsif ( $Param{Data}->{NotificationCustomDateTimeInput} ) {
+
+            # validation
+            if (
+                !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
+                )
+            {
+                return;
+            }
+
+            # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
+            $Param{Data}->{NotificationDate} =
+                $Param{Data}->{NotificationCustomDateTimeYear}
+                . '-'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
+                . '-'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
+                . ' '
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
+                . ':'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
+                . ':00';
         }
     }
 
