@@ -1588,6 +1588,54 @@ my @NotificationUpdateTests = (
             NotificationCustomDateTime            => '',
         },
     },
+
+    # update appointment from custom relative notification 2 hours before start template to no notification template
+    # verify that not needed values are flushed afterwards
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 11',
+            Description          => 'Update to notification custom relative notification 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        DataAfter => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Update notification appointment 11',
+            Description                           => 'Update to no notification template',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 0,
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 30,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '',
+            NotificationTemplate                  => '',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
 );
 
 # notification update test execution

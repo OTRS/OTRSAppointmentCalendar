@@ -2054,6 +2054,20 @@ sub _AppointmentNotificationPrepare {
         }
     }
 
+    # reset notification data if needed
+    if ( !$Param{Data}->{NotificationTemplate} ) {
+
+        for my $PossibleParam (
+            qw(
+            NotificationDate NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
+            NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime NotificationCustomDateTime
+            )
+            )
+        {
+            $Param{Data}->{$PossibleParam} = undef;
+        }
+    }
+
     # prepare possible notification params
     for my $PossibleParam (
         qw(
