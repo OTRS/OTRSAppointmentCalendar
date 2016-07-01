@@ -364,13 +364,13 @@ my @NotificationTests = (
             UserID               => $UserID,
         },
         Result => {
-            NotificationDate                      => '0000-00-00 00:00:00',
+            NotificationDate                      => '',
             NotificationTemplate                  => '',
             NotificationCustom                    => '',
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -389,13 +389,13 @@ my @NotificationTests = (
             UserID               => $UserID,
         },
         Result => {
-            NotificationDate                      => '0000-00-00 00:00:00',
+            NotificationDate                      => '',
             NotificationTemplate                  => 'WrongNotificationTemplate',
             NotificationCustom                    => '',
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -420,7 +420,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -445,7 +445,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -470,7 +470,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -495,7 +495,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -520,7 +520,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 0,
             NotificationCustomRelativeUnit        => '',
             NotificationCustomRelativePointOfTime => '',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -550,7 +550,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'beforestart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -580,7 +580,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'hours',
             NotificationCustomRelativePointOfTime => 'beforestart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -610,7 +610,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'days',
             NotificationCustomRelativePointOfTime => 'beforestart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -640,7 +640,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'afterstart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -670,7 +670,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'hours',
             NotificationCustomRelativePointOfTime => 'afterstart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -700,7 +700,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'days',
             NotificationCustomRelativePointOfTime => 'afterstart',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -730,7 +730,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'beforeend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -760,7 +760,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'hours',
             NotificationCustomRelativePointOfTime => 'beforeend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -790,7 +790,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'days',
             NotificationCustomRelativePointOfTime => 'beforeend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -820,7 +820,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'afterend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -850,7 +850,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'hours',
             NotificationCustomRelativePointOfTime => 'afterend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 
@@ -880,7 +880,7 @@ my @NotificationTests = (
             NotificationCustomRelativeUnitCount   => 2,
             NotificationCustomRelativeUnit        => 'days',
             NotificationCustomRelativePointOfTime => 'afterend',
-            NotificationCustomDateTime            => '0000-00-00 00:00:00',
+            NotificationCustomDateTime            => '',
         },
     },
 

@@ -983,13 +983,13 @@ sub AppointmentGet {
         $Result{RecurrenceUntil}                       = $Row[18];
         $Result{RecurrenceID}                          = $Row[19];
         $Result{RecurrenceExclude}                     = \@RecurrenceExclude;
-        $Result{NotificationDate}                      = $Row[21];
+        $Result{NotificationDate}                      = $Row[21] || '';
         $Result{NotificationTemplate}                  = $Row[22];
         $Result{NotificationCustom}                    = $Row[23];
         $Result{NotificationCustomRelativeUnitCount}   = $Row[24];
         $Result{NotificationCustomRelativeUnit}        = $Row[25];
         $Result{NotificationCustomRelativePointOfTime} = $Row[26];
-        $Result{NotificationCustomDateTime}            = $Row[27];
+        $Result{NotificationCustomDateTime}            = $Row[27] || '';
         $Result{CreateTime}                            = $Row[28];
         $Result{CreateBy}                              = $Row[29];
         $Result{ChangeTime}                            = $Row[30];
@@ -2057,12 +2057,17 @@ sub _AppointmentNotificationPrepare {
     # prepare possible notification params
     for my $PossibleParam (
         qw(
-        NotificationDate NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
-        NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime NotificationCustomDateTime
+        NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
+        NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime
         )
         )
     {
         $Param{Data}->{$PossibleParam} ||= '';
+    }
+
+    # set empty datetime strings to undef
+    for my $PossibleParam (qw(NotificationDate NotificationCustomDateTime)) {
+        $Param{Data}->{$PossibleParam} ||= undef;
     }
 
     # prepare custom datetime string
@@ -2086,9 +2091,6 @@ sub _AppointmentNotificationPrepare {
             . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
             . ':00';
     }
-    else {
-        $Param{Data}->{NotificationCustomDateTime} = '';
-    }
 
     return if !$Param{Data}->{NotificationTemplate};
 
@@ -2107,7 +2109,12 @@ sub _AppointmentNotificationPrepare {
     # --------------------------
     # template time before start
     # --------------------------
-    elsif ( $Param{Data}->{NotificationTemplate} ne 'Custom' ) {
+    elsif (
+        $Param{Data}->{NotificationTemplate} ne 'Custom'
+        && IsNumber( $Param{Data}->{NotificationTemplate} )
+        && $Param{Data}->{NotificationTemplate} > 0
+        )
+    {
 
         return if !IsNumber( $Param{Data}->{NotificationTemplate} );
 
@@ -2217,6 +2224,13 @@ sub _AppointmentNotificationPrepare {
                 . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
                 . ':00';
         }
+    }
+
+    if ( !IsStringWithData( $Param{Data}->{NotificationDate} ) ) {
+        $Param{Data}->{NotificationDate} = undef;
+    }
+    if ( !IsStringWithData( $Param{Data}->{NotificationCustomDateTime} ) ) {
+        $Param{Data}->{NotificationCustomDateTime} = undef;
     }
 
     return 1;
