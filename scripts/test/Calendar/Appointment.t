@@ -346,8 +346,8 @@ $Self->Is(
 # notifications
 # -------------
 
-# notification test definition
-my @NotificationTests = (
+# notification creation test definition
+my @NotificationCreateTests = (
 
     # add appointment with notifications disabled explicitly
     {
@@ -1095,8 +1095,8 @@ my @NotificationTests = (
     },
 );
 
-# notification test execution
-for my $Test (@NotificationTests) {
+# notification create test execution
+for my $Test (@NotificationCreateTests) {
 
     # create appointment
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
@@ -1129,6 +1129,526 @@ for my $Test (@NotificationTests) {
             $AppointmentData{$ResultKey},
             $Test->{Result}->{$ResultKey},
             'Notification appointment result: ' . $ResultKey . ' - ' . $Test->{Data}->{Description},
+        );
+    }
+}
+
+# notification update test definition
+my @NotificationUpdateTests = (
+
+    # update appointment from no template to wrong template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 1',
+            Description          => 'Before update no notification',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 0,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 1',
+            Description          => 'Update to wrong notification template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'WrongNotificationTemplate',
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '',
+            NotificationTemplate                  => 'WrongNotificationTemplate',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from no template to starttime template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 2',
+            Description          => 'Before update no notification',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 0,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 2',
+            Description          => 'Update to notification template start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Start',
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-09-01 00:00:00',
+            NotificationTemplate                  => 'Start',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from starttime template to 30 minutes before start template
+    {
+        DataBefore => {
+
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 3',
+            Description          => 'Update to notification template 30 minutes before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Start',
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 3',
+            Description          => 'Update to notification template 30 minutes before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 1800,
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-31 23:30:00',
+            NotificationTemplate                  => 1800,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from 30 minutes before start template to 12 hours before start template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 4',
+            Description          => 'Update to notification template 12 hours before start template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 1800,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 4',
+            Description          => 'Update to notification template 12 hours before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 43200,
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-31 12:00:00',
+            NotificationTemplate                  => 43200,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from 12 hours before start template to 2 days before start template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 5',
+            Description          => 'Update to notification template 2 days before start template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 43200,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 5',
+            Description          => 'Update to notification template 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 172800,
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-30 00:00:00',
+            NotificationTemplate                  => 172800,
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from 2 days before start template to no notification template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 6',
+            Description          => 'Update to no notification template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 172800,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 6',
+            Description          => 'Before update to no notification',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 0,
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '',
+            NotificationTemplate                  => '',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+    # update appointment from 12 hours before start template to custom 2 minutes before start template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 7',
+            Description          => 'Update to notification template custom 2 minutes before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 43200,
+            UserID               => $UserID,
+        },
+        DataAfter => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Update notification appointment 7',
+            Description                           => 'Update to notification custom 2 minutes before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-31 23:58:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+# update appointment from custom 2 minutes before start template to custom relative notification 2 hours before start template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 8',
+            Description          => 'Update to notification custom relative notification 2 hours before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 8',
+            Description          => 'Update to notification custom relative notification 2 hours before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'hours',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-31 22:00:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'hours',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+# update appointment from custom relative notification 2 hours before start template to custom relative notification 2 days before start template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 9',
+            Description          => 'Update to notification custom relative notification 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'hours',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 9',
+            Description          => 'Update to notification custom relative notification 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-30 00:00:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            NotificationCustomDateTime            => '',
+        },
+    },
+
+# update appointment from custom relative notification 2 days before start template to notification date 2 minutes before start template
+    {
+        DataBefore => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Update notification appointment 10',
+            Description                           => 'Update to notification date 2 minutes before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        DataAfter => {
+            CalendarID                            => $Calendar1{CalendarID},
+            Title                                 => 'Update notification appointment 10',
+            Description                           => 'Update to notification date 2 minutes before start',
+            Location                              => 'Germany',
+            StartTime                             => '2016-09-01 00:00:00',
+            EndTime                               => '2016-09-02 00:00:00',
+            AllDay                                => 1,
+            TimezoneID                            => 1,
+            NotificationTemplate                  => 'Custom',
+            NotificationCustomRelativeInput       => 0,
+            NotificationCustomDateTimeInput       => 1,
+            NotificationCustomRelativeUnitCount   => undef,
+            NotificationCustomRelativeUnit        => undef,
+            NotificationCustomRelativePointOfTime => undef,
+            NotificationCustomDateTimeYear        => '2016',
+            NotificationCustomDateTimeMonth       => '08',
+            NotificationCustomDateTimeDay         => '31',
+            NotificationCustomDateTimeHour        => '23',
+            NotificationCustomDateTimeMinute      => '58',
+            UserID                                => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '2016-08-31 23:58:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'datetime',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '2016-08-31 23:58:00',
+        },
+    },
+
+    # update appointment from custom relative notification 2 hours before start template to no notification template
+    {
+        DataBefore => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 11',
+            Description          => 'Update to notification custom relative notification 2 days before start',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 'Custom',
+            NotificationCustomRelativeInput       => 1,
+            NotificationCustomDateTimeInput       => 0,
+            NotificationCustomRelativeUnitCount   => 2,
+            NotificationCustomRelativeUnit        => 'days',
+            NotificationCustomRelativePointOfTime => 'beforestart',
+            UserID                                => $UserID,
+        },
+        DataAfter => {
+            CalendarID           => $Calendar1{CalendarID},
+            Title                => 'Update notification appointment 11',
+            Description          => 'Update to no notification template',
+            Location             => 'Germany',
+            StartTime            => '2016-09-01 00:00:00',
+            EndTime              => '2016-09-02 00:00:00',
+            AllDay               => 1,
+            TimezoneID           => 1,
+            NotificationTemplate => 0,
+            UserID               => $UserID,
+        },
+        Result => {
+            NotificationDate                      => '',
+            NotificationTemplate                  => '',
+            NotificationCustom                    => '',
+            NotificationCustomRelativeUnitCount   => 0,
+            NotificationCustomRelativeUnit        => '',
+            NotificationCustomRelativePointOfTime => '',
+            NotificationCustomDateTime            => '',
+        },
+    },
+);
+
+# notification update test execution
+for my $Test (@NotificationUpdateTests) {
+
+    # create appointment
+    my $AppointmentID = $AppointmentObject->AppointmentCreate(
+        %{ $Test->{DataBefore} },
+        UserID => $UserID,
+    );
+
+    # verify appointment creation
+    $Self->True(
+        $AppointmentID,
+        'Notification appointment created - ' . $Test->{DataBefore}->{Description},
+    );
+
+    # retrieve stored appointment information
+    my %AppointmentData = $AppointmentObject->AppointmentGet(
+        AppointmentID => $AppointmentID,
+    );
+
+    # verify appointment data get
+    my $Created = IsHashRefWithData( \%AppointmentData );
+    $Self->True(
+        $Created,
+        'Notification appointment data retrieved - ' . $Test->{DataBefore}->{Description},
+    );
+
+    # update appointment
+    my $Success = $AppointmentObject->AppointmentUpdate(
+        %{ $Test->{DataAfter} },
+        AppointmentID => $AppointmentID,
+        UserID        => $UserID,
+    );
+
+    # verify appointment update
+    $Self->True(
+        $Success,
+        'Notification appointment updated - ' . $Test->{DataAfter}->{Description},
+    );
+
+    # retrieve stored appointment information
+    %AppointmentData = $AppointmentObject->AppointmentGet(
+        AppointmentID => $AppointmentID,
+    );
+
+    # verify appointment data get
+    $Created = IsHashRefWithData( \%AppointmentData );
+    $Self->True(
+        $Created,
+        'Notification appointment data retrieved - ' . $Test->{DataBefore}->{Description},
+    );
+
+    # verify results
+    for my $ResultKey ( sort keys %{ $Test->{Result} } ) {
+
+        $Self->Is(
+            $AppointmentData{$ResultKey},
+            $Test->{Result}->{$ResultKey},
+            'Notification appointment result: ' . $ResultKey . ' - ' . $Test->{DataAfter}->{Description},
         );
     }
 }
