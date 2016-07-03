@@ -2080,7 +2080,7 @@ sub _AppointmentNotificationPrepare {
     }
 
     # special check for relative unit count as it can be zero
-    # (empty value will be treated as zero to avoid errors)
+    # (empty and negative values will be treated as zero to avoid errors)
     if (
         !IsNumber( $Param{Data}->{NotificationCustomRelativeUnitCount} )
         || $Param{Data}->{NotificationCustomRelativeUnitCount} <= 0
@@ -2170,8 +2170,6 @@ sub _AppointmentNotificationPrepare {
             my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
             my $CustomUnitPoint = $Param{Data}->{NotificationCustomRelativePointOfTime};
 
-            return if !IsNumber($CustomUnitCount);
-
             # setup the count to compute for the offset
             my %UnitOffsetCompute = (
                 minutes => 60,
@@ -2253,6 +2251,7 @@ sub _AppointmentNotificationPrepare {
     if ( !IsStringWithData( $Param{Data}->{NotificationDate} ) ) {
         $Param{Data}->{NotificationDate} = undef;
     }
+
     if ( !IsStringWithData( $Param{Data}->{NotificationCustomDateTime} ) ) {
         $Param{Data}->{NotificationCustomDateTime} = undef;
     }

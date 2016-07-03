@@ -848,10 +848,6 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # prepare radio button for custom relative input
-        $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"'
-            if $Appointment{NotificationCustomRelativeInput};
-
         # extract the date units for the custom date selection
         my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek );
         if ( $Appointment{NotificationCustomDateTime} ) {
@@ -885,9 +881,16 @@ sub Run {
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
 
-        # prepare radio button for custom date time input
-        $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
-            if $Appointment{NotificationCustomDateTimeInput};
+        # prepare radio button for custom date time and relative input
+        if ( $Appointment{NotificationCustom} eq 'datetime' ) {
+            $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
+        }
+        elsif ( $Appointment{NotificationCustom} eq 'relative' ) {
+            $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"';
+        }
+        else {
+            $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"';
+        }
 
         # get plugin list
         $Param{PluginList} = $PluginObject->PluginList();
