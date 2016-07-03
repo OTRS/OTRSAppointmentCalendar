@@ -1225,6 +1225,8 @@ sub Run {
         }
 
         # determine notification custom type
+        $GetParam{NotificationTemplate} ||= '';
+
         if ( $GetParam{NotificationTemplate} ne 'Custom' ) {
             $GetParam{NotificationCustom} = '';
         }

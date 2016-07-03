@@ -63,15 +63,13 @@ performs the selected task.
             AppointmentID => 123,
             ParentID      => 234,
             CalendarID    => 345,
-            StartTime     => '2016-08-02 03:59:00',
-            EndTime       => '2016-08-12 03:59:00',
-            Type          => 'Start'                # can be either 'Start' or 'End'
+            NotifyTime    => '2016-08-02 03:59:00',
         },
     );
 
 Returns:
 
-    $Result = 1;    # or fail in case of an error
+    $Result = 1; # or fail in case of an error
 
 =cut
 
@@ -81,7 +79,7 @@ sub Run {
     # check task params
     my $CheckResult = $Self->_CheckTaskParams(
         %Param,
-        NeededDataAttributes => [ 'AppointmentID', 'CalendarID', 'StartTime', 'EndTime' ],
+        NeededDataAttributes => [ 'AppointmentID', 'CalendarID', 'NotifyTime' ],
     );
 
     # stop execution if an error in params is detected

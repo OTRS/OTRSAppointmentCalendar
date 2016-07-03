@@ -1783,8 +1783,7 @@ sub AppointmentSeenSet {
 Get appointment data for upcoming appointment start or end.
 
     my %AppointmentData = $AppointmentObject->AppointmentUpcomingGet(
-        Type      => 'Start', # can be either 'Start' or 'End', default: 'Start'
-        Timestamp => '2016-08-02 03:59:00', # can be either 'Start' or 'End', default: 'Start'
+        Timestamp => '2016-08-02 03:59:00', # get appointments for the related notification timestamp
     );
 
 returns:
@@ -1795,13 +1794,6 @@ returns:
 
 sub AppointmentUpcomingGet {
     my ( $Self, %Param ) = @_;
-
-    # determine appointment type to get upcoming entry for
-    my $AppointmentType = 'start_time';
-
-    if ( lc $Param{Type} eq 'end' ) {
-        $AppointmentType = 'end_time';
-    }
 
     # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -1815,40 +1807,51 @@ sub AppointmentUpcomingGet {
     my $SQL = "
         SELECT id, parent_id, calendar_id, unique_id
         FROM calendar_appointment
-        WHERE DATE($AppointmentType) >= DATE(?)
-        ORDER BY $AppointmentType";
+        WHERE DATE(notify_time) >= DATE(?)
+        ORDER BY notify_time ASC";
 
     # db query
     return if !$DBObject->Prepare(
-        SQL   => $SQL,
-        Bind  => [ \$CurrentTimestamp ],
-        Limit => 1,
+        SQL  => $SQL,
+        Bind => [ \$CurrentTimestamp ],
     );
 
-    my %Result;
+    my @ResultRaw;
 
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
-        $Result{AppointmentID} = $Row[0];
-        $Result{ParentID}      = $Row[1];
-        $Result{CalendarID}    = $Row[2];
-        $Result{UniqueID}      = $Row[3];
+        my %UpcomingAppointment;
+
+        $UpcomingAppointment{AppointmentID} = $Row[0];
+        $UpcomingAppointment{ParentID}      = $Row[1];
+        $UpcomingAppointment{CalendarID}    = $Row[2];
+        $UpcomingAppointment{UniqueID}      = $Row[3];
+
+        push @ResultRaw, \%UpcomingAppointment;
     }
 
-    my %UpcomingAppointment;
+    my @Results;
 
-    if ( IsHashRefWithData( \%Result ) ) {
-        %UpcomingAppointment = $Self->AppointmentGet(%Result);
+    APPOINTMENTDATA:
+    for my $AppointmentData (@ResultRaw) {
+
+        next APPOINTMENTDATA if !IsHashRefWithData($AppointmentData);
+        next APPOINTMENTDATA if !$AppointmentData->{CalendarID};
+        next APPOINTMENTDATA if !$AppointmentData->{AppointmentID};
+
+        my %Appointment = $Self->AppointmentGet( %{$AppointmentData} );
+
+        push @Results, \%Appointment;
     }
 
-    return \%UpcomingAppointment;
+    return @Results;
 }
 
-=item AppointmentFutureTasksDelete()
+=item _AppointmentFutureTasksDelete()
 
 Delete all calendar appointment future tasks.
 
-    my $Success = $AppointmentObject->AppointmentFutureTasksDelete();
+    my $Success = $AppointmentObject->_AppointmentFutureTasksDelete();
 
 returns:
 
@@ -1856,7 +1859,7 @@ returns:
 
 =cut
 
-sub AppointmentFutureTasksDelete {
+sub _AppointmentFutureTasksDelete {
     my ( $Self, %Param ) = @_;
 
     # get a local scheduler db object
@@ -1909,25 +1912,23 @@ sub AppointmentFutureTasksUpdate {
     my ( $Self, %Param ) = @_;
 
     # get appointment data for upcoming appointment start and end
-    my %UpcomingAppointment = (
-        'Start' => $Self->AppointmentUpcomingGet(
-            Type => 'Start',
-        ),
-        'End' => $Self->AppointmentUpcomingGet(
-            Type => 'End',
-        ),
-    );
+    my @UpcomingAppointments = $Self->AppointmentUpcomingGet();
 
-    if (
-        !IsHashRefWithData( $UpcomingAppointment{Start} )
-        || !IsHashRefWithData( $UpcomingAppointment{End} )
-        )
-    {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Could not get upcoming appointment data for start and/or end-time!",
-        );
-        return;
+    # check for no upcoming appointments
+    if ( !IsArrayRefWithData( \@UpcomingAppointments ) ) {
+
+        # flush obsolete future tasks
+        my $Success = $Self->_AppointmentFutureTasksDelete();
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Could not delete appointment future tasks!',
+            );
+            return;
+        }
+
+        return 1;
     }
 
     # get a local scheduler db object
@@ -1938,8 +1939,23 @@ sub AppointmentFutureTasksUpdate {
         Type => 'CalendarAppointment',
     );
 
+    # check for invalid task count (just one task max allowed)
+    if ( scalar @FutureTaskList > 1 ) {
+
+        # flush obsolete future tasks
+        my $Success = $Self->_AppointmentFutureTasksDelete();
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Could not delete appointment future tasks!',
+            );
+            return;
+        }
+    }
+
     # check if it is needed to update the future task list
-    if ( scalar @FutureTaskList == 2 ) {
+    if ( IsArrayRefWithData( \@FutureTaskList ) ) {
 
         # get a local calendar helper object
         my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -1949,7 +1965,12 @@ sub AppointmentFutureTasksUpdate {
         FUTURETASK:
         for my $FutureTask (@FutureTaskList) {
 
-            if ( !IsHashRefWithData($FutureTask) || !$FutureTask->{TaskID} ) {
+            if (
+                !IsHashRefWithData($FutureTask)
+                || !$FutureTask->{TaskID}
+                || !$FutureTask->{ExecutionTime}
+                )
+            {
                 $UpdateNeeded = 1;
                 last FUTURETASK;
             }
@@ -1964,65 +1985,58 @@ sub AppointmentFutureTasksUpdate {
                 last FUTURETASK;
             }
 
-            my $Type = $FutureTaskData{Data}->{Type};
-
             # get unix timestamps of stored and upcoming times to compare
             my $FutureTaskTime = $CalendarHelperObject->SystemTimeGet(
-                String => $FutureTaskData{Data}->{ $Type . 'Time' },
+                String => $FutureTaskData{Data}->{NotifyTime},
             );
             my $UpcomingAppointmentTime = $CalendarHelperObject->SystemTimeGet(
-                String => $UpcomingAppointment{$Type}->{ $Type . 'Time' },
+                String => $UpcomingAppointments[0]->{NotificationDate},
             );
 
-            # do nothing if the upcoming start time and id equals the stored values
-            if (
-                $UpcomingAppointmentTime != $FutureTaskTime
-                || $UpcomingAppointment{$Type}->{AppointmentID} != $FutureTaskData{Data}->{AppointmentID}
-                )
-            {
+            # do nothing if the upcoming notification time equals the stored value
+            if ( $UpcomingAppointmentTime != $FutureTaskTime ) {
                 $UpdateNeeded = 1;
                 last FUTURETASK;
             }
         }
 
-        return 1 if !$UpdateNeeded;
-    }
+        if ($UpdateNeeded) {
 
-    # flush obsolete future tasks
-    my $Success = $Self->AppointmentFutureTasksDelete();
+            # flush obsolete future tasks
+            my $Success = $Self->_AppointmentFutureTasksDelete();
 
-    if ( !$Success ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Could not delete appointment future tasks!',
-        );
-        return;
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => 'Could not delete appointment future tasks!',
+                );
+                return;
+            }
+        }
+        else {
+            return 1;
+        }
     }
 
     # schedule new future tasks for notification actions
-    for my $TaskType ( sort keys %UpcomingAppointment ) {
+    my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
+        ExecutionTime => $UpcomingAppointments[0]->{NotificationDate},
+        Type          => 'CalendarAppointment',
+        Data          => {
+            AppointmentID => $UpcomingAppointments[0]->{AppointmentID},
+            ParentID      => $UpcomingAppointments[0]->{ParentID},
+            CalendarID    => $UpcomingAppointments[0]->{CalendarID},
+            NotifyTime    => $UpcomingAppointments[0]->{NotificationDate},
+        },
+    );
 
-        my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
-            ExecutionTime => $UpcomingAppointment{$TaskType}->{ $TaskType . 'Time' },
-            Type          => 'CalendarAppointment',
-            Data          => {
-                AppointmentID => $UpcomingAppointment{$TaskType}->{AppointmentID},
-                ParentID      => $UpcomingAppointment{$TaskType}->{ParentID},
-                CalendarID    => $UpcomingAppointment{$TaskType}->{CalendarID},
-                StartTime     => $UpcomingAppointment{$TaskType}->{StartTime},
-                EndTime       => $UpcomingAppointment{$TaskType}->{EndTime},
-                Type          => $TaskType,
-            },
+    if ( !$TaskID ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message =>
+                "Could not schedule future task for AppointmentID $UpcomingAppointments[0]->{AppointmentID}!",
         );
-
-        if ( !$TaskID ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message =>
-                    "Could not schedule future task for AppointmentID $UpcomingAppointment{$TaskType}->{AppointmentID} ! Type: $TaskType !",
-            );
-            return;
-        }
+        return;
     }
 
     return 1;
