@@ -785,10 +785,10 @@ sub Run {
                     Value => Translatable('Custom'),
                 },
             ],
-            SelectedID   => '0',                      # $SelectedNotification
-            Name         => 'NotificationTemplate',
-            Multiple     => 0,
-            Class        => 'Modernize',
+            SelectedID => $Appointment{NotificationTemplate} || '0',
+            Name       => 'NotificationTemplate',
+            Multiple   => 0,
+            Class      => 'Modernize',
             PossibleNone => 0,
             Disabled     => $Permissions
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
@@ -810,10 +810,10 @@ sub Run {
                     Value => Translatable('Days'),
                 },
             ],
-            SelectedID   => '0',                                # $SelectedNotificationCustomUnits
-            Name         => 'NotificationCustomRelativeUnit',
-            Multiple     => 0,
-            Class        => 'Modernize',
+            SelectedID => $Appointment{NotificationCustomRelativeUnit} || 'minutes',
+            Name       => 'NotificationCustomRelativeUnit',
+            Multiple   => 0,
+            Class      => 'Modernize',
             PossibleNone => 0,
             Disabled     => $Permissions
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
@@ -839,27 +839,55 @@ sub Run {
                     Value => Translatable('after the appointment has been ended'),
                 },
             ],
-            SelectedID   => '0',                                       # $SelectedNotificationCustomUnitsPointOfTime
-            Name         => 'NotificationCustomRelativePointOfTime',
-            Multiple     => 0,
-            Class        => 'Modernize',
+            SelectedID => $Appointment{NotificationCustomRelativePointOfTime} || 'beforestart',
+            Name       => 'NotificationCustomRelativePointOfTime',
+            Multiple   => 0,
+            Class      => 'Modernize',
             PossibleNone => 0,
             Disabled     => $Permissions
-                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,     # disable if permissions are below move_into
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
+
+        # prepare radio button for custom relative input
+        $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"'
+            if $Appointment{NotificationCustomRelativeInput};
+
+        # extract the date units for the custom date selection
+        my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek );
+        if ( $Appointment{NotificationCustomDateTime} ) {
+
+            # get a local calendar helper object
+            my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+            ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $CalendarHelperObject->SystemTimeGet(
+                    String => $Appointment{NotificationCustomDateTime},
+                ),
+            );
+        }
 
         # notification custom date selection
         $Param{NotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
-            Prefix           => 'NotificationCustomDateTime',
-            Format           => 'DateInputFormatLong',
-            YearPeriodPast   => $YearPeriodPast{Start},
-            YearPeriodFuture => $YearPeriodFuture{Start},
+            Prefix                           => 'NotificationCustomDateTime',
+            NotificationCustomDateTimeYear   => $Year,
+            NotificationCustomDateTimeMonth  => $Month,
+            NotificationCustomDateTimeDay    => $Day,
+            NotificationCustomDateTimeHour   => $Hour,
+            NotificationCustomDateTimeMinute => $Minute,
+            NotificationCustomDateTimeSecond => $Second,
+            Format                           => 'DateInputFormatLong',
+            YearPeriodPast                   => $YearPeriodPast{Start},
+            YearPeriodFuture                 => $YearPeriodFuture{Start},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
             Disabled         => $Permissions
                 && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
         );
+
+        # prepare radio button for custom date time input
+        $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
+            if $Appointment{NotificationCustomDateTimeInput};
 
         # get plugin list
         $Param{PluginList} = $PluginObject->PluginList();

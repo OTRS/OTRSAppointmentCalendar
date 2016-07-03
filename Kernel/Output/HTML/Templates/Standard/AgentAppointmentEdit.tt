@@ -367,18 +367,30 @@
                 <label for="Notification">[% Translate("Relative point of time") | html %]:</label>
 
                 <div class="FieldExplanation">
-                    <input type="radio" name="NotificationCustomRelativeInput" value="" id="NotificationCustomRelativeInput" checked="checked">
-                    <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
+
+                    <input type="radio" name="NotificationCustomRelativeInput" value="" id="NotificationCustomRelativeInput" [% Data.NotificationCustomRelativeInputRadio %]>
                     <div class="FieldInline">
-                        [% Data.NotificationCustomUnitsStrg %]
+                        <table style="border: 0;">
+                            <tr>
+                                <td>
+                                    <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>[% Data.NotificationCustomUnitsStrg %]</td>
+                            </tr>
+                            <tr>
+                                <td>[% Data.NotificationCustomUnitsPointOfTimeStrg %]</td>
+                            </tr>
+                        </table>
                     </div>
-                    [% Data.NotificationCustomUnitsPointOfTimeStrg %]
+
                 </div>
 
                 <label for="Notification">[% Translate("Date/Time") | html %]:</label>
 
                 <div class="FieldExplanation">
-                    <input type="radio" name="NotificationCustomDateTimeInput" value="" id="NotificationCustomDateTimeInput">
+                    <input type="radio" name="NotificationCustomDateTimeInput" value="" id="NotificationCustomDateTimeInput" [% Data.NotificationCustomDateTimeInputRadio %]>
                     [% Data.NotificationCustomDateTimeStrg %]
                 </div>
             </div>

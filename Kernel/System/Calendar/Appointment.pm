@@ -2071,12 +2071,22 @@ sub _AppointmentNotificationPrepare {
     # prepare possible notification params
     for my $PossibleParam (
         qw(
-        NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
-        NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime
+        NotificationTemplate NotificationCustom NotificationCustomRelativeUnit
+        NotificationCustomRelativePointOfTime
         )
         )
     {
         $Param{Data}->{$PossibleParam} ||= '';
+    }
+
+    # special check for relative unit count as it can be zero
+    # (empty value will be treated as zero to avoid errors)
+    if (
+        !IsNumber( $Param{Data}->{NotificationCustomRelativeUnitCount} )
+        || $Param{Data}->{NotificationCustomRelativeUnitCount} <= 0
+        )
+    {
+        $Param{Data}->{NotificationCustomRelativeUnitCount} = 0;
     }
 
     # set empty datetime strings to undef
@@ -2160,7 +2170,7 @@ sub _AppointmentNotificationPrepare {
             my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
             my $CustomUnitPoint = $Param{Data}->{NotificationCustomRelativePointOfTime};
 
-            return if !$CustomUnitCount;
+            return if !IsNumber($CustomUnitCount);
 
             # setup the count to compute for the offset
             my %UnitOffsetCompute = (

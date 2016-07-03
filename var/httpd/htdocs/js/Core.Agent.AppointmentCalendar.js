@@ -1173,6 +1173,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // custom field is needed
             Fields.$NotificationCustomStringDiv.show();
+
+            // initialize modern fields on custom selection
+            Core.UI.InputFields.InitSelect($('select.Modernize'));
         }
 
         // disable enable the different custom fields
@@ -1181,8 +1184,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             // enable relative date fields
             Fields.$NotificationCustomRelativeInput.val(1);
             Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', false);
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', false).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false).trigger('redraw.InputField');
 
             // disable the custom date time fields
             Fields.$NotificationCustomDateTimeInput.val('');
@@ -1207,8 +1210,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Fields.$NotificationCustomRelativeInput.val('');
             Fields.$NotificationCustomRelativeInput.prop('checked', false);
             Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', true);
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', true).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true).trigger('redraw.InputField');
         }
 
         // Register change event handler
