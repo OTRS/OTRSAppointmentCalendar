@@ -882,6 +882,8 @@ sub Run {
         );
 
         # prepare radio button for custom date time and relative input
+        $Appointment{NotificationCustom} ||= '';
+
         if ( $Appointment{NotificationCustom} eq 'datetime' ) {
             $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
         }
