@@ -552,7 +552,9 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, timezone_id, team_id, resource_id, all_day, recurring, notify_time
+            end_time, timezone_id, team_id, resource_id, all_day, recurring, notify_time,
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -609,21 +611,27 @@ sub AppointmentList {
         }
 
         my %Appointment = (
-            AppointmentID    => $Row[0],
-            ParentID         => $Row[1],
-            CalendarID       => $Row[2],
-            UniqueID         => $Row[3],
-            Title            => $Row[4],
-            Description      => $Row[5],
-            Location         => $Row[6],
-            StartTime        => $Row[7],
-            EndTime          => $Row[8],
-            TimezoneID       => $Row[9],
-            TeamID           => \@TeamID,
-            ResourceID       => \@ResourceID,
-            AllDay           => $Row[12],
-            Recurring        => $Row[13],
-            NotificationDate => $Row[14],
+            AppointmentID                         => $Row[0],
+            ParentID                              => $Row[1],
+            CalendarID                            => $Row[2],
+            UniqueID                              => $Row[3],
+            Title                                 => $Row[4],
+            Description                           => $Row[5],
+            Location                              => $Row[6],
+            StartTime                             => $Row[7],
+            EndTime                               => $Row[8],
+            TimezoneID                            => $Row[9],
+            TeamID                                => \@TeamID,
+            ResourceID                            => \@ResourceID,
+            AllDay                                => $Row[12],
+            Recurring                             => $Row[13],
+            NotificationDate                      => $Row[14] || '',
+            NotificationTemplate                  => $Row[15],
+            NotificationCustom                    => $Row[16],
+            NotificationCustomRelativeUnitCount   => $Row[17],
+            NotificationCustomRelativeUnit        => $Row[18],
+            NotificationCustomRelativePointOfTime => $Row[19],
+            NotificationCustomDateTime            => $Row[20] || '',
         );
         push @Result, \%Appointment;
     }
@@ -1078,7 +1086,7 @@ sub AppointmentUpdate {
     }
 
     # prepare possible notification params
-    $Self->_AppointmentNotificationPrepare(
+    my $Success = $Self->_AppointmentNotificationPrepare(
         Data => \%Param,
     );
 

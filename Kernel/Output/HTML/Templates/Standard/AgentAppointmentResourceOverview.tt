@@ -331,7 +331,13 @@ Core.Agent.AppointmentCalendar.Init({
                         resourceIds: AppointmentData.ResourceID,
                         resourceNames: AppointmentData.ResourceNames,
                         pluginData: AppointmentData.PluginData,
-                        notificationDate: AppointmentData.NotificationDate
+                        notificationDate: AppointmentData.NotificationDate,
+                        notificationTemplate: AppointmentData.NotificationTemplate,
+                        notificationCustom: AppointmentData.NotificationCustom,
+                        notificationCustomRelativeUnitCount: AppointmentData.NotificationCustomRelativeUnitCount,
+                        notificationCustomRelativeUnit: AppointmentData.NotificationCustomRelativeUnit,
+                        notificationCustomRelativePointOfTime: AppointmentData.NotificationCustomRelativePointOfTime,
+                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime
                     };
                 }
             }
