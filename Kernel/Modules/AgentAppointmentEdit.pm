@@ -8,6 +8,8 @@
 
 package Kernel::Modules::AgentAppointmentEdit;
 
+## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
+
 use strict;
 use warnings;
 
@@ -397,13 +399,14 @@ sub Run {
         $Param{StartDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix           => 'Start',
-            StartHour        => $Appointment{StartHour} // $GetParam{StartHour},
-            StartMinute      => $Appointment{StartMinute} // $GetParam{StartMinute},
-            Format           => 'DateInputFormatLong',
-            Validate         => 1,
-            YearPeriodPast   => $YearPeriodPast{Start},
-            YearPeriodFuture => $YearPeriodFuture{Start},
+            Prefix                   => 'Start',
+            StartHour                => $Appointment{StartHour} // $GetParam{StartHour},
+            StartMinute              => $Appointment{StartMinute} // $GetParam{StartMinute},
+            Format                   => 'DateInputFormatLong',
+            ValidateDateBeforePrefix => 'End',
+            Validate                 => 1,
+            YearPeriodPast           => $YearPeriodPast{Start},
+            YearPeriodFuture         => $YearPeriodFuture{Start},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -413,13 +416,14 @@ sub Run {
         $Param{EndDateString} = $LayoutObject->BuildDateSelection(
             %GetParam,
             %Appointment,
-            Prefix           => 'End',
-            EndHour          => $Appointment{EndHour} // $GetParam{EndHour},
-            EndMinute        => $Appointment{EndMinute} // $GetParam{EndMinute},
-            Format           => 'DateInputFormatLong',
-            Validate         => 1,
-            YearPeriodPast   => $YearPeriodPast{End},
-            YearPeriodFuture => $YearPeriodFuture{End},
+            Prefix                  => 'End',
+            EndHour                 => $Appointment{EndHour} // $GetParam{EndHour},
+            EndMinute               => $Appointment{EndMinute} // $GetParam{EndMinute},
+            Format                  => 'DateInputFormatLong',
+            ValidateDateAfterPrefix => 'Start',
+            Validate                => 1,
+            YearPeriodPast          => $YearPeriodPast{End},
+            YearPeriodFuture        => $YearPeriodFuture{End},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
@@ -710,16 +714,185 @@ sub Run {
         $Param{RecurrenceUntilString} = $LayoutObject->BuildDateSelection(
             %Appointment,
             %GetParam,
-            Prefix           => 'RecurrenceUntil',
-            Format           => 'DateInputFormat',
-            DiffTime         => $RecurrenceUntilDiffTime,
-            Validate         => 1,
-            YearPeriodPast   => $YearPeriodPast{RecurrenceUntil},
-            YearPeriodFuture => $YearPeriodFuture{RecurrenceUntil},
+            Prefix                  => 'RecurrenceUntil',
+            Format                  => 'DateInputFormat',
+            DiffTime                => $RecurrenceUntilDiffTime,
+            ValidateDateAfterPrefix => 'Start',
+            Validate                => 1,
+            YearPeriodPast          => $YearPeriodPast{RecurrenceUntil},
+            YearPeriodFuture        => $YearPeriodFuture{RecurrenceUntil},
 
             # we are calculating this locally
             OverrideTimeZone => 1,
         );
+
+        my $MinutesBefore = $LayoutObject->{LanguageObject}->Translate('minutes before');
+        my $HourBefore    = $LayoutObject->{LanguageObject}->Translate('hour before');
+        my $HoursBefore   = $LayoutObject->{LanguageObject}->Translate('hours before');
+        my $DayBefore     = $LayoutObject->{LanguageObject}->Translate('day before');
+        my $DaysBefore    = $LayoutObject->{LanguageObject}->Translate('days before');
+        my $WeekBefore    = $LayoutObject->{LanguageObject}->Translate('week before');
+
+        # notification selection
+        $Param{NotificationStrg} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => '0',
+                    Value => Translatable('No notification'),
+                },
+                {
+                    Key   => 'Start',
+                    Value => "0 $MinutesBefore",
+                },
+                {
+                    Key   => '300',
+                    Value => "5 $MinutesBefore",
+                },
+                {
+                    Key   => '900',
+                    Value => "15 $MinutesBefore",
+                },
+                {
+                    Key   => '1800',
+                    Value => "30 $MinutesBefore",
+                },
+                {
+                    Key   => '3600',
+                    Value => "1 $HourBefore",
+                },
+                {
+                    Key   => '7200',
+                    Value => "2 $HoursBefore",
+                },
+                {
+                    Key   => '43200',
+                    Value => "12 $HoursBefore",
+                },
+                {
+                    Key   => '86400',
+                    Value => "1 $DayBefore",
+                },
+                {
+                    Key   => '172800',
+                    Value => "2 $DaysBefore",
+                },
+                {
+                    Key   => '604800',
+                    Value => "1 $WeekBefore",
+                },
+                {
+                    Key   => 'Custom',
+                    Value => Translatable('Custom'),
+                },
+            ],
+            SelectedID => $Appointment{NotificationTemplate} || '0',
+            Name       => 'NotificationTemplate',
+            Multiple   => 0,
+            Class      => 'Modernize',
+            PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
+        # notification custom units selection
+        $Param{NotificationCustomUnitsStrg} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => 'minutes',
+                    Value => Translatable('Minutes'),
+                },
+                {
+                    Key   => 'hours',
+                    Value => Translatable('Hours'),
+                },
+                {
+                    Key   => 'days',
+                    Value => Translatable('Days'),
+                },
+            ],
+            SelectedID => $Appointment{NotificationCustomRelativeUnit} || 'minutes',
+            Name       => 'NotificationCustomRelativeUnit',
+            Multiple   => 0,
+            Class      => 'Modernize',
+            PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
+        # notification custom units point of time selection
+        $Param{NotificationCustomUnitsPointOfTimeStrg} = $LayoutObject->BuildSelection(
+            Data => [
+                {
+                    Key   => 'beforestart',
+                    Value => Translatable('before the appointment starts'),
+                },
+                {
+                    Key   => 'afterstart',
+                    Value => Translatable('after the appointment has been started'),
+                },
+                {
+                    Key   => 'beforeend',
+                    Value => Translatable('before the appointment ends'),
+                },
+                {
+                    Key   => 'afterend',
+                    Value => Translatable('after the appointment has been ended'),
+                },
+            ],
+            SelectedID => $Appointment{NotificationCustomRelativePointOfTime} || 'beforestart',
+            Name       => 'NotificationCustomRelativePointOfTime',
+            Multiple   => 0,
+            Class      => 'Modernize',
+            PossibleNone => 0,
+            Disabled     => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
+        # extract the date units for the custom date selection
+        my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek );
+        if ( $Appointment{NotificationCustomDateTime} ) {
+
+            # get a local calendar helper object
+            my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+            ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $CalendarHelperObject->SystemTimeGet(
+                    String => $Appointment{NotificationCustomDateTime},
+                ),
+            );
+        }
+
+        # notification custom date selection
+        $Param{NotificationCustomDateTimeStrg} = $LayoutObject->BuildDateSelection(
+            Prefix                           => 'NotificationCustomDateTime',
+            NotificationCustomDateTimeYear   => $Year,
+            NotificationCustomDateTimeMonth  => $Month,
+            NotificationCustomDateTimeDay    => $Day,
+            NotificationCustomDateTimeHour   => $Hour,
+            NotificationCustomDateTimeMinute => $Minute,
+            NotificationCustomDateTimeSecond => $Second,
+            Format                           => 'DateInputFormatLong',
+            YearPeriodPast                   => $YearPeriodPast{Start},
+            YearPeriodFuture                 => $YearPeriodFuture{Start},
+
+            # we are calculating this locally
+            OverrideTimeZone => 1,
+            Disabled         => $Permissions
+                && ( $PermissionLevel{$Permissions} < 2 ) ? 1 : 0,    # disable if permissions are below move_into
+        );
+
+        # prepare radio button for custom date time and relative input
+        $Appointment{NotificationCustom} ||= '';
+
+        if ( $Appointment{NotificationCustom} eq 'datetime' ) {
+            $Param{NotificationCustomDateTimeInputRadio} = 'checked="checked"'
+        }
+        elsif ( $Appointment{NotificationCustom} eq 'relative' ) {
+            $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"';
+        }
+        else {
+            $Param{NotificationCustomRelativeInputRadio} = 'checked="checked"';
+        }
 
         # get plugin list
         $Param{PluginList} = $PluginObject->PluginList();
@@ -815,7 +988,7 @@ sub Run {
             );
 
             # initialize datepickers for different date fields
-            for my $Prefix (qw(Start End RecurrenceUntil)) {
+            for my $Prefix (qw(Start End RecurrenceUntil NotificationCustomDateTime)) {
                 $LayoutObject->Block(
                     Name => 'DatepickerInit',
                     Data => {
@@ -964,7 +1137,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType}    eq 'Daily'
+                $GetParam{RecurrenceType} eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1032,8 +1205,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear} &&
-                $GetParam{RecurrenceUntilMonth} &&
+                $GetParam{RecurrenceUntilYear}    &&
+                $GetParam{RecurrenceUntilMonth}   &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -1049,6 +1222,19 @@ sub Run {
             elsif ( $GetParam{RecurrenceLimit} eq '2' ) {
                 $GetParam{RecurrenceUntil} = undef;
             }
+        }
+
+        # determine notification custom type
+        $GetParam{NotificationTemplate} ||= '';
+
+        if ( $GetParam{NotificationTemplate} ne 'Custom' ) {
+            $GetParam{NotificationCustom} = '';
+        }
+        elsif ( $GetParam{NotificationCustomRelativeInput} ) {
+            $GetParam{NotificationCustom} = 'relative';
+        }
+        elsif ( $GetParam{NotificationCustomDateTimeInput} ) {
+            $GetParam{NotificationCustom} = 'datetime';
         }
 
         # team
@@ -1357,6 +1543,6 @@ sub _DayOffsetGet {
     else {
         return 1;
     }
-
 }
+
 1;

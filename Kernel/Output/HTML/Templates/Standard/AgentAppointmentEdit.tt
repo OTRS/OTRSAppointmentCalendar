@@ -96,6 +96,10 @@
 [% IF Data.PermissionLevel < 2 %]
                 <p id="StartDay" class="ReadOnlyValue">[% Data.StartDate | html %]</p>
 [% ELSE %]
+                <div id="StartDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to value before End date.") | html %]</p>
+                </div>
                 [% Data.StartDateString %]
 [% END %]
             </div>
@@ -105,6 +109,10 @@
 [% IF Data.PermissionLevel < 2 %]
                 <p id="EndDay" class="ReadOnlyValue">[% Data.EndDate | html %]</p>
 [% ELSE %]
+                <div id="EndDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                </div>
                 [% Data.EndDateString %]
 [% END %]
             </div>
@@ -331,6 +339,10 @@
                 [% Data.RecurrenceLimitString %]
             </div>
             <div id="RecurrenceUntilDiv" class="Field Hidden">
+                <div id="RecurrenceUntilDayError" class="TooltipErrorMessage">
+                    <p>[% Translate("Invalid date!") | html %]</p>
+                    <p>[% Translate("Please set this to value after Start date.") | html %]</p>
+                </div>
                 [% Data.RecurrenceUntilString %]
             </div>
             <div id="RecurrenceCountDiv" class="Field Hidden">
@@ -339,6 +351,53 @@
 [% END %]
 [% END %]
         </fieldset>
+
+        <fieldset class="TableLike">
+
+            <legend><span>[% Translate("Notification") | html %]</span></legend>
+
+            <label for="NotificationTemplate">[% Translate("Notification") | html %]:</label>
+            <div class="Field">
+                [% Data.NotificationStrg %]
+            </div>
+            <div class="Clear"></div>
+
+            <div class="Field" id="NotificationCustomStringDiv">
+
+                <label for="Notification">[% Translate("Relative point of time") | html %]:</label>
+
+                <div class="FieldExplanation">
+
+                    <input type="radio" name="NotificationCustomRelativeInput" value="" id="NotificationCustomRelativeInput" [% Data.NotificationCustomRelativeInputRadio %]>
+                    <div class="FieldInline">
+                        <table style="border: 0;">
+                            <tr>
+                                <td>
+                                    <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>[% Data.NotificationCustomUnitsStrg %]</td>
+                            </tr>
+                            <tr>
+                                <td>[% Data.NotificationCustomUnitsPointOfTimeStrg %]</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <label for="Notification">[% Translate("Date/Time") | html %]:</label>
+
+                <div class="FieldExplanation">
+                    <input type="radio" name="NotificationCustomDateTimeInput" value="" id="NotificationCustomDateTimeInput" [% Data.NotificationCustomDateTimeInputRadio %]>
+                    [% Data.NotificationCustomDateTimeStrg %]
+                </div>
+            </div>
+            <div class="Clear"></div>
+
+        </fieldset>
+
 [% IF Data.PluginList %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Link") | html %]</span></legend>
@@ -397,6 +456,22 @@ Core.Agent.AppointmentCalendar.RecurringInit({
     $RecurrenceUntilDay: $('#RecurrenceUntilDay'),
     $RecurrenceCountDiv: $('#RecurrenceCountDiv')
 });
+
+Core.Agent.AppointmentCalendar.NotificationInit({
+    $NotificationTemplate: $('#NotificationTemplate'),
+    $NotificationCustomStringDiv: $('#NotificationCustomStringDiv'),
+    $NotificationCustomRelativeInput: $('#NotificationCustomRelativeInput'),
+    $NotificationCustomRelativeUnitCount: $('#NotificationCustomRelativeUnitCount'),
+    $NotificationCustomRelativeUnit: $('#NotificationCustomRelativeUnit'),
+    $NotificationCustomRelativePointOfTime: $('#NotificationCustomRelativePointOfTime'),
+    $NotificationCustomDateTimeInput: $('#NotificationCustomDateTimeInput'),
+    $NotificationCustomDateTimeDay: $('#NotificationCustomDateTimeDay'),
+    $NotificationCustomDateTimeMonth: $('#NotificationCustomDateTimeMonth'),
+    $NotificationCustomDateTimeYear: $('#NotificationCustomDateTimeYear'),
+    $NotificationCustomDateTimeHour: $('#NotificationCustomDateTimeHour'),
+    $NotificationCustomDateTimeMinute: $('#NotificationCustomDateTimeMinute')
+});
+
 Core.Agent.AppointmentCalendar.TeamInit($('#TeamID'), $('#ResourceID'), $('#ChallengeToken').val(), $('label[for="TeamID"] + div.Field p.ReadOnlyValue'), $('label[for="ResourceID"] + div.Field p.ReadOnlyValue'));
 [% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
 Core.Agent.AppointmentCalendar.PluginInit($('.PluginField'), $('#ChallengeToken').val());

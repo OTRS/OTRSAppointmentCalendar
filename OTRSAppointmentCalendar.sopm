@@ -69,8 +69,10 @@
         <File Permission="640" Location="Kernel/System/Calendar/Plugin.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
+        <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
@@ -99,6 +101,7 @@
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.10/clipboard.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
+        <File Permission="640" Location="var/packagesetup/OTRSAppointmentCalendar.pm"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
 
@@ -183,6 +186,13 @@
             <Column Name="start_time" Required="true" Type="DATE"/>
             <Column Name="end_time" Required="true" Type="DATE"/>
             <Column Name="all_day" Type="SMALLINT"/>
+            <Column Name="notify_time" Type="DATE"/>
+            <Column Name="notify_template" Size="255" Type="VARCHAR"/>
+            <Column Name="notify_custom" Size="255" Type="VARCHAR"/>
+            <Column Name="notify_custom_unit_count" Type="BIGINT"/>
+            <Column Name="notify_custom_unit" Size="255" Type="VARCHAR"/>
+            <Column Name="notify_custom_unit_point" Size="255" Type="VARCHAR"/>
+            <Column Name="notify_custom_date" Type="DATE"/>
             <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
             <Column Name="team_id" Size="3800" Type="VARCHAR"/>
             <Column Name="resource_id" Size="3800" Type="VARCHAR"/>
@@ -283,4 +293,21 @@
         <TableDrop Name="calendar_team_user"/>
         <TableDrop Name="calendar_team"/>
     </DatabaseUninstall>
+
+    <CodeInstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeInstall();
+    ]]></CodeInstall>
+
+    <CodeReinstall Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeReinstall();
+    ]]></CodeReinstall>
+
+    <CodeUpgrade Type="post"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeUpgrade();
+    ]]></CodeUpgrade>
+
+    <CodeUninstall Type="pre"><![CDATA[
+        $Kernel::OM->Get('var::packagesetup::OTRSAppointmentCalendar')->CodeUninstall();
+    ]]></CodeUninstall>
+
 </otrs_package>

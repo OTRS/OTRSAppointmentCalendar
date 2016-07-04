@@ -329,7 +329,15 @@ Core.Agent.AppointmentCalendar.Init({
                         teamNames: AppointmentData.TeamNames,
                         resourceIds: AppointmentData.ResourceID,
                         resourceNames: AppointmentData.ResourceNames,
-                        pluginData: AppointmentData.PluginData
+                        pluginData: AppointmentData.PluginData,
+                        notification: AppointmentData.NotificationDate.length ? true : false,
+                        notificationDate: AppointmentData.NotificationDate,
+                        notificationTemplate: AppointmentData.NotificationTemplate,
+                        notificationCustom: AppointmentData.NotificationCustom,
+                        notificationCustomRelativeUnitCount: AppointmentData.NotificationCustomRelativeUnitCount,
+                        notificationCustomRelativeUnit: AppointmentData.NotificationCustomRelativeUnit,
+                        notificationCustomRelativePointOfTime: AppointmentData.NotificationCustomRelativePointOfTime,
+                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime
                     };
                 }
             }
@@ -451,6 +459,12 @@ $('#Team').on('change', function() {
 [% END %]
         </fieldset>
 [% END %]
+        <fieldset>
+            <legend><span>[% Translate("Notification") | html %]</span></legend>
+            <p class="Value">%notificationDate%</p>
+            <label>[% Translate("Notification") | html %]:</label>
+            <div class="Clear"></div>
+        </fieldset>
     </div>
 
 </div>

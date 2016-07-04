@@ -26,7 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
-    'Kernel::System::Time',
+    'Kernel::System::Daemon::SchedulerDB',
 );
 
 =head1 NAME
@@ -80,39 +80,43 @@ sub new {
 creates a new appointment.
 
     my $AppointmentID = $AppointmentObject->AppointmentCreate(
-        ParentID             => 1,                                       # (optional) valid ParentID for recurring appointments
-        CalendarID           => 1,                                       # (required) valid CalendarID
-        UniqueID             => 'jwioji-fwjio',                          # (optional) provide desired UniqueID; if there is already existing Appointment
-                                                                         #            with same UniqueID, system will delete it
-        Title                => 'Webinar',                               # (required) Title
-        Description          => 'How to use Process tickets...',         # (optional) Description
-        Location             => 'Straubing',                             # (optional) Location
-        StartTime            => '2016-01-01 16:00:00',                   # (required)
-        EndTime              => '2016-01-01 17:00:00',                   # (required)
-        AllDay               => 0,                                       # (optional) default 0
-        TimezoneID           => 1,                                       # (optional) Timezone - it can be 0 (UTC)
-        TeamID               => [ 1 ],                                   # (optional) must be an array reference if supplied
-        ResourceID           => [ 1, 3 ],                                # (optional) must be an array reference if supplied
-        Recurring            => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        ParentID              => 1,                                       # (optional) valid ParentID for recurring appointments
+        CalendarID            => 1,                                       # (required) valid CalendarID
+        UniqueID              => 'jwioji-fwjio',                          # (optional) provide desired UniqueID; if there is already existing Appointment
+                                                                          #            with same UniqueID, system will delete it
+        Title                 => 'Webinar',                               # (required) Title
+        Description           => 'How to use Process tickets...',         # (optional) Description
+        Location              => 'Straubing',                             # (optional) Location
+        StartTime             => '2016-01-01 16:00:00',                   # (required)
+        EndTime               => '2016-01-01 17:00:00',                   # (required)
+        AllDay                => 0,                                       # (optional) default 0
+        TimezoneID            => 1,                                       # (optional) Timezone - it can be 0 (UTC)
+        TeamID                => [ 1 ],                                   # (optional) must be an array reference if supplied
+        ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
+        Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        RecurrenceType        => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
+                                                                          #           "CustomWeekly", "CustomMonthly", "CustomYearly"
 
-        RecurrenceType       => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
-                                                                         #           "CustomWeekly", "CustomMonthly", "CustomYearly"
-
-        RecurrenceFrequency  => [1, 3, 5],                               # (required if Custom Recurring) Recurrence pattern
-                                                                         #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
-                                                                         #           for CustomMonthly: 1-1st, 2-2nd,.., 31th
-                                                                         #           for CustomYearly: 1-Jan, 2-Feb,..., 12-Dec
-                                                                         # ...
-        RecurrenceCount      => 1,                                       # (optional) How many Appointments to create
-        RecurrenceInterval   => 2,                                       # (optional) Repeating interval (default 1)
-        RecurrenceUntil      => '2016-01-10 00:00:00',                   # (optional) Until date
-        RecurrenceID         => '2016-01-10 00:00:00',                   # (optional) Expected start time for this occurrence
-        RecurrenceExclude    => [                                        # (optional) Which specific occurrences to exclude
+        RecurrenceFrequency   => [1, 3, 5],                               # (required if Custom Recurring) Recurrence pattern
+                                                                          #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
+                                                                          #           for CustomMonthly: 1-1st, 2-2nd,.., 31th
+                                                                          #           for CustomYearly: 1-Jan, 2-Feb,..., 12-Dec
+                                                                          # ...
+        RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
+        RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
+        RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
+        RecurrenceID          => '2016-01-10 00:00:00',                   # (optional) Expected start time for this occurrence
+        RecurrenceExclude     => [                                        # (optional) Which specific occurrences to exclude
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
-
-        UserID               => 1,                                       # (required) UserID
+        NotificationTime                  => '2016-01-01 17:0:00',        # (optional) Point of time to execute the notification event
+        NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
+        NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
+        NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
+        NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
+                                                                          #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        UserID                => 1,                                       # (required) UserID
     );
 
 returns parent AppointmentID if successful
@@ -135,6 +139,11 @@ sub AppointmentCreate {
             return;
         }
     }
+
+    # prepare possible notification params
+    $Self->_AppointmentNotificationPrepare(
+        Data => \%Param,
+    );
 
     # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -161,7 +170,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -333,15 +342,19 @@ sub AppointmentCreate {
         \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
         \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
         \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},      \$Param{RecurrenceID},
-        \$Arrays{RecurrenceExclude}, \$Param{UserID},               \$Param{UserID};
+        \$Arrays{RecurrenceExclude}, \$Param{NotificationDate},     \$Param{NotificationTemplate},
+        \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
+        \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
+        \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, create_time,
-            create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             current_timestamp, ?, current_timestamp, ?)
     ";
 
@@ -539,7 +552,9 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, timezone_id, team_id, resource_id, all_day, recurring
+            end_time, timezone_id, team_id, resource_id, all_day, recurring, notify_time,
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -596,20 +611,27 @@ sub AppointmentList {
         }
 
         my %Appointment = (
-            AppointmentID => $Row[0],
-            ParentID      => $Row[1],
-            CalendarID    => $Row[2],
-            UniqueID      => $Row[3],
-            Title         => $Row[4],
-            Description   => $Row[5],
-            Location      => $Row[6],
-            StartTime     => $Row[7],
-            EndTime       => $Row[8],
-            TimezoneID    => $Row[9],
-            TeamID        => \@TeamID,
-            ResourceID    => \@ResourceID,
-            AllDay        => $Row[12],
-            Recurring     => $Row[13],
+            AppointmentID                         => $Row[0],
+            ParentID                              => $Row[1],
+            CalendarID                            => $Row[2],
+            UniqueID                              => $Row[3],
+            Title                                 => $Row[4],
+            Description                           => $Row[5],
+            Location                              => $Row[6],
+            StartTime                             => $Row[7],
+            EndTime                               => $Row[8],
+            TimezoneID                            => $Row[9],
+            TeamID                                => \@TeamID,
+            ResourceID                            => \@ResourceID,
+            AllDay                                => $Row[12],
+            Recurring                             => $Row[13],
+            NotificationDate                      => $Row[14] || '',
+            NotificationTemplate                  => $Row[15],
+            NotificationCustom                    => $Row[16],
+            NotificationCustomRelativeUnitCount   => $Row[17],
+            NotificationCustomRelativeUnit        => $Row[18],
+            NotificationCustomRelativePointOfTime => $Row[19],
+            NotificationCustomDateTime            => $Row[20] || '',
         );
         push @Result, \%Appointment;
     }
@@ -859,6 +881,11 @@ returns a hash:
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
+        NotificationTime                  => '2016-01-01 17:0:00',
+        NotificationTemplate              => 'Custom',
+        NotificationCustomUnitCount       => '12',
+        NotificationCustomUnit            => 'minutes',
+        NotificationCustomUnitPointOfTime => 'beforestart',
         CreateTime          => '2016-01-01 00:00:00',
         CreateBy            => 2,
         ChangeTime          => '2016-01-01 00:00:00',
@@ -904,8 +931,9 @@ sub AppointmentGet {
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, create_time,
-            create_by, change_time, change_by
+            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
+            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
+            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -942,31 +970,38 @@ sub AppointmentGet {
         # recurrence exclude
         my @RecurrenceExclude = $Row[20] ? split( ',', $Row[20] ) : undef;
 
-        $Result{AppointmentID}       = $Row[0];
-        $Result{ParentID}            = $Row[1];
-        $Result{CalendarID}          = $Row[2];
-        $Result{UniqueID}            = $Row[3];
-        $Result{Title}               = $Row[4];
-        $Result{Description}         = $Row[5];
-        $Result{Location}            = $Row[6];
-        $Result{StartTime}           = $Row[7];
-        $Result{EndTime}             = $Row[8];
-        $Result{AllDay}              = $Row[9];
-        $Result{TimezoneID}          = $Row[10];
-        $Result{TeamID}              = \@TeamID;
-        $Result{ResourceID}          = \@ResourceID;
-        $Result{Recurring}           = $Row[13];
-        $Result{RecurrenceType}      = $Row[14];
-        $Result{RecurrenceFrequency} = \@RecurrenceFrequency;
-        $Result{RecurrenceCount}     = $Row[16];
-        $Result{RecurrenceInterval}  = $Row[17];
-        $Result{RecurrenceUntil}     = $Row[18];
-        $Result{RecurrenceID}        = $Row[19];
-        $Result{RecurrenceExclude}   = \@RecurrenceExclude;
-        $Result{CreateTime}          = $Row[21];
-        $Result{CreateBy}            = $Row[22];
-        $Result{ChangeTime}          = $Row[23];
-        $Result{ChangeBy}            = $Row[24];
+        $Result{AppointmentID}                         = $Row[0];
+        $Result{ParentID}                              = $Row[1];
+        $Result{CalendarID}                            = $Row[2];
+        $Result{UniqueID}                              = $Row[3];
+        $Result{Title}                                 = $Row[4];
+        $Result{Description}                           = $Row[5];
+        $Result{Location}                              = $Row[6];
+        $Result{StartTime}                             = $Row[7];
+        $Result{EndTime}                               = $Row[8];
+        $Result{AllDay}                                = $Row[9];
+        $Result{TimezoneID}                            = $Row[10];
+        $Result{TeamID}                                = \@TeamID;
+        $Result{ResourceID}                            = \@ResourceID;
+        $Result{Recurring}                             = $Row[13];
+        $Result{RecurrenceType}                        = $Row[14];
+        $Result{RecurrenceFrequency}                   = \@RecurrenceFrequency;
+        $Result{RecurrenceCount}                       = $Row[16];
+        $Result{RecurrenceInterval}                    = $Row[17];
+        $Result{RecurrenceUntil}                       = $Row[18];
+        $Result{RecurrenceID}                          = $Row[19];
+        $Result{RecurrenceExclude}                     = \@RecurrenceExclude;
+        $Result{NotificationDate}                      = $Row[21] || '';
+        $Result{NotificationTemplate}                  = $Row[22];
+        $Result{NotificationCustom}                    = $Row[23];
+        $Result{NotificationCustomRelativeUnitCount}   = $Row[24];
+        $Result{NotificationCustomRelativeUnit}        = $Row[25];
+        $Result{NotificationCustomRelativePointOfTime} = $Row[26];
+        $Result{NotificationCustomDateTime}            = $Row[27] || '';
+        $Result{CreateTime}                            = $Row[28];
+        $Result{CreateBy}                              = $Row[29];
+        $Result{ChangeTime}                            = $Row[30];
+        $Result{ChangeBy}                              = $Row[31];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -988,30 +1023,44 @@ sub AppointmentGet {
 updates an existing appointment.
 
     my $Success = $AppointmentObject->AppointmentUpdate(
-        AppointmentID       => 2,                                       # (required)
-        CalendarID          => 1,                                       # (required) Valid CalendarID
-        Title               => 'Webinar',                               # (required) Title
-        Description         => 'How to use Process tickets...',         # (optional) Description
-        Location            => 'Straubing',                             # (optional) Location
-        StartTime           => '2016-01-01 16:00:00',                   # (required)
-        EndTime             => '2016-01-01 17:00:00',                   # (required)
-        AllDay              => 0,                                       # (optional) Default 0
-        TimezoneID          => -2,                                      # (optional) Timezone - it can be 0 (UTC)
-        Team                => 1,                                       # (optional)
-        ResourceID          => [ 1, 3 ],                                # (optional) must be an array reference if supplied
-        Recurring           => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        AppointmentID         => 2,                                       # (required)
+        CalendarID            => 1,                                       # (required) Valid CalendarID
+        Title                 => 'Webinar',                               # (required) Title
+        Description           => 'How to use Process tickets...',         # (optional) Description
+        Location              => 'Straubing',                             # (optional) Location
+        StartTime             => '2016-01-01 16:00:00',                   # (required)
+        EndTime               => '2016-01-01 17:00:00',                   # (required)
+        AllDay                => 0,                                       # (optional) Default 0
+        TimezoneID            => -2,                                      # (optional) Timezone - it can be 0 (UTC)
+        Team                  => 1,                                       # (optional)
+        ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
+        Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
 
-        RecurrenceType      => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
-                                                                        #           "CustomWeekly", "CustomMonthly", "CustomYearly"
+        RecurrenceType        => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
+                                                                          #           "CustomWeekly", "CustomMonthly", "CustomYearly"
 
-        RecurrenceFrequency => 1,                                       # (required if Custom Recurring) Recurrence pattern
-                                                                        #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
-                                                                        #           for CustomMonthly: 1-Jan, 2-Feb,..., 12-Dec
-                                                                        # ...
-        RecurrenceCount     => 1,                                       # (optional) How many Appointments to create
-        RecurrenceInterval  => 2,                                       # (optional) Repeating interval (default 1)
-        RecurrenceUntil     => '2016-01-10 00:00:00',                   # (optional) Until date
-        UserID              => 1,                                       # (required) UserID
+        RecurrenceFrequency   => 1,                                       # (required if Custom Recurring) Recurrence pattern
+                                                                          #           for CustomWeekly: 1-Mon, 2-Tue,..., 7-Sun
+                                                                          #           for CustomMonthly: 1-Jan, 2-Feb,..., 12-Dec
+                                                                          # ...
+        RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
+        RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
+        RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
+
+        NotificationDate                      => '2016-01-01 17:0:00',    # (optional) Point of time to execute the notification event
+        NotificationTemplate                  => 'Custom',                # (optional) Template to be used for notification point of time
+        NotificationCustom                    => '12',                    # (optional) minutes, hours or days count for custom template
+        NotificationCustomRelativeUnitCount   => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomRelativeUnit        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomRelativePointOfTime => 'beforestart',           # (optional) Point of execute for custom templates
+                                                                          #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        NotificationCustomDateTimeYear        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeMonth       => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeDay         => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeHour        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTimeMinute      => 'minutes',               # (optional) minutes, hours or days unit for custom template
+
+        UserID                => 1,                                       # (required) UserID
     );
 
 returns 1 if successful:
@@ -1035,6 +1084,11 @@ sub AppointmentUpdate {
             return;
         }
     }
+
+    # prepare possible notification params
+    my $Success = $Self->_AppointmentNotificationPrepare(
+        Data => \%Param,
+    );
 
     # needed objects
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
@@ -1061,7 +1115,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -1225,8 +1279,9 @@ sub AppointmentUpdate {
         SET
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
             timezone_id=?, team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?,
-            recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?,
-            change_time=current_timestamp, change_by=?
+            recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?,
+            notify_template=?, notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
+            notify_custom_unit_point=?, notify_custom_date=?, change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -1238,7 +1293,10 @@ sub AppointmentUpdate {
             \$Param{StartTime},  \$Param{EndTime},     \$Param{AllDay},      \$Param{TimezoneID},
             \$Arrays{TeamID},    \$Arrays{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceType},
             \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
-            \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{UserID}, \$Param{AppointmentID},
+            \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{NotificationDate},
+            \$Param{NotificationTemplate}, \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
+            \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
+            \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
 
@@ -1693,6 +1751,578 @@ sub AppointmentSeenSet {
     $CacheObject->CleanUp(
         Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
     );
+
+    return 1;
+}
+
+=item AppointmentUpcomingGet()
+
+Get appointment data for upcoming appointment start or end.
+
+    my @UpcomingAppointments = $AppointmentObject->AppointmentUpcomingGet(
+        Timestamp => '2016-08-02 03:59:00', # get appointments for the related notification timestamp
+    );
+
+returns:
+
+    Appointment data of AppointmentGet().
+
+=cut
+
+sub AppointmentUpcomingGet {
+    my ( $Self, %Param ) = @_;
+
+    # needed objects
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # get local calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # get current timestamp
+    my $CurrentTimestamp;
+
+    # create needed sql query based on the current or a given timestamp
+    my $SQL = 'SELECT id, parent_id, calendar_id, unique_id FROM calendar_appointment ';
+
+    if ( $Param{Timestamp} ) {
+
+        $CurrentTimestamp = $Param{Timestamp};
+        $SQL .= "WHERE DATE(notify_time) = DATE(?) ";
+    }
+    else {
+
+        $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
+        $SQL .= "WHERE DATE(notify_time) >= DATE(?) ";
+    }
+
+    $SQL .= 'ORDER BY notify_time ASC';
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => [ \$CurrentTimestamp ],
+    );
+
+    my @ResultRaw;
+
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+
+        my %UpcomingAppointment;
+
+        $UpcomingAppointment{AppointmentID} = $Row[0];
+        $UpcomingAppointment{ParentID}      = $Row[1];
+        $UpcomingAppointment{CalendarID}    = $Row[2];
+        $UpcomingAppointment{UniqueID}      = $Row[3];
+
+        push @ResultRaw, \%UpcomingAppointment;
+    }
+
+    my @Results;
+
+    APPOINTMENTDATA:
+    for my $AppointmentData (@ResultRaw) {
+
+        next APPOINTMENTDATA if !IsHashRefWithData($AppointmentData);
+        next APPOINTMENTDATA if !$AppointmentData->{CalendarID};
+        next APPOINTMENTDATA if !$AppointmentData->{AppointmentID};
+
+        my %Appointment = $Self->AppointmentGet( %{$AppointmentData} );
+
+        push @Results, \%Appointment;
+    }
+
+    return @Results;
+}
+
+=item _AppointmentFutureTasksDelete()
+
+Delete all calendar appointment future tasks.
+
+    my $Success = $AppointmentObject->_AppointmentFutureTasksDelete();
+
+returns:
+
+    True if future task deletion was successful, otherwise false.
+
+=cut
+
+sub _AppointmentFutureTasksDelete {
+    my ( $Self, %Param ) = @_;
+
+    # get a local scheduler db object
+    my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+
+    # get a list of already stored future tasks
+    my @FutureTaskList = $SchedulerDBObject->FutureTaskList(
+        Type => 'CalendarAppointment',
+    );
+
+    # flush obsolete future tasks
+    if ( IsArrayRefWithData( \@FutureTaskList ) ) {
+
+        FUTURETASK:
+        for my $FutureTask (@FutureTaskList) {
+
+            next FUTURETASK if !$FutureTask;
+            next FUTURETASK if !IsHashRefWithData($FutureTask);
+
+            my $Success = $SchedulerDBObject->FutureTaskDelete(
+                TaskID => $FutureTask->{TaskID},
+            );
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Could not delete future task with id $FutureTask->{TaskID}!",
+                );
+                return;
+            }
+        }
+    }
+
+    return 1;
+}
+
+=item AppointmentFutureTasksUpdate()
+
+Update OTRS daemon future task list for upcoming appointments.
+
+    my $Success = $AppointmentObject->AppointmentFutureTasksUpdate();
+
+returns:
+
+    True if future task update was successful, otherwise false.
+
+=cut
+
+sub AppointmentFutureTasksUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # get appointment data for upcoming appointments
+    my @UpcomingAppointments = $Self->AppointmentUpcomingGet();
+
+    # check for no upcoming appointments
+    if ( !IsArrayRefWithData( \@UpcomingAppointments ) ) {
+
+        # flush obsolete future tasks
+        my $Success = $Self->_AppointmentFutureTasksDelete();
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Could not delete appointment future tasks!',
+            );
+            return;
+        }
+
+        return 1;
+    }
+
+    # get a local scheduler db object
+    my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+
+    # get a list of already stored future tasks
+    my @FutureTaskList = $SchedulerDBObject->FutureTaskList(
+        Type => 'CalendarAppointment',
+    );
+
+    # check for invalid task count (just one task max allowed)
+    if ( scalar @FutureTaskList > 1 ) {
+
+        # flush obsolete future tasks
+        my $Success = $Self->_AppointmentFutureTasksDelete();
+
+        if ( !$Success ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'Could not delete appointment future tasks!',
+            );
+            return;
+        }
+    }
+
+    # check if it is needed to update the future task list
+    if ( IsArrayRefWithData( \@FutureTaskList ) ) {
+
+        # get a local calendar helper object
+        my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+        my $UpdateNeeded = 0;
+
+        FUTURETASK:
+        for my $FutureTask (@FutureTaskList) {
+
+            if (
+                !IsHashRefWithData($FutureTask)
+                || !$FutureTask->{TaskID}
+                || !$FutureTask->{ExecutionTime}
+                )
+            {
+                $UpdateNeeded = 1;
+                last FUTURETASK;
+            }
+
+            # get the stored future task
+            my %FutureTaskData = $SchedulerDBObject->FutureTaskGet(
+                TaskID => $FutureTask->{TaskID},
+            );
+
+            if ( !IsHashRefWithData( \%FutureTaskData ) ) {
+                $UpdateNeeded = 1;
+                last FUTURETASK;
+            }
+
+            # get unix timestamps of stored and upcoming times to compare
+            my $FutureTaskTime = $CalendarHelperObject->SystemTimeGet(
+                String => $FutureTaskData{Data}->{NotifyTime},
+            );
+            my $UpcomingAppointmentTime = $CalendarHelperObject->SystemTimeGet(
+                String => $UpcomingAppointments[0]->{NotificationDate},
+            );
+
+            # do nothing if the upcoming notification time equals the stored value
+            if ( $UpcomingAppointmentTime != $FutureTaskTime ) {
+                $UpdateNeeded = 1;
+                last FUTURETASK;
+            }
+        }
+
+        if ($UpdateNeeded) {
+
+            # flush obsolete future tasks
+            my $Success = $Self->_AppointmentFutureTasksDelete();
+
+            if ( !$Success ) {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => 'Could not delete appointment future tasks!',
+                );
+                return;
+            }
+        }
+        else {
+            return 1;
+        }
+    }
+
+    # schedule new future tasks for notification actions
+    my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
+        ExecutionTime => $UpcomingAppointments[0]->{NotificationDate},
+        Type          => 'CalendarAppointment',
+        Data          => {
+            AppointmentID => $UpcomingAppointments[0]->{AppointmentID},
+            ParentID      => $UpcomingAppointments[0]->{ParentID},
+            CalendarID    => $UpcomingAppointments[0]->{CalendarID},
+            NotifyTime    => $UpcomingAppointments[0]->{NotificationDate},
+        },
+    );
+
+    if ( !$TaskID ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message =>
+                "Could not schedule future task for AppointmentID $UpcomingAppointments[0]->{AppointmentID}!",
+        );
+        return;
+    }
+
+    return 1;
+}
+
+=item _AppointmentNotificationPrepare()
+
+Prepare appointment notification data.
+
+    my $Success = $AppointmentObject->_AppointmentNotificationPrepare();
+
+returns:
+
+    True if preparation was successful, otherwise false.
+
+=cut
+
+sub _AppointmentNotificationPrepare {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Data)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # reset notification data if needed
+    if ( !$Param{Data}->{NotificationTemplate} ) {
+
+        for my $PossibleParam (
+            qw(
+            NotificationDate NotificationTemplate NotificationCustom NotificationCustomRelativeUnitCount
+            NotificationCustomRelativeUnit NotificationCustomRelativePointOfTime NotificationCustomDateTime
+            )
+            )
+        {
+            $Param{Data}->{$PossibleParam} = undef;
+        }
+    }
+
+    # prepare possible notification params
+    for my $PossibleParam (
+        qw(
+        NotificationTemplate NotificationCustom NotificationCustomRelativeUnit
+        NotificationCustomRelativePointOfTime
+        )
+        )
+    {
+        $Param{Data}->{$PossibleParam} ||= '';
+    }
+
+    # special check for relative unit count as it can be zero
+    # (empty and negative values will be treated as zero to avoid errors)
+    if (
+        !IsNumber( $Param{Data}->{NotificationCustomRelativeUnitCount} )
+        || $Param{Data}->{NotificationCustomRelativeUnitCount} <= 0
+        )
+    {
+        $Param{Data}->{NotificationCustomRelativeUnitCount} = 0;
+    }
+
+    # set empty datetime strings to undef
+    for my $PossibleParam (qw(NotificationDate NotificationCustomDateTime)) {
+        $Param{Data}->{$PossibleParam} ||= undef;
+    }
+
+    # prepare custom datetime string
+    if (
+        IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
+        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
+        )
+    {
+        $Param{Data}->{NotificationCustomDateTime} =
+            $Param{Data}->{NotificationCustomDateTimeYear}
+            . '-'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
+            . '-'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
+            . ' '
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
+            . ':'
+            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
+            . ':00';
+    }
+
+    return if !$Param{Data}->{NotificationTemplate};
+
+    # get a local calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # --------------
+    # template Start
+    # --------------
+    if ( $Param{Data}->{NotificationTemplate} eq 'Start' ) {
+
+        # setup the appointment start date as notification date
+        $Param{Data}->{NotificationDate} = $Param{Data}->{StartTime};
+    }
+
+    # --------------------------
+    # template time before start
+    # --------------------------
+    elsif (
+        $Param{Data}->{NotificationTemplate} ne 'Custom'
+        && IsNumber( $Param{Data}->{NotificationTemplate} )
+        && $Param{Data}->{NotificationTemplate} > 0
+        )
+    {
+
+        return if !IsNumber( $Param{Data}->{NotificationTemplate} );
+
+        # offset template (before start datetime) used
+        my $Offset = $Param{Data}->{NotificationTemplate};
+
+        # get a unix timestamp of appointment start time
+        my $StartLocalTime = $CalendarHelperObject->SystemTimeGet(
+            String => $Param{Data}->{StartTime},
+        );
+
+        # save the start time - offset as new notification datetime string
+        $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+            SystemTime => ( $StartLocalTime - $Offset ),
+        );
+    }
+
+    # ---------------
+    # template Custom
+    # ---------------
+    else {
+
+        # compute date of relative input
+        if ( $Param{Data}->{NotificationCustomRelativeInput} ) {
+
+            $Param{Data}->{NotificationCustom} = 'relative';
+
+            my $CustomUnitCount = $Param{Data}->{NotificationCustomRelativeUnitCount};
+            my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
+            my $CustomUnitPoint = $Param{Data}->{NotificationCustomRelativePointOfTime};
+
+            # setup the count to compute for the offset
+            my %UnitOffsetCompute = (
+                minutes => 60,
+                hours   => 3600,
+                days    => 86400,
+            );
+
+            my $NotificationLocalTime;
+
+            # compute from start time
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'afterstart' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Data}->{StartTime},
+                );
+            }
+
+            # compute from end time
+            elsif ( $CustomUnitPoint eq 'beforeend' || $CustomUnitPoint eq 'afterend' ) {
+
+                $NotificationLocalTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $Param{Data}->{EndTime},
+                );
+            }
+
+            # not supported point of time
+            else {
+                return;
+            }
+
+            # compute the offset to be used
+            my $Offset = ( $CustomUnitCount * $UnitOffsetCompute{$CustomUnit} );
+
+            # save the newly computed notification datetime string
+            if ( $CustomUnitPoint eq 'beforestart' || $CustomUnitPoint eq 'beforeend' ) {
+                $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime - $Offset ),
+                );
+            }
+            else {
+                $Param{Data}->{NotificationDate} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => ( $NotificationLocalTime + $Offset ),
+                );
+            }
+        }
+
+        # save date time input
+        elsif ( $Param{Data}->{NotificationCustomDateTimeInput} ) {
+
+            $Param{Data}->{NotificationCustom} = 'datetime';
+
+            # validation
+            if (
+                !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
+                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
+                )
+            {
+                return;
+            }
+
+            # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
+            $Param{Data}->{NotificationDate} =
+                $Param{Data}->{NotificationCustomDateTimeYear}
+                . '-'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
+                . '-'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
+                . ' '
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
+                . ':'
+                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
+                . ':00';
+        }
+    }
+
+    if ( !IsStringWithData( $Param{Data}->{NotificationDate} ) ) {
+        $Param{Data}->{NotificationDate} = undef;
+    }
+
+    if ( !IsStringWithData( $Param{Data}->{NotificationCustomDateTime} ) ) {
+        $Param{Data}->{NotificationCustomDateTime} = undef;
+    }
+
+    return 1;
+}
+
+=item AppointmentNotification()
+
+Will be triggered by the OTRS daemon to fire events for appointments,
+that reaches it's reminder (notification) time.
+
+    my $Success = $AppointmentObject->AppointmentNotification();
+
+returns:
+
+    True if notify action was successful, otherwise false.
+
+=cut
+
+sub AppointmentNotification {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(NotifyTime)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get appointments for the related notification timestamp
+    my @UpcomingAppointments = $Self->AppointmentUpcomingGet(
+        Timestamp => $Param{NotifyTime},
+    );
+
+    return if !IsArrayRefWithData( \@UpcomingAppointments );
+
+    UPCOMINGAPPOINTMENT:
+    for my $UpcomingAppointment (@UpcomingAppointments) {
+
+        next UPCOMINGAPPOINTMENT if !$UpcomingAppointment;
+        next UPCOMINGAPPOINTMENT if !IsHashRefWithData($UpcomingAppointment);
+        next UPCOMINGAPPOINTMENT if !$UpcomingAppointment->{AppointmentID};
+
+        # fire event
+        $Self->EventHandler(
+            Event => 'AppointmentNotification',
+            Data  => {
+                AppointmentID => $UpcomingAppointment->{AppointmentID},
+            },
+        );
+    }
+
+    # sleep at least 1 second to make sure the timestamp doesn't
+    # equals the last one for update upcoming future tasks
+    sleep 1;
+
+    my $Success = $Self->AppointmentFutureTasksUpdate();
+
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Could not update appointment future tasks!',
+        );
+        return;
+    }
 
     return 1;
 }
