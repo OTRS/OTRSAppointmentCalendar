@@ -1315,25 +1315,6 @@ sub AppointmentUpdate {
         Seen          => 0,
     );
 
-    # handle notification entries
-    if ( $Param{NotificationTime} ) {
-
-        my $Success = $Self->AppointmentNotificationDelete(
-            %Param,
-        );
-
-        $Success = $Self->_AppointmentNotificationCreate(
-            %Param,
-        );
-
-        if ( !$Success ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Could not update appointment notification for appointment id '$Param{AppointmentID}'!",
-            );
-        }
-    }
-
     # delete cache
     $CacheObject->Delete(
         Type => $Self->{CacheType},
@@ -1447,18 +1428,6 @@ sub AppointmentDelete {
             Message  => 'Recurring appointments couldn\'t be deleted!',
         );
         return;
-    }
-
-    # handle notification entries
-    my $Success = $Self->AppointmentNotificationDelete(
-        AppointmentID => $Param{AppointmentID},
-    );
-
-    if ( !$Success ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "Could not delete appointment notification for appointment id '$Param{AppointmentID}'!",
-        );
     }
 
     # delete appointment
@@ -1790,7 +1759,7 @@ sub AppointmentSeenSet {
 
 Get appointment data for upcoming appointment start or end.
 
-    my %AppointmentData = $AppointmentObject->AppointmentUpcomingGet(
+    my @UpcomingAppointments = $AppointmentObject->AppointmentUpcomingGet(
         Timestamp => '2016-08-02 03:59:00', # get appointments for the related notification timestamp
     );
 
@@ -1810,13 +1779,23 @@ sub AppointmentUpcomingGet {
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     # get current timestamp
-    my $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
+    my $CurrentTimestamp;
 
-    my $SQL = "
-        SELECT id, parent_id, calendar_id, unique_id
-        FROM calendar_appointment
-        WHERE DATE(notify_time) >= DATE(?)
-        ORDER BY notify_time ASC";
+    # create needed sql query based on the current or a given timestamp
+    my $SQL = 'SELECT id, parent_id, calendar_id, unique_id FROM calendar_appointment ';
+
+    if ( $Param{Timestamp} ) {
+
+        $CurrentTimestamp = $Param{Timestamp};
+        $SQL .= "WHERE DATE(notify_time) = DATE(?) ";
+    }
+    else {
+
+        $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
+        $SQL .= "WHERE DATE(notify_time) >= DATE(?) ";
+    }
+
+    $SQL .= 'ORDER BY notify_time ASC';
 
     # db query
     return if !$DBObject->Prepare(
@@ -1919,7 +1898,7 @@ returns:
 sub AppointmentFutureTasksUpdate {
     my ( $Self, %Param ) = @_;
 
-    # get appointment data for upcoming appointment start and end
+    # get appointment data for upcoming appointments
     my @UpcomingAppointments = $Self->AppointmentUpcomingGet();
 
     # check for no upcoming appointments
@@ -2283,48 +2262,67 @@ sub _AppointmentNotificationPrepare {
 
 =item AppointmentNotification()
 
-Get the next upcoming appointment data.
+Will be triggered by the OTRS daemon to fire events for appointments,
+that reaches it's reminder (notification) time.
 
     my $Success = $AppointmentObject->AppointmentNotification();
 
 returns:
 
-    True if future task update was successful, otherwise false.
+    True if notify action was successful, otherwise false.
 
 =cut
 
 sub AppointmentNotification {
     my ( $Self, %Param ) = @_;
 
-    return 1;
-}
+    # check needed stuff
+    for my $Needed (qw(NotifyTime)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
 
-=begin Internal:
+    # get appointments for the related notification timestamp
+    my @UpcomingAppointments = $Self->AppointmentUpcomingGet(
+        Timestamp => $Param{NotifyTime},
+    );
 
-=cut
+    return if !IsArrayRefWithData( \@UpcomingAppointments );
 
-sub _AppointmentNotificationGet {
-    my ( $Self, %Param ) = @_;
+    UPCOMINGAPPOINTMENT:
+    for my $UpcomingAppointment (@UpcomingAppointments) {
 
-    return 1;
-}
+        next UPCOMINGAPPOINTMENT if !$UpcomingAppointment;
+        next UPCOMINGAPPOINTMENT if !IsHashRefWithData($UpcomingAppointment);
+        next UPCOMINGAPPOINTMENT if !$UpcomingAppointment->{AppointmentID};
 
-=begin Internal:
+        # fire event
+        $Self->EventHandler(
+            Event => 'AppointmentNotification',
+            Data  => {
+                AppointmentID => $UpcomingAppointment->{AppointmentID},
+            },
+        );
+    }
 
-=cut
+    # sleep at least 1 second to make sure the timestamp doesn't
+    # equals the last one for update upcoming future tasks
+    sleep 1;
 
-sub _AppointmentNotificationCreate {
-    my ( $Self, %Param ) = @_;
+    my $Success = $Self->AppointmentFutureTasksUpdate();
 
-    return 1;
-}
-
-=begin Internal:
-
-=cut
-
-sub AppointmentNotificationDelete {
-    my ( $Self, %Param ) = @_;
+    if ( !$Success ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Could not update appointment future tasks!',
+        );
+        return;
+    }
 
     return 1;
 }
