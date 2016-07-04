@@ -142,6 +142,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             slotDuration: '00:30:00',
             forceEventDuration: true,
             nowIndicator: true,
+            timezone: 'local',
             resourceAreaWidth: '21%',
             views: {
                 month: {
@@ -771,14 +772,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 Data,
                 function (Response) {
                     if (Response.Success) {
-                        if (
-                            Data.Recurring === '1'
-                            || AppointmentData.CalEvent.allDay
-                            || AppointmentData.CalEvent.resourceId
-                            )
-                        {
-                            $('#calendar').fullCalendar('refetchEvents');
-                        }
+                        $('#calendar').fullCalendar('refetchEvents');
                     } else {
                         AppointmentData.RevertFunc();
                     }

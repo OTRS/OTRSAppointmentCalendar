@@ -8,8 +8,6 @@
 
 package Kernel::Modules::AgentAppointmentEdit;
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 use strict;
 use warnings;
 
@@ -118,16 +116,14 @@ sub Run {
             }
         }
 
-        # get user timezone offset
-        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-            UserID => $Self->{UserID},
-        );
-
         # define year boundaries
         my ( %YearPeriodPast, %YearPeriodFuture );
         for my $Field (qw (Start End RecurrenceUntil)) {
             $YearPeriodPast{$Field} = $YearPeriodFuture{$Field} = 5;
         }
+
+        # assume we are creating new appointment
+        my $CreateMode = 1;
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -149,23 +145,21 @@ sub Run {
                 );
             }
 
+            # we are in edit mode
+            else {
+                $CreateMode = 0;
+            }
+
             # check permissions
             $Permissions = $CalendarObject->CalendarPermissionGet(
                 CalendarID => $Appointment{CalendarID},
                 UserID     => $Self->{UserID},
             );
 
-            $Appointment{TimezoneID} = $Appointment{TimezoneID} ? $Appointment{TimezoneID} : 0;
-
             # get start time components
             my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
-
-            if ( !$Appointment{AllDay} ) {
-                $StartTime -= $Appointment{TimezoneID} * 3600;
-                $StartTime += $Offset * 3600;
-            }
 
             (
                 my $S, $Appointment{StartMinute},
@@ -178,13 +172,8 @@ sub Run {
                 String => $Appointment{EndTime},
             );
 
-            if ( !$Appointment{AllDay} ) {
-                $EndTime -= $Appointment{TimezoneID} * 3600;
-                $EndTime += $Offset * 3600;
-            }
-
             # end times for all day appointments are inclusive, subtract whole day
-            else {
+            if ( $Appointment{AllDay} ) {
                 $EndTime -= 86400;
                 if ( $EndTime < $StartTime ) {
                     $EndTime = $StartTime;
@@ -201,8 +190,7 @@ sub Run {
                 my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
                 );
-                $RecurrenceUntil -= $Appointment{TimezoneID} * 3600;
-                $RecurrenceUntil += $Offset * 3600;
+
                 (
                     $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
@@ -233,8 +221,7 @@ sub Run {
                 if ( $RecurrenceType eq 'CustomWeekly' ) {
 
                     my $DayOffset = $Self->_DayOffsetGet(
-                        Time     => $Appointment{StartTime},
-                        Timezone => $Appointment{TimezoneID},
+                        Time => $Appointment{StartTime},
                     );
 
                     if ( defined $GetParam{Days} ) {
@@ -259,8 +246,7 @@ sub Run {
                 elsif ( $RecurrenceType eq 'CustomMonthly' ) {
 
                     my $DayOffset = $Self->_DayOffsetGet(
-                        Time     => $Appointment{StartTime},
-                        Timezone => $Appointment{TimezoneID},
+                        Time => $Appointment{StartTime},
                     );
 
                     if ( defined $GetParam{MonthDays} ) {
@@ -284,8 +270,7 @@ sub Run {
                 elsif ( $RecurrenceType eq 'CustomYearly' ) {
 
                     my $DayOffset = $Self->_DayOffsetGet(
-                        Time     => $Appointment{StartTime},
-                        Timezone => $Appointment{TimezoneID},
+                        Time => $Appointment{StartTime},
                     );
 
                     if ( defined $GetParam{Months} ) {
@@ -407,9 +392,7 @@ sub Run {
             Validate                 => 1,
             YearPeriodPast           => $YearPeriodPast{Start},
             YearPeriodFuture         => $YearPeriodFuture{Start},
-
-            # we are calculating this locally
-            OverrideTimeZone => 1,
+            OverrideTimeZone         => $CreateMode,
         );
 
         # end date string
@@ -424,9 +407,7 @@ sub Run {
             Validate                => 1,
             YearPeriodPast          => $YearPeriodPast{End},
             YearPeriodFuture        => $YearPeriodFuture{End},
-
-            # we are calculating this locally
-            OverrideTimeZone => 1,
+            OverrideTimeZone        => $CreateMode,
         );
 
         # get main object
@@ -721,9 +702,7 @@ sub Run {
             Validate                => 1,
             YearPeriodPast          => $YearPeriodPast{RecurrenceUntil},
             YearPeriodFuture        => $YearPeriodFuture{RecurrenceUntil},
-
-            # we are calculating this locally
-            OverrideTimeZone => 1,
+            OverrideTimeZone        => $CreateMode,
         );
 
         my $MinutesBefore = $LayoutObject->{LanguageObject}->Translate('minutes before');
@@ -1060,6 +1039,11 @@ sub Run {
             }
         }
 
+        # get user timezone offset
+        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+            UserID => $Self->{UserID},
+        );
+
         if ( $GetParam{AllDay} ) {
             $GetParam{StartTime} = sprintf(
                 "%04d-%02d-%02d 00:00:00",
@@ -1117,6 +1101,24 @@ sub Run {
                 "%04d-%02d-%02d %02d:%02d:00",
                 $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
                 $GetParam{EndHour}, $GetParam{EndMinute}
+            );
+
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{StartTime},
+            );
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{EndTime},
+            );
+
+            # convert to UTC
+            $StartTime -= $Offset * 3600;
+            $EndTime   -= $Offset * 3600;
+
+            $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $StartTime,
+            );
+            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $EndTime,
             );
         }
 
@@ -1264,10 +1266,7 @@ sub Run {
             }
         }
 
-        # set required parameters
-        $GetParam{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-            UserID => $Self->{UserID},
-        );
+        # pass current user ID
         $GetParam{UserID} = $Self->{UserID};
 
         if (%Appointment) {
@@ -1502,12 +1501,11 @@ sub _DayOffsetGet {
             return;
         }
     }
-    $Param{Timezone} //= 0;
 
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     # get user timezone offset
-    my $UserTimezone = $CalendarHelperObject->TimezoneOffsetGet(
+    my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
         UserID => $Self->{UserID},
     );
 
@@ -1522,9 +1520,7 @@ sub _DayOffsetGet {
     );
 
     # calculate destination time (according to user timezone)
-    my $DestinationTimeSystem = $OriginalTimeSystem
-        - $Param{Timezone} * 3600
-        + $UserTimezone * 3600;
+    my $DestinationTimeSystem = $OriginalTimeSystem + $Offset * 3600;
 
     # get destination date info
     my @DestinationDateInfo = $CalendarHelperObject->DateGet(
