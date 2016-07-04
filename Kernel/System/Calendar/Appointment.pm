@@ -90,7 +90,6 @@ creates a new appointment.
         StartTime             => '2016-01-01 16:00:00',                   # (required)
         EndTime               => '2016-01-01 17:00:00',                   # (required)
         AllDay                => 0,                                       # (optional) default 0
-        TimezoneID            => 1,                                       # (optional) Timezone - it can be 0 (UTC)
         TeamID                => [ 1 ],                                   # (optional) must be an array reference if supplied
         ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
@@ -244,15 +243,6 @@ sub AppointmentCreate {
         return;
     }
 
-    # check timezone
-    if ( !defined $Param{TimezoneID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "TimezoneID not defined!",
-        );
-        return;
-    }
-
     # check if array refs
     my %Arrays;
     for my $Parameter (
@@ -338,23 +328,23 @@ sub AppointmentCreate {
     }
 
     push @Bind, \$Param{CalendarID}, \$Param{UniqueID}, \$Param{Title}, \$Param{Description},
-        \$Param{Location},   \$Param{StartTime}, \$Param{EndTime},     \$Param{AllDay},
-        \$Param{TimezoneID}, \$Arrays{TeamID},   \$Arrays{ResourceID}, \$Param{Recurring},
-        \$Param{RecurrenceType},     \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount},
-        \$Param{RecurrenceInterval}, \$Param{RecurrenceUntil},      \$Param{RecurrenceID},
-        \$Arrays{RecurrenceExclude}, \$Param{NotificationDate},     \$Param{NotificationTemplate},
-        \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
-        \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
-        \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{UserID};
+        \$Param{Location}, \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay},
+        \$Arrays{TeamID}, \$Arrays{ResourceID}, \$Param{Recurring}, \$Param{RecurrenceType},
+        \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
+        \$Param{RecurrenceUntil}, \$Param{RecurrenceID}, \$Arrays{RecurrenceExclude},
+        \$Param{NotificationDate}, \$Param{NotificationTemplate}, \$Param{NotificationCustom},
+        \$Param{NotificationCustomRelativeUnitCount}, \$Param{NotificationCustomRelativeUnit},
+        \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
+        \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
             ($ParentIDCol calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
-            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
-            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
+            recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
+            notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
+            notify_custom_date, create_time, create_by, change_time, change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             current_timestamp, ?, current_timestamp, ?)
     ";
 
@@ -451,7 +441,6 @@ Result => 'HASH':
             Location      => 'Straubing',
             StartTime     => '2016-01-01 16:00:00',
             EndTime       => '2016-01-01 17:00:00',
-            TimezoneID    => 1,
             AllDay        => 0,
             Recurring     => 1,                                           # for recurring (parent) appointments only
         },
@@ -465,7 +454,6 @@ Result => 'HASH':
             Location      => 'Straubing',
             StartTime     => '2016-01-02 16:00:00',
             EndTime       => '2016-01-02 17:00:00',
-            TimezoneID    => 1,
             TeamID        => [ 1 ],
             ResourceID    => [ 1, 3 ],
             AllDay        => 0,
@@ -549,7 +537,6 @@ sub AppointmentList {
             );
             return;
         }
-        $StartTimeSystem -= 24 * 60 * 60;    # allow 24h because of timezone differences
         $Param{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
             SystemTime => $StartTimeSystem,
         );
@@ -565,7 +552,6 @@ sub AppointmentList {
             );
             return;
         }
-        $EndTimeSystem += 24 * 60 * 60;    # allow 24h because of timezone differences
         $Param{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
             SystemTime => $EndTimeSystem,
         );
@@ -573,9 +559,9 @@ sub AppointmentList {
 
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, timezone_id, team_id, resource_id, all_day, recurring, notify_time,
-            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
-            notify_custom_unit_point, notify_custom_date
+            end_time, team_id, resource_id, all_day, recurring, notify_time, notify_template,
+            notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
+            notify_custom_date
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -619,14 +605,14 @@ sub AppointmentList {
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         # team id
-        my @TeamID = split( ',', $Row[10] // '' );
+        my @TeamID = split( ',', $Row[9] // '' );
         if ( $Param{TeamID} ) {
             next ROW if !grep { $_ == $Param{TeamID} } @TeamID;
         }
 
         # resource id
-        $Row[11] = $Row[11] ? $Row[11] : 0;
-        my @ResourceID = $Row[11] =~ /,/ ? split( ',', $Row[11] ) : ( $Row[11] );
+        $Row[10] = $Row[10] ? $Row[10] : 0;
+        my @ResourceID = $Row[10] =~ /,/ ? split( ',', $Row[10] ) : ( $Row[10] );
         if ( $Param{ResourceID} ) {
             next ROW if !grep { $_ == $Param{ResourceID} } @ResourceID;
         }
@@ -641,18 +627,17 @@ sub AppointmentList {
             Location                              => $Row[6],
             StartTime                             => $Row[7],
             EndTime                               => $Row[8],
-            TimezoneID                            => $Row[9],
             TeamID                                => \@TeamID,
             ResourceID                            => \@ResourceID,
-            AllDay                                => $Row[12],
-            Recurring                             => $Row[13],
-            NotificationDate                      => $Row[14] || '',
-            NotificationTemplate                  => $Row[15],
-            NotificationCustom                    => $Row[16],
-            NotificationCustomRelativeUnitCount   => $Row[17],
-            NotificationCustomRelativeUnit        => $Row[18],
-            NotificationCustomRelativePointOfTime => $Row[19],
-            NotificationCustomDateTime            => $Row[20] || '',
+            AllDay                                => $Row[11],
+            Recurring                             => $Row[12],
+            NotificationDate                      => $Row[13] || '',
+            NotificationTemplate                  => $Row[14],
+            NotificationCustom                    => $Row[15],
+            NotificationCustomRelativeUnitCount   => $Row[16],
+            NotificationCustomRelativeUnit        => $Row[17],
+            NotificationCustomRelativePointOfTime => $Row[18],
+            NotificationCustomDateTime            => $Row[19] || '',
         );
         push @Result, \%Appointment;
     }
@@ -888,7 +873,6 @@ returns a hash:
         StartTime           => '2016-01-01 16:00:00',
         EndTime             => '2016-01-01 17:00:00',
         AllDay              => 0,
-        TimezoneID          => 1,
         TeamID              => [ 1 ],
         ResourceID          => [ 1, 3 ],
         Recurring           => 1,
@@ -951,10 +935,10 @@ sub AppointmentGet {
     my @Bind;
     my $SQL = '
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
-            end_time, all_day, timezone_id, team_id, resource_id, recurring, recur_type, recur_freq,
-            recur_count, recur_interval, recur_until, recur_id, recur_exclude, notify_time,
-            notify_template, notify_custom, notify_custom_unit_count, notify_custom_unit,
-            notify_custom_unit_point, notify_custom_date, create_time, create_by, change_time, change_by
+            end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
+            recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
+            notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
+            notify_custom_date, create_time, create_by, change_time, change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -980,16 +964,16 @@ sub AppointmentGet {
     while ( my @Row = $DBObject->FetchrowArray() ) {
 
         # team id
-        my @TeamID = split( ',', $Row[11] // '' );
+        my @TeamID = split( ',', $Row[10] // '' );
 
         # resource id
-        my @ResourceID = split( ',', $Row[12] // '0' );
+        my @ResourceID = split( ',', $Row[11] // '0' );
 
         # recurrence frequency
-        my @RecurrenceFrequency = $Row[15] ? split( ',', $Row[15] ) : undef;
+        my @RecurrenceFrequency = $Row[14] ? split( ',', $Row[14] ) : undef;
 
         # recurrence exclude
-        my @RecurrenceExclude = $Row[20] ? split( ',', $Row[20] ) : undef;
+        my @RecurrenceExclude = $Row[19] ? split( ',', $Row[19] ) : undef;
 
         $Result{AppointmentID}                         = $Row[0];
         $Result{ParentID}                              = $Row[1];
@@ -1001,28 +985,27 @@ sub AppointmentGet {
         $Result{StartTime}                             = $Row[7];
         $Result{EndTime}                               = $Row[8];
         $Result{AllDay}                                = $Row[9];
-        $Result{TimezoneID}                            = $Row[10];
         $Result{TeamID}                                = \@TeamID;
         $Result{ResourceID}                            = \@ResourceID;
-        $Result{Recurring}                             = $Row[13];
-        $Result{RecurrenceType}                        = $Row[14];
+        $Result{Recurring}                             = $Row[12];
+        $Result{RecurrenceType}                        = $Row[13];
         $Result{RecurrenceFrequency}                   = \@RecurrenceFrequency;
-        $Result{RecurrenceCount}                       = $Row[16];
-        $Result{RecurrenceInterval}                    = $Row[17];
-        $Result{RecurrenceUntil}                       = $Row[18];
-        $Result{RecurrenceID}                          = $Row[19];
+        $Result{RecurrenceCount}                       = $Row[15];
+        $Result{RecurrenceInterval}                    = $Row[16];
+        $Result{RecurrenceUntil}                       = $Row[17];
+        $Result{RecurrenceID}                          = $Row[18];
         $Result{RecurrenceExclude}                     = \@RecurrenceExclude;
-        $Result{NotificationDate}                      = $Row[21] || '';
-        $Result{NotificationTemplate}                  = $Row[22];
-        $Result{NotificationCustom}                    = $Row[23];
-        $Result{NotificationCustomRelativeUnitCount}   = $Row[24];
-        $Result{NotificationCustomRelativeUnit}        = $Row[25];
-        $Result{NotificationCustomRelativePointOfTime} = $Row[26];
-        $Result{NotificationCustomDateTime}            = $Row[27] || '';
-        $Result{CreateTime}                            = $Row[28];
-        $Result{CreateBy}                              = $Row[29];
-        $Result{ChangeTime}                            = $Row[30];
-        $Result{ChangeBy}                              = $Row[31];
+        $Result{NotificationDate}                      = $Row[20] || '';
+        $Result{NotificationTemplate}                  = $Row[21];
+        $Result{NotificationCustom}                    = $Row[22];
+        $Result{NotificationCustomRelativeUnitCount}   = $Row[23];
+        $Result{NotificationCustomRelativeUnit}        = $Row[24];
+        $Result{NotificationCustomRelativePointOfTime} = $Row[25];
+        $Result{NotificationCustomDateTime}            = $Row[26] || '';
+        $Result{CreateTime}                            = $Row[27];
+        $Result{CreateBy}                              = $Row[28];
+        $Result{ChangeTime}                            = $Row[29];
+        $Result{ChangeBy}                              = $Row[30];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -1052,7 +1035,6 @@ updates an existing appointment.
         StartTime             => '2016-01-01 16:00:00',                   # (required)
         EndTime               => '2016-01-01 17:00:00',                   # (required)
         AllDay                => 0,                                       # (optional) Default 0
-        TimezoneID            => -2,                                      # (optional) Timezone - it can be 0 (UTC)
         Team                  => 1,                                       # (optional)
         ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
@@ -1180,15 +1162,6 @@ sub AppointmentUpdate {
     # needed objects
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
-    # check timezone
-    if ( !defined $Param{TimezoneID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => "TimezoneID not defined!",
-        );
-        return;
-    }
-
     # check if array refs
     my %Arrays;
     for my $Parameter (
@@ -1299,10 +1272,11 @@ sub AppointmentUpdate {
         UPDATE calendar_appointment
         SET
             calendar_id=?, title=?, description=?, location=?, start_time=?, end_time=?, all_day=?,
-            timezone_id=?, team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?,
-            recur_count=?, recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?,
-            notify_template=?, notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
-            notify_custom_unit_point=?, notify_custom_date=?, change_time=current_timestamp, change_by=?
+            team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?, recur_count=?,
+            recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?, notify_template=?,
+            notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
+            notify_custom_unit_point=?, notify_custom_date=?, change_time=current_timestamp,
+            change_by=?
         WHERE id=?
     ';
 
@@ -1310,14 +1284,15 @@ sub AppointmentUpdate {
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{CalendarID}, \$Param{Title},       \$Param{Description}, \$Param{Location},
-            \$Param{StartTime},  \$Param{EndTime},     \$Param{AllDay},      \$Param{TimezoneID},
-            \$Arrays{TeamID},    \$Arrays{ResourceID}, \$Param{Recurring},   \$Param{RecurrenceType},
+            \$Param{CalendarID}, \$Param{Title}, \$Param{Description}, \$Param{Location},
+            \$Param{StartTime}, \$Param{EndTime}, \$Param{AllDay}, \$Arrays{TeamID},
+            \$Arrays{ResourceID}, \$Param{Recurring}, \$Param{RecurrenceType},
             \$Arrays{RecurrenceFrequency}, \$Param{RecurrenceCount}, \$Param{RecurrenceInterval},
             \$Param{RecurrenceUntil}, \$RecurrenceExclude, \$Param{NotificationDate},
-            \$Param{NotificationTemplate}, \$Param{NotificationCustom}, \$Param{NotificationCustomRelativeUnitCount},
-            \$Param{NotificationCustomRelativeUnit}, \$Param{NotificationCustomRelativePointOfTime},
-            \$Param{NotificationCustomDateTime}, \$Param{UserID}, \$Param{AppointmentID},
+            \$Param{NotificationTemplate}, \$Param{NotificationCustom},
+            \$Param{NotificationCustomRelativeUnitCount}, \$Param{NotificationCustomRelativeUnit},
+            \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
+            \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
 
