@@ -200,17 +200,23 @@ sub Import {
                 }
             }
 
-            my $StartTime = $Properties->{'dtstart'}->[0]->{'value'};
-
-            $Parameters{StartTime} = $Self->_FormatTime(
-                Time => $StartTime,
+            my $StartTimeICal = $Self->_FormatTime(
+                Time => $Properties->{'dtstart'}->[0]->{'value'},
+            );
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $StartTimeICal,
             );
 
             if ($TimezoneID) {
-                $Parameters{TimezoneID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
                 );
+                $StartTime -= $Offset * 3600;
             }
+
+            $Parameters{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $StartTime,
+            );
         }
 
         # get end time
@@ -224,17 +230,28 @@ sub Import {
 
             if ( ref $Properties->{'dtend'}->[0]->{'_parameters'} eq 'HASH' ) {
 
-                # Check timezone
+                # check timezone
                 if ( $Properties->{'dtend'}->[0]->{'_parameters'}->{'TZID'} ) {
                     $TimezoneID = $Properties->{'dtend'}->[0]->{'_parameters'}->{'TZID'};
                 }
             }
 
-            my $EndTime = $Properties->{'dtend'}->[0]->{'value'};
+            my $EndTimeICal = $Self->_FormatTime(
+                Time => $Properties->{'dtend'}->[0]->{'value'},
+            );
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $EndTimeICal,
+            );
 
-            $Parameters{EndTime} = $Self->_FormatTime(
-                Time       => $EndTime,
-                TimezoneID => $TimezoneID,
+            if ($TimezoneID) {
+                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                    TimezoneID => $TimezoneID,
+                );
+                $EndTime -= $Offset * 3600;
+            }
+
+            $Parameters{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $EndTime,
             );
         }
 
@@ -429,11 +446,23 @@ sub Import {
                             }
                         }
 
-                        my $ExcludeTime = $Exclude->{'value'};
+                        my $ExcludeTimeICal = $Self->_FormatTime(
+                            Time => $Exclude->{'value'},
+                        );
 
-                        push @RecurrenceExclude, $Self->_FormatTime(
-                            Time       => $ExcludeTime,
-                            TimezoneID => $TimezoneID,
+                        my $ExcludeTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                            String => $ExcludeTimeICal,
+                        );
+
+                        if ($TimezoneID) {
+                            my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                                TimezoneID => $TimezoneID,
+                            );
+                            $ExcludeTime -= $Offset * 3600;
+                        }
+
+                        push @RecurrenceExclude, $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                            SystemTime => $ExcludeTime,
                         );
                     }
                 }
@@ -544,10 +573,22 @@ sub Import {
                 }
             }
 
-            my $RecurrenceID = $Properties->{'recurrence-id'}->[0]->{'value'};
-            $Parameters{RecurrenceID} = $Self->_FormatTime(
-                Time       => $RecurrenceID,
-                TimezoneID => $TimezoneID,
+            my $RecurrenceIDICal = $Self->_FormatTime(
+                Time => $Properties->{'recurrence-id'}->[0]->{'value'},
+            );
+            my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $RecurrenceIDICal,
+            );
+
+            if ($TimezoneID) {
+                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                    TimezoneID => $TimezoneID,
+                );
+                $RecurrenceID -= $Offset * 3600;
+            }
+
+            $Param{RecurrenceID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $RecurrenceID,
             );
 
             # delete existing overriden occurrence
@@ -590,7 +631,6 @@ sub Import {
                 CalendarID    => $Param{CalendarID},
                 AppointmentID => $Appointment{AppointmentID},
                 UserID        => $Param{UserID},
-                TimezoneID    => 0,
                 %Parameters,
             );
         }
@@ -602,7 +642,6 @@ sub Import {
             $Success = $AppointmentObject->AppointmentCreate(
                 CalendarID => $Param{CalendarID},
                 UserID     => $Param{UserID},
-                TimezoneID => 0,
                 %Parameters,
             );
         }
