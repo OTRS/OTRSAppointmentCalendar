@@ -60,10 +60,7 @@ performs the selected task.
         TaskID   => 123,
         TaskName => 'some name',    # optional
         Data     => {               # appointment id as got from Kernel::System::Calendar::Appointment::AppointmentGet()
-            AppointmentID => 123,
-            ParentID      => 234,
-            CalendarID    => 345,
-            NotifyTime    => '2016-08-02 03:59:00',
+            NotifyTime => '2016-08-02 03:59:00',
         },
     );
 
