@@ -312,13 +312,6 @@ $Selenium->RunTest(
         );
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#EndHour').val();",
-            ),
-            '18',
-            'End time matches',
-        );
-        $Self->Is(
-            $Selenium->execute_script(
                 "return \$('.PluginContainer div a[target=\"_blank\"]').text();"
             ),
             "$TicketNumber Link Ticket $RandomID",

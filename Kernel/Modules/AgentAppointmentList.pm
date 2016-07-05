@@ -6,8 +6,6 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-## nofilter(TidyAll::Plugin::OTRS::Migrations::OTRS6::TimeZoneOffset)
-
 package Kernel::Modules::AgentAppointmentList;
 
 use strict;
@@ -71,6 +69,29 @@ sub Run {
                 }
             }
 
+            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{StartTime},
+            );
+            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                String => $GetParam{EndTime},
+            );
+
+            # get user timezone offset
+            my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                UserID => $Self->{UserID},
+            );
+
+            # convert to UTC
+            $StartTime -= $Offset * 3600;
+            $EndTime   -= $Offset * 3600;
+
+            $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $StartTime,
+            );
+            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                SystemTime => $EndTime,
+            );
+
             # reset empty parameters
             for my $Param ( sort keys %GetParam ) {
                 if ( !$GetParam{$Param} ) {
@@ -80,11 +101,6 @@ sub Run {
 
             my @Appointments = $AppointmentObject->AppointmentList(
                 %GetParam,
-            );
-
-            # get user timezone offset
-            $Self->{UserTimeZone} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-                UserID => $Self->{UserID},
             );
 
             # go through all appointments
@@ -99,15 +115,23 @@ sub Run {
                     $Appointment->{NotificationDate} = '';
                 }
 
+                # formatted date/time strings used in display
+                $Appointment->{StartDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment->{StartTime},
+                    'DateFormat'
+                );
+                $Appointment->{EndDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment->{EndTime},
+                    'DateFormat'
+                );
+
                 # calculate local times
                 if ( !$Appointment->{AllDay} ) {
-                    $Appointment->{TimezoneID} = $Appointment->{TimezoneID} ? $Appointment->{TimezoneID} : 0;
 
                     my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                         String => $Appointment->{StartTime},
                     );
-                    $StartTime -= $Appointment->{TimezoneID} * 3600;
-                    $StartTime += $Self->{UserTimeZone} * 3600;
+                    $StartTime += $Offset * 3600;
                     $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $StartTime,
                     );
@@ -115,8 +139,7 @@ sub Run {
                     my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                         String => $Appointment->{EndTime},
                     );
-                    $EndTime -= $Appointment->{TimezoneID} * 3600;
-                    $EndTime += $Self->{UserTimeZone} * 3600;
+                    $EndTime += $Offset * 3600;
                     $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $EndTime,
                     );
@@ -125,8 +148,7 @@ sub Run {
                         my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
                             String => $Appointment->{RecurrenceUntil},
                         );
-                        $RecurrenceUntil -= $Appointment->{TimezoneID} * 3600;
-                        $RecurrenceUntil += $Self->{UserTimeZone} * 3600;
+                        $RecurrenceUntil += $Offset * 3600;
                         $Appointment->{RecurrenceUntil}
                             = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                             SystemTime => $RecurrenceUntil,
@@ -269,6 +291,16 @@ sub Run {
             if ( !$Seen ) {
                 my %Appointment = $AppointmentObject->AppointmentGet(
                     AppointmentID => $AppointmentID,
+                );
+
+                # formatted date/time strings
+                $Appointment{StartDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment{StartTime},
+                    'DateFormat'
+                );
+                $Appointment{EndDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment{EndTime},
+                    'DateFormat'
                 );
 
                 my @Resources = ();

@@ -91,7 +91,6 @@ my $AppointmentID1 = $AppointmentObject->AppointmentCreate(
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
     EndTime    => '2016-01-01 17:00:00',
-    TimezoneID => 1,
     UserID     => $UserID,
 );
 
@@ -102,11 +101,10 @@ $Self->True(
 
 # no CalendarID
 my $AppointmentID2 = $AppointmentObject->AppointmentCreate(
-    Title      => 'Webinar',
-    StartTime  => '2016-01-01 16:00:00',
-    EndTime    => '2016-01-01 17:00:00',
-    TimezoneID => 1,
-    UserID     => $UserID,
+    Title     => 'Webinar',
+    StartTime => '2016-01-01 16:00:00',
+    EndTime   => '2016-01-01 17:00:00',
+    UserID    => $UserID,
 );
 
 $Self->False(
@@ -119,7 +117,6 @@ my $AppointmentID3 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     StartTime  => '2016-01-01 16:00:00',
     EndTime    => '2016-01-01 17:00:00',
-    TimezoneID => 1,
     UserID     => $UserID,
 );
 
@@ -133,7 +130,6 @@ my $AppointmentID4 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
     EndTime    => '2016-01-01 17:00:00',
-    TimezoneID => 1,
     UserID     => $UserID,
 );
 
@@ -147,7 +143,6 @@ my $AppointmentID5 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
-    TimezoneID => 1,
     UserID     => $UserID,
 );
 
@@ -156,13 +151,12 @@ $Self->False(
     'AppointmentCreate #5',
 );
 
-# no TimezoneID
+# no UserID
 my $AppointmentID6 = $AppointmentObject->AppointmentCreate(
     CalendarID => $Calendar1{CalendarID},
     Title      => 'Webinar',
     StartTime  => '2016-01-01 16:00:00',
     EndTime    => '2016-01-01 17:00:00',
-    UserID     => $UserID,
 );
 
 $Self->False(
@@ -170,21 +164,7 @@ $Self->False(
     'AppointmentCreate #6',
 );
 
-# no UserID
 my $AppointmentID7 = $AppointmentObject->AppointmentCreate(
-    CalendarID => $Calendar1{CalendarID},
-    Title      => 'Webinar',
-    StartTime  => '2016-01-01 16:00:00',
-    EndTime    => '2016-01-01 17:00:00',
-    TimezoneID => 1,
-);
-
-$Self->False(
-    $AppointmentID7,
-    'AppointmentCreate #7',
-);
-
-my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     CalendarID  => $Calendar1{CalendarID},
     Title       => 'Title',
     Description => 'Description',
@@ -192,17 +172,16 @@ my $AppointmentID8 = $AppointmentObject->AppointmentCreate(
     StartTime   => '2016-01-01 16:00:00',
     EndTime     => '2016-01-01 17:00:00',
     AllDay      => 1,
-    TimezoneID  => 0,                        # this must be accepted (UTC)
     UserID      => $UserID,
 );
 $Self->True(
-    $AppointmentID8,
-    'AppointmentCreate #8',
+    $AppointmentID7,
+    'AppointmentCreate #7',
 );
 
 my @Appointments1 = $AppointmentObject->AppointmentList(
     CalendarID => $Calendar1{CalendarID},
-    StartTime  => '2016-01-01 16:00:00',     # Try at this point of time (at this second)
+    StartTime  => '2016-01-01 16:00:00',    # Try at this point of time (at this second)
     EndTime    => '2016-02-01 00:00:00',
 );
 
@@ -2104,7 +2083,6 @@ my $AppointmentIDRec1 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "Daily",
     RecurrenceInterval => 1,                         # once per day
@@ -2125,7 +2103,6 @@ my $AppointmentIDRecPass1 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2018-03-01 16:00:00',
     EndTime            => '2018-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomDaily",
     RecurrenceInterval => 1,
@@ -2146,7 +2123,6 @@ my $AppointmentIDRecFail1 = $AppointmentObject->AppointmentCreate(
     StartTime   => '2016-03-01 16:00:00',
     EndTime     => '2016-03-01 17:00:00',
     AllDay      => 1,
-    TimezoneID  => 1,
     Recurring   => 1,
 
     # RecurrenceType     => "Daily",
@@ -2168,7 +2144,6 @@ my $AppointmentIDRecFail2 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "WrongDaily",              # WrongDaily is not supported
     RecurrenceInterval => 1,
@@ -2189,7 +2164,6 @@ my $AppointmentIDRecFail3 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomWeekly",
     RecurrenceInterval => 1,
@@ -2210,7 +2184,6 @@ my $AppointmentIDRecFail4 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomMonthly",
     RecurrenceInterval => 1,
@@ -2231,7 +2204,6 @@ my $AppointmentIDRecFail5 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomYearly",
     RecurrenceInterval => 1,
@@ -2252,7 +2224,6 @@ my $AppointmentIDRec2 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-10-01 16:00:00',
     EndTime            => '2016-10-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "Weekly",
     RecurrenceInterval => 1,                                # each week
@@ -2273,7 +2244,6 @@ my $AppointmentIDRec3 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-10-07 16:00:00',
     EndTime            => '2016-10-07 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "Monthly",
     RecurrenceInterval => 1,                                 # each month
@@ -2294,7 +2264,6 @@ my $AppointmentIDRec4 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-10-10 16:00:00',
     EndTime            => '2016-10-10 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "Yearly",
     RecurrenceInterval => 1,                                 # each year
@@ -2315,7 +2284,6 @@ my $AppointmentIDRec5 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2017-01-01 16:00:00',
     EndTime            => '2016-01-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => 'CustomDaily',
     RecurrenceInterval => 2,
@@ -2336,7 +2304,6 @@ my $AppointmentIDRec6 = $AppointmentObject->AppointmentCreate(
     StartTime           => '2016-05-04 16:00:00',                   # wednesday
     EndTime             => '2016-05-04 17:00:00',
     AllDay              => 1,
-    TimezoneID          => 1,
     Recurring           => 1,
     RecurrenceType      => 'CustomWeekly',
     RecurrenceInterval  => 2,                                       # each 2nd
@@ -2358,7 +2325,6 @@ my $AppointmentIDRec7 = $AppointmentObject->AppointmentCreate(
     StartTime           => '2016-07-05 16:00:00',
     EndTime             => '2016-07-05 17:00:00',
     AllDay              => 1,
-    TimezoneID          => 1,
     Recurring           => 1,
     RecurrenceType      => "CustomMonthly",
     RecurrenceInterval  => 2,                                        # each 2 months
@@ -2380,7 +2346,6 @@ my $AppointmentIDRec8 = $AppointmentObject->AppointmentCreate(
     StartTime           => '2016-01-05 16:00:00',
     EndTime             => '2016-01-05 17:00:00',
     AllDay              => 1,
-    TimezoneID          => 1,
     Recurring           => 1,
     RecurrenceType      => "CustomYearly",
     RecurrenceInterval  => 2,                                       # each 2 months
@@ -2402,7 +2367,6 @@ my $AppointmentIDRec9 = $AppointmentObject->AppointmentCreate(
     StartTime           => '2016-09-01 00:00:00',
     EndTime             => '2016-09-02 00:00:00',
     AllDay              => 1,
-    TimezoneID          => 1,
     Recurring           => 1,
     RecurrenceType      => "CustomWeekly",
     RecurrenceInterval  => 2,                                  # each 2 weeks
@@ -2424,7 +2388,7 @@ my @AppointmentsRec1 = $AppointmentObject->AppointmentList(
 
 $Self->Is(
     scalar @AppointmentsRec1,
-    6,
+    5,
     'AppointmentList() - # rec1 ok',
 );
 
@@ -2438,7 +2402,6 @@ my $SuccessRec1 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-02 16:00:00',
     EndTime            => '2016-03-02 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomDaily",
     RecurrenceInterval => 2,                          # each 2 days
@@ -2558,11 +2521,11 @@ for ( my $Counter = 0; $Counter < scalar @AppointmentRec5Expected; $Counter++ ) 
 }
 
 my %AppointmentGet1 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
 );
 
 my %AppointmentExpected1 = (
-    AppointmentID      => $AppointmentID8,
+    AppointmentID      => $AppointmentID7,
     CalendarID         => $Calendar1{CalendarID},
     Title              => 'Title',
     Description        => 'Description',
@@ -2570,7 +2533,6 @@ my %AppointmentExpected1 = (
     StartTime          => '2016-01-01 16:00:00',
     EndTime            => '2016-01-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 0,
     RecurrenceInterval => 1,
     CreateBy           => $UserID,
     ChangeBy           => $UserID,
@@ -2624,7 +2586,7 @@ my %Calendar2 = $CalendarObject->CalendarCreate(
 );
 
 my $Update1 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID      => $AppointmentID8,
+    AppointmentID      => $AppointmentID7,
     CalendarID         => $Calendar2{CalendarID},
     Title              => 'Webinar title',
     Description        => 'Description details',
@@ -2632,7 +2594,6 @@ my $Update1 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-01-02 16:00:00',
     EndTime            => '2016-01-02 17:00:00',
     AllDay             => 0,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => 'Daily',
     RecurrenceInterval => 2,
@@ -2645,11 +2606,11 @@ $Self->True(
 );
 
 my %AppointmentGet4 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
 );
 
 my %AppointmentExpected4 = (
-    AppointmentID      => $AppointmentID8,
+    AppointmentID      => $AppointmentID7,
     CalendarID         => $Calendar2{CalendarID},
     Title              => 'Webinar title',
     Description        => 'Description details',
@@ -2657,7 +2618,6 @@ my %AppointmentExpected4 = (
     StartTime          => '2016-01-02 16:00:00',
     EndTime            => '2016-01-02 17:00:00',
     AllDay             => 0,
-    TimezoneID         => 1,
     RecurrenceInterval => 2,
     RecurrenceCount    => 2,
     CreateBy           => $UserID,
@@ -2682,7 +2642,6 @@ my $Update2 = $AppointmentObject->AppointmentUpdate(
     Title      => 'Webinar title',
     StartTime  => '2016-01-02 16:00:00',
     EndTime    => '2016-01-03 17:00:00',
-    TimezoneID => 1,
     UserID     => $UserID,
 );
 $Self->False(
@@ -2692,11 +2651,10 @@ $Self->False(
 
 # no CalendarID
 my $Update3 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-03 17:00:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2706,11 +2664,10 @@ $Self->False(
 
 # no title
 my $Update4 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     CalendarID    => $Calendar2{CalendarID},
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-03 17:00:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2720,11 +2677,10 @@ $Self->False(
 
 # no StartTime
 my $Update5 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     EndTime       => '2016-01-03 17:00:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2734,11 +2690,10 @@ $Self->False(
 
 # no EndTime
 my $Update6 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2748,12 +2703,11 @@ $Self->False(
 
 # no UserID
 my $Update7 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     CalendarID    => $Calendar2{CalendarID},
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-02 16:15:00',
-    TimezoneID    => 1,
 );
 $Self->False(
     $Update7,
@@ -2769,7 +2723,7 @@ $Self->False(
 );
 
 my $Delete2 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
 );
 $Self->False(
     $Delete2,
@@ -2786,7 +2740,7 @@ $GroupObject->PermissionGroupUserAdd(
     UserID => 1,
 );
 my $Delete3 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2805,7 +2759,7 @@ $GroupObject->PermissionGroupUserAdd(
     UserID => 1,
 );
 my $Delete4 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2825,7 +2779,7 @@ $GroupObject->PermissionGroupUserAdd(
     UserID => 1,
 );
 my $Delete5 = $AppointmentObject->AppointmentDelete(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     UserID        => $UserID,
 );
 $Self->True(
@@ -2834,7 +2788,7 @@ $Self->True(
 );
 
 my %AppointmentGet5 = $AppointmentObject->AppointmentGet(
-    AppointmentID => $AppointmentID8,
+    AppointmentID => $AppointmentID7,
     UserID        => $UserID,
 );
 $Self->False(
@@ -2851,7 +2805,6 @@ my $AppointmentID9 = $AppointmentObject->AppointmentCreate(
     StartTime   => '2016-01-28 12:00:00',
     EndTime     => '2016-03-02 17:00:00',
     AllDay      => 1,
-    TimezoneID  => 1,
     UserID      => $UserID,
 );
 $Self->True(
@@ -2867,7 +2820,6 @@ my $AppointmentID10 = $AppointmentObject->AppointmentCreate(
     StartTime   => '2016-02-02 12:00:00',
     EndTime     => '2016-03-05 17:00:00',
     AllDay      => 1,
-    TimezoneID  => 1,
     UserID      => $UserID,
 );
 $Self->True(
@@ -2898,7 +2850,6 @@ my $AppointmentID12 = $AppointmentObject->AppointmentCreate(
     RecurrenceType     => 'Monthly',
     RecurrenceInterval => 1,
     RecurrenceUntil    => '2017-01-03 16:00:00',
-    TimezoneID         => 0,
     UserID             => $UserID,
 );
 $Self->True(
@@ -2950,7 +2901,6 @@ my $AppointmentIDRec13 = $AppointmentObject->AppointmentCreate(
     StartTime          => '2016-06-01 00:00:00',
     EndTime            => '2016-06-01 00:00:00',
     AllDay             => 1,
-    TimezoneID         => 0,
     Recurring          => 1,
     RecurrenceType     => 'Daily',
     RecurrenceInterval => 1,                         # once per day
@@ -3009,7 +2959,6 @@ my $Update13 = $AppointmentObject->AppointmentUpdate(
     Title         => 'Recurring appointment edit',
     StartTime     => '2016-06-07 00:00:00',
     EndTime       => '2016-06-07 00:00:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 
@@ -3208,28 +3157,11 @@ my $Update9 = $AppointmentObject->AppointmentUpdate(
     Title         => 'Webinar title',
     StartTime     => '2016-01-02 16:00:00',
     EndTime       => '2016-01-02 16:15:00',
-    TimezoneID    => 1,
     UserID        => $UserID,
 );
 $Self->True(
     $Update9,
     "AppointmentUpdate #9",
-);
-
-# Missing TimezoneID
-my $Update10 = $AppointmentObject->AppointmentUpdate(
-    AppointmentID  => $AppointmentID1,
-    CalendarID     => $Calendar1{CalendarID},
-    Title          => 'Webinar title',
-    StartTime      => '2016-01-02 16:00:00',
-    EndTime        => '2016-01-02 16:15:00',
-    Recurring      => 1,
-    RecurrenceType => 'Daily',
-    UserID         => $UserID,
-);
-$Self->False(
-    $Update10,
-    "AppointmentUpdate #10",
 );
 
 # missing RecurrenceFrequency
@@ -3242,7 +3174,6 @@ my $AppointmentIDRecPass2 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2018-03-01 16:00:00',
     EndTime            => '2018-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomDaily",
     RecurrenceInterval => 1,
@@ -3264,7 +3195,6 @@ my $AppointmentIDRecFail6 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceInterval => 1,
     RecurrenceUntil    => '2016-03-06 00:00:00',
@@ -3285,7 +3215,6 @@ my $AppointmentIDRecFail7 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "WrongDaily",              # WrongDaily is not supported
     RecurrenceInterval => 1,
@@ -3307,7 +3236,6 @@ my $AppointmentIDRecFail8 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomWeekly",
     RecurrenceInterval => 1,
@@ -3329,7 +3257,6 @@ my $AppointmentIDRecFail9 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomMonthly",
     RecurrenceInterval => 1,
@@ -3351,7 +3278,6 @@ my $AppointmentIDRecFail10 = $AppointmentObject->AppointmentUpdate(
     StartTime          => '2016-03-01 16:00:00',
     EndTime            => '2016-03-01 17:00:00',
     AllDay             => 1,
-    TimezoneID         => 1,
     Recurring          => 1,
     RecurrenceType     => "CustomYearly",
     RecurrenceInterval => 1,
@@ -3481,7 +3407,6 @@ my $AppointmentID14 = $AppointmentObject->AppointmentCreate(
     Description     => 'How to use Process tickets...',
     StartTime       => '2016-04-30 00:00:00',
     EndTime         => '2016-05-01 00:00:00',
-    TimezoneID      => 0,
     AllDay          => 1,
     Recurring       => 1,
     RecurrenceType  => 'Monthly',
