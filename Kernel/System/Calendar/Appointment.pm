@@ -1808,12 +1808,12 @@ sub AppointmentUpcomingGet {
     if ( $Param{Timestamp} ) {
 
         $CurrentTimestamp = $Param{Timestamp};
-        $SQL .= "WHERE DATE(notify_time) = DATE(?) ";
+        $SQL .= "WHERE notify_time = ? ";
     }
     else {
 
         $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
-        $SQL .= "WHERE DATE(notify_time) >= DATE(?) ";
+        $SQL .= "WHERE notify_time >= ? ";
     }
 
     $SQL .= 'ORDER BY notify_time ASC';
@@ -2031,10 +2031,7 @@ sub AppointmentFutureTasksUpdate {
         ExecutionTime => $UpcomingAppointments[0]->{NotificationDate},
         Type          => 'CalendarAppointment',
         Data          => {
-            AppointmentID => $UpcomingAppointments[0]->{AppointmentID},
-            ParentID      => $UpcomingAppointments[0]->{ParentID},
-            CalendarID    => $UpcomingAppointments[0]->{CalendarID},
-            NotifyTime    => $UpcomingAppointments[0]->{NotificationDate},
+            NotifyTime => $UpcomingAppointments[0]->{NotificationDate},
         },
     );
 
