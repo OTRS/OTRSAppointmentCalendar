@@ -470,6 +470,27 @@ Result => 'HASH':
             ResourceID    => [ 1, 3 ],
             AllDay        => 0,
         },
+        {
+            AppointmentID                         => 2,
+            ParentID                              => 1,                                           # for recurred (child) appointments only
+            CalendarID                            => 1,
+            UniqueID                              => '20160101T180000-A78B57@localhost',
+            Title                                 => 'Webinar',
+            Description                           => 'How to use Process tickets...',
+            Location                              => 'Straubing',
+            StartTime                             => '2016-01-02 16:00:00',
+            EndTime                               => '2016-01-02 17:00:00',
+            TimezoneID                            => 1,
+            TeamID                                => [ 1 ],
+            ResourceID                            => [ 1, 3 ],
+            NotificationDate                      => '2016-01-02 16:10:00',
+            NotificationTemplate                  => 'Custom',
+            NotificationCustom                    => 'relative',
+            NotificationCustomRelativeUnitCount   => '10',
+            NotificationCustomRelativeUnit        => 'minutes',
+            NotificationCustomRelativePointOfTime => 'afterstart',
+            NotificationCustomDateTime            => '2016-01-02 16:00:00',
+        },
         ...
     ];
 
