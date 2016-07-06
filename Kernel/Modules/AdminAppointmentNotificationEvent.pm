@@ -1414,7 +1414,7 @@ sub _Overview {
             next NOTIFICATIONID if !$NotificationID;
             next NOTIFICATIONID if $NotificationIDs{$NotificationID};
 
-            delete $NotificationIDs{$NotificationID};
+            delete $List{$NotificationID};
         }
     }
     else {
