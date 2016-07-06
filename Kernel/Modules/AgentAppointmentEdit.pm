@@ -122,8 +122,8 @@ sub Run {
             $YearPeriodPast{$Field} = $YearPeriodFuture{$Field} = 5;
         }
 
-        # assume we are creating new appointment
-        my $CreateMode = 1;
+        # do not use date selection time zone calculation by default
+        my $OverrideTimeZone = 1;
 
         my %Appointment;
         if ( $GetParam{AppointmentID} ) {
@@ -145,9 +145,10 @@ sub Run {
                 );
             }
 
-            # we are in edit mode
+            # use time zone calculation if editing existing appointments
+            # but only if not dealing with an all day appointment
             else {
-                $CreateMode = 0;
+                $OverrideTimeZone = $Appointment{AllDay} || 0;
             }
 
             # check permissions
@@ -392,7 +393,7 @@ sub Run {
             Validate                 => 1,
             YearPeriodPast           => $YearPeriodPast{Start},
             YearPeriodFuture         => $YearPeriodFuture{Start},
-            OverrideTimeZone         => $CreateMode,
+            OverrideTimeZone         => $OverrideTimeZone,
         );
 
         # end date string
@@ -407,7 +408,7 @@ sub Run {
             Validate                => 1,
             YearPeriodPast          => $YearPeriodPast{End},
             YearPeriodFuture        => $YearPeriodFuture{End},
-            OverrideTimeZone        => $CreateMode,
+            OverrideTimeZone        => $OverrideTimeZone,
         );
 
         # get main object
@@ -702,7 +703,7 @@ sub Run {
             Validate                => 1,
             YearPeriodPast          => $YearPeriodPast{RecurrenceUntil},
             YearPeriodFuture        => $YearPeriodFuture{RecurrenceUntil},
-            OverrideTimeZone        => $CreateMode,
+            OverrideTimeZone        => $OverrideTimeZone,
         );
 
         my $MinutesBefore = $LayoutObject->{LanguageObject}->Translate('minutes before');
@@ -1139,7 +1140,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType} eq 'Daily'
+                $GetParam{RecurrenceType}    eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1207,8 +1208,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
