@@ -124,11 +124,6 @@ sub Export {
         );
         return if !$Appointment{AppointmentID};
 
-        # get padded offset
-        my $Offset = $Self->_GetPaddedOffset(
-            Offset => $Appointment{TimezoneID},
-        );
-
         # calculate start time
         my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
             String => $Appointment{StartTime},
@@ -136,7 +131,6 @@ sub Export {
         my $ICalStartTime = Date::ICal->new(
             epoch => $StartTime,
         );
-        $ICalStartTime->offset($Offset);
 
         # calculate end time
         my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
@@ -145,7 +139,6 @@ sub Export {
         my $ICalEndTime = Date::ICal->new(
             epoch => $EndTime,
         );
-        $ICalEndTime->offset($Offset);
 
         # recalculate for all day appointment, discard time data
         if ( $Appointment{AllDay} ) {
@@ -260,7 +253,6 @@ sub Export {
                 my $ICalRecurrenceUntil = Date::ICal->new(
                     epoch => $RecurrenceUntil,
                 );
-                $ICalRecurrenceUntil->offset($Offset);
                 $ICalEventProperties{rrule} .= ';UNTIL=' . substr( $ICalRecurrenceUntil->ical(), 0, -1 );
             }
             elsif ( $Appointment{RecurrenceCount} ) {
@@ -276,7 +268,6 @@ sub Export {
                     my $ICalRecurrenceID = Date::ICal->new(
                         epoch => $RecurrenceID,
                     );
-                    $ICalRecurrenceID->offset($Offset);
 
                     push @ICalRepeatableProperties, {
                         Property => 'exdate',
@@ -305,7 +296,6 @@ sub Export {
                 my $ICalRecurrenceID = Date::ICal->new(
                     epoch => $RecurrenceID,
                 );
-                $ICalRecurrenceID->offset($Offset);
 
                 $ICalEventProperties{'recurrence-id'}
                     = $Appointment{AllDay} ? substr( $ICalRecurrenceID->ical(), 0, -1 ) : $ICalRecurrenceID->ical();
@@ -422,43 +412,6 @@ sub Export {
     }
 
     return $ICalCalendar->as_string();
-}
-
-sub _GetPaddedOffset {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(Offset)) {
-        if ( !defined $Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my $Result;
-
-    # get integer and remainder parts
-    my ( $OffsetInt, $OffsetRem ) = ( int $Param{Offset}, $Param{Offset} - int $Param{Offset} );
-
-    # get sign
-    if ( $Param{Offset} >= 0 ) {
-        $Result = '+';
-    }
-    else {
-        $Result = '-';
-    }
-
-    # prepare for padding
-    $OffsetInt = abs($OffsetInt);
-    $OffsetRem = abs( int( $OffsetRem * 60 ) );
-
-    # pad the string
-    $Result .= sprintf( '%02d%02d', $OffsetInt, $OffsetRem );
-
-    return $Result;
 }
 
 no warnings 'redefine';

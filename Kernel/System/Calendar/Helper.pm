@@ -134,14 +134,13 @@ sub SystemTimeGet {
         Second => $6,
     );
 
-    # Create an object with a specific date and time:
+    # create an object with a specific date and time
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
             %Data,
-
-            # TimeZone => 'Europe/Berlin',        # optional, defaults to setting of SysConfig OTRSTimeZone
-            }
+            TimeZone => 'UTC',
+        },
     );
 
     # check system time
@@ -177,8 +176,9 @@ sub TimestampGet {
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
+            Epoch    => $Param{SystemTime},
+            TimeZone => 'UTC',
+        },
     );
 
     # get timestamp
@@ -201,7 +201,10 @@ sub CurrentTimestampGet {
     # Create an object with current date and time
     # within time zone set in SysConfig OTRSTimeZone:
     my $DateTimeObject = $Kernel::OM->Create(
-        'Kernel::System::DateTime'
+        'Kernel::System::DateTime',
+        ObjectParams => {
+            TimeZone => 'UTC',
+        },
     );
 
     return $DateTimeObject->ToString();
@@ -221,10 +224,12 @@ returns:
 sub CurrentSystemTime {
     my ( $Self, %Param ) = @_;
 
-    # Create an object with current date and time
-    # within time zone set in SysConfig OTRSTimeZone:
+    # create an object with current date and time
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
+        ObjectParams => {
+            TimeZone => 'UTC',
+        },
     );
 
     return $DateTimeObject->ToEpoch();
@@ -266,8 +271,9 @@ sub DateGet {
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
+            Epoch    => $Param{SystemTime},
+            TimeZone => 'UTC',
+        },
     );
 
     my $Date = $DateTimeObject->Get();
@@ -318,7 +324,8 @@ sub Date2SystemTime {
         'Kernel::System::DateTime',
         ObjectParams => {
             %Param,
-            }
+            TimeZone => 'UTC',
+        },
     );
 
     return $DateTimeObject->ToEpoch();
@@ -358,8 +365,9 @@ sub AddPeriod {
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
-            Epoch => $Param{Time},
-            }
+            Epoch    => $Param{Time},
+            TimeZone => 'UTC',
+        },
     );
 
     # remember start day
@@ -424,6 +432,9 @@ sub TimezoneOffsetGet {
 
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
+        ObjectParams => {
+            TimeZone => 'UTC',
+        },
     );
     my $TimeZoneByOffset = $DateTimeObject->TimeZoneByOffsetList();
     my $Offset           = 0;
@@ -468,8 +479,9 @@ sub WeekDetailsGet {
     my $DateTimeObject = $Kernel::OM->Create(
         'Kernel::System::DateTime',
         ObjectParams => {
-            Epoch => $Param{SystemTime},
-            }
+            Epoch    => $Param{SystemTime},
+            TimeZone => 'UTC',
+        },
     );
 
     my $WeekDay = $DateTimeObject->Get()->{DayOfWeek};

@@ -318,7 +318,9 @@ Core.Agent.AppointmentCalendar.Init({
                         id: AppointmentData.AppointmentID,
                         parentId: AppointmentData.ParentID,
                         start: AppointmentData.StartTime,
+                        startDate: AppointmentData.StartDate,
                         end: AppointmentData.EndTime,
+                        endDate: AppointmentData.EndDate,
                         title: AppointmentData.Title,
                         description: AppointmentData.Description,
                         location: AppointmentData.Location,
@@ -436,10 +438,10 @@ $('#Team').on('change', function() {
         </fieldset>
         <fieldset>
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
-            <p class="Value">%start%</p>
+            <p class="Value">%startDate%</p>
             <label>[% Translate("Start date") | html %]:</label>
             <div class="Clear"></div>
-            <p class="Value">%end%</p>
+            <p class="Value">%endDate%</p>
             <label>[% Translate("End date") | html %]:</label>
             <div class="Clear"></div>
             <p class="Value">%allDay%</p>

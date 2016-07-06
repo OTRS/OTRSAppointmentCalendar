@@ -6,34 +6,32 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-<div class="InnerContent">
+<div id="OngoingAppointments" class="InnerContent">
     <h2>[% Translate("Following appointments have been started") | html %]:</h2>
-    <form id="SearchForm">
-        <table class="DataTable">
-            <thead>
-                <tr>
-                    <th>[% Translate("Title") | html %]</th>
-                    <th>[% Translate("Start time") | html %]</th>
-                    <th>[% Translate("End time") | html %]</th>
+    <table class="DataTable">
+        <thead>
+            <tr>
+                <th>[% Translate("Title") | truncate (40) | html %]</th>
+                <th>[% Translate("Start time") | html %]</th>
+                <th>[% Translate("End time") | html %]</th>
 [% IF Data.ShowResources %]
-                    <th>[% Translate("Resource") | html %]</th>
+                <th>[% Translate("Resource") | html %]</th>
 [% END %]
-                </tr>
-            </thead>
-            <tbody>
+            </tr>
+        </thead>
+        <tbody>
 [% RenderBlockStart("Appointment") %]
-                <tr>
-                    <td>[% Data.Title | html %]</td>
-                    <td>[% Data.StartTime | html %]</td>
-                    <td>[% Data.EndTime | html %]</td>
+            <tr>
+                <td>[% Data.Title | html %]</td>
+                <td>[% Data.StartDate | html %]</td>
+                <td>[% Data.EndDate | html %]</td>
 [% IF Data.ShowResources %]
-                    <td title="[% Data.Resource | html %]">
-                        [% Data.Resource | truncate(30) %]
-                    </td>
+                <td title="[% Data.Resource | html %]">
+                    [% Data.Resource | truncate(30) %]
+                </td>
 [% END %]
-                </tr>
+            </tr>
 [% RenderBlockEnd("Appointment") %]
-            </tbody>
-        </table>
-    </from>
+        </tbody>
+    </table>
 </div>
