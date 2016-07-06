@@ -115,46 +115,51 @@ sub Run {
                     $Appointment->{NotificationDate} = '';
                 }
 
-                # formatted date/time strings used in display
-                $Appointment->{StartDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
-                    $Appointment->{StartTime},
-                    'DateFormat'
+                # get system times
+                my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    String => $Appointment->{StartTime},
                 );
-                $Appointment->{EndDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
-                    $Appointment->{EndTime},
-                    'DateFormat'
+                my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    String => $Appointment->{EndTime},
                 );
 
-                # calculate local times
-                if ( !$Appointment->{AllDay} ) {
+                # save time stamps for display before calculation
+                $Appointment->{StartDate} = $Appointment->{StartTime};
+                $Appointment->{EndDate}   = $Appointment->{EndTime};
 
-                    my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                        String => $Appointment->{StartTime},
+                # end times for all day appointments are inclusive, subtract whole day
+                if ( $Appointment->{AllDay} ) {
+                    $EndTime -= 86400;
+                    if ( $EndTime < $StartTime ) {
+                        $EndTime = $StartTime;
+                    }
+                    $Appointment->{EndDate} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                        SystemTime => $EndTime,
                     );
+                }
+
+                # calculate local times for control
+                else {
                     $StartTime += $Offset * 3600;
                     $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $StartTime,
                     );
 
-                    my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                        String => $Appointment->{EndTime},
-                    );
                     $EndTime += $Offset * 3600;
                     $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
                         SystemTime => $EndTime,
                     );
-
-                    if ( $Appointment->{RecurrenceUntil} ) {
-                        my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
-                            String => $Appointment->{RecurrenceUntil},
-                        );
-                        $RecurrenceUntil += $Offset * 3600;
-                        $Appointment->{RecurrenceUntil}
-                            = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
-                            SystemTime => $RecurrenceUntil,
-                            );
-                    }
                 }
+
+                # formatted date/time strings used in display
+                $Appointment->{StartDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment->{StartDate},
+                    'DateFormat' . ( $Appointment->{AllDay} ? 'Short' : '' )
+                );
+                $Appointment->{EndDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment->{EndDate},
+                    'DateFormat' . ( $Appointment->{AllDay} ? 'Short' : '' )
+                );
 
                 # include resource data
                 $Appointment->{TeamName}      = '';
