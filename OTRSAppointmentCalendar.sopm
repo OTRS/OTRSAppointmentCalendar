@@ -194,7 +194,6 @@
             <Column Name="notify_custom_unit" Size="255" Type="VARCHAR"/>
             <Column Name="notify_custom_unit_point" Size="255" Type="VARCHAR"/>
             <Column Name="notify_custom_date" Type="DATE"/>
-            <Column Name="timezone_id" Required="true" Size="100" Type="VARCHAR"/>
             <Column Name="team_id" Size="3800" Type="VARCHAR"/>
             <Column Name="resource_id" Size="3800" Type="VARCHAR"/>
             <Column Name="recurring" Type="SMALLINT"/>
