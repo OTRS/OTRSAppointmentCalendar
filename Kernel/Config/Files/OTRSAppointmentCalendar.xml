@@ -347,17 +347,27 @@
         </Setting>
     </ConfigItem>
 
-    <!-- event notifications -->
+    <!-- notifications -->
 
-    <ConfigItem Name="Frontend::Admin::AdminNotificationEvent###EventObjectTypes" Required="0" Valid="1">
-        <Description Translatable="1">Defines the event object types that will be handled via AdminNotificationEvent.</Description>
+    <ConfigItem Name="Frontend::Admin::AdminAppointmentNotificationEvent###EventObjectTypes" Required="0" Valid="1">
+        <Description Translatable="1">Defines the event object types that will be handled via AdminAppointmentNotificationEvent.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
         <Setting>
             <Array>
-                <Item>Ticket</Item>
-                <Item>Article</Item>
+                <Item>Calendar</Item>
                 <Item>Appointment</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Events###Calendar" Required="1" Valid="1">
+        <Description Translatable="1">List of all calendar events to be displayed in the GUI.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Frontend::Admin</SubGroup>
+        <Setting>
+            <Array>
+                <Item>CalendarCreate</Item>
+                <Item>CalendarUpdate</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -367,8 +377,10 @@
         <SubGroup>Frontend::Admin</SubGroup>
         <Setting>
             <Array>
-                <Item>AppointmentStart</Item>
-                <Item>AppointmentEnd</Item>
+                <Item>AppointmentCreate</Item>
+                <Item>AppointmentUpdate</Item>
+                <Item>AppointmentDelete</Item>
+                <Item>AppointmentNotification</Item>
             </Array>
         </Setting>
     </ConfigItem>
@@ -381,6 +393,132 @@
                 <Item Key="Module">Kernel::System::Calendar::Event::Notification</Item>
                 <Item Key="Event">(AppointmentCreate|AppointmentUpdate|AppointmentDelete)</Item>
             </Hash>
+        </Setting>
+    </ConfigItem>
+
+    <!-- notifications ui -->
+
+    <ConfigItem Name="Frontend::Module###AdminAppointmentNotificationEvent" Required="0" Valid="1">
+        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::ModuleRegistration</SubGroup>
+        <Setting>
+            <FrontendModuleReg>
+                <Group>admin</Group>
+                <Description Translatable="1">This module is part of the admin area of OTRS.</Description>
+                <Title Translatable="1">Appointment Notifications</Title>
+                <NavBarName>Admin</NavBarName>
+                <NavBarModule>
+                    <Module>Kernel::Output::HTML::NavBar::ModuleAdmin</Module>
+                    <Name Translatable="1">Appointment Notifications</Name>
+                    <Description Translatable="1">Create and manage appointment notifications.</Description>
+                    <Block>System</Block>
+                    <Prio>400</Prio>
+                </NavBarModule>
+                <Loader>
+                    <CSS>Core.Agent.Admin.NotificationEvent.css</CSS>
+                    <JavaScript>Core.Agent.Admin.NotificationEvent.js</JavaScript>
+                </Loader>
+            </FrontendModuleReg>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="Frontend::Admin::AdminAppointmentNotificationEvent###RichText" Required="0" Valid="1">
+        <Description Translatable="1">Uses richtext for viewing and editing ticket notification.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Option SelectedID="1">
+                <Item Key="0" Translatable="1">No</Item>
+                <Item Key="1" Translatable="1">Yes</Item>
+            </Option>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Admin::AdminAppointmentNotificationEvent###RichTextWidth" Required="0" Valid="1">
+        <Description Translatable="1">Defines the width for the rich text editor component for this screen. Enter number (pixels) or percent value (relative).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <String Regex="^\d+%?$">620</String>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Frontend::Admin::AdminAppointmentNotificationEvent###RichTextHeight" Required="0" Valid="1">
+        <Description Translatable="1">Defines the height for the rich text editor component for this screen. Enter number (pixels) or percent value (relative).</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <String Regex="^\d+%?$">320</String>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="Notification::Transport###Email" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::Email</Item>
+                <Item Key="Name" Translatable="1">Email</Item>
+                <Item Key="Icon">fa fa-envelope</Item>
+                <Item Key="Prio">100</Item>
+                <Item Key="IsOTRSBusinessTransport">0</Item>
+                <Item Key="AgentEnabledByDefault">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Notification::Transport###NotificationView" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::NotificationView</Item>
+                <Item Key="Name" Translatable="1">Web View</Item>
+                <Item Key="Icon">fa fa-th-list</Item>
+                <Item Key="Prio">110</Item>
+                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="AgentEnabledByDefault">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Notification::Transport###SMS" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::SMS</Item>
+                <Item Key="Name" Translatable="1">SMS (Short Message Service)</Item>
+                <Item Key="Icon">fa fa-mobile</Item>
+                <Item Key="Prio">120</Item>
+                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="AgentEnabledByDefault">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="PreferencesGroups###NotificationEvent" Required="0" Valid="1">
+        <Description Translatable="1">Transport selection for ticket notifications.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Agent::Preferences</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::Output::HTML::Preferences::NotificationEvent</Item>
+                <Item Key="Column">Notification Settings</Item>
+                <Item Key="Label" Translatable="1">Ticket notifications</Item>
+                <Item Key="Desc" Translatable="1">Choose for which kind of ticket changes you want to receive notifications.</Item>
+                <Item Key="PrefKey">AdminNotifcationEventTransport</Item>
+                <Item Key="Prio">8000</Item>
+                <Item Key="Active">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+
+    <ConfigItem Name="Notification::CharactersPerLine" Required="1" Valid="1">
+        <Description Translatable="1">Defines the number of character per line used in case an HTML article preview replacement on TemplateGenerator for EventNotifications.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <String Regex="">80</String><!-- default 1 hour -->
         </Setting>
     </ConfigItem>
 
