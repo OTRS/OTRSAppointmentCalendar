@@ -799,8 +799,11 @@ sub _Edit {
         $ArticleSenderTypeIDClass .= ' ' . $Param{ArticleSenderTypeIDServerError};
     }
 
+    my $NotificationConfig = $ConfigObject->Get('Frontend::Admin::AdminAppointmentNotificationEvent');
+
+    # get a list of registered events
     my %RegisteredEvents = $Kernel::OM->Get('Kernel::System::Event')->EventList(
-        ObjectTypes => [ 'Ticket', 'Article', ],
+        ObjectTypes => $NotificationConfig->{EventObjectTypes},
     );
 
     my @Events;
