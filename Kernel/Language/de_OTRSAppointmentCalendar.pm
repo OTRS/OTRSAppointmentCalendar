@@ -110,6 +110,10 @@ sub Data {
     $Self->{Translation}->{'Change Team Relations for Agent'} = 'Ändere Team-Zuordnungen für Agent';
     $Self->{Translation}->{'Filter for agents'} = 'Filter für Agenten';
 
+    # Template: AgentDashboardAppointmentCalendar
+    $Self->{Translation}->{'Soon'} = 'Demnächst';
+    $Self->{Translation}->{'5 days'} = '5 Tage';
+
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Das System konnten den Kalender nicht erstellen!';
     $Self->{Translation}->{'No CalendarID!'} = 'Keine CalenderID!';
@@ -192,6 +196,7 @@ sub Data {
     $Self->{Translation}->{"OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default)."} = "OTRS unterstützt keine wiederholenden Termine oder Enddatum oder Anzahl an Iterationen. Während Import-Prozessen kann es passieren, dass ICS-Dateien solche Termine enthalten. OTRS wird stattdessen alle vergangenen Termine sowie alle Termine der kommenden n Monate (120 Monate / 10 Jahre standardmäßig) erstellen.";
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} = 'Zeigt einen Link im Menü der TicketZoom-Ansicht im Agenten-Interface an, um Termine zu erstellen, welche direkt mit dem entsprechenden Ticket verknüpft sind. Zusätzliche Zugriffskontrolle, ob der Menüpunkt angezeigt wird oder nicht, kann mit dem Schlüssel "Gruppe" und "Inhalt" wie z.B. ("rw:group1;move_into:group2") erreicht werden. Um Menüeinträge zu gruppieren, verwenden Sie den Schlüssel "ClusterName" und im Inhalt den Namen, welchen Sie in der Ansicht verwenden möchten. Verwenden Sie "ClusterPriority" um die Reihenfolge in der jeweiligen Gruppierung zu beeinflussen.';
     $Self->{Translation}->{'New Appointment'} = 'Neuer Termin';
+    $Self->{Translation}->{'Appointments'} = 'Termine';
     $Self->{Translation}->{'Create new appointment.'} = 'Einen neuen Termin erstellen';
     $Self->{Translation}->{'Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.'} = 'Maximale Anzahl an aktiven Kalendern in der Kalenderübersicht oder Resourcenübersicht. Bitte beachten Sie, dass sich zuviele gleichzeitig aktive Kalender aufgrund vieler gleichzeitiger Anfragen auf die Performance des Systems auswirken kann.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Erstellt einen neuen Termin in einem Kalender, welcher direkt mit diesem Ticket verknüpft ist';

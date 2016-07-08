@@ -1,0 +1,142 @@
+# --
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;Subaction=AppointmentCreate" class="CallForAction Fullsize Center">
+    <span>
+        <i class="fa fa-plus-square"></i>
+        [% Translate("New Appointment") | html %]
+    </span>
+</a>
+
+[% RenderBlockStart("ContentSmallAppointmentFilter") %]
+<div class="DashboardActions">
+    <ul class="AppointmentFilter Tab Actions">
+        <li class="[% Data.item("Agent::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Today" class="[% Data.item("Today::Selected") | html %]" title="[% Translate("Today") | html %]">[% Translate("Today") | html %] ([% Data.TodayCount | html %])</a></li>
+        <li class="[% Data.item("Customer::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Tomorrow" class="[% Data.item("Tomorrow::Selected") | html %]" title="[% Translate("Tomorrow") | html %]">[% Translate("Tomorrow") | html %] ([% Data.TomorrowCount | html %])</a></li>
+        <li class="[% Data.item("Customer::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Soon" class="[% Data.item("Soon::Selected") | html %]" title="[% Translate("Soon") | html %] ([% Translate("5 days") | html %])">[% Translate("Soon") | html %] ([% Data.SoonCount | html %])</a></li>
+    </ul>
+</div>
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Agent').unbind('click').bind('click', function(){
+        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Agent', function () {
+        });
+        return false;
+    });
+    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Customer').unbind('click').bind('click', function(){
+        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Customer', function () {
+        });
+        return false;
+    });
+//]]></script>
+[% END %]
+[% RenderBlockStart("ContentSmallAppointmentFilterNavBar") %]
+<span class="Pagination">
+    [% Data.SiteNavBar %]
+</span>
+[% RenderBlockEnd("ContentSmallAppointmentFilterNavBar") %]
+
+[% RenderBlockEnd("ContentSmallAppointmentFilter") %]
+
+[% RenderBlockStart("ContentSmallTodayTable") %]
+<table class="DataTable">
+    <thead>
+        <tr>
+            <td style="width: 14px;"></td>
+            <td style="width: 14px;">[% Translate("Start") | html %]</td>
+            <td>[% Translate("Name") | html %]</td>
+        </tr>
+    </thead>
+    <tbody>
+[% RenderBlockStart("ContentSmallTodayAppointmentRow") %]
+        <tr>
+            <td class="Center">
+                <label for="Calendar[% Data.CalendarID | html %]">
+                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
+                </label>
+            </td>
+            <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
+            <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>
+        </tr>
+[% RenderBlockEnd("ContentSmallTodayAppointmentRow") %]
+[% RenderBlockStart("ContentSmallTodayAppointmentNone") %]
+        <tr>
+            <td>
+                [% Translate("none") | html %]
+            </td>
+        </tr>
+[% RenderBlockEnd("ContentSmallTodayAppointmentNone") %]
+    </tbody>
+</table>
+[% RenderBlockEnd("ContentSmallTodayTable") %]
+
+<br>
+
+[% RenderBlockStart("ContentSmallTomorrowTable") %]
+<table class="DataTable">
+    <thead>
+        <tr>
+            <td style="width: 14px;"></td>
+            <td style="width: 14px;">[% Translate("Start") | html %]</td>
+            <td>[% Translate("Name") | html %]</td>
+        </tr>
+    </thead>
+    <tbody>
+[% RenderBlockStart("ContentSmallTomorrowAppointmentRow") %]
+        <tr>
+            <td class="Center">
+                <label for="Calendar[% Data.CalendarID | html %]">
+                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
+                </label>
+            </td>
+            <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
+            <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>
+        </tr>
+[% RenderBlockEnd("ContentSmallTomorrowAppointmentRow") %]
+[% RenderBlockStart("ContentSmallTomorrowAppointmentNone") %]
+        <tr>
+            <td>
+                [% Translate("none") | html %]
+            </td>
+        </tr>
+[% RenderBlockEnd("ContentSmallTomorrowAppointmentNone") %]
+    </tbody>
+</table>
+[% RenderBlockEnd("ContentSmallTomorrowTable") %]
+
+[% RenderBlockStart("ContentSmallNextDaysTable") %]
+<table class="DataTable">
+    <thead>
+        <tr>
+            <td style="width: 14px;"></td>
+            <td>[% Translate("Start") | html %]</td>
+            <td>[% Translate("Name") | html %]</td>
+        </tr>
+    </thead>
+    <tbody>
+[% RenderBlockStart("ContentSmallAppointmentRow") %]
+        <tr>
+            <td class="Center">
+                <label for="Calendar[% Data.CalendarID | html %]">
+                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.Name | html %]"></span>
+                </label>
+            </td>
+            <td>[% Data.StartTime | html %]</td>
+            <td>[% Data.Title | html %]</td>
+        </tr>
+[% RenderBlockEnd("ContentSmallAppointmentRow") %]
+[% RenderBlockStart("ContentSmallAppointmentNone") %]
+        <tr>
+            <td>
+                [% Translate("none") | html %]
+            </td>
+        </tr>
+[% RenderBlockEnd("ContentSmallAppointmentNone") %]
+    </tbody>
+</table>
+[% RenderBlockEnd("ContentSmallNextDaysTable") %]
