@@ -197,11 +197,6 @@ sub Run {
         Key  => $CacheKeyAppointmentsCount,
     );
 
-    # TESTING disable cache
-    $DataCalendars             = 0;
-    $DataAppointments          = 0;
-    $CacheKeyAppointmentsCount = 0;
-
     # if cache is up-to-date, use the given data
     if (
         ref $DataCalendars eq 'HASH'
@@ -409,96 +404,6 @@ sub Run {
         );
     }
 
-    # get time object
-    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-    # get current time-stamp
-    my $Time = $TimeObject->SystemTime();
-
-    my $Online;
-
-    # get session info
-    my $CacheUsed = 1;
-    if ( !$Online ) {
-
-        $CacheUsed = 0;
-        $Online    = {
-            User => {
-                Agent    => {},
-                Customer => {},
-            },
-            UserCount => {
-                Agent    => 0,
-                Customer => 0,
-            },
-            UserData => {
-                Agent    => {},
-                Customer => {},
-            },
-        };
-
-        # get session object
-        my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
-
-        # get session ids
-        my @Sessions = $SessionObject->GetAllSessionIDs();
-
-        # get user object
-        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-        SESSIONID:
-        for my $SessionID (@Sessions) {
-
-            next SESSIONID if !$SessionID;
-
-            # get session data
-            my %Data = $SessionObject->GetSessionIDData( SessionID => $SessionID );
-
-            next SESSIONID if !%Data;
-            next SESSIONID if !$Data{UserID};
-
-            # use agent instead of user
-            my %AgentData;
-            if ( $Data{UserType} eq 'User' ) {
-                $Data{UserType} = 'Agent';
-
-                # get user data
-                %AgentData = $UserObject->GetUserData(
-                    UserID        => $Data{UserID},
-                    NoOutOfOffice => 1,
-                );
-            }
-            else {
-                $Data{UserFullname}
-                    ||= $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
-                    UserLogin => $Data{UserLogin},
-                    );
-            }
-
-            # only show if not already shown
-            next SESSIONID if $Online->{User}->{ $Data{UserType} }->{ $Data{UserID} };
-
-            # check last request time / idle time out
-            next SESSIONID if !$Data{UserLastRequest};
-            next SESSIONID if $Data{UserLastRequest} + ( $IdleMinutes * 60 ) < $Time;
-
-            # remember user and data
-            $Online->{User}->{ $Data{UserType} }->{ $Data{UserID} } = $Data{$SortBy};
-            $Online->{UserCount}->{ $Data{UserType} }++;
-            $Online->{UserData}->{ $Data{UserType} }->{ $Data{UserID} } = { %Data, %AgentData };
-        }
-    }
-
-    # set cache
-    if ( !$CacheUsed && $Self->{Config}->{CacheTTLLocal} ) {
-        $CacheObject->Set(
-            Type  => 'Dashboard',
-            Key   => $Self->{CacheKey},
-            Value => $Online,
-            TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
-        );
-    }
-
     # set css class
     my %Summary;
     $Summary{ $Self->{Filter} . '::Selected' } = 'Selected';
@@ -508,10 +413,8 @@ sub Run {
         Name => 'ContentSmallAppointmentFilter',
         Data => {
             %{ $Self->{Config} },
-            %{ $Online->{UserCount} },
             %Summary,
-            Name => $Self->{Name},
-
+            Name          => $Self->{Name},
             TodayCount    => $AppointmentsCount{Today},
             TomorrowCount => $AppointmentsCount{Tomorrow},
             SoonCount     => $AppointmentsCount{Soon},
@@ -519,7 +422,7 @@ sub Run {
     );
 
     # add page nav bar
-    my $Total    = $Online->{UserCount}->{ $Self->{Filter} } || 0;
+    my $Total    = $AppointmentsCount{ $Self->{Filter} } || 0;
     my $LinkPage = 'Subaction=Element;Name=' . $Self->{Name} . ';Filter=' . $Self->{Filter} . ';';
     my %PageNav  = $LayoutObject->PageNavBar(
         StartHit       => $Self->{StartHit},
@@ -542,150 +445,9 @@ sub Run {
         },
     );
 
-    $Self->{Filter} = 'Agent';
-
-    # show agent/customer
-    my %OnlineUser = %{ $Online->{User}->{ $Self->{Filter} } };
-    my %OnlineData = %{ $Online->{UserData}->{ $Self->{Filter} } };
-    my $Count      = 0;
-    my $Limit      = $LayoutObject->{ $Self->{PrefKey} } || $Self->{Config}->{Limit};
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # Check if agent has permission to start chats with the listed users
-    my $EnableChat               = 1;
-    my $ChatStartingAgentsGroup  = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatStartingAgents');
-    my $ChatReceivingAgentsGroup = $ConfigObject->Get('ChatEngine::PermissionGroup::ChatReceivingAgents');
-
-    if (
-        !$ConfigObject->Get('ChatEngine::Active')
-        || !defined $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"}
-        || $LayoutObject->{"UserIsGroup[$ChatStartingAgentsGroup]"} ne 'Yes'
-        )
-    {
-        $EnableChat = 0;
-    }
-    if (
-        $EnableChat
-        && $Self->{Filter} eq 'Agent'
-        && !$ConfigObject->Get('ChatEngine::ChatDirection::AgentToAgent')
-        )
-    {
-        $EnableChat = 0;
-    }
-    if (
-        $EnableChat
-        && $Self->{Filter} eq 'Customer'
-        && !$ConfigObject->Get('ChatEngine::ChatDirection::AgentToCustomer')
-        )
-    {
-        $EnableChat = 0;
-    }
-
-    USERID:
-    for my $UserID ( sort { $OnlineUser{$a} cmp $OnlineUser{$b} } keys %OnlineUser ) {
-
-        $Count++;
-
-        next USERID if !$UserID;
-        next USERID if $Count < $Self->{StartHit};
-        last USERID if $Count >= ( $Self->{StartHit} + $Self->{PageShown} );
-
-        # extract user data
-        my $UserData        = $OnlineData{$UserID};
-        my $AgentEnableChat = 0;
-        my $ChatAccess      = 0;
-
-        # Default status
-        my $UserState            = "Offline";
-        my $UserStateDescription = $LayoutObject->{LanguageObject}->Translate('This user is currently offline');
-
-        # we also need to check if the receiving agent has chat permissions
-        if ( $EnableChat && $Self->{Filter} eq 'Agent' ) {
-
-            my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
-                UserID => $UserData->{UserID},
-                Type   => 'rw',
-            );
-
-            my %UserGroupsReverse = reverse %UserGroups;
-            $ChatAccess = $UserGroupsReverse{$ChatReceivingAgentsGroup} ? 1 : 0;
-
-            # Check agents availability
-            if ($ChatAccess) {
-                my $AgentChatAvailability = $Kernel::OM->Get('Kernel::System::Chat')->AgentAvailabilityGet(
-                    UserID   => $UserID,
-                    External => 0,
-                );
-
-                if ( $AgentChatAvailability == 3 ) {
-                    $UserState            = "Active";
-                    $AgentEnableChat      = 1;
-                    $UserStateDescription = $LayoutObject->{LanguageObject}->Translate('This user is currently active');
-                }
-                elsif ( $AgentChatAvailability == 2 ) {
-                    $UserState            = "Away";
-                    $AgentEnableChat      = 1;
-                    $UserStateDescription = $LayoutObject->{LanguageObject}->Translate('This user is currently away');
-                }
-                elsif ( $AgentChatAvailability == 1 ) {
-                    $UserState = "Unavailable";
-                    $UserStateDescription
-                        = $LayoutObject->{LanguageObject}->Translate('This user is currently unavailable');
-                }
-            }
-        }
-
-        $LayoutObject->Block(
-            Name => 'ContentSmallUserOnlineRow',
-            Data => {
-                %{$UserData},
-                ChatAccess           => $ChatAccess,
-                AgentEnableChat      => $AgentEnableChat,
-                UserState            => $UserState,
-                UserStateDescription => $UserStateDescription,
-            },
-        );
-
-        if ( $Self->{Config}->{ShowEmail} ) {
-            $LayoutObject->Block(
-                Name => 'ContentSmallUserOnlineRowEmail',
-                Data => $UserData,
-            );
-        }
-
-        next USERID if !$UserData->{OutOfOffice};
-
-        my $Start = sprintf(
-            "%04d-%02d-%02d 00:00:00",
-            $UserData->{OutOfOfficeStartYear}, $UserData->{OutOfOfficeStartMonth},
-            $UserData->{OutOfOfficeStartDay}
-        );
-        my $TimeStart = $TimeObject->TimeStamp2SystemTime(
-            String => $Start,
-        );
-        my $End = sprintf(
-            "%04d-%02d-%02d 23:59:59",
-            $UserData->{OutOfOfficeEndYear}, $UserData->{OutOfOfficeEndMonth},
-            $UserData->{OutOfOfficeEndDay}
-        );
-        my $TimeEnd = $TimeObject->TimeStamp2SystemTime(
-            String => $End,
-        );
-
-        next USERID if $TimeStart > $Time || $TimeEnd < $Time;
-
-        $LayoutObject->Block(
-            Name => 'ContentSmallUserOnlineRowOutOfOffice',
-        );
-    }
-
-    if ( !%OnlineUser ) {
-        $LayoutObject->Block(
-            Name => 'ContentSmallUserOnlineNone',
-        );
-    }
+    # show appointments
+    my $Count = 0;
+    my $Limit = $LayoutObject->{ $Self->{PrefKey} } || $Self->{Config}->{Limit};
 
     # check for refresh time
     my $Refresh  = 30;              # 30 seconds
