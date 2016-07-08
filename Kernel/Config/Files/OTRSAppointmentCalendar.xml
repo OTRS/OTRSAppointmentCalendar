@@ -54,14 +54,14 @@
                     <Prio>8000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
-                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -87,17 +87,17 @@
                     <Prio>7000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <CSS>Core.AllocationList.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                     <JavaScript>Core.UI.AllocationList.js</JavaScript>
                     <JavaScript>Core.Agent.TableFilters.js</JavaScript>
-                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -173,7 +173,7 @@
                 <Loader>
                     <CSS>Core.AppointmentCalendar.Manage.css</CSS>
                     <CSS>thirdparty/spectrum-1.8.0/spectrum.css</CSS>
-                    <JavaScript>thirdparty/clipboard.js-1.5.10/clipboard.min.js</JavaScript>
+                    <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                     <JavaScript>thirdparty/spectrum-1.8.0/spectrum.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -449,11 +449,11 @@
                     <Prio>6500</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.6.1/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <CSS>Core.AppointmentCalendar.Agenda.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.10.6/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.6.1/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
