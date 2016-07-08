@@ -487,209 +487,207 @@ $Selenium->RunTest(
             'Calendars are filtered correctly',
         );
 
-        # # create new Appointment (as root)
-        # my $StartTime       = $TimeObject->CurrentTimestamp();
-        # my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
-        #     String => $StartTime,
-        # );
-        # $StartTime = $TimeObject->SystemTime2TimeStamp(
-        #     SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60,    # last week
-        # );
-        #
-        # my $EndTime = $TimeObject->SystemTime2TimeStamp(
-        #     SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60 + 2 * 60 * 60,    # 2 hours after start time
-        # );
-        #
-        # my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
-        #     CalendarID  => $Calendar4{CalendarID},
-        #     Title       => 'Permissions check appointment',
-        #     Description => 'How to use Process tickets...',
-        #     Location    => 'Straubing',
-        #     StartTime   => $StartTime,
-        #     EndTime     => $EndTime,
-        #     UserID      => 1,
-        #     TimezoneID  => 0,
-        # );
-        #
-        # $Self->True(
-        #     $AppointmentID,
-        #     "Permission Appointment created.",
-        # );
-        #
-        # # add ro permissions to the user
-        # $GroupObject->PermissionGroupUserAdd(
-        #     GID        => $GroupID2,
-        #     UID        => $UserID,
-        #     Permission => {
-        #         ro => 1,
-        #     },
-        #     UserID => 1,
-        # );
-        #
-        # # reload page
-        # $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
-        #
-        # # wait for AJAX to finish
-        # $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-        #
-        # # show the fourth calendar and hide all others
-        # $Selenium->find_element( 'Calendar' . $Calendar4{CalendarID}, 'id' )->click();
-        # $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
-        # $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
-        # $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
-        #
-        # # go to previous week in order to disable realtime notification dialog
-        # $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
-        #
-        # # wait for AJAX to finish
-        # $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-        #
-        # # click on appointment
-        # $Selenium->execute_script(
-        #     "return \$('.fc-scrollpane-inner a:first').click();",
-        # );
-        #
-        # # wait for appointment
-        # $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        #
-        # # check if fields are disabled
-        # for my $Element (
-        #     qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
-        #     RecurrenceType
-        #     )
-        #     )
-        # {
-        #     $ElementReadOnly->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 1,
-        #     );
-        # }
-        #
-        # # elements that are not allowed on page
-        # for my $Element (qw(EditFormSubmit EditFormDelete EditFormCopy)) {
-        #     $ElementExists->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 0,
-        #     );
-        # }
-        #
-        # # elements that should be on page
-        # for my $Element (qw(EditFormCancel)) {
-        #     $ElementExists->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 1,
-        #     );
-        # }
-        #
-        # # click on cancel
-        # $Selenium->find_element( '#EditFormCancel', 'css' )->click();
-        #
-        # # add move_into permissions to the user
-        # $GroupObject->PermissionGroupUserAdd(
-        #     GID        => $GroupID2,
-        #     UID        => $UserID,
-        #     Permission => {
-        #         ro        => 1,
-        #         move_into => 1,
-        #     },
-        #     UserID => 1,
-        # );
-        #
-        # # click on appointment
-        # $Selenium->execute_script(
-        #     "return \$('.fc-scrollpane-inner a:first').click();",
-        # );
-        #
-        # # wait for appointment
-        # $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        #
-        # # check if fields are disabled
-        # for my $Element (qw( CalendarID )) {
-        #     $ElementReadOnly->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 1,
-        #     );
-        # }
-        #
-        # # check if fields are enabled
-        # for my $Element (
-        #     qw(Title Description Location TeamID ResourceID StartDay EndDay AllDay RecurrenceType)
-        #     )
-        # {
-        #     $ElementReadOnly->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 0,
-        #     );
-        # }
-        #
-        # # elements that are not allowed on page
-        # for my $Element (qw(EditFormDelete EditFormCopy)) {
-        #     $ElementExists->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 0,
-        #     );
-        # }
-        #
-        # # elements that should be on page
-        # for my $Element (qw(EditFormSubmit EditFormCancel)) {
-        #     $ElementExists->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 1,
-        #     );
-        # }
-        #
-        # # click on cancel
-        # $Selenium->find_element( '#EditFormCancel', 'css' )->click();
-        #
-        # # add create permissions to the user
-        # $GroupObject->PermissionGroupUserAdd(
-        #     GID        => $GroupID2,
-        #     UID        => $UserID,
-        #     Permission => {
-        #         ro        => 1,
-        #         move_into => 1,
-        #         create    => 1,
-        #     },
-        #     UserID => 1,
-        # );
-        #
-        # # click on appointment
-        # $Selenium->execute_script(
-        #     "return \$('.fc-scrollpane-inner a:first').click();",
-        # );
-        #
-        # # wait for appointment
-        # $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        #
-        # # check if fields are enabled
-        # for my $Element (
-        #     qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
-        #     RecurrenceType
-        #     )
-        #     )
-        # {
-        #     $ElementReadOnly->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 0,
-        #     );
-        # }
-        #
-        # # elements that should be on page
-        # for my $Element (qw(EditFormCopy EditFormSubmit EditFormDelete EditFormCancel)) {
-        #     $ElementExists->(
-        #         UnitTestObject => $Self,
-        #         Element        => $Element,
-        #         Value          => 1,
-        #     );
-        # }
+        # create new Appointment (as root)
+        my $StartTime       = $TimeObject->CurrentTimestamp();
+        my $StartTimeSystem = $TimeObject->TimeStamp2SystemTime(
+            String => $StartTime,
+        );
+        $StartTime = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60,    # last week
+        );
+
+        my $EndTime = $TimeObject->SystemTime2TimeStamp(
+            SystemTime => $StartTimeSystem - 7 * 24 * 60 * 60 + 2 * 60 * 60,    # 2 hours after start time
+        );
+
+        my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
+            CalendarID  => $Calendar4{CalendarID},
+            Title       => 'Permissions check appointment',
+            Description => 'How to use Process tickets...',
+            Location    => 'Straubing',
+            StartTime   => $StartTime,
+            EndTime     => $EndTime,
+            UserID      => 1,
+            TimezoneID  => 0,
+        );
+
+        $Self->True(
+            $AppointmentID,
+            "Permission Appointment created.",
+        );
+
+        # add ro permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro => 1,
+            },
+            UserID => 1,
+        );
+
+        # reload page
+        $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # show the fourth calendar and hide all others
+        $Selenium->find_element( 'Calendar' . $Calendar4{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
+
+        # go to previous week in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # find the appointment link
+        my $AppointmentLink = $Selenium->find_element( '.fc-event-container a', 'css' );
+        $Selenium->mouse_move_to_location($AppointmentLink);
+
+        # click on appointment
+        $AppointmentLink->click();
+
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check if fields are disabled
+        for my $Element (
+            qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
+            RecurrenceType
+            )
+            )
+        {
+            $ElementReadOnly->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # elements that are not allowed on page
+        for my $Element (qw(EditFormSubmit EditFormDelete EditFormCopy)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that should be on page
+        for my $Element (qw(EditFormCancel)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # click on cancel
+        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+
+        # add move_into permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro        => 1,
+                move_into => 1,
+            },
+            UserID => 1,
+        );
+
+        # click on appointment
+        $AppointmentLink->click();
+
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check if fields are disabled
+        for my $Element (qw( CalendarID )) {
+            $ElementReadOnly->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # check if fields are enabled
+        for my $Element (
+            qw(Title Description Location TeamID ResourceID StartDay EndDay AllDay RecurrenceType)
+            )
+        {
+            $ElementReadOnly->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that are not allowed on page
+        for my $Element (qw(EditFormDelete EditFormCopy)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that should be on page
+        for my $Element (qw(EditFormSubmit EditFormCancel)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
+
+        # click on cancel
+        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+
+        # add create permissions to the user
+        $GroupObject->PermissionGroupUserAdd(
+            GID        => $GroupID2,
+            UID        => $UserID,
+            Permission => {
+                ro        => 1,
+                move_into => 1,
+                create    => 1,
+            },
+            UserID => 1,
+        );
+
+        # click on appointment
+        $AppointmentLink->click();
+
+        # wait for appointment
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+
+        # check if fields are enabled
+        for my $Element (
+            qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
+            RecurrenceType
+            )
+            )
+        {
+            $ElementReadOnly->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 0,
+            );
+        }
+
+        # elements that should be on page
+        for my $Element (qw(EditFormCopy EditFormSubmit EditFormDelete EditFormCancel)) {
+            $ElementExists->(
+                UnitTestObject => $Self,
+                Element        => $Element,
+                Value          => 1,
+            );
+        }
     },
 );
 
