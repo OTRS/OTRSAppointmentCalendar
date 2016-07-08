@@ -231,7 +231,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params, Data);
+                TargetNS.OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
             eventClick: function(CalEvent) {
@@ -240,7 +240,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     End: CalEvent.end,
                     CalEvent: CalEvent
                 };
-                OpenEditDialog(Params, Data);
+                TargetNS.OpenEditDialog(Params, Data);
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc) {
@@ -413,7 +413,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // Auto open appointment create screen
             if (Params.Appointment.AppointmentCreate) {
-                OpenEditDialog(Params, {
+                TargetNS.OpenEditDialog(Params, {
                     Start: Params.Appointment.AppointmentCreate.Start ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.Start) : $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
                     End: Params.Appointment.AppointmentCreate.End ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.End) : $.fullCalendar.moment().add(2, 'hours').startOf('hour'),
                     PluginKey: Params.Appointment.AppointmentCreate.PluginKey ? Params.Appointment.AppointmentCreate.PluginKey : null,
@@ -424,13 +424,13 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // Auto open appointment edit screen
             else if (Params.Appointment.AppointmentID) {
-                OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
+                TargetNS.OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
             }
 
             $('#' + Core.App.EscapeSelector(Params.Appointment.AppointmentCreateButton))
                 .off('click.AppointmentCalendar')
                 .on('click.AppointmentCalendar', function () {
-                    OpenEditDialog(Params, {
+                    TargetNS.OpenEditDialog(Params, {
                         Start: $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
                         End: $.fullCalendar.moment().add(2, 'hours').startOf('hour')
                     });
@@ -622,7 +622,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
+     * @public
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with configuration.
@@ -643,7 +643,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @description
      *      This method opens the appointment dialog after selecting a time period or an appointment.
      */
-    function OpenEditDialog(Params, AppointmentData) {
+    TargetNS.OpenEditDialog = function (Params, AppointmentData) {
         var Data = {
             ChallengeToken: Params.ChallengeToken,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
@@ -1767,6 +1767,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method submits an edit appointment call to the backend and refreshes the view.
       */
     TargetNS.EditAppointment = function (Data) {
+        if (Core.Config.Get('AppointmentCalendarAgendaOverview')) {
+            $('.OverviewControl').addClass('Loading');
+        }
+
         Core.AJAX.FunctionCall(
             Core.Config.Get('CGIHandle'),
             Data,
@@ -1776,6 +1780,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                     // Close the dialog
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+
+                    // Reload page if necessary
+                    if (Core.Config.Get('AppointmentCalendarAgendaOverview')) {
+                        window.location.reload();
+                    }
                 }
                 else {
                     if (Response.Error) {
