@@ -60,7 +60,7 @@
         <tr>
             <th style="width: 14px;"></th>
             <th style="width: 14px;">[% Translate("Start") | html %]</th>
-            <th>[% Translate("Name") | html %]</th>
+            <th>[% Translate("Title") | html %]</th>
         </tr>
     </thead>
     <tbody>
