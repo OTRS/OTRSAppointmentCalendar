@@ -41,6 +41,7 @@
         <File Permission="640" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm"/>
+        <File Permission="640" Location="Kernel/Modules/AgentAppointmentAgendaOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarImport.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
@@ -53,6 +54,7 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarImport.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
@@ -81,6 +83,7 @@
         <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
+        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCreate.t"/>
@@ -91,6 +94,7 @@
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/spectrum-1.8.0/spectrum.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
+        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Agenda.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.2.1/scheduler.min.js"/>

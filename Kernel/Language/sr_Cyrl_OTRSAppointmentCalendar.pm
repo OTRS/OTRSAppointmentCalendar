@@ -31,7 +31,7 @@ sub Data {
     $Self->{Translation}->{'Successfully imported %s appointment(s) to calendar %s.'} = 'Успешно увезено %s термин(а) у календар %s.';
     $Self->{Translation}->{'Calendar Management'} = 'Управљање календарима';
     $Self->{Translation}->{'Calendar Overview'} = 'Преглед календара';
-    $Self->{Translation}->{'Add new Calendar'} = 'Додај нови календар';
+    $Self->{Translation}->{'Add Calendar'} = 'Додај календар';
     $Self->{Translation}->{'Import Calendar'} = 'Увези календар';
     $Self->{Translation}->{'Filter for calendars'} = 'Филтер за календаре';
     $Self->{Translation}->{'Depending on the group field, the system will allow users the access to the calendar according to their permission level.'} =
