@@ -16,20 +16,31 @@
 [% RenderBlockStart("ContentSmallAppointmentFilter") %]
 <div class="DashboardActions">
     <ul class="AppointmentFilter Tab Actions">
-        <li class="[% Data.item("Agent::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Today" class="[% Data.item("Today::Selected") | html %]" title="[% Translate("Today") | html %]">[% Translate("Today") | html %] ([% Data.TodayCount | html %])</a></li>
-        <li class="[% Data.item("Customer::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Tomorrow" class="[% Data.item("Tomorrow::Selected") | html %]" title="[% Translate("Tomorrow") | html %]">[% Translate("Tomorrow") | html %] ([% Data.TomorrowCount | html %])</a></li>
-        <li class="[% Data.item("Customer::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Soon" class="[% Data.item("Soon::Selected") | html %]" title="[% Translate("Soon") | html %] ([% Translate("5 days") | html %])">[% Translate("Soon") | html %] ([% Data.SoonCount | html %])</a></li>
+        <li class="[% Data.item("Today::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Today" class="[% Data.item("Today::Selected") | html %]" title="[% Translate("Today") | html %]">[% Translate("Today") | html %] ([% Data.TodayCount | html %])</a></li>
+        <li class="[% Data.item("Tomorrow::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Tomorrow" class="[% Data.item("Tomorrow::Selected") | html %]" title="[% Translate("Tomorrow") | html %]">[% Translate("Tomorrow") | html %] ([% Data.TomorrowCount | html %])</a></li>
+        <li class="[% Data.item("Soon::Selected") | html %]"><a href="#" id="Dashboard[% Data.Name | html %]Soon" class="[% Data.item("Soon::Selected") | html %]" title="[% Translate("Soon") | html %] ([% Translate("5 days") | html %])">[% Translate("Soon") | html %] ([% Data.SoonCount | html %])</a></li>
     </ul>
 </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
-    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Agent').unbind('click').bind('click', function(){
-        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Agent', function () {
+
+    // load filter for today
+    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Today').unbind('click').bind('click', function(){
+        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Today', function () {
         });
         return false;
     });
-    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Customer').unbind('click').bind('click', function(){
-        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Customer', function () {
+
+    // load filter for tomorrow
+    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Tomorrow').unbind('click').bind('click', function(){
+        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Tomorrow', function () {
+        });
+        return false;
+    });
+
+    // load filter for soon
+    $('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]') + 'Soon').unbind('click').bind('click', function(){
+        Core.AJAX.ContentUpdate($('#Dashboard' + Core.App.EscapeSelector('[% Data.Name | html %]')), '[% Env("Baselink") %]Action=[% Env("Action") %];Subaction=Element;Name=[% Data.Name | html %];Filter=Soon', function () {
         });
         return false;
     });
@@ -43,91 +54,25 @@
 
 [% RenderBlockEnd("ContentSmallAppointmentFilter") %]
 
-[% RenderBlockStart("ContentSmallTodayTable") %]
+[% RenderBlockStart("ContentSmallTable") %]
 <table class="DataTable">
     <thead>
         <tr>
-            <td style="width: 14px;"></td>
-            <td style="width: 14px;">[% Translate("Start") | html %]</td>
-            <td>[% Translate("Name") | html %]</td>
-        </tr>
-    </thead>
-    <tbody>
-[% RenderBlockStart("ContentSmallTodayAppointmentRow") %]
-        <tr>
-            <td class="Center">
-                <label for="Calendar[% Data.CalendarID | html %]">
-                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
-                </label>
-            </td>
-            <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
-            <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>
-        </tr>
-[% RenderBlockEnd("ContentSmallTodayAppointmentRow") %]
-[% RenderBlockStart("ContentSmallTodayAppointmentNone") %]
-        <tr>
-            <td>
-                [% Translate("none") | html %]
-            </td>
-        </tr>
-[% RenderBlockEnd("ContentSmallTodayAppointmentNone") %]
-    </tbody>
-</table>
-[% RenderBlockEnd("ContentSmallTodayTable") %]
-
-<br>
-
-[% RenderBlockStart("ContentSmallTomorrowTable") %]
-<table class="DataTable">
-    <thead>
-        <tr>
-            <td style="width: 14px;"></td>
-            <td style="width: 14px;">[% Translate("Start") | html %]</td>
-            <td>[% Translate("Name") | html %]</td>
-        </tr>
-    </thead>
-    <tbody>
-[% RenderBlockStart("ContentSmallTomorrowAppointmentRow") %]
-        <tr>
-            <td class="Center">
-                <label for="Calendar[% Data.CalendarID | html %]">
-                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
-                </label>
-            </td>
-            <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
-            <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>
-        </tr>
-[% RenderBlockEnd("ContentSmallTomorrowAppointmentRow") %]
-[% RenderBlockStart("ContentSmallTomorrowAppointmentNone") %]
-        <tr>
-            <td>
-                [% Translate("none") | html %]
-            </td>
-        </tr>
-[% RenderBlockEnd("ContentSmallTomorrowAppointmentNone") %]
-    </tbody>
-</table>
-[% RenderBlockEnd("ContentSmallTomorrowTable") %]
-
-[% RenderBlockStart("ContentSmallNextDaysTable") %]
-<table class="DataTable">
-    <thead>
-        <tr>
-            <td style="width: 14px;"></td>
-            <td>[% Translate("Start") | html %]</td>
-            <td>[% Translate("Name") | html %]</td>
+            <th style="width: 14px;"></th>
+            <th style="width: 14px;">[% Translate("Start") | html %]</th>
+            <th>[% Translate("Name") | html %]</th>
         </tr>
     </thead>
     <tbody>
 [% RenderBlockStart("ContentSmallAppointmentRow") %]
-        <tr>
+        <tr class="MasterAction">
             <td class="Center">
                 <label for="Calendar[% Data.CalendarID | html %]">
-                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.Name | html %]"></span>
+                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
                 </label>
             </td>
-            <td>[% Data.StartTime | html %]</td>
-            <td>[% Data.Title | html %]</td>
+            <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
+            <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>
         </tr>
 [% RenderBlockEnd("ContentSmallAppointmentRow") %]
 [% RenderBlockStart("ContentSmallAppointmentNone") %]
@@ -139,4 +84,28 @@
 [% RenderBlockEnd("ContentSmallAppointmentNone") %]
     </tbody>
 </table>
-[% RenderBlockEnd("ContentSmallNextDaysTable") %]
+[% RenderBlockEnd("ContentSmallTable") %]
+
+[% WRAPPER JSOnDocumentComplete %]
+<script type="text/javascript">//<![CDATA[
+
+$('.MasterAction').bind('click', function (Event) {
+    var $MasterActionLink = $(this).find('.MasterActionLink');
+    // prevent MasterAction on Dynamic Fields links
+    if ($(Event.target).hasClass('DynamicFieldLink')) {
+        return true;
+    }
+    // only act if the link was not clicked directly
+    if (Event.target !== $MasterActionLink.get(0)) {
+        if (Event.ctrlKey || Event.metaKey) {
+            window.open($MasterActionLink.attr('href'));
+        }
+        else {
+            window.location = $MasterActionLink.attr('href');
+        }
+        return false;
+    }
+});
+
+//]]></script>
+[% END %]

@@ -61,8 +61,9 @@ sub new {
         }
     }
 
+    # set default filter if not set yet
     if ( !$Self->{Filter} ) {
-        $Self->{Filter} = $Self->{$PreferencesKey} || $Self->{Config}->{Filter} || 'Agent';
+        $Self->{Filter} = $Self->{$PreferencesKey} || $Self->{Config}->{Filter} || 'Today';
     }
 
     $Self->{PrefKey} = 'AppointmentDashboardPref' . $Self->{Name} . '-Shown';
@@ -170,54 +171,50 @@ sub Run {
         ValidID => 1,
     );
 
-    # seperate appointments to today, tomorrow and the next five days
+    # collect calendar and appointment data
+    # seperate appointments to today, tomorrow
+    # and the next five days (soon)
     my %Calendars;
-    my %AppointmentsToday;
-    my %AppointmentsTomorrow;
-    my %AppointmentsSoon;
+    my %Appointments;
+    my %AppointmentsCount;
 
     # check cache
-    my $CacheKeyCalendars                = $Self->{CacheKey} . '::Calendars';
-    my $CacheKeyAppointmentsToday        = $Self->{CacheKey} . '::AppointmentsToday';
-    my $CacheKeyAppointmentsTomorrow     = $Self->{CacheKey} . '::AppointmentsTomorrow';
-    my $CacheKeyAppointmentsSoon = $Self->{CacheKey} . '::AppointmentsSoon';
+    my $CacheKeyCalendars         = $Self->{CacheKey} . '::Calendars';
+    my $CacheKeyAppointments      = $Self->{CacheKey} . '::Appointments::' . $Self->{Filter};
+    my $CacheKeyAppointmentsCount = $Self->{CacheKey} . '::AppointmentsCount';
 
+    # get cached data
     my $DataCalendars = $CacheObject->Get(
         Type => 'Dashboard',
         Key  => $CacheKeyCalendars,
     );
-    my $DataAppointmentsToday = $CacheObject->Get(
+    my $DataAppointments = $CacheObject->Get(
         Type => 'Dashboard',
-        Key  => $CacheKeyAppointmentsToday,
+        Key  => $CacheKeyAppointments,
     );
-    my $DataAppointmentsTomorrow = $CacheObject->Get(
+    my $DataAppointmentsCount = $CacheObject->Get(
         Type => 'Dashboard',
-        Key  => $CacheKeyAppointmentsTomorrow,
-    );
-    my $DataAppointmentsSoon = $CacheObject->Get(
-        Type => 'Dashboard',
-        Key  => $CacheKeyAppointmentsSoon,
+        Key  => $CacheKeyAppointmentsCount,
     );
 
-    # disable cache
-    $DataCalendars                = 0;
-    $DataAppointmentsToday        = 0;
-    $DataAppointmentsTomorrow     = 0;
-    $DataAppointmentsSoon = 0;
+    # TESTING disable cache
+    $DataCalendars             = 0;
+    $DataAppointments          = 0;
+    $CacheKeyAppointmentsCount = 0;
 
-    # get needed information
+    # if cache is up-to-date, use the given data
     if (
         ref $DataCalendars eq 'HASH'
-        && ref $DataAppointmentsToday eq 'HASH'
-        && ref $DataAppointmentsTomorrow eq 'HASH'
-        && ref $DataAppointmentsSoon eq 'HASH'
+        && ref $DataAppointments eq 'HASH'
+        && ref $DataAppointmentsCount eq 'HASH'
         )
     {
-        %Calendars                = %{$DataCalendars};
-        %AppointmentsToday        = %{$DataAppointmentsToday};
-        %AppointmentsTomorrow     = %{$DataAppointmentsTomorrow};
-        %AppointmentsSoon = %{$DataAppointmentsSoon};
+        %Calendars         = %{$DataCalendars};
+        %Appointments      = %{$DataAppointments};
+        %AppointmentsCount = %{$DataAppointmentsCount};
     }
+
+    # collect the data again if necessary
     else {
 
         CALENDAR:
@@ -239,7 +236,7 @@ sub Run {
         );
 
         # prepare calendar appointments
-        my %Appointments;
+        my %AppointmentsUnsorted;
 
         CALENDARID:
         for my $CalendarID ( sort keys %Calendars ) {
@@ -261,64 +258,51 @@ sub Run {
                 next APPOINTMENT if !IsHashRefWithData($Appointment);
 
                 # save appointment in new hash for later sorting
-                $Appointments{ $Appointment->{AppointmentID} } = $Appointment;
+                $AppointmentsUnsorted{ $Appointment->{AppointmentID} } = $Appointment;
             }
         }
+
+        # get datetime strings for the dates with related offsets
+        # (today, tomorrow and soon - which means the next 5 days
+        # except today and tomorrow counted from current timestamp)
+        my %DateOffset = (
+            Today     => 0,
+            Tomorrow  => 86400,
+            PlusTwo   => 172800,
+            PlusThree => 259200,
+            PlusFour  => 345600,
+        );
+
+        my %Dates;
 
         # get current timestamp
         my $CurrentSystemTime = $CalendarHelperObject->CurrentSystemTime();
 
-        my $DateToday     = '';
-        my $DateTomorrow  = '';
-        my $DatePlusTwo   = '';
-        my $DatePlusThree = '';
-        my $DatePlusFour  = '';
+        for my $DateOffsetKey ( sort keys %DateOffset ) {
 
-        # get date of today
-        my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => $CurrentSystemTime,
-        );
+            # get date units with current offset
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $CurrentSystemTime + $DateOffset{$DateOffsetKey},
+            );
 
-        $DateToday = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
+            $Dates{$DateOffsetKey}
+                = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
+        }
 
-        # get date of tomorrow
-        ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => ( $CurrentSystemTime + 86400 ),
-        );
-
-        $DateTomorrow = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
-
-        # get date of today + 2
-        ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => ( $CurrentSystemTime + 172800 ),
-        );
-
-        $DatePlusTwo = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
-
-        # get date of today + 3
-        ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => ( $CurrentSystemTime + 259200 ),
-        );
-
-        $DatePlusThree = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
-
-        # get date of today + 4
-        ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => ( $CurrentSystemTime + 345600 ),
-        );
-
-        $DatePlusFour = sprintf( "%02d", $Year ) . '-' . sprintf( "%02d", $Month ) . '-' . sprintf( "%02d", $Day );
+        $AppointmentsCount{Today}    = 0;
+        $AppointmentsCount{Tomorrow} = 0;
+        $AppointmentsCount{Soon}     = 0;
 
         APPOINTMENTID:
-        for my $AppointmentID ( sort keys %Appointments ) {
+        for my $AppointmentID ( sort keys %AppointmentsUnsorted ) {
 
             next APPOINTMENTID if !$AppointmentID;
-            next APPOINTMENTID if !IsHashRefWithData( $Appointments{$AppointmentID} );
-            next APPOINTMENTID if !$Appointments{$AppointmentID}->{StartTime};
+            next APPOINTMENTID if !IsHashRefWithData( $AppointmentsUnsorted{$AppointmentID} );
+            next APPOINTMENTID if !$AppointmentsUnsorted{$AppointmentID}->{StartTime};
 
             # extract current date (without time)
             my $StartDateSystemTime = $CalendarHelperObject->SystemTimeGet(
-                String => $Appointments{$AppointmentID}->{StartTime},
+                String => $AppointmentsUnsorted{$AppointmentID}->{StartTime},
             );
 
             next APPOINTMENTID if !$StartDateSystemTime;
@@ -331,43 +315,53 @@ sub Run {
                 = sprintf( "%02d", $CYear ) . '-' . sprintf( "%02d", $CMonth ) . '-' . sprintf( "%02d", $CDay );
 
             # today
-            if ( $StartDate eq $DateToday ) {
-                $AppointmentsToday{$AppointmentID} = $Appointments{$AppointmentID};
+            if ( $StartDate eq $Dates{Today} ) {
+
+                $AppointmentsCount{Today}++;
+
+                if ( $Self->{Filter} eq 'Today' ) {
+                    $Appointments{$AppointmentID} = $AppointmentsUnsorted{$AppointmentID};
+                }
             }
 
-            # tomorror
-            elsif ( $StartDate eq $DateTomorrow ) {
-                $AppointmentsTomorrow{$AppointmentID} = $Appointments{$AppointmentID};
+            # tomorrow
+            elsif ( $StartDate eq $Dates{Tomorrow} ) {
+
+                $AppointmentsCount{Tomorrow}++;
+
+                if ( $Self->{Filter} eq 'Tomorrow' ) {
+                    $Appointments{$AppointmentID} = $AppointmentsUnsorted{$AppointmentID};
+                }
             }
 
-            # next five days
+            # soon
             elsif (
-                $StartDate eq $DatePlusTwo
-                || $StartDate eq $DatePlusThree
-                || $StartDate eq $DatePlusFour
+                $StartDate eq $Dates{PlusTwo}
+                || $StartDate eq $Dates{PlusThree}
+                || $StartDate eq $Dates{PlusFour}
                 )
             {
-                $AppointmentsSoon{$AppointmentID} = $Appointments{$AppointmentID};
+                $AppointmentsCount{Soon}++;
+
+                if ( $Self->{Filter} eq 'Soon' ) {
+                    $Appointments{$AppointmentID} = $AppointmentsUnsorted{$AppointmentID};
+                }
             }
         }
 
         # set cache for appointments
         $CacheObject->Set(
             Type  => 'Dashboard',
-            Key   => $CacheKeyAppointmentsToday,
-            Value => \%AppointmentsToday,
+            Key   => $CacheKeyAppointments,
+            Value => \%Appointments,
             TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
         );
+
+        # set cache for appointments count
         $CacheObject->Set(
             Type  => 'Dashboard',
-            Key   => $CacheKeyAppointmentsTomorrow,
-            Value => \%AppointmentsTomorrow,
-            TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
-        );
-        $CacheObject->Set(
-            Type  => 'Dashboard',
-            Key   => $CacheKeyAppointmentsSoon,
-            Value => \%AppointmentsSoon,
+            Key   => $CacheKeyAppointmentsCount,
+            Value => \%AppointmentsCount,
             TTL   => $Self->{Config}->{CacheTTLLocal} * 60,
         );
     }
@@ -375,15 +369,17 @@ sub Run {
     # get layout object
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
-    # prepare today table
+    my $AppointmentTableBlock = 'ContentSmallTable';
+
+    # prepare appointments table
     $LayoutObject->Block(
-        Name => 'ContentSmallTodayTable',
+        Name => 'ContentSmallTable',
     );
 
-    for my $AppointmentTodayID ( sort keys %AppointmentsToday ) {
+    for my $AppointmentID ( sort keys %Appointments ) {
 
         my $StartSystemTime = $CalendarHelperObject->SystemTimeGet(
-            String     => $AppointmentsToday{$AppointmentTodayID}->{StartTime},
+            String => $Appointments{$AppointmentID}->{StartTime},
         );
 
         my ( $ASecond, $AMinute, $AHour, $ADay, $AMonth, $AYear, $ADayOfWeek ) = $CalendarHelperObject->DateGet(
@@ -393,45 +389,23 @@ sub Run {
         my $StartTime = sprintf( "%02d", $AHour ) . ':' . sprintf( "%02d", $AMinute );
 
         $LayoutObject->Block(
-            Name => 'ContentSmallTodayAppointmentRow',
+            Name => 'ContentSmallAppointmentRow',
             Data => {
-                AppointmentID => $AppointmentsToday{$AppointmentTodayID}->{AppointmentID},
-                Title         => $AppointmentsToday{$AppointmentTodayID}->{Title},
+                AppointmentID => $Appointments{$AppointmentID}->{AppointmentID},
+                Title         => $Appointments{$AppointmentID}->{Title},
                 StartTime     => $StartTime,
-                StartTimeLong => $AppointmentsToday{$AppointmentTodayID}->{StartTime},
-                Color         => $Calendars{ $AppointmentsToday{$AppointmentTodayID}->{CalendarID} }->{Color},
-                CalendarName  => $Calendars{ $AppointmentsToday{$AppointmentTodayID}->{CalendarID} }->{CalendarName},
+                StartTimeLong => $Appointments{$AppointmentID}->{StartTime},
+                Color         => $Calendars{ $Appointments{$AppointmentID}->{CalendarID} }->{Color},
+                CalendarName  => $Calendars{ $Appointments{$AppointmentID}->{CalendarID} }->{CalendarName},
             },
         );
     }
 
-    # prepare tomorrow table
-    $LayoutObject->Block(
-        Name => 'ContentSmallTomorrowTable',
-    );
+    if ( !IsHashRefWithData( \%Appointments ) ) {
 
-    for my $AppointmentTomorrowID ( sort keys %AppointmentsTomorrow ) {
-
-        my $StartSystemTime = $CalendarHelperObject->SystemTimeGet(
-            String     => $AppointmentsTomorrow{$AppointmentTomorrowID}->{StartTime},
-        );
-
-        my ( $ASecond, $AMinute, $AHour, $ADay, $AMonth, $AYear, $ADayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => $StartSystemTime,
-        );
-
-        my $StartTime = sprintf( "%02d", $AHour ) . ':' . sprintf( "%02d", $AMinute );
-
+        # show up message for no appointments
         $LayoutObject->Block(
-            Name => 'ContentSmallTomorrowAppointmentRow',
-            Data => {
-                AppointmentID => $AppointmentsTomorrow{$AppointmentTomorrowID}->{AppointmentID},
-                Title         => $AppointmentsTomorrow{$AppointmentTomorrowID}->{Title},
-                StartTime     => $StartTime,
-                StartTimeLong => $AppointmentsTomorrow{$AppointmentTomorrowID}->{StartTime},
-                Color         => $Calendars{ $AppointmentsTomorrow{$AppointmentTomorrowID}->{CalendarID} }->{Color},
-                CalendarName  => $Calendars{ $AppointmentsTomorrow{$AppointmentTomorrowID}->{CalendarID} }->{CalendarName},
-            },
+            Name => 'ContentSmallAppointmentNone',
         );
     }
 
@@ -536,10 +510,11 @@ sub Run {
             %{ $Self->{Config} },
             %{ $Online->{UserCount} },
             %Summary,
-            Name          => $Self->{Name},
-            TodayCount    => scalar keys %AppointmentsToday,
-            TomorrowCount => scalar keys %AppointmentsTomorrow,
-            SoonCount     => scalar keys %AppointmentsSoon,
+            Name => $Self->{Name},
+
+            TodayCount    => $AppointmentsCount{Today},
+            TomorrowCount => $AppointmentsCount{Tomorrow},
+            SoonCount     => $AppointmentsCount{Soon},
         },
     );
 
@@ -566,6 +541,8 @@ sub Run {
             %PageNav,
         },
     );
+
+    $Self->{Filter} = 'Agent';
 
     # show agent/customer
     my %OnlineUser = %{ $Online->{User}->{ $Self->{Filter} } };
