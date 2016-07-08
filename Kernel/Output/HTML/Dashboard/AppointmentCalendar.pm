@@ -73,7 +73,7 @@ sub new {
 
     $Self->{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
 
-    $Self->{CacheKey} = $Self->{Name} . '::' . $Self->{Filter};
+    $Self->{CacheKey} = $Self->{Name} . '::';
 
     # get configuration for the full name order for user names
     # and append it to the cache key to make sure, that the
@@ -179,9 +179,9 @@ sub Run {
     my %AppointmentsCount;
 
     # check cache
-    my $CacheKeyCalendars         = $Self->{CacheKey} . '::Calendars';
-    my $CacheKeyAppointments      = $Self->{CacheKey} . '::Appointments::' . $Self->{Filter};
-    my $CacheKeyAppointmentsCount = $Self->{CacheKey} . '::AppointmentsCount';
+    my $CacheKeyCalendars         = $Self->{CacheKey} . $Self->{UserID} . '::Calendars';
+    my $CacheKeyAppointments      = $Self->{CacheKey} . $Self->{UserID} . '::Appointments::' . $Self->{Filter};
+    my $CacheKeyAppointmentsCount = $Self->{CacheKey} . $Self->{UserID} . '::AppointmentsCount';
 
     # get cached data
     my $DataCalendars = $CacheObject->Get(
@@ -381,7 +381,10 @@ sub Run {
             SystemTime => $StartSystemTime,
         );
 
+        # prepare dates and times
         my $StartTime = sprintf( "%02d", $AHour ) . ':' . sprintf( "%02d", $AMinute );
+        my $StartTimeLong = $LayoutObject->{LanguageObject}
+            ->FormatTimeString( $Appointments{$AppointmentID}->{StartTime}, 'DateFormatLong' );
 
         $LayoutObject->Block(
             Name => 'ContentSmallAppointmentRow',
@@ -389,7 +392,7 @@ sub Run {
                 AppointmentID => $Appointments{$AppointmentID}->{AppointmentID},
                 Title         => $Appointments{$AppointmentID}->{Title},
                 StartTime     => $StartTime,
-                StartTimeLong => $Appointments{$AppointmentID}->{StartTime},
+                StartTimeLong => $StartTimeLong,
                 Color         => $Calendars{ $Appointments{$AppointmentID}->{CalendarID} }->{Color},
                 CalendarName  => $Calendars{ $Appointments{$AppointmentID}->{CalendarID} }->{CalendarName},
             },

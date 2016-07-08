@@ -402,7 +402,7 @@
                 <Item Key="Limit">10</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">0</Item>
-                <Item Key="CacheTTLLocal">5</Item>
+                <Item Key="CacheTTLLocal">2</Item>
             </Hash>
         </Setting>
     </ConfigItem>
