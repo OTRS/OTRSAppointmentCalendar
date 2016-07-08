@@ -21,6 +21,13 @@
                             <span><i class="fa fa-calendar-o"></i>[% Translate("Manage Calendars") | html %]</span>
                         </a>
                     </li>
+[% RenderBlockStart("AppointmentCreateButton") %]
+                    <li>
+                        <a id="AppointmentCreateButton" href="#" class="CallForAction Fullsize Center" title="[% Translate("Add new Appointment") | html %]">
+                            <span><i class="fa fa-plus-square"></i>[% Translate("Add Appointment") | html %]</span>
+                        </a>
+                    </li>
+[% RenderBlockEnd("AppointmentCreateButton") %]
                 </ul>
             </div>
         </div>
@@ -237,6 +244,7 @@ Core.Agent.AppointmentCalendar.Init({
     Appointment: {
         AppointmentCreate: [% Data.AppointmentCreate || "null" %],
         AppointmentID: [% Data.AppointmentID | JSON %],
+        AppointmentCreateButton: 'AppointmentCreateButton'
     },
     Calendars: {
         Sources: {

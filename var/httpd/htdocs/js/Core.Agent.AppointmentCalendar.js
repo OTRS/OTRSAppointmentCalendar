@@ -79,6 +79,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.Appointment.AppointmentCreate.Search - Search string for the plugin module search.
      * @param {String} Params.Appointment.AppointmentCreate.ObjectID - Object ID for the plugin module search.
      * @param {Integer} Params.Appointment.AppointmentID - Auto open appointment edit screen with specified appointment (optional).
+     * @param {String} Params.Appointment.AppointmentCreateButton - ID of the add appointment button.
      * @param {Object} Params.Calendars - Object with calendar parameters.
      * @param {Array} Params.Calendars.Sources - Array of calendar sources.
      * @param {jQueryObjects} Params.Calendars.Switches - Array of calendar switch elements.
@@ -425,6 +426,17 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             else if (Params.Appointment.AppointmentID) {
                 OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
             }
+
+            $('#' + Core.App.EscapeSelector(Params.Appointment.AppointmentCreateButton))
+                .off('click.AppointmentCalendar')
+                .on('click.AppointmentCalendar', function () {
+                    OpenEditDialog(Params, {
+                        Start: $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
+                        End: $.fullCalendar.moment().add(2, 'hours').startOf('hour')
+                    });
+
+                    return false;
+                });
         }
 
         if (Params.CalendarSettingsButton) {

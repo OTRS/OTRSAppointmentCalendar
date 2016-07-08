@@ -149,6 +149,10 @@ sub Run {
                 }
 
                 $LayoutObject->Block(
+                    Name => 'AppointmentCreateButton',
+                );
+
+                $LayoutObject->Block(
                     Name => 'CalendarDiv',
                     Data => {
                         %Param,
@@ -442,7 +446,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

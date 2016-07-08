@@ -24,7 +24,7 @@ sub Data {
     # Template: AgentAppointmentCalendarManage
     $Self->{Translation}->{'Calendar Management'} = 'Kalenderverwaltung';
     $Self->{Translation}->{'Calendar Overview'} = 'Kalenderübersicht';
-    $Self->{Translation}->{'Add new Calendar'} = 'Neuen Kalender anlegen';
+    $Self->{Translation}->{'Add Calendar'} = 'Neuen Kalender anlegen';
     $Self->{Translation}->{'Calendar Import'} = 'Kalender importieren';
     $Self->{Translation}->{'Here you can upload a file to import calendar to your system. The file needs to be in .ics format.'} =
         'An dieser Stelle können Sie eine Datei hochladen, um Kalender in Ihr System zu importieren. Die Datei muss im ICS-Format vorliegen.';
