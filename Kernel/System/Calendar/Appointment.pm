@@ -169,7 +169,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -373,7 +373,7 @@ sub AppointmentCreate {
         );
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            $AppointmentID = $Row[0];
+            $AppointmentID = $Row[0] || '';
         }
 
         # return if there is not appointment created
@@ -1118,7 +1118,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
