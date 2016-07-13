@@ -996,11 +996,11 @@ sub AppointmentGet {
         $Result{RecurrenceID}                          = $Row[18];
         $Result{RecurrenceExclude}                     = \@RecurrenceExclude;
         $Result{NotificationDate}                      = $Row[20] || '';
-        $Result{NotificationTemplate}                  = $Row[21];
-        $Result{NotificationCustom}                    = $Row[22];
-        $Result{NotificationCustomRelativeUnitCount}   = $Row[23];
-        $Result{NotificationCustomRelativeUnit}        = $Row[24];
-        $Result{NotificationCustomRelativePointOfTime} = $Row[25];
+        $Result{NotificationTemplate}                  = $Row[21] || '';
+        $Result{NotificationCustom}                    = $Row[22] || '';
+        $Result{NotificationCustomRelativeUnitCount}   = $Row[23] || 0;
+        $Result{NotificationCustomRelativeUnit}        = $Row[24] || '';
+        $Result{NotificationCustomRelativePointOfTime} = $Row[25] || '';
         $Result{NotificationCustomDateTime}            = $Row[26] || '';
         $Result{CreateTime}                            = $Row[27];
         $Result{CreateBy}                              = $Row[28];
