@@ -173,6 +173,8 @@ $Selenium->RunTest(
         # wait for reload to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
 
+        sleep 1;
+
         # verify first occurrence of the third appointment is visible
         $Self->True(
             $Selenium->execute_script(
