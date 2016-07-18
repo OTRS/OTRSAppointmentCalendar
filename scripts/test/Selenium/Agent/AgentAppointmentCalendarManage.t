@@ -62,7 +62,7 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarManage");
 
         # click Add new calendar
-        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->click();
+        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->VerifiedClick();
 
         # write calendar name
         $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys("Calendar $RandomID");
@@ -169,8 +169,7 @@ $Selenium->RunTest(
             $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',
         );
-
-        }
+    },
 );
 
 1;
