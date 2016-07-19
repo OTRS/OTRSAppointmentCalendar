@@ -100,7 +100,9 @@ $Selenium->RunTest(
         $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
@@ -114,7 +116,9 @@ $Selenium->RunTest(
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify first appointment is visible
         $Self->True(
@@ -126,7 +130,9 @@ $Selenium->RunTest(
         $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 2');
@@ -141,7 +147,9 @@ $Selenium->RunTest(
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify first appointment is visible
         $Self->True(
@@ -153,7 +161,9 @@ $Selenium->RunTest(
         $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
@@ -171,23 +181,28 @@ $Selenium->RunTest(
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
-        sleep 1;
+        # refresh the page
+        $Selenium->VerifiedRefresh();
 
         # verify first occurrence of the third appointment is visible
         $Self->True(
-            $Selenium->execute_script(
-                "return \$('.MasterActionLink:contains(\"Appointment 3\")').length"
-                ) > 0,
-            'First occurrence of the third appointment visible',
+            index( $Selenium->get_page_source(), 'Appointment 3' ) > -1,
+            'Third appointment visible',
         );
 
         # click on third appointment master
-        $Selenium->execute_script("return \$('.MasterActionLink:contains(\"Appointment 3\")').first().click()"),
+        $Selenium->execute_script(
+            "return \$('.MasterActionLink:contains(\"Appointment 3\")').first().click();"
+        );
 
-            # wait until form and overlay has loaded, if neccessary
-            $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        # wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
         # click on Delete
         $Selenium->find_element( '#EditFormDelete', 'css' )->click();
@@ -196,14 +211,13 @@ $Selenium->RunTest(
         $Selenium->accept_alert();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify all third appointment occurences have been removed
-        $Self->Is(
-            $Selenium->execute_script(
-                "return \$('.MasterActionLink:contains(\"Appointment 3\")').length"
-            ),
-            '0',
+        $Self->True(
+            index( $Selenium->get_page_source(), 'Appointment 3' ) == -1,
             'All third appointment occurrences removed',
         );
     },
