@@ -24,13 +24,12 @@ $Selenium->RunTest(
                 RestoreSystemConfiguration => 1,
             },
         );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
-        my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
-        my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
-        my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
-        my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+        my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
+        my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
+        my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+        my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
 
@@ -93,6 +92,32 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
+        my $CalendarWeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 7;
+
+        # get start of the week
+        my $StartTime = $CalendarHelperObject->CurrentSystemTime();
+        my ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
+            SystemTime => $StartTime,
+        );
+        while ( $WeekDay != $CalendarWeekDayStart ) {
+            $StartTime -= 60 * 60 * 24;
+            ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
+                SystemTime => $StartTime,
+            );
+        }
+        my ($Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek) = $CalendarHelperObject->DateGet(
+            SystemTime => $StartTime,
+        );
+
+        # appointment times will always be the same at the start of the week
+        my %StartTime = (
+            Day    => $Day,
+            Month  => $Month,
+            Year   => $Year,
+            Hour   => 12,
+            Minute => 15,
+        );
+
         # go to agenda overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentAgendaOverview");
 
@@ -104,8 +129,13 @@ $Selenium->RunTest(
             JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
         );
 
-        # enter some data
+        # create a regular appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
+        for my $Group ( qw(Start End) ) {
+            for my $Field ( qw(Day Month Year Hour Minute) ) {
+                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar1{CalendarID}
@@ -134,8 +164,13 @@ $Selenium->RunTest(
             JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
         );
 
-        # enter some data
+        # create an all-day appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 2');
+        for my $Group ( qw(Start End) ) {
+            for my $Field ( qw(Day Month Year) ) {
+                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar2{CalendarID}
@@ -165,8 +200,13 @@ $Selenium->RunTest(
             JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
         );
 
-        # enter some data
+        # create recurring appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
+        for my $Group ( qw(Start End) ) {
+            for my $Field ( qw(Day Month Year Hour Minute) ) {
+                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar3{CalendarID}
@@ -175,6 +215,10 @@ $Selenium->RunTest(
         $Selenium->execute_script(
             "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
         # click on Save
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
