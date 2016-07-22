@@ -172,7 +172,6 @@ $Selenium->RunTest(
                 . $Calendar3{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
         $Selenium->execute_script(
             "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
@@ -184,9 +183,6 @@ $Selenium->RunTest(
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
         );
-
-        # refresh the page
-        $Selenium->VerifiedRefresh();
 
         # verify first occurrence of the third appointment is visible
         $Self->True(
