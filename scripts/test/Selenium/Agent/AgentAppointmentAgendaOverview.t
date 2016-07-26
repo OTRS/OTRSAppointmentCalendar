@@ -132,8 +132,9 @@ $Selenium->RunTest(
         # create a regular appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
         for my $Group (qw(Start End)) {
-            for my $Field (qw(Day Month Year Hour Minute)) {
+            for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -150,8 +151,6 @@ $Selenium->RunTest(
             JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
         );
 
-        sleep 1;
-
         # verify first appointment is visible
         $Self->True(
             index( $Selenium->get_page_source(), 'Appointment 1' ) > -1,
@@ -167,10 +166,12 @@ $Selenium->RunTest(
         );
 
         # create an all-day appointment
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 2');
+        $Selenium->find_element( 'Title',  'name' )->send_keys('Appointment 2');
+        $Selenium->find_element( 'AllDay', 'name' )->click();
         for my $Group (qw(Start End)) {
             for my $Field (qw(Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -178,7 +179,6 @@ $Selenium->RunTest(
                 . $Calendar2{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'AllDay', 'name' )->click();
 
         # click on Save
         $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
@@ -187,8 +187,6 @@ $Selenium->RunTest(
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
         );
-
-        sleep 1;
 
         # verify first appointment is visible
         $Self->True(
@@ -207,8 +205,9 @@ $Selenium->RunTest(
         # create recurring appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
         for my $Group (qw(Start End)) {
-            for my $Field (qw(Day Month Year Hour Minute)) {
+            for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -231,8 +230,6 @@ $Selenium->RunTest(
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
         );
-
-        sleep 1;
 
         # verify first occurrence of the third appointment is visible
         $Self->True(
