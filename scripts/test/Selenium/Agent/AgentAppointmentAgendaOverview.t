@@ -122,7 +122,7 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentAgendaOverview");
 
         # click on the appointment create button
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor(
@@ -134,7 +134,6 @@ $Selenium->RunTest(
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
-                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -143,8 +142,10 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
 
+        sleep 1;
+
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
         $Selenium->WaitFor(
@@ -158,7 +159,7 @@ $Selenium->RunTest(
         );
 
         # click on the create button for another appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor(
@@ -167,11 +168,10 @@ $Selenium->RunTest(
 
         # create an all-day appointment
         $Selenium->find_element( 'Title',  'name' )->send_keys('Appointment 2');
-        $Selenium->find_element( 'AllDay', 'name' )->click();
+        $Selenium->find_element( 'AllDay', 'name' )->VerifiedClick();
         for my $Group (qw(Start End)) {
             for my $Field (qw(Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
-                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -180,8 +180,10 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
 
+        sleep 1;
+
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
         $Selenium->WaitFor(
@@ -195,7 +197,7 @@ $Selenium->RunTest(
         );
 
         # click again on the create button for an appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor(
@@ -207,7 +209,6 @@ $Selenium->RunTest(
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
-                sleep 1;
             }
         }
         $Selenium->execute_script(
@@ -223,8 +224,10 @@ $Selenium->RunTest(
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
+        sleep 1;
+
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
         $Selenium->WaitFor(
@@ -238,9 +241,7 @@ $Selenium->RunTest(
         );
 
         # click on third appointment master
-        $Selenium->execute_script(
-            "return \$('.MasterActionLink:contains(\"Appointment 3\")').first().click();"
-        );
+        $Selenium->find_element( 'Appointment 3', 'link_text' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor(
