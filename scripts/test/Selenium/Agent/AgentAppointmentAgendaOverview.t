@@ -24,13 +24,12 @@ $Selenium->RunTest(
                 RestoreSystemConfiguration => 1,
             },
         );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
-        my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
-        my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
-        my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
-        my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+        my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
+        my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
+        my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+        my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
 
@@ -93,28 +92,67 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
+        my $CalendarWeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 7;
+
+        # get start of the week
+        my $StartTime = $CalendarHelperObject->CurrentSystemTime();
+        my ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
+            SystemTime => $StartTime,
+        );
+        while ( $WeekDay != $CalendarWeekDayStart ) {
+            $StartTime -= 60 * 60 * 24;
+            ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
+                SystemTime => $StartTime,
+            );
+        }
+        my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+            SystemTime => $StartTime,
+        );
+
+        # appointment times will always be the same at the start of the week
+        my %StartTime = (
+            Day    => $Day,
+            Month  => $Month,
+            Year   => $Year,
+            Hour   => 12,
+            Minute => 15,
+        );
+
         # go to agenda overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentAgendaOverview");
 
         # click on the appointment create button
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
-        # enter some data
+        # create a regular appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
+        for my $Group (qw(Start End)) {
+            for my $Field (qw(Hour Minute Day Month Year)) {
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
 
+        sleep 1;
+
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify first appointment is visible
         $Self->True(
@@ -123,25 +161,38 @@ $Selenium->RunTest(
         );
 
         # click on the create button for another appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
-        # enter some data
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 2');
+        # create an all-day appointment
+        $Selenium->find_element( 'Title',  'name' )->send_keys('Appointment 2');
+        $Selenium->find_element( 'AllDay', 'name' )->VerifiedClick();
+        for my $Group (qw(Start End)) {
+            for my $Field (qw(Day Month Year)) {
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar2{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'AllDay', 'name' )->click();
+
+        sleep 1;
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify first appointment is visible
         $Self->True(
@@ -150,42 +201,58 @@ $Selenium->RunTest(
         );
 
         # click again on the create button for an appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
-        # enter some data
+        # create recurring appointment
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
+        for my $Group (qw(Start End)) {
+            for my $Field (qw(Hour Minute Day Month Year)) {
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
+            }
+        }
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar3{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'EndHour', 'name' )->send_keys('18');
         $Selenium->execute_script(
             "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
+        $Selenium->execute_script(
+            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+        );
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
+
+        sleep 1;
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify first occurrence of the third appointment is visible
         $Self->True(
-            $Selenium->execute_script(
-                "return \$('.MasterActionLink:contains(\"Appointment 3\")').length"
-                ) > 0,
-            'First occurrence of the third appointment visible',
+            index( $Selenium->get_page_source(), 'Appointment 3' ) > -1,
+            'Third appointment visible',
         );
 
         # click on third appointment master
-        $Selenium->execute_script("return \$('.MasterActionLink:contains(\"Appointment 3\")').first().click()"),
+        $Selenium->find_element( 'Appointment 3', 'link_text' )->VerifiedClick();
 
-            # wait until form and overlay has loaded, if neccessary
-            $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        # wait until form and overlay has loaded, if neccessary
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
+        );
 
         # click on Delete
         $Selenium->find_element( '#EditFormDelete', 'css' )->click();
@@ -194,14 +261,13 @@ $Selenium->RunTest(
         $Selenium->accept_alert();
 
         # wait for reload to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".OverviewControl.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+        );
 
         # verify all third appointment occurences have been removed
-        $Self->Is(
-            $Selenium->execute_script(
-                "return \$('.MasterActionLink:contains(\"Appointment 3\")').length"
-            ),
-            '0',
+        $Self->True(
+            index( $Selenium->get_page_source(), 'Appointment 3' ) == -1,
             'All third appointment occurrences removed',
         );
     },
