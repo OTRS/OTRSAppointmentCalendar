@@ -133,7 +133,9 @@ $Selenium->RunTest(
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
-                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
             }
         }
         $Selenium->execute_script(
@@ -171,7 +173,9 @@ $Selenium->RunTest(
         $Selenium->find_element( 'AllDay', 'name' )->VerifiedClick();
         for my $Group (qw(Start End)) {
             for my $Field (qw(Day Month Year)) {
-                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
             }
         }
         $Selenium->execute_script(
@@ -208,7 +212,9 @@ $Selenium->RunTest(
         $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
-                $Selenium->find_element( "$Group$Field", 'name' )->send_keys( $StartTime{$Field} );
+                $Selenium->execute_script(
+                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                );
             }
         }
         $Selenium->execute_script(
