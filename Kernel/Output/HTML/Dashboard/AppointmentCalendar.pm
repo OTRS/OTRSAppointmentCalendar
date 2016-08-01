@@ -257,6 +257,11 @@ sub Run {
                 next APPOINTMENT if !$Appointment;
                 next APPOINTMENT if !IsHashRefWithData($Appointment);
 
+                # save system time of StartTime
+                $Appointment->{SystemTimeStart} = $CalendarHelperObject->SystemTimeGet(
+                    String => $Appointment->{StartTime},
+                );
+
                 # save appointment in new hash for later sorting
                 $AppointmentsUnsorted{ $Appointment->{AppointmentID} } = $Appointment;
             }
@@ -376,8 +381,10 @@ sub Run {
         Name => 'ContentSmallTable',
     );
 
-    for my $AppointmentID ( sort keys %Appointments ) {
-
+    for my $AppointmentID (
+        sort { $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart} } keys %Appointments
+        )
+    {
         my $StartSystemTime = $CalendarHelperObject->SystemTimeGet(
             String => $Appointments{$AppointmentID}->{StartTime},
         );
