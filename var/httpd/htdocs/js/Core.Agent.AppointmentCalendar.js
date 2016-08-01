@@ -1195,6 +1195,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method initializes the reminder section behavior.
      */
     TargetNS.NotificationInit = function (Fields) {
+        var NotificationCustomStringDiv = Fields.$NotificationCustomStringDiv.attr('id');
 
         if (Fields.$NotificationTemplate.val() !== 'Custom') {
 
@@ -1215,9 +1216,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // enable relative date fields
             Fields.$NotificationCustomRelativeInput.val(1);
-            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', false).trigger('redraw.InputField');
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false).prop('readonly', false);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', false);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false);
 
             // disable the custom date time fields
             Fields.$NotificationCustomDateTimeInput.val('');
@@ -1241,10 +1242,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             // disable relative date fields
             Fields.$NotificationCustomRelativeInput.val('');
             Fields.$NotificationCustomRelativeInput.prop('checked', false);
-            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', true).trigger('redraw.InputField');
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true).prop('readonly', true);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', true);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true);
         }
+
+        // TODO: Workaround for InputFields bug in the framework (disabled attribute not checked after initialization)
+        Core.UI.InputFields.Deactivate('#' + Core.App.EscapeSelector(NotificationCustomStringDiv));
+        Core.UI.InputFields.Activate('#' + Core.App.EscapeSelector(NotificationCustomStringDiv));
 
         // Register change event handler
         Fields.$NotificationTemplate.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
