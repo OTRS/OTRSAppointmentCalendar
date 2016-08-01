@@ -87,25 +87,6 @@ sub new {
 sub Preferences {
     my ( $Self, %Param ) = @_;
 
-    # get a list of at least readable calendars
-    my @CalendarList = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarList(
-        UserID  => $Self->{UserID},
-        ValidID => 1,
-    );
-
-    # prepare calendars
-    my %Calendars;
-
-    CALENDAR:
-    for my $Calendar (@CalendarList) {
-
-        next CALENDAR if !$Calendar;
-        next CALENDAR if !IsHashRefWithData($Calendar);
-        next CALENDAR if $Calendars{ $Calendar->{CalendarID} };
-
-        $Calendars{ $Calendar->{CalendarID} } = $Calendar->{CalendarName};
-    }
-
     my @Params = (
         {
             Desc  => Translatable('Shown'),
@@ -381,6 +362,12 @@ sub Run {
         Name => 'ContentSmallTable',
     );
 
+    # get timezone offset for current user
+    my $TimezoneOffsetRaw = $CalendarHelperObject->TimezoneOffsetGet(
+        UserID => $Self->{UserID},
+    );
+    my $TimezoneOffset = $TimezoneOffsetRaw * 60 * 60;
+
     for my $AppointmentID (
         sort { $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart} } keys %Appointments
         )
@@ -390,7 +377,7 @@ sub Run {
         );
 
         my ( $ASecond, $AMinute, $AHour, $ADay, $AMonth, $AYear, $ADayOfWeek ) = $CalendarHelperObject->DateGet(
-            SystemTime => $StartSystemTime,
+            SystemTime => $StartSystemTime + $TimezoneOffset,
         );
 
         # prepare dates and times
@@ -465,7 +452,8 @@ sub Run {
     my $Limit = $LayoutObject->{ $Self->{PrefKey} } || $Self->{Config}->{Limit};
 
     # check for refresh time
-    my $Refresh  = 30;              # 30 seconds
+    my $Refresh = $LayoutObject->{ $Self->{PrefKey} . 'Refresh' } // 1;
+
     my $NameHTML = $Self->{Name};
     $NameHTML =~ s{-}{_}xmsg;
 
@@ -475,7 +463,7 @@ sub Run {
             %{ $Self->{Config} },
             Name        => $Self->{Name},
             NameHTML    => $NameHTML,
-            RefreshTime => $Refresh,
+            RefreshTime => $Refresh * 60,
         },
         KeepScriptTags => $Param{AJAX},
     );
