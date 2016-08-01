@@ -109,12 +109,14 @@ creates a new appointment.
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
-        NotificationTime                  => '2016-01-01 17:0:00',        # (optional) Point of time to execute the notification event
+        NotificationTime                  => '2016-01-01 17:00:00',       # (optional) Point of time to execute the notification event
         NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
         NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
         NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
         NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
+        NotificationCustomDateTime        => '2016-01-01 17:00:00',       # (optional) Notification date time for custom template
+
         UserID                => 1,                                       # (required) UserID
     );
 
@@ -1050,18 +1052,14 @@ updates an existing appointment.
         RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
         RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
 
-        NotificationDate                      => '2016-01-01 17:0:00',    # (optional) Point of time to execute the notification event
+        NotificationDate                      => '2016-01-01 17:00:00',   # (optional) Point of time to execute the notification event
         NotificationTemplate                  => 'Custom',                # (optional) Template to be used for notification point of time
         NotificationCustom                    => '12',                    # (optional) minutes, hours or days count for custom template
         NotificationCustomRelativeUnitCount   => 'minutes',               # (optional) minutes, hours or days unit for custom template
         NotificationCustomRelativeUnit        => 'minutes',               # (optional) minutes, hours or days unit for custom template
         NotificationCustomRelativePointOfTime => 'beforestart',           # (optional) Point of execute for custom templates
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
-        NotificationCustomDateTimeYear        => 'minutes',               # (optional) minutes, hours or days unit for custom template
-        NotificationCustomDateTimeMonth       => 'minutes',               # (optional) minutes, hours or days unit for custom template
-        NotificationCustomDateTimeDay         => 'minutes',               # (optional) minutes, hours or days unit for custom template
-        NotificationCustomDateTimeHour        => 'minutes',               # (optional) minutes, hours or days unit for custom template
-        NotificationCustomDateTimeMinute      => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomDateTime            => '2016-01-01 17:00:00',   # (optional) Notification date time for custom template
 
         UserID                => 1,                                       # (required) UserID
     );
@@ -2088,28 +2086,6 @@ sub _AppointmentNotificationPrepare {
         $Param{Data}->{$PossibleParam} ||= undef;
     }
 
-    # prepare custom datetime string
-    if (
-        IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
-        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
-        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
-        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
-        && IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
-        )
-    {
-        $Param{Data}->{NotificationCustomDateTime} =
-            $Param{Data}->{NotificationCustomDateTimeYear}
-            . '-'
-            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
-            . '-'
-            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
-            . ' '
-            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
-            . ':'
-            . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
-            . ':00';
-    }
-
     return if !$Param{Data}->{NotificationTemplate};
 
     # get a local calendar helper object
@@ -2216,29 +2192,12 @@ sub _AppointmentNotificationPrepare {
             $Param{Data}->{NotificationCustom} = 'datetime';
 
             # validation
-            if (
-                !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeYear} )
-                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMonth} )
-                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeDay} )
-                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeHour} )
-                || !IsStringWithData( $Param{Data}->{NotificationCustomDateTimeMinute} )
-                )
-            {
+            if ( !IsStringWithData( $Param{Data}->{NotificationCustomDateTime} ) ) {
                 return;
             }
 
             # save the given date time values as notification datetime string (i.e. 2016-06-28 02:00:00)
-            $Param{Data}->{NotificationDate} =
-                $Param{Data}->{NotificationCustomDateTimeYear}
-                . '-'
-                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMonth} )
-                . '-'
-                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeDay} )
-                . ' '
-                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeHour} )
-                . ':'
-                . sprintf( "%02d", $Param{Data}->{NotificationCustomDateTimeMinute} )
-                . ':00';
+            $Param{Data}->{NotificationDate} = $Param{Data}->{NotificationCustomDateTime};
         }
     }
 
