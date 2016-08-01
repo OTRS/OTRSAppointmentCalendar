@@ -32,6 +32,9 @@
             </div>
             <div class="ActionRow">
                 <div class="Buttons HeaderLeft">
+                    <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Overview" class="CallForAction Inline">
+                        <span><i class="fa fa-calendar-o"></i> [% Translate("Manage Calendars") | html %]</span>
+                    </a>
 [% RenderBlockStart("AppointmentCreateButton") %]
                     <a id="AppointmentCreateButton" href="#" class="CallForAction Inline">
                         <span><i class="fa fa-plus-square"></i> [% Translate("Add Appointment") | html %]</span>
@@ -42,15 +45,12 @@
                     <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Filter=[% Data.Filter | uri %]" class="CallForAction Inline">
                         <span>[% Translate("Today") | html %]</span>
                     </a>
-
-                    <div class="ButtonGroup">
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Filter=[% Data.Filter | uri %];Start=[% Data.Start | uri %];Jump=Prev" class="CallForAction Inline">
-                            <span class="fa fa-chevron-left"></span>
-                        </a>
-                        <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Filter=[% Data.Filter | uri %];Start=[% Data.Start | uri %];Jump=Next" class="CallForAction Inline">
-                            <span class="fa fa-chevron-right"></span>
-                        </a>
-                    </div>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Filter=[% Data.Filter | uri %];Start=[% Data.Start | uri %];Jump=Prev" class="CallForAction Inline">
+                        <span class="fa fa-chevron-left"></span>
+                    </a>
+                    <a href="[% Env("Baselink") %]Action=[% Env("Action") %];Filter=[% Data.Filter | uri %];Start=[% Data.Start | uri %];Jump=Next" class="CallForAction Inline">
+                        <span class="fa fa-chevron-right"></span>
+                    </a>
                 </div>
                 <div class="HeaderCenter">
                     <h2>[% Data.HeaderTitle | html %] <span class="WeekNumber">[% Data.HeaderTitleCW | html %]</span></h2>

@@ -23,16 +23,14 @@
         margin: 6px 5px 2px;
     }
 
-    .Buttons a {
+    .HeaderLeft,
+    .RTL .HeaderRight {
         float: left;
     }
 
-    .HeaderLeft {
-        float: left;
-    }
-
-    .RTL .HeaderLeft {
-        float: right;
+    .HeaderLeft.Buttons a,
+    .RTL .HeaderRight.Buttons a {
+        margin-right: 5px;
     }
 
     .HeaderCenter {
@@ -44,21 +42,14 @@
         font-weight: bold;
     }
 
-    .HeaderRight {
+    .HeaderRight,
+    .RTL .HeaderLeft {
         float: right;
     }
 
-    .RTL .HeaderRight {
-        float: left;
-    }
-
-    .ButtonGroup {
-    	display: inline-block;
-        margin-left: 10px;
-    }
-
-    .ButtonGroup a.CallForAction {
-        margin-left: -2px;
+    .HeaderRight.Buttons a,
+    .RTL .HeaderLeft.Buttons a {
+        margin-left: 5px;
     }
 
     .DateDivider {
