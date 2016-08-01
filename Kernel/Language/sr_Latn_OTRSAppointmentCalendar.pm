@@ -15,6 +15,22 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AgentAppointmentAgendaOverview
+    $Self->{Translation}->{'Agenda Overview'} = 'Pregled dnevnog reda';
+    $Self->{Translation}->{'Manage Calendars'} = 'Upravljanje kalendarima';
+    $Self->{Translation}->{'Add Appointment'} = 'Dodaj termin';
+    $Self->{Translation}->{'Color'} = 'Boja';
+    $Self->{Translation}->{'End date'} = 'Datum kraja';
+    $Self->{Translation}->{'Repeat'} = 'Ponavljanje';
+    $Self->{Translation}->{'No calendars found. Please add a calendar first by using Manage Calendars page.'} =
+        'Nije pronađen nijedan kalendar. Molimo prvo dodajte kalendar korišćenjem ekrana Upravljanje kalendarima.';
+    $Self->{Translation}->{'Appointment'} = 'Termin';
+    $Self->{Translation}->{'This is a repeating appointment'} = 'Ovaj termin se ponavlja';
+    $Self->{Translation}->{'Would you like to edit just this occurrence or all occurrences?'} =
+        'Da li želite da izmeni samo ovo ili sva ponavljanja?';
+    $Self->{Translation}->{'All occurrences'} = 'Sva ponavljanja';
+    $Self->{Translation}->{'Just this occurrence'} = 'Samo ovo ponavljanje';
+
     # Template: AgentAppointmentCalendarImport
     $Self->{Translation}->{'Calendar Import'} = 'Uvoz kalendara';
     $Self->{Translation}->{'Uploaded file must be in valid iCal format (.ics).'} = 'Poslati fajl mora biti u ispravnom iCal formatu (.ics).';
@@ -31,6 +47,7 @@ sub Data {
     $Self->{Translation}->{'Successfully imported %s appointment(s) to calendar %s.'} = 'Uspešno uvezeno %s termin(a) u kalendar %s.';
     $Self->{Translation}->{'Calendar Management'} = 'Upravljanje kalendarima';
     $Self->{Translation}->{'Calendar Overview'} = 'Pregled kalendara';
+    $Self->{Translation}->{'Add new Calendar'} = 'Dodaj novi kalendar';
     $Self->{Translation}->{'Add Calendar'} = 'Dodaj kalendar';
     $Self->{Translation}->{'Import Calendar'} = 'Uvezi kalendar';
     $Self->{Translation}->{'Filter for calendars'} = 'Filter za kalendare';
@@ -48,17 +65,14 @@ sub Data {
     $Self->{Translation}->{'Copy public calendar URL'} = 'Iskopiraj javnu adresu kalendara (URL)';
     $Self->{Translation}->{'Calendar name'} = 'Naziv kalendara';
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Kalendar sa istim nazivom već postoji.';
-    $Self->{Translation}->{'Color'} = 'Boja';
     $Self->{Translation}->{'Permission group'} = 'Grupa pristupa';
     $Self->{Translation}->{'More'} = 'Više';
     $Self->{Translation}->{'Less'} = 'Manje';
 
     # Template: AgentAppointmentCalendarOverview
-    $Self->{Translation}->{'Manage Calendars'} = 'Upravljanje kalendarima';
+    $Self->{Translation}->{'Add new Appointment'} = 'Dodaj novi termin';
     $Self->{Translation}->{'Calendars'} = 'Kalendari';
     $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Ova stranica služi za pregled kalendara.';
-    $Self->{Translation}->{'No calendars found. Please add a calendar first by using Manage Calendars page.'} =
-        'Nije pronađen nijedan kalendar. Molimo prvo dodajte kalendar korišćenjem ekrana Upravljanje kalendarima.';
     $Self->{Translation}->{'Too many active calendars'} = 'Previše aktivnih kalendara';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Ili prvo isključite prikaz nekog kalendara ili povećajte limit u konfiguraciji.';
@@ -67,20 +81,13 @@ sub Data {
     $Self->{Translation}->{'Timeline Week'} = 'Sedmična osa';
     $Self->{Translation}->{'Timeline Day'} = 'Dnevna osa';
     $Self->{Translation}->{'Jump'} = 'Skoči';
-    $Self->{Translation}->{'Appointment'} = 'Termin';
-    $Self->{Translation}->{'This is a repeating appointment'} = 'Ovaj termin se ponavlja';
-    $Self->{Translation}->{'Would you like to edit just this occurrence or all occurrences?'} =
-        'Da li želite da izmeni samo ovo ili sva ponavljanja?';
-    $Self->{Translation}->{'All occurrences'} = 'Sva ponavljanja';
-    $Self->{Translation}->{'Just this occurrence'} = 'Samo ovo ponavljanje';
     $Self->{Translation}->{'Dismiss'} = 'Poništi';
+    $Self->{Translation}->{'Show'} = 'Prikaži';
     $Self->{Translation}->{'Basic information'} = 'Osnovne informacije';
     $Self->{Translation}->{'Location'} = 'Lokacija';
     $Self->{Translation}->{'Resource'} = 'Resurs';
     $Self->{Translation}->{'Team'} = 'Tim';
     $Self->{Translation}->{'Date/Time'} = 'Datum/vreme';
-    $Self->{Translation}->{'End date'} = 'Datum kraja';
-    $Self->{Translation}->{'Repeat'} = 'Ponavljanje';
 
     # Template: AgentAppointmentCalendarOverviewSeen
     $Self->{Translation}->{'Following appointments have been started'} = 'Sledeći termini su započeti';
@@ -91,10 +98,13 @@ sub Data {
     $Self->{Translation}->{'Please set this to value before End date.'} = 'Molimo postavite ovaj datum pre kraja.';
     $Self->{Translation}->{'Please set this to value after Start date.'} = 'Molimo postavite ovaj datum posle početka.';
     $Self->{Translation}->{'This an ocurrence of a repeating appointment.'} = 'Ovo je termin koji se ponavlja.';
+    $Self->{Translation}->{'Click here to see the parent appointment.'} = 'Kliknite ovde za pregled matičnog termina.';
     $Self->{Translation}->{'Click here to edit the parent appointment.'} = 'Kliknite ovde za izmenu matičnog termina.';
     $Self->{Translation}->{'Frequency'} = 'Učestalost';
     $Self->{Translation}->{'Every'} = 'Svakog(e)';
-    $Self->{Translation}->{'Never'} = 'Nikada';
+    $Self->{Translation}->{'Relative point of time'} = 'Relativno vreme';
+    $Self->{Translation}->{'Are you sure you want to delete this appointment? This operation cannot be undone.'} =
+        'Da li ste sigurni da želite da izbrišete ovaj termin? Ovu operaciju nije moguće opozvati.';
 
     # Template: AgentAppointmentResourceOverview
     $Self->{Translation}->{'Resource Overview'} = 'Pregled resursa';
@@ -141,8 +151,14 @@ sub Data {
     $Self->{Translation}->{'Edit Calendar'} = 'Izmeni kalendar';
     $Self->{Translation}->{'Error updating the calendar!'} = 'Greška prilikom izmene kalendara';
 
+    # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
+    $Self->{Translation}->{'All appointments'} = 'Svi termini';
+    $Self->{Translation}->{'Appointments assigned to me'} = 'Termini dodeljeni meni';
+    $Self->{Translation}->{'Showing only appointments assigned to you! Change settings'} = 'Prikaz samo termina dodeljenih vama! Izmenite podešavanja';
+
     # Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
     $Self->{Translation}->{'Appointment not found!'} = 'Termin nije pronađen!';
+    $Self->{Translation}->{'Never'} = 'Nikada';
     $Self->{Translation}->{'Every Day'} = 'Svaki dan';
     $Self->{Translation}->{'Every Week'} = 'Svake sedmice';
     $Self->{Translation}->{'Every Month'} = 'Svakog meseca';
@@ -152,14 +168,27 @@ sub Data {
     $Self->{Translation}->{'Weekly'} = 'Sedmično';
     $Self->{Translation}->{'Monthly'} = 'Mesečno';
     $Self->{Translation}->{'Yearly'} = 'Godišnje';
+    $Self->{Translation}->{'every'} = 'Svake';
+    $Self->{Translation}->{'for %s time(s)'} = 'ukupno %s put(a)';
     $Self->{Translation}->{'until ...'} = 'do ...';
     $Self->{Translation}->{'for ... time(s)'} = 'ukupno ... put(a)';
+    $Self->{Translation}->{'until %s'} = 'do %s';
+    $Self->{Translation}->{'No notification'} = 'Bez obaveštenja';
+    $Self->{Translation}->{'%s minute(s) before'} = '%s minut(a) pre';
+    $Self->{Translation}->{'%s hour(s) before'} = '%s sat(a) pre';
+    $Self->{Translation}->{'%s day(s) before'} = '%s dan(a) pre';
+    $Self->{Translation}->{'%s week before'} = '%s nedelja pre';
+    $Self->{Translation}->{'before the appointment starts'} = 'pre nego što termin započne';
+    $Self->{Translation}->{'after the appointment has been started'} = 'pošto termin započne';
+    $Self->{Translation}->{'before the appointment ends'} = 'pre nego što se termin završi';
+    $Self->{Translation}->{'after the appointment has been ended'} = 'pošto se termin završi';
     $Self->{Translation}->{'No permission!'} = 'Bez dozvole!';
     $Self->{Translation}->{'Links could not be deleted!'} = 'Veze ne mogu biti obrisane!';
     $Self->{Translation}->{'Link could not be created!'} = 'Veza nije mogla biti kreirana!';
     $Self->{Translation}->{'No permissions!'} = 'Bez dozvole!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
+    $Self->{Translation}->{'+%d more'} = '+%d više';
     $Self->{Translation}->{'Ongoing appointments'} = 'Započeti termini';
 
     # Perl Module: Kernel/Modules/AgentAppointmentTeam.pm
@@ -177,10 +206,11 @@ sub Data {
 
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Stranica za pregled kalendara.';
+    $Self->{Translation}->{'Appointment calendar event module that prepares notification entries for appointments.'} =
+        'Modul događaja kalendara za pripremu obaveštenja o terminima.';
     $Self->{Translation}->{'Appointment edit screen.'} = 'Stranica za izmenu kalendara.';
     $Self->{Translation}->{'Appointment list'} = 'Lista termina';
     $Self->{Translation}->{'Appointment list.'} = 'Lista termina.';
-    $Self->{Translation}->{'CalDav'} = '';
     $Self->{Translation}->{'Calendar manage screen.'} = 'Stranica za upravljanje kalendarima.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Kreira novi termin u kalendaru povezan sa ovim tiketom';
     $Self->{Translation}->{'Create new appointment.'} = 'Kreira novi termin.';
@@ -190,6 +220,7 @@ sub Data {
     $Self->{Translation}->{'Edit appointment'} = 'Izmena termina';
     $Self->{Translation}->{'Import Calendar screen.'} = 'Ekran za uvoz kalendara.';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Povezuje termine i tikete "Normalnim" vrstama veza.';
+    $Self->{Translation}->{'List of all appointment events to be displayed in the GUI.'} = 'Lista svih obaveštenja o terminima za prikaz u interfejsu.';
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =
         'Lista boja u heksadecimalnom RGB zapisu koje će biti dostupne za izbor prilikom pravljenja kalendara. Obratite pažnju da su boje dovoljno tamne tako da beli tekst može biti ispisan na njima.';
     $Self->{Translation}->{'Manage different calendars.'} = 'Upravljanje različitim kalendarima.';
@@ -199,6 +230,7 @@ sub Data {
     $Self->{Translation}->{'New Appointment'} = 'Novi termin';
     $Self->{Translation}->{'OTRS doesn\'t support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default).'} =
         'OTRS ne podržava termine koji se ponavljaju bez krajnjeg datuma ili broja iteracija. Prilikom uvoza kalendara, može se dogoditi da ICS fajl sadrži takve \'beskonačne\' termine. Umesto takvog ponašanja, sistem će kreirati sve termine iz prošlosti, kao i termine za sledeći n broj meseci (podrazumevano 120 meseci/10 godina).';
+    $Self->{Translation}->{'Overview of all appointments.'} = 'Pregled svih termina.';
     $Self->{Translation}->{'Plugin search'} = 'Modul pretrage';
     $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Modul pretrage za automatsko dopunjavanje.';
     $Self->{Translation}->{'Resource overview page.'} = 'Stranica za pregled resursa.';
@@ -210,6 +242,10 @@ sub Data {
     $Self->{Translation}->{'Team list'} = 'Lista timova';
     $Self->{Translation}->{'Team management screen.'} = 'Ekran upravljanja timovima.';
     $Self->{Translation}->{'Team management.'} = 'Upravljanje timovima.';
+
+
+    push @{ $Self->{JavaScriptStrings} // [] }, (
+    );
 
 }
 
