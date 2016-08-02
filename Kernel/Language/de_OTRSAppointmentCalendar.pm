@@ -167,12 +167,6 @@ sub Data {
     $Self->{Translation}->{'%s hour(s) before'} = '%s Stunde(n) vorher';
     $Self->{Translation}->{'%s day(s) before'} = '%s Tag(e) vorher';
     $Self->{Translation}->{'%s week before'} = '%s Woche(n) vorher';
-    $Self->{Translation}->{'minutes before'} = 'Minuten vorher';
-    $Self->{Translation}->{'hour before'} = 'Stunde vorher';
-    $Self->{Translation}->{'hours before'} = 'Stunden vorher';
-    $Self->{Translation}->{'day before'} = 'Tag vorher';
-    $Self->{Translation}->{'days before'} = 'Tage vorher';
-    $Self->{Translation}->{'week before'} = 'Woche vorher';
     $Self->{Translation}->{'No notification'} = 'Keine Benachrichtigung';
     $Self->{Translation}->{'Relative point of time'} = 'Relativer Zeitpunkt';
     $Self->{Translation}->{'before the appointment starts'} = 'bevor der Termin beginnt';

@@ -366,7 +366,7 @@ $Selenium->RunTest(
         # verify second appointment is an all day appointment
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('.fc-timeline-event.AllDay').length;"
+                "return \$('.fc-timeline-event .fa-sun-o').length;"
             ),
             '1',
             'Second appointment in an all day appointment',
@@ -544,10 +544,12 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
+        # find the appointment link
+        my $AppointmentLink = $Selenium->find_element( '.fc-event-container a', 'css' );
+        $Selenium->mouse_move_to_location($AppointmentLink);
+
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->click();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -599,9 +601,7 @@ $Selenium->RunTest(
         );
 
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->click();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -661,9 +661,7 @@ $Selenium->RunTest(
         );
 
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->click();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -690,10 +688,7 @@ $Selenium->RunTest(
                 Value          => 1,
             );
         }
-
-        # sleep(20);
-
-        }
+    },
 );
 
 1;

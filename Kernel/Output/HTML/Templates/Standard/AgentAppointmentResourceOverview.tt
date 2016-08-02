@@ -420,6 +420,7 @@ $('#Team').on('change', function() {
     </div>
 
     <div id="AppointmentTooltipTemplate" class="Hidden">
+        <div class="Icons"></div>
         <fieldset>
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <p class="Value">%title%</p>
