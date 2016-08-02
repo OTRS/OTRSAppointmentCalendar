@@ -262,7 +262,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 UpdateAppointment(Params, Data);
             },
             eventRender: function(CalEvent, $Element) {
-                var $Container,
+                var $IconContainer,
                     $Icon;
 
                 if (CalEvent.allDay
@@ -271,34 +271,34 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     || CalEvent.notification) {
 
                     // Create container and icon element
-                    $Container = $('<div />').addClass('Icons');
+                    $IconContainer = $('<div />').addClass('Icons');
                     $Icon = $('<i />').addClass('fa');
 
                     // Mark appointment with appropriate icon(s)
                     if (CalEvent.allDay) {
                         $Icon.clone()
                             .addClass('fa-sun-o')
-                            .appendTo($Container);
+                            .appendTo($IconContainer);
                     }
                     if (CalEvent.recurring) {
                         $Icon.clone()
                             .addClass('fa-repeat')
-                            .appendTo($Container);
+                            .appendTo($IconContainer);
                     }
                     if (CalEvent.parentId) {
                         $Icon.clone()
                             .addClass('fa-link')
-                            .appendTo($Container);
+                            .appendTo($IconContainer);
                     }
                     if (CalEvent.notification) {
                         $Icon.clone()
                             .addClass('fa-bell')
-                            .appendTo($Container);
+                            .appendTo($IconContainer);
                     }
 
                     // Prepend container to the appointment
                     $Element.find('.fc-content')
-                        .prepend($Container);
+                        .prepend($IconContainer);
                 }
             },
             eventResizeStart: function(CalEvent) {
@@ -318,7 +318,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     DocumentVisibleLeft = $(document).scrollLeft() + $(window).width(),
                     DocumentVisibleTop = $(document).scrollTop() + $(window).height(),
                     LastXPosition,
-                    LastYPosition;
+                    LastYPosition,
+                    $IconContainer,
+                    $Icon;
 
                 if (!JSEvent) {
                     JSEvent = window.event;
@@ -361,6 +363,41 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (LastXPosition > DocumentVisibleLeft) {
                         PosX = PosX - $TooltipObj.width() - 30;
                         $TooltipObj.css('left', PosX + 'px');
+                    }
+
+                    // Prepare appointment icons
+                    if (CalEvent.allDay
+                        || CalEvent.recurring
+                        || CalEvent.parentId
+                        || CalEvent.notification) {
+
+                        // Get container
+                        $IconContainer = $TooltipObj.find('.Icons');
+
+                        // Create icon element
+                        $Icon = $('<i />').addClass('fa');
+
+                        // Mark appointment with appropriate icon(s)
+                        if (CalEvent.allDay) {
+                            $Icon.clone()
+                                .addClass('fa-sun-o')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.recurring) {
+                            $Icon.clone()
+                                .addClass('fa-repeat')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.parentId) {
+                            $Icon.clone()
+                                .addClass('fa-link')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.notification) {
+                            $Icon.clone()
+                                .addClass('fa-bell')
+                                .appendTo($IconContainer);
+                        }
                     }
 
                     // Show the tooltip
