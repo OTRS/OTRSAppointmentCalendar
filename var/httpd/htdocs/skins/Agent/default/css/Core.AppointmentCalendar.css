@@ -35,7 +35,8 @@
         border: 1px solid rgba(0, 0, 0, 0.25);
     }
 
-    .fc-content .Icons {
+    .fc-content .Icons,
+    .AppointmentTooltip > .Icons {
         position: absolute;
         right: 0;
     }
@@ -44,7 +45,7 @@
         font-size: 13px;
         line-height: 0.9em;
         color: inherit;
-        opacity: 0.25;
+        opacity: 0.3;
         margin-right: 2px;
     }
 
@@ -89,6 +90,13 @@
         border: 1px solid #CCC;
         width: 375px;
         padding: 5px;
+    }
+
+    .AppointmentTooltip > .Icons i {
+        font-size: 13px;
+        line-height: 0.9em;
+        color: inherit;
+        margin-right: 2px;
     }
 
     .AppointmentTooltip > fieldset {
