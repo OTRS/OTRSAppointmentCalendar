@@ -66,10 +66,15 @@ sub new {
         $Self->{Filter} = $Self->{$PreferencesKey} || $Self->{Config}->{Filter} || 'Today';
     }
 
-    $Self->{PrefKey} = 'AppointmentDashboardPref' . $Self->{Name} . '-Shown';
+    # setup the prefrences keys
+    $Self->{PrefKeyShown}   = 'AppointmentDashboardPref' . $Self->{Name} . '-Shown';
+    $Self->{PrefKeyRefresh} = 'AppointmentDashboardPref' . $Self->{Name} . '-Refresh';
 
-    $Self->{PageShown} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKey} }
+    $Self->{PageShown} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyShown} }
         || $Self->{Config}->{Limit} || 10;
+
+    $Self->{PageRefresh} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->{ $Self->{PrefKeyRefresh} }
+        || 1;
 
     $Self->{StartHit} = int( $ParamObject->GetParam( Param => 'StartHit' ) || 1 );
 
@@ -90,7 +95,7 @@ sub Preferences {
     my @Params = (
         {
             Desc  => Translatable('Shown'),
-            Name  => $Self->{PrefKey},
+            Name  => $Self->{PrefKeyShown},
             Block => 'Option',
             Data  => {
                 5  => ' 5',
@@ -104,7 +109,7 @@ sub Preferences {
         },
         {
             Desc  => Translatable('Refresh (minutes)'),
-            Name  => $Self->{PrefKey} . 'Refresh',
+            Name  => $Self->{PrefKeyRefresh},
             Block => 'Option',
             Data  => {
                 0  => 'off',
@@ -115,7 +120,7 @@ sub Preferences {
                 10 => '10',
                 15 => '15',
             },
-            SelectedID => $Self->{PrefKey} . 'Refresh' || 0,
+            SelectedID  => $Self->{PageRefresh},
             Translation => 1,
         },
     );
@@ -449,10 +454,10 @@ sub Run {
 
     # show appointments
     my $Count = 0;
-    my $Limit = $LayoutObject->{ $Self->{PrefKey} } || $Self->{Config}->{Limit};
+    my $Limit = $LayoutObject->{ $Self->{PrefKeyShown} } || $Self->{Config}->{Limit};
 
     # check for refresh time
-    my $Refresh = $LayoutObject->{ $Self->{PrefKey} . 'Refresh' } // 1;
+    my $Refresh = $LayoutObject->{ $Self->{PrefKeyRefresh} } // 1;
 
     my $NameHTML = $Self->{Name};
     $NameHTML =~ s{-}{_}xmsg;

@@ -397,12 +397,12 @@
                 <Item Key="ShowEmail">0</Item>
                 <Item Key="IdleMinutes">60</Item>
                 <Item Key="SortBy">UserFullname</Item>
-                <Item Key="Filter">Agent</Item>
+                <Item Key="Filter">Today</Item>
                 <Item Key="Block">ContentSmall</Item>
                 <Item Key="Limit">10</Item>
                 <Item Key="Group"></Item>
                 <Item Key="Default">0</Item>
-                <Item Key="CacheTTLLocal">2</Item>
+                <Item Key="CacheTTLLocal">5</Item>
             </Hash>
         </Setting>
     </ConfigItem>
