@@ -47,7 +47,7 @@
 //]]></script>
 [% END %]
 [% RenderBlockStart("ContentSmallAppointmentFilterNavBar") %]
-<span class="Pagination">
+<span class="SpacingTop Pagination">
     [% Data.SiteNavBar %]
 </span>
 [% RenderBlockEnd("ContentSmallAppointmentFilterNavBar") %]
