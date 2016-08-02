@@ -378,7 +378,10 @@ sub Run {
 
     APPOINTMENTID:
     for my $AppointmentID (
-        sort { $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart} } keys %Appointments
+        sort {
+            $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart}
+            || $Appointments{$a}->{AppointmentID} <=> $Appointments{$b}->{AppointmentID}
+        } keys %Appointments
         )
     {
         # pagination handling
