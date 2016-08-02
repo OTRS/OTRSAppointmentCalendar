@@ -123,6 +123,7 @@ sub Data {
     # Template: AgentDashboardAppointmentCalendar
     $Self->{Translation}->{'Soon'} = 'Demnächst';
     $Self->{Translation}->{'5 days'} = '5 Tage';
+    $Self->{Translation}->{'Refresh (minutes)'} = 'Aktualisierung (Minuten)';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
     $Self->{Translation}->{'All appointments'} = 'Alle Termine';

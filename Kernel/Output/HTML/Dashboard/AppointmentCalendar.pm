@@ -373,10 +373,22 @@ sub Run {
     );
     my $TimezoneOffset = $TimezoneOffsetRaw * 60 * 60;
 
+    my $Count = 0;
+    my $Shown = 0;
+
+    APPOINTMENTID:
     for my $AppointmentID (
         sort { $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart} } keys %Appointments
         )
     {
+        # pagination handling
+        last APPOINTMENTID if $Shown >= $Self->{PageShown};
+
+        if ( ( $Self->{StartHit} - 1 ) > $Count ) {
+            $Count++;
+            next APPOINTMENTID;
+        }
+
         my $StartSystemTime = $CalendarHelperObject->SystemTimeGet(
             String => $Appointments{$AppointmentID}->{StartTime},
         );
@@ -401,6 +413,9 @@ sub Run {
                 CalendarName  => $Calendars{ $Appointments{$AppointmentID}->{CalendarID} }->{CalendarName},
             },
         );
+
+        # increase shown item count
+        $Shown++;
     }
 
     if ( !IsHashRefWithData( \%Appointments ) ) {
@@ -451,10 +466,6 @@ sub Run {
             %PageNav,
         },
     );
-
-    # show appointments
-    my $Count = 0;
-    my $Limit = $LayoutObject->{ $Self->{PrefKeyShown} } || $Self->{Config}->{Limit};
 
     # check for refresh time
     my $Refresh = $LayoutObject->{ $Self->{PrefKeyRefresh} } // 1;
