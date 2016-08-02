@@ -35,91 +35,21 @@
         border: 1px solid rgba(0, 0, 0, 0.25);
     }
 
-    .AllDay:before {
-        content: "\F185";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
+    .fc-content .Icons {
+        position: absolute;
+        right: 0;
     }
 
-    .RecurringParent:before {
-        content: "\F01E";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
+    .fc-content i {
+        font-size: 13px;
+        line-height: 0.9em;
+        color: inherit;
+        opacity: 0.25;
         margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
     }
 
-    .RecurringChild:before {
-        content: "\F0C1";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
-    }
-
-    .NotificationAllDay:before {
-        content: "\F185 \F0F3";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
-    }
-
-    .NotificationRecurringParent:before {
-        content: "\F01E \F0F3";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
-    }
-
-    .NotificationRecurringChild:before {
-        content: "\F0C1 \F0F3";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
-    }
-
-    .Notification:before {
-        content: "\F0F3";
-        float: right;
-        font: normal normal normal 13px/1 FontAwesome;
-        margin-right: 2px;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        opacity: 0.5;
-    }
-
-    .AllDay .fc-content,
-    .RecurringParent .fc-content,
-    .RecurringChild .fc-content
-    .NotificationAllDay .fc-content
-    .NotificationRecurringParent .fc-content
-    .NotificationRecurringChild .fc-content
-    .Notification .fc-content {
-        margin-right: 16px;
+    tr:hover td .fc-content i {
+        color: inherit;
     }
 
     .fc button {
