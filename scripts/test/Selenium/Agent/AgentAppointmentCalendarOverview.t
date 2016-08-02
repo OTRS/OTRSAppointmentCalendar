@@ -366,7 +366,7 @@ $Selenium->RunTest(
         # verify second appointment is an all day appointment
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('.fc-timeline-event.AllDay').length;"
+                "return \$('.fc-timeline-event .fa-sun-o').length;"
             ),
             '1',
             'Second appointment in an all day appointment',

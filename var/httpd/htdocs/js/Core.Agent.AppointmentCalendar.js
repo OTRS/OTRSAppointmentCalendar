@@ -262,33 +262,43 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 UpdateAppointment(Params, Data);
             },
             eventRender: function(CalEvent, $Element) {
-                if (CalEvent.allDay) {
-                    $Element.addClass('AllDay');
-                }
-                if (CalEvent.recurring) {
-                    $Element.addClass('RecurringParent');
-                }
-                else if (CalEvent.parentId) {
-                    $Element.addClass('RecurringChild');
-                }
+                var $Container,
+                    $Icon;
 
-                if (CalEvent.notification) {
+                if (CalEvent.allDay
+                    || CalEvent.recurring
+                    || CalEvent.parentId
+                    || CalEvent.notification) {
 
-                    // check for already existing font-awesome
-                    // classes to prevent overwriting css-contents
-                    // on pseudo elements like .Class:before
-                    if ($Element.hasClass('AllDay')) {
-                        $Element.addClass('NotificationAllDay');
+                    // Create container and icon element
+                    $Container = $('<div />').addClass('Icons');
+                    $Icon = $('<i />').addClass('fa');
+
+                    // Mark appointment with appropriate icon(s)
+                    if (CalEvent.allDay) {
+                        $Icon.clone()
+                            .addClass('fa-sun-o')
+                            .appendTo($Container);
                     }
-                    else if ($Element.hasClass('RecurringParent')) {
-                        $Element.addClass('NotificationRecurringParent');
+                    if (CalEvent.recurring) {
+                        $Icon.clone()
+                            .addClass('fa-repeat')
+                            .appendTo($Container);
                     }
-                    else if ($Element.hasClass('RecurringChild')) {
-                        $Element.addClass('NotificationRecurringChild');
+                    if (CalEvent.parentId) {
+                        $Icon.clone()
+                            .addClass('fa-link')
+                            .appendTo($Container);
                     }
-                    else {
-                        $Element.addClass('Notification');
+                    if (CalEvent.notification) {
+                        $Icon.clone()
+                            .addClass('fa-bell')
+                            .appendTo($Container);
                     }
+
+                    // Prepend container to the appointment
+                    $Element.find('.fc-content')
+                        .prepend($Container);
                 }
             },
             eventResizeStart: function(CalEvent) {
