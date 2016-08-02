@@ -380,7 +380,7 @@ sub Run {
     for my $AppointmentID (
         sort {
             $Appointments{$a}->{SystemTimeStart} <=> $Appointments{$b}->{SystemTimeStart}
-            || $Appointments{$a}->{AppointmentID} <=> $Appointments{$b}->{AppointmentID}
+                || $Appointments{$a}->{AppointmentID} <=> $Appointments{$b}->{AppointmentID}
         } keys %Appointments
         )
     {
