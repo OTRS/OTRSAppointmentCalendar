@@ -62,6 +62,8 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeam.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeamUser.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardAppointmentCalendar.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Helper.pm"/>
