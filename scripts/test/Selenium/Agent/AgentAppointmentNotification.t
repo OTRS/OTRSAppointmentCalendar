@@ -12,13 +12,13 @@ use utf8;
 
 use vars (qw($Self));
 
-# Get selenium object
+# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # Get needed objects
+        # get needed objects
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
                 RestoreSystemConfiguration => 1,
@@ -33,7 +33,7 @@ $Selenium->RunTest(
 
         my $RandomID = $Helper->GetRandomID();
 
-        # Create test group
+        # create test group
         my $GroupName = "test-calendar-group-$RandomID";
         my $GroupID   = $GroupObject->GroupAdd(
             Name    => $GroupName,
@@ -41,46 +41,46 @@ $Selenium->RunTest(
             UserID  => 1,
         );
 
-        # Get script alias
+        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # Get current system time
+        # get current system time
         my $SystemTime = $CalendarHelperObject->CurrentSystemTime();
 
-        # Add 1 month
+        # add 1 month
         $SystemTime = $CalendarHelperObject->AddPeriod(
             Time   => $SystemTime,
             Months => 1,
         );
 
-        # Get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
+        # get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
         my @DateInfo = $CalendarHelperObject->DateGet(
             SystemTime => $SystemTime,
         );
 
-        # Change resolution (desktop mode)
+        # change resolution (desktop mode)
         $Selenium->set_window_size( 768, 1050 );
 
-        # Create test user
+        # create test user
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => [ 'users', $GroupName ],
             Language => $Language,
         ) || die "Did not get test user";
 
-        # Get UserID
+        # get UserID
         my $UserID = $UserObject->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
-        # Start test
+        # start test
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
 
-        # Create a few test calendars
+        # create a few test calendars
         my %Calendar1 = $CalendarObject->CalendarCreate(
             CalendarName => "My Calendar $RandomID",
             Color        => '#3A87AD',
@@ -89,25 +89,25 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
-        # Go to calendar overview page
+        # go to calendar overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
-
-        # Wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-
-        # Click on the month view
-        $Selenium->find_element( '.fc-month-button', 'css' )->click();
-
-        # Wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-
-        # Go to next month in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->click();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # Get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
+        # click on the month view
+        $Selenium->find_element( '.fc-month-button', 'css' )->VerifiedClick();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # go to next month in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->VerifiedClick();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
         my $DataDate = "$DateInfo[5]-";
         if ( $DateInfo[4] < 10 ) {
             $DataDate .= "0";
@@ -302,13 +302,13 @@ $Selenium->RunTest(
         # notification pre-defined template test execution
         for my $Test (@TemplateCreateTests) {
 
-            # Create appointment
-            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+            # create appointment
+            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-            # Wait until form and overlay has loaded, if neccessary
+            # wait until form and overlay has loaded, if neccessary
             $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-            # Enter some data
+            # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
                 "return \$('#CalendarID').val("
@@ -320,10 +320,10 @@ $Selenium->RunTest(
                 "return \$('#NotificationTemplate').val('$Test->{Data}->{NotificationTemplate}').trigger('redraw.InputField').trigger('change');"
             );
 
-            # Click on Save
-            $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+            # click on Save
+            $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-            # Wait for dialog to close and AJAX to finish
+            # wait for dialog to close and AJAX to finish
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -334,7 +334,7 @@ $Selenium->RunTest(
                 Result     => 'HASH',
             );
 
-            # Make sure there is an appointment
+            # make sure there is an appointment
             $Self->Is(
                 scalar @AppointmentList,
                 1,
@@ -374,7 +374,7 @@ $Selenium->RunTest(
                 UserID        => $UserID,
             );
 
-            # Delete appointment
+            # delete appointment
             $Self->True(
                 $Delete,
                 "Delete appointment verification - $Test->{Data}->{Description} .",
@@ -518,13 +518,13 @@ $Selenium->RunTest(
         # notification custom relative template test execution
         for my $Test (@TemplateCustomRelativeCreateTests) {
 
-            # Create appointment
-            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+            # create appointment
+            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-            # Wait until form and overlay has loaded, if neccessary
+            # wait until form and overlay has loaded, if neccessary
             $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-            # Enter some data
+            # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
                 "return \$('#CalendarID').val("
@@ -538,7 +538,7 @@ $Selenium->RunTest(
             );
 
             # activate the relative notifications
-            $Selenium->find_element( "#NotificationCustomRelativeInput", 'css' )->click();
+            $Selenium->find_element( "#NotificationCustomRelativeInput", 'css' )->VerifiedClick();
 
             # fill out the custom unit count field
             $Selenium->execute_script(
@@ -555,10 +555,10 @@ $Selenium->RunTest(
                 "return \$('#NotificationCustomRelativePointOfTime').val('$Test->{Data}->{NotificationCustomRelativePointOfTime}').trigger('redraw.InputField').trigger('change');"
             );
 
-            # Click on Save
-            $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+            # click on Save
+            $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-            # Wait for dialog to close and AJAX to finish
+            # wait for dialog to close and AJAX to finish
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -569,7 +569,7 @@ $Selenium->RunTest(
                 Result     => 'HASH',
             );
 
-            # Make sure there is an appointment
+            # make sure there is an appointment
             $Self->Is(
                 scalar @AppointmentList,
                 1,
@@ -640,7 +640,7 @@ $Selenium->RunTest(
                 UserID        => $UserID,
             );
 
-            # Delete appointment
+            # delete appointment
             $Self->True(
                 $Delete,
                 "Delete appointment verification - $Test->{Data}->{Description} .",
@@ -770,13 +770,13 @@ $Selenium->RunTest(
         # notification datetime template test execution
         for my $Test (@TemplateCustomDateTimeCreateTests) {
 
-            # Create appointment
-            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+            # create appointment
+            $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-            # Wait until form and overlay has loaded, if neccessary
+            # wait until form and overlay has loaded, if neccessary
             $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-            # Enter some data
+            # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
                 "return \$('#CalendarID').val("
@@ -790,7 +790,7 @@ $Selenium->RunTest(
             );
 
             # activate the relative notifications
-            $Selenium->find_element( "#NotificationCustomDateTimeInput", 'css' )->click();
+            $Selenium->find_element( "#NotificationCustomDateTimeInput", 'css' )->VerifiedClick();
 
             # select day
             $Selenium->execute_script(
@@ -817,10 +817,10 @@ $Selenium->RunTest(
                 "return \$('#NotificationCustomDateTimeMinute').val('$Test->{Data}->{DateTimeMinute}').trigger('redraw.InputField').trigger('change');"
             );
 
-            # Click on Save
-            $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+            # click on Save
+            $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-            # Wait for dialog to close and AJAX to finish
+            # wait for dialog to close and AJAX to finish
             $Selenium->WaitFor(
                 JavaScript =>
                     'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -831,7 +831,7 @@ $Selenium->RunTest(
                 Result     => 'HASH',
             );
 
-            # Make sure there is an appointment
+            # make sure there is an appointment
             $Self->Is(
                 scalar @AppointmentList,
                 1,
@@ -848,7 +848,7 @@ $Selenium->RunTest(
                 );
             }
 
-            # Delete appointment
+            # delete appointment
             my $Delete = $AppointmentObject->AppointmentDelete(
                 AppointmentID => $AppointmentList[0]->{AppointmentID},
                 UserID        => $UserID,
@@ -859,7 +859,7 @@ $Selenium->RunTest(
                 "Delete appointment verification - $Test->{Data}->{Description} .",
             );
         }
-        }
+    },
 );
 
 1;

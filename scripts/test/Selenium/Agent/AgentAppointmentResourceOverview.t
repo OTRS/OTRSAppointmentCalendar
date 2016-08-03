@@ -104,7 +104,7 @@ $Selenium->RunTest(
         $TestTeamLink->VerifiedClick();
 
         # select test user
-        $Selenium->find_element("//input[\@value='$UserID']")->click();
+        $Selenium->find_element("//input[\@value='$UserID']")->VerifiedClick();
 
         # submit form
         $Selenium->find_element( 'button.Primary', 'css' )->VerifiedClick();
@@ -116,7 +116,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # go to previous week in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -162,7 +162,7 @@ $Selenium->RunTest(
         );
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(

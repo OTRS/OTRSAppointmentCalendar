@@ -12,13 +12,13 @@ use utf8;
 
 use vars (qw($Self));
 
-# Get selenium object
+# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # Get needed objects
+        # get needed objects
         $Kernel::OM->ObjectParamAdd(
             'Kernel::System::UnitTest::Helper' => {
                 RestoreSystemConfiguration => 1,
@@ -33,7 +33,7 @@ $Selenium->RunTest(
 
         my $RandomID = $Helper->GetRandomID();
 
-        # Create test group
+        # create test group
         my $GroupName = "test-calendar-group-$RandomID";
         my $GroupID   = $GroupObject->GroupAdd(
             Name    => $GroupName,
@@ -41,46 +41,46 @@ $Selenium->RunTest(
             UserID  => 1,
         );
 
-        # Get script alias
+        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # Get current system time
+        # get current system time
         my $SystemTime = $CalendarHelperObject->CurrentSystemTime();
 
-        # Add 1 month
+        # add 1 month
         $SystemTime = $CalendarHelperObject->AddPeriod(
             Time   => $SystemTime,
             Months => 1,
         );
 
-        # Get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
+        # get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
         my @DateInfo = $CalendarHelperObject->DateGet(
             SystemTime => $SystemTime,
         );
 
-        # Change resolution (desktop mode)
+        # change resolution (desktop mode)
         $Selenium->set_window_size( 768, 1050 );
 
-        # Create test user
+        # create test user
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => [ 'users', $GroupName ],
             Language => $Language,
         ) || die "Did not get test user";
 
-        # Get UserID
+        # get UserID
         my $UserID = $UserObject->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
-        # Start test
+        # start test
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
 
-        # Create a few test calendars
+        # create a few test calendars
         my %Calendar1 = $CalendarObject->CalendarCreate(
             CalendarName => "My Calendar $RandomID",
             Color        => '#3A87AD',
@@ -89,38 +89,38 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
 
-        # Go to calendar overview page
+        # go to calendar overview page
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
-
-        # Wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-
-        # Click on the month view
-        $Selenium->find_element( '.fc-month-button', 'css' )->click();
-
-        # Wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
-
-        # Go to next month in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->click();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # Get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
+        # click on the month view
+        $Selenium->find_element( '.fc-month-button', 'css' )->VerifiedClick();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # go to next month in order to disable realtime notification dialog
+        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->VerifiedClick();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
+        # get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
         my $DataDate = "$DateInfo[5]-";
         if ( $DateInfo[4] < 10 ) {
             $DataDate .= "0";
         }
         $DataDate .= "$DateInfo[4]-01";
 
-        # Create every day appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create every day appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every day');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -131,10 +131,10 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -145,7 +145,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 4 appointments
+        # make sure there are 4 appointments
         $Self->Is(
             scalar @Appointments1,
             4,
@@ -157,19 +157,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete1,
             "Delete daily recurring appointments.",
         );
 
-        # Create every week appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create every week appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every week');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -180,18 +180,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Weekly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Create 3 appointment
+        # create 3 appointment
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for AJAX to finish
+        # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -202,7 +202,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments2,
             3,
@@ -232,25 +232,25 @@ $Selenium->RunTest(
             );
         }
 
-        # Delete appointments
+        # delete appointments
         my $Delete2 = $AppointmentObject->AppointmentDelete(
             AppointmentID => $Appointments2[0]->{AppointmentID},
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete2,
             "Delete weekly recurring appointments.",
         );
 
-        # Create every month appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create every month appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every month');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -261,18 +261,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Monthly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Create 3 appointment
+        # create 3 appointment
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for AJAX to finish
+        # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -283,7 +283,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments3,
             3,
@@ -314,25 +314,25 @@ $Selenium->RunTest(
             );
         }
 
-        # Delete appointments
+        # delete appointments
         my $Delete3 = $AppointmentObject->AppointmentDelete(
             AppointmentID => $Appointments3[0]->{AppointmentID},
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete3,
             "Delete monthly recurring appointments.",
         );
 
-        # Create every year appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create every year appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every year');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -343,18 +343,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Yearly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Create 3 appointment
+        # create 3 appointment
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for AJAX to finish
+        # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -365,7 +365,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments4,
             3,
@@ -396,25 +396,25 @@ $Selenium->RunTest(
             );
         }
 
-        # Delete appointments
+        # delete appointments
         my $Delete4 = $AppointmentObject->AppointmentDelete(
             AppointmentID => $Appointments4[0]->{AppointmentID},
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete4,
             "Delete yearly recurring appointments.",
         );
 
-        # Create appointment every second day
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create appointment every second day
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd day');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -425,27 +425,27 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
         );
 
-        # Set each 2nd day
+        # set each 2nd day
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 3 appointment
+        # create 3 appointment
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -456,7 +456,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments5,
             3,
@@ -486,19 +486,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete5,
             "Delete custom daily recurring appointments.",
         );
 
-        # Create custom weekly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom weekly recurring appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd Monday, Wednesday and Sunday');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -509,7 +509,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -519,18 +519,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length'
         );
 
-        # Deselect selected day
+        # deselect selected day
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomWeeklyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected6 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomWeeklyDiv button.fc-state-active").length;'
@@ -540,7 +540,7 @@ $Selenium->RunTest(
             "Check if nothing is selected (#6)."
         );
 
-        # Select Mon
+        # select Mon
         $Selenium->execute_script(
             "\$('#RecurrenceCustomWeeklyDiv button[value=\"1\"]').click();"
         );
@@ -555,7 +555,7 @@ $Selenium->RunTest(
             "Custom weekly appointment - check if Monday is selected."
         );
 
-        # Select Wed
+        # select Wed
         $Selenium->execute_script(
             "\$('#RecurrenceCustomWeeklyDiv button[value=\"3\"]').click();"
         );
@@ -570,7 +570,7 @@ $Selenium->RunTest(
             "Custom weekly appointment - check if Wednesday is selected."
         );
 
-        # Select Sun
+        # select Sun
         $Selenium->execute_script(
             "\$('#RecurrenceCustomWeeklyDiv button[value=\"7\"]').click();"
         );
@@ -585,21 +585,21 @@ $Selenium->RunTest(
             "Custom weekly appointment - check if Sunday is selected."
         );
 
-        # Set each 2nd week
+        # set each 2nd week
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 6 appointments
+        # create 6 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('6');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -610,7 +610,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 6 appointments
+        # make sure there are 6 appointments
         $Self->Is(
             scalar @Appointments6,
             6,
@@ -633,7 +633,7 @@ $Selenium->RunTest(
                 SystemTime => $SystemTime6,
             );
 
-            # Add current day
+            # add current day
             if ( !$LastCW6 ) {
                 push @Appointment6StartTimes, $CalendarHelperObject->TimestampGet(
                     SystemTime => $SystemTime6,
@@ -651,7 +651,7 @@ $Selenium->RunTest(
                 $LastCW6 = $CW6;
             }
 
-            # Add one day
+            # add one day
             $SystemTime6 += 24 * 3600;
         }
 
@@ -668,19 +668,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete6,
             "Delete custom weekly recurring appointments.",
         );
 
-        # Create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom weekly recurring appointment(without anything selected)
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom weekly without anything selected');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -691,7 +691,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -701,18 +701,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length'
         );
 
-        # Deselect selected day
+        # deselect selected day
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomWeeklyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected7 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomWeeklyDiv button.fc-state-active").length;'
@@ -722,21 +722,21 @@ $Selenium->RunTest(
             "Check if nothing is selected (#7)."
         );
 
-        # Set each 2nd week
+        # set each 2nd week
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 3 appointments
+        # create 3 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -747,7 +747,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments7,
             3,
@@ -771,7 +771,7 @@ $Selenium->RunTest(
                 SystemTime => $SystemTime7,
             );
 
-            # Add current day
+            # add current day
             if ( !$LastCW7 ) {
                 push @Appointment7StartTimes, $CalendarHelperObject->TimestampGet(
                     SystemTime => $SystemTime7,
@@ -790,7 +790,7 @@ $Selenium->RunTest(
                 $LastCW7 = $CW7;
             }
 
-            # Add one day
+            # add one day
             $SystemTime7 += 24 * 3600;
         }
 
@@ -807,19 +807,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete7,
             "Delete custom weekly recurring appointments.",
         );
 
-        # Create custom monthly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom monthly recurring appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd month, on 3th, 10th and 31th of month.');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -830,7 +830,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -840,18 +840,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
         );
 
-        # Deselect selected day
+        # deselect selected day
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomMonthlyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected8 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomMonthlyDiv button.fc-state-active").length;'
@@ -861,7 +861,7 @@ $Selenium->RunTest(
             "Check if nothing is selected (#8)."
         );
 
-        # Select 3th
+        # select 3th
         $Selenium->execute_script(
             "\$('#RecurrenceCustomMonthlyDiv button[value=\"3\"]').click();"
         );
@@ -876,7 +876,7 @@ $Selenium->RunTest(
             "Custom monthly appointment - check if 3 is selected."
         );
 
-        # Select 10th
+        # select 10th
         $Selenium->execute_script(
             "\$('#RecurrenceCustomMonthlyDiv button[value=\"10\"]').click();"
         );
@@ -891,7 +891,7 @@ $Selenium->RunTest(
             "Custom monthly appointment - check if 10 is selected."
         );
 
-        # Select 31
+        # select 31
         $Selenium->execute_script(
             "\$('#RecurrenceCustomMonthlyDiv button[value=\"31\"]').click();"
         );
@@ -906,21 +906,21 @@ $Selenium->RunTest(
             "Custom monthly appointment - check if 31 is selected."
         );
 
-        # Set each 2nd week
+        # set each 2nd week
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 20 appointments
+        # create 20 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('20');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -931,7 +931,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 20 appointments
+        # make sure there are 20 appointments
         $Self->Is(
             scalar @Appointments8,
             20,
@@ -968,7 +968,7 @@ $Selenium->RunTest(
                 );
             }
 
-            # Add one day
+            # add one day
             $SystemTime8 += 24 * 3600;
         }
 
@@ -985,19 +985,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete8,
             "Delete custom monthly recurring appointments.",
         );
 
-        # Create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom weekly recurring appointment(without anything selected)
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom monthly without anything selected');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -1008,7 +1008,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -1018,18 +1018,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
         );
 
-        # Deselect selected day
+        # deselect selected day
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomMonthlyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected9 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomMonthlyDiv button.fc-state-active").length;'
@@ -1039,21 +1039,21 @@ $Selenium->RunTest(
             "Check if nothing is selected (#9)."
         );
 
-        # Set each 2nd year
+        # set each 2nd year
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 3 appointments
+        # create 3 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -1064,7 +1064,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments9,
             3,
@@ -1084,7 +1084,7 @@ $Selenium->RunTest(
                 SystemTime => $SystemTime9,
             );
 
-            # Add current day
+            # add current day
             if ( !$LastMonth9 ) {
                 push @Appointment9StartTimes, $CalendarHelperObject->TimestampGet(
                     SystemTime => $SystemTime9,
@@ -1103,7 +1103,7 @@ $Selenium->RunTest(
                 $LastMonth9 = $Month;
             }
 
-            # Add one day
+            # add one day
             $SystemTime9 += 24 * 3600;
         }
 
@@ -1120,19 +1120,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete9,
             "Delete custom weekly recurring appointments.",
         );
 
-        # Create custom yearly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom yearly recurring appointment
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd year, in February, October and December.');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -1143,7 +1143,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -1153,18 +1153,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
         );
 
-        # Deselect selected month
+        # deselect selected month
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomYearlyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected10 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomYearlyDiv button.fc-state-active").length;'
@@ -1174,7 +1174,7 @@ $Selenium->RunTest(
             "Check if nothing is selected (#10)."
         );
 
-        # Select February
+        # select February
         $Selenium->execute_script(
             "\$('#RecurrenceCustomYearlyDiv button[value=\"2\"]').click();"
         );
@@ -1189,7 +1189,7 @@ $Selenium->RunTest(
             "Custom yearly appointment - check if February is selected."
         );
 
-        # Select October
+        # select October
         $Selenium->execute_script(
             "\$('#RecurrenceCustomYearlyDiv button[value=\"10\"]').click();"
         );
@@ -1204,7 +1204,7 @@ $Selenium->RunTest(
             "Custom yearly appointment - check if October is selected."
         );
 
-        # Select December
+        # select December
         $Selenium->execute_script(
             "\$('#RecurrenceCustomYearlyDiv button[value=\"12\"]').click();"
         );
@@ -1219,21 +1219,21 @@ $Selenium->RunTest(
             "Custom yearly appointment - check if December is selected."
         );
 
-        # Set each 2nd week
+        # set each 2nd week
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 6 appointments
+        # create 6 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('6');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -1244,7 +1244,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 6 appointments
+        # make sure there are 6 appointments
         $Self->Is(
             scalar @Appointments10,
             6,
@@ -1282,7 +1282,7 @@ $Selenium->RunTest(
                 );
             }
 
-            # Add one day
+            # add one day
             $SystemTime10 += 24 * 3600;
         }
 
@@ -1299,19 +1299,19 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete10,
             "Delete custom monthly recurring appointments.",
         );
 
-        # Create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
+        # create custom weekly recurring appointment(without anything selected)
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
 
-        # Wait until form and overlay has loaded, if neccessary
+        # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # Enter some data
+        # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom yearly without anything selected');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
@@ -1322,7 +1322,7 @@ $Selenium->RunTest(
             "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait until js shows Interval
+        # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
@@ -1332,18 +1332,18 @@ $Selenium->RunTest(
             "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
         );
 
-        # Wait for js
+        # wait for js
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
         );
 
-        # Deselect selected month
+        # deselect selected month
         $Selenium->execute_script(
             "return \$('#RecurrenceCustomYearlyDiv button.fc-state-active').click();"
         );
 
-        # Make sure it's deselected
+        # make sure it's deselected
         my $Deselected11 = $Selenium->WaitFor(
             JavaScript =>
                 'return !$("#RecurrenceCustomYearlyDiv button.fc-state-active").length;'
@@ -1353,21 +1353,21 @@ $Selenium->RunTest(
             "Check if nothing is selected (#11)."
         );
 
-        # Set each 2nd year
+        # set each 2nd year
         $Selenium->execute_script(
             "return \$('#RecurrenceInterval').val(2);"
         );
 
-        # Create 3 appointments
+        # create 3 appointments
         $Selenium->execute_script(
             "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
-        # Click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        # click on Save
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
-        # Wait for dialog to close and AJAX to finish
+        # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
@@ -1378,7 +1378,7 @@ $Selenium->RunTest(
             Result     => 'HASH',
         );
 
-        # Make sure there are 3 appointments
+        # make sure there are 3 appointments
         $Self->Is(
             scalar @Appointments11,
             3,
@@ -1399,7 +1399,7 @@ $Selenium->RunTest(
                 SystemTime => $SystemTime11,
             );
 
-            # Add current day
+            # add current day
             if ( !$LastYear11 ) {
                 push @Appointment11StartTimes, $CalendarHelperObject->TimestampGet(
                     SystemTime => $SystemTime11,
@@ -1419,7 +1419,7 @@ $Selenium->RunTest(
                 );
             }
 
-            # Add one day
+            # add one day
             $SystemTime11 += 24 * 3600;
         }
 
@@ -1436,13 +1436,12 @@ $Selenium->RunTest(
             UserID        => $UserID,
         );
 
-        # Delete appointments
+        # delete appointments
         $Self->True(
             $Delete11,
             "Delete custom yearly recurring appointments(without any month selected).",
         );
-
-        }
+    },
 );
 
 1;
