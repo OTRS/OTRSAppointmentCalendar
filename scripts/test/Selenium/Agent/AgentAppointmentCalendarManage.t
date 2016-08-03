@@ -98,7 +98,7 @@ $Selenium->RunTest(
         );
 
         # click ok to dismiss
-        $Selenium->find_element( 'div.Dialog button#DialogButton1', 'css' )->click();
+        $Selenium->find_element( 'div.Dialog button#DialogButton1', 'css' )->VerifiedClick();
 
         # wait for tooltip message
         $Selenium->WaitFor(
@@ -106,7 +106,7 @@ $Selenium->RunTest(
         );
 
         # update calendar name
-        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->click();
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->VerifiedClick();
         $Selenium->send_keys_to_active_element(' 2');
 
         # set it to invalid
