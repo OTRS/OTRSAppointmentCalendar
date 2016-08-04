@@ -626,9 +626,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             ReplaceValue = CalEvent[Placeholder];
 
             // Special properties
-            if (Placeholder === 'calendarId') {
-                ReplaceValue = $('label[for="Calendar' + Core.App.EscapeSelector(ReplaceValue) + '"]').text();
-            } else if (Placeholder === 'recurring') {
+            if (Placeholder === 'recurring') {
                 if (CalEvent.parentId) {
                     ReplaceValue = true;
                 }

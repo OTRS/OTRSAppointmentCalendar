@@ -66,10 +66,10 @@
     <tbody>
 [% RenderBlockStart("ContentSmallAppointmentRow") %]
         <tr class="MasterAction">
-            <td class="Center">
-                <label for="Calendar[% Data.CalendarID | html %]">
-                    <span class="CalendarColor" style="background-color: [% Data.Color | html %]; width: 14px; height: 14px; display: inline-block; vertical-align: text-top; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25);" title="[% Data.CalendarName | html %]"></span>
-                </label>
+            <td class="Flags Center">
+                <div class="Flag Small" title="[% Data.CalendarName | html %]">
+                    <span style="background-color: [% Data.Color | html %]; border: 1px solid #BBB; border: 1px solid rgba(0, 0, 0, 0.25); box-sizing: border-box;"></span>
+                </div>
             </td>
             <td title="[% Data.StartTimeLong | html %]">[% Data.StartTime | html %]</td>
             <td><a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;AppointmentID=[% Data.AppointmentID | url %]" class="MasterActionLink" title="[% Data.Title | html %]">[% Data.Title | html %]</a></td>

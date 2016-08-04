@@ -53,9 +53,11 @@
                             <td class="Center">
                                 <input type="checkbox" id="Calendar[% Data.CalendarID | html %]" name="Calendar[% Data.CalendarID | html %]" data-id="[% Data.CalendarID | html %]" [% Data.Checked %]/>
                             </td>
-                            <td class="Center">
+                            <td class="Flags Center">
                                 <label for="Calendar[% Data.CalendarID | html %]">
-                                    <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
+                                    <div class="Flag Small" title="[% Data.CalendarName | html %]">
+                                        <span class="CalendarColor" style="background-color: [% Data.Color | html %];"></span>
+                                    </div>
                                 </label>
                             </td>
                             <td>
@@ -286,6 +288,8 @@ Core.Agent.AppointmentCalendar.Init({
                         resourceIds: AppointmentData.ResourceID,
                         resourceNames: AppointmentData.ResourceNames,
                         pluginData: AppointmentData.PluginData,
+                        calendarName: [% Data.CalendarName | JSON %],
+                        calendarColor: [% Data.Color | JSON %],
                         notification: AppointmentData.NotificationDate.length ? true : false,
                         notificationDate: AppointmentData.NotificationDate,
                         notificationTemplate: AppointmentData.NotificationTemplate,
@@ -356,7 +360,12 @@ Core.Agent.AppointmentCalendar.Init({
             <p class="Value">%location%</p>
             <label>[% Translate("Location") | html %]:</label>
             <div class="Clear"></div>
-            <p class="Value">%calendarId%</p>
+            <p class="Value">
+                <span class="Flag Small">
+                    <span class="CalendarColor" style="background-color: %calendarColor%;"></span>
+                </span>
+                %calendarName%
+            </p>
             <label>[% Translate("Calendar") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
