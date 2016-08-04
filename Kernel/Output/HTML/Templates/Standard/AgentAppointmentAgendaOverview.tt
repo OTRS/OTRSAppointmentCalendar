@@ -97,7 +97,9 @@
 [% RenderBlockStart("AppointmentActionRow") %]
             <tr id="AppointmentID_[% Data.AppointmentID | html %]" class="MasterAction">
                 <td class="Flags Center">
-                    <span class="Color" style="background-color: [% Data.CalendarData.${Data.CalendarID}.Color | html %];"></span>
+                    <div class="Flag Small" title="[% Data.CalendarData.${Data.CalendarID}.CalendarName | html %]">
+                        <span class="CalendarColor" style="background-color: [% Data.CalendarData.${Data.CalendarID}.Color | html %];"></span>
+                    </div>
                 </td>
                 <td>
                     <div title="[% Data.CalendarData.${Data.CalendarID}.CalendarName | html %]">
