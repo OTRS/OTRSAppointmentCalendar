@@ -104,40 +104,6 @@ sub Data {
     $Self->{Translation}->{'Are you sure you want to delete this appointment? This operation cannot be undone.'} =
         'Да ли сте сигурни да желите да избришете овај термин? Ову операцију није могуће опозвати.';
 
-    # Template: AgentAppointmentResourceOverview
-    $Self->{Translation}->{'Resource Overview'} = 'Преглед ресурса';
-    $Self->{Translation}->{'Manage Teams'} = 'Управљање тимовима';
-    $Self->{Translation}->{'Manage Team Agents'} = 'Управљање оператерима у тимовима';
-    $Self->{Translation}->{'This is a resource overview page.'} = 'Ова страница служи за преглед ресурса.';
-    $Self->{Translation}->{'No teams found. Please add a team first by using Manage Teams page.'} =
-        'Ниједан тим није пронађен. Молимо прво додајте тим коришћењеем екрана Управљање тимовима';
-    $Self->{Translation}->{'No team agents found. Please assign agents to a team first by using Manage Team Agents page.'} =
-        'Ниједан оператер није пронађен у тиму. Молимо прво додајте оператера у тим коришћењем Управљање оператерима у тимовима.';
-    $Self->{Translation}->{'Restore default settings'} = 'Вратите подразумевана подешавања';
-    $Self->{Translation}->{'Resources'} = 'Ресурси';
-    $Self->{Translation}->{'Shown resources'} = 'Приказани ресурси';
-    $Self->{Translation}->{'Available Resources'} = 'Доступни ресурси';
-    $Self->{Translation}->{'Filter available resources'} = 'Филтер за доступне ресурсе';
-    $Self->{Translation}->{'Visible Resources (order by drag & drop)'} = 'Видљиви ресурси (редослед према превуци и пусти)';
-
-    # Template: AgentAppointmentTeam
-    $Self->{Translation}->{'Add Team'} = 'Додај тим';
-    $Self->{Translation}->{'Team Import'} = 'Увоз тима';
-    $Self->{Translation}->{'Here you can upload a configuration file to import a team to your system. The file needs to be in .yml format as exported by team management module.'} =
-        'Овде можете послати конфигурациони фајл за увоз тима у ваш систем. Фајл мора бити у истом .yml формату који је могуће добити извозом у екрану управљања тимовима.';
-    $Self->{Translation}->{'Import team'} = 'Увези тим';
-    $Self->{Translation}->{'Filter for teams'} = 'Филтер за тимове';
-    $Self->{Translation}->{'Export team'} = 'Извези тим';
-    $Self->{Translation}->{'Edit Team'} = 'Измени тим';
-    $Self->{Translation}->{'Team with same name already exists.'} = 'Тим са истим називом већ постоји.';
-
-    # Template: AgentAppointmentTeamUser
-    $Self->{Translation}->{'Filter for agents'} = 'Филтер за оператере';
-    $Self->{Translation}->{'Teams'} = 'Тимови';
-    $Self->{Translation}->{'Manage Team-Agent Relations'} = 'Управљање оператерима у тимовима';
-    $Self->{Translation}->{'Change Agent Relations for Team'} = 'Измени припадност оператера тиму';
-    $Self->{Translation}->{'Change Team Relations for Agent'} = 'Измени припадност тиму оператерима';
-
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarImport.pm
     $Self->{Translation}->{'No permissions'} = 'Без дозволе';
     $Self->{Translation}->{'System was unable to import file!'} = 'Систем није успео да увезе фајл!';
@@ -193,9 +159,6 @@ sub Data {
     $Self->{Translation}->{'Need TeamID!'} = 'Нема TeamID!';
     $Self->{Translation}->{'Could not retrieve data for given TeamID'} = 'За дати TeamID нема података';
 
-    # Perl Module: Kernel/Modules/AgentAppointmentTeamList.pm
-    $Self->{Translation}->{'Unassigned'} = 'Недодељено';
-
     # Perl Module: Kernel/Modules/PublicCalendar.pm
     $Self->{Translation}->{'No such user!'} = 'Непознат корисник!';
     $Self->{Translation}->{'Invalid calendar!'} = 'Неисправан календар!';
@@ -222,7 +185,6 @@ sub Data {
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =
         'Листа боја у хексадецималном RGB запису које ће бити доступне за избор приликом прављења календара. Обратите пажњу да су боје довољно тамне тако да бели текст може бити исписан на њима.';
     $Self->{Translation}->{'Manage different calendars.'} = 'Управљање различитим календарима.';
-    $Self->{Translation}->{'Manage team agents.'} = 'Управљање оператерима у тимовима.';
     $Self->{Translation}->{'Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.'} =
         'Максимални број активних календара у екранима за преглед. Обратите пажњу да велики број активних календара може имати утицај на перформансе вашег сервера прављењем превише симултаних захтева.';
     $Self->{Translation}->{'New Appointment'} = 'Нови термин';
@@ -231,15 +193,10 @@ sub Data {
     $Self->{Translation}->{'Overview of all appointments.'} = 'Преглед свих термина.';
     $Self->{Translation}->{'Plugin search'} = 'Модул претраге';
     $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Модул претраге за аутоматско допуњавање.';
-    $Self->{Translation}->{'Resource overview page.'} = 'Страница за преглед ресурса.';
-    $Self->{Translation}->{'Resource overview screen.'} = 'Екран прегледа ресурса.';
-    $Self->{Translation}->{'Resources list.'} = 'Листа ресурса.';
+    $Self->{Translation}->{'Resource Overview (OTRS Business Solution™)'} = 'Преглед ресурса (OTRS Business Solution™)';
+    $Self->{Translation}->{'Resource Overview'} = 'Преглед ресурса';
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} =
         'Приказује везу у менију тикета за креирање термина у календару повезаног са тим тикетом. Додатна контрола приказа ове везе може се постићи коришћењем кључа "Group" са садржајем "rw:group1;move_into:group2". За здруживање веза у менију подесите кључ "ClusterName" са садржајем који ће бити назив који желите да видите у интерфејсу. Користите кључ "ClusterPriority" за измену редоследа група у менију.';
-    $Self->{Translation}->{'Team agents management screen.'} = 'Екран управљања оператерима у тимовима.';
-    $Self->{Translation}->{'Team list'} = 'Листа тимова';
-    $Self->{Translation}->{'Team management screen.'} = 'Екран управљања тимовима.';
-    $Self->{Translation}->{'Team management.'} = 'Управљање тимовима.';
 
 }
 

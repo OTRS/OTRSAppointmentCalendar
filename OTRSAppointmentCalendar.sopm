@@ -47,11 +47,7 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentImport.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamList.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeam.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentTeamUser.pm"/>
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentResourceOverview.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt"/>
@@ -60,16 +56,12 @@
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeam.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentTeamUser.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentResourceOverview.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardAppointmentCalendar.tt"/>
         <File Permission="640" Location="Kernel/System/Calendar.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Helper.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Team.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Plugin.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
@@ -82,7 +74,6 @@
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Helper.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Plugin.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Team.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t"/>
@@ -91,7 +82,6 @@
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCreate.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentDashboardWidget.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentResourceOverview.t"/>
         <File Permission="640" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.css"/>
         <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.min.css"/>
@@ -242,53 +232,7 @@
                 <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
-        <TableCreate Name="calendar_team">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
-            <Column Name="group_id" Required="true" Type="INTEGER"/>
-            <Column Name="comments" Size="250" Type="VARCHAR"/>
-            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
-            <Column Name="create_time" Required="true" Type="DATE" />
-            <Column Name="create_by" Required="true" Type="INTEGER" />
-            <Column Name="change_time" Required="true" Type="DATE" />
-            <Column Name="change_by" Required="true" Type="INTEGER" />
-            <Unique Name="calendar_team_name">
-                <UniqueColumn Name="name"/>
-            </Unique>
-            <Index Name="calendar_team_group_id">
-                <IndexColumn Name="group_id"/>
-            </Index>
-            <ForeignKey ForeignTable="valid">
-                <Reference Local="valid_id" Foreign="id"/>
-            </ForeignKey>
-            <ForeignKey ForeignTable="groups">
-                <Reference Local="group_id" Foreign="id"/>
-            </ForeignKey>
-            <ForeignKey ForeignTable="users">
-                <Reference Local="create_by" Foreign="id"/>
-                <Reference Local="change_by" Foreign="id"/>
-            </ForeignKey>
-        </TableCreate>
-        <TableCreate Name="calendar_team_user">
-            <Column Name="user_id" Required="true" Type="INTEGER"/>
-            <Column Name="team_id" Required="true" Type="INTEGER"/>
-            <Column Name="create_time" Required="true" Type="DATE"/>
-            <Column Name="create_by" Required="true" Type="INTEGER"/>
-            <Column Name="change_time" Required="true" Type="DATE"/>
-            <Column Name="change_by" Required="true" Type="INTEGER"/>
-            <Unique Name="calendar_team_user_unique">
-                <UniqueColumn Name="user_id"/>
-                <UniqueColumn Name="team_id"/>
-            </Unique>
-            <Index Name="calendar_team_team_id">
-                <IndexColumn Name="team_id"/>
-            </Index>
-            <ForeignKey ForeignTable="users">
-                <Reference Local="user_id" Foreign="id"/>
-                <Reference Local="create_by" Foreign="id"/>
-                <Reference Local="change_by" Foreign="id"/>
-            </ForeignKey>
-        </TableCreate>
+
         <Insert Table="link_object">
             <Data Key="name" Type="Quote">Appointment</Data>
         </Insert>
@@ -298,8 +242,6 @@
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>
-        <TableDrop Name="calendar_team_user"/>
-        <TableDrop Name="calendar_team"/>
     </DatabaseUninstall>
 
     <CodeInstall Type="post"><![CDATA[

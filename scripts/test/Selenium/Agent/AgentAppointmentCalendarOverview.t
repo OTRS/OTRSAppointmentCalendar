@@ -559,12 +559,18 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # check if fields are disabled
+        ELEMENT:
         for my $Element (
             qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
             RecurrenceType
             )
             )
         {
+            # check if team object is registered
+            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+                next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
+            }
+
             $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -620,10 +626,16 @@ $Selenium->RunTest(
         }
 
         # check if fields are enabled
+        ELEMENT:
         for my $Element (
             qw(Title Description Location TeamID ResourceID StartDay EndDay AllDay RecurrenceType)
             )
         {
+            # check if team object is registered
+            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+                next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
+            }
+
             $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -671,12 +683,18 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # check if fields are enabled
+        ELEMENT:
         for my $Element (
             qw(Title Description Location CalendarID TeamID ResourceID StartDay EndDay AllDay
             RecurrenceType
             )
             )
         {
+            # check if team object is registered
+            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+                next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
+            }
+
             $ElementReadOnly->(
                 UnitTestObject => $Self,
                 Element        => $Element,

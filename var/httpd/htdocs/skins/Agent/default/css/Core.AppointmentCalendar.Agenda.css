@@ -20,7 +20,7 @@
     }
 
     .Buttons {
-        margin: 6px 5px 2px;
+        margin: 4px 3px 2px;
     }
 
     .HeaderLeft,
@@ -30,7 +30,7 @@
 
     .HeaderLeft.Buttons a,
     .RTL .HeaderRight.Buttons a {
-        margin-right: 5px;
+        margin-right: 3px;
     }
 
     .HeaderCenter {
@@ -49,7 +49,7 @@
 
     .HeaderRight.Buttons a,
     .RTL .HeaderLeft.Buttons a {
-        margin-left: 5px;
+        margin-left: 3px;
     }
 
     .DateDivider {
