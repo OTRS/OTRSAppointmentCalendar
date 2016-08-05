@@ -93,6 +93,7 @@ creates a new appointment.
         TeamID                => [ 1 ],                                   # (optional) must be an array reference if supplied
         ResourceID            => [ 1, 3 ],                                # (optional) must be an array reference if supplied
         Recurring             => 1,                                       # (optional) flag the appointment as recurring (parent only!)
+        RecurringRaw          => 1,                                       # (optional) skip loop for recurring appointments (do not create occurrences!)
         RecurrenceType        => 'Daily',                                 # (required if Recurring) Possible "Daily", "Weekly", "Monthly", "Yearly",
                                                                           #           "CustomWeekly", "CustomMonthly", "CustomYearly"
 
@@ -171,7 +172,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -251,7 +252,7 @@ sub AppointmentCreate {
         qw(TeamID ResourceID RecurrenceFrequency RecurrenceExclude)
         )
     {
-        if ( $Param{$Parameter} ) {
+        if ( $Param{$Parameter} && @{ $Param{$Parameter} // [] } ) {
             if ( !IsArrayRefWithData( $Param{$Parameter} ) ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
@@ -389,7 +390,7 @@ sub AppointmentCreate {
     }
 
     # add recurring appointments
-    if ( $Param{Recurring} ) {
+    if ( $Param{Recurring} && !$Param{RecurringRaw} ) {
         return if !$Self->_AppointmentRecurringCreate(
             ParentID    => $AppointmentID,
             Appointment => \%Param,
@@ -1116,7 +1117,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )

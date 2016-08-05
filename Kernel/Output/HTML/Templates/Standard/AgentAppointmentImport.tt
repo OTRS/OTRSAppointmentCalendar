@@ -8,7 +8,7 @@
 
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
 
-    <h1 class="Header">[% Translate("Calendar Import") | html %]</h1>
+    <h1 class="Header">[% Translate("Appointment Import") | html %]</h1>
 
     <div class="SidebarColumn">
         <div class="WidgetSimple">
@@ -44,7 +44,7 @@
     <div class="ContentColumn">
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Data.Title | html %]</h2>
+                <h2>[% Translate("Import Appointments") | html %]</h2>
             </div>
 
             <div class="Content">
@@ -76,7 +76,7 @@
                         </div>
                         <div class="Field SpacingTop">
                             <button class="Primary CallForAction" type="submit" value="[% Translate("Upload calendar") | html %]">
-                                <span>[% Translate("Import calendar") | html %]</span>
+                                <span>[% Translate("Import appointments") | html %]</span>
                             </button>
                             [% Translate("or") | html %]
                             <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" title="[% Translate("Cancel") | html %]">

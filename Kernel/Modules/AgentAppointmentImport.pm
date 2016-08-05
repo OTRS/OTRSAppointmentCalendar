@@ -6,7 +6,7 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-package Kernel::Modules::AgentAppointmentCalendarImport;
+package Kernel::Modules::AgentAppointmentImport;
 
 use strict;
 use warnings;
@@ -147,7 +147,7 @@ sub Run {
 
         # Import ok
         return $LayoutObject->Redirect(
-            OP => "Action=AgentAppointmentCalendarManage;ImportSuccess=1;Count=${Count};Name="
+            OP => "Action=AgentAppointmentCalendarManage;ImportAppointmentsSuccess=1;Count=${Count};Name="
                 . $LayoutObject->LinkEncode( $Calendar{CalendarName} ),
         );
 
@@ -166,7 +166,7 @@ sub _Overview {
     my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
-    $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import Calendar");
+    $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import Appointments");
     $Param{CalendarIDInvalid} //= '';
 
     my @CalendarList = $CalendarObject->CalendarList(
@@ -211,7 +211,7 @@ sub _Mask {
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
     $Output .= $LayoutObject->Output(
-        TemplateFile => 'AgentAppointmentCalendarImport',
+        TemplateFile => 'AgentAppointmentImport',
         Data         => {
             %Param,
         },
