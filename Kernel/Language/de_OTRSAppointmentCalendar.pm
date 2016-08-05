@@ -15,16 +15,22 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AgentAppointmentAgendaOverview
+    $Self->{Translation}->{'Agenda Overview'} = 'Agendaübersicht';
+    $Self->{Translation}->{'Add Appointment'} = 'Termin hinzufügen';
+    $Self->{Translation}->{'Color'} = 'Farbe';
+
     # Template: AgentAppointmentCalendarImport
     $Self->{Translation}->{'Uploaded file must be in valid iCal format (.ics).'} = 'Die hochgeladene Datei muss in einem gültigen iCal-Format (.ics) vorliegen.';
     $Self->{Translation}->{"If desired Calendar is not listed here, please make sure that you have at least 'create' permissions."} = 'Sollte ein gewünschter Kalender hier nicht aufgelistet sein, stellen Sie bitte sicher, dass Sie mindestens die Berechtigung zum Erstellen von Kalendern besitzen.';
     $Self->{Translation}->{'Update existing appointments?'} = 'Existierende Termine überschreiben?';
     $Self->{Translation}->{'All existing appointments in the calendar with same UniqueID will be overwritten.'} = 'Alle existierenden Termine mit der selben "UniqueID" im entsprechenden Kalender werden überschrieben.';
+    $Self->{Translation}->{'Add new Calendar'} = 'Einen neuen Kalender anlegen';
 
     # Template: AgentAppointmentCalendarManage
     $Self->{Translation}->{'Calendar Management'} = 'Kalenderverwaltung';
     $Self->{Translation}->{'Calendar Overview'} = 'Kalenderübersicht';
-    $Self->{Translation}->{'Add new Calendar'} = 'Neuen Kalender anlegen';
+    $Self->{Translation}->{'Add Calendar'} = 'Neuen Kalender anlegen';
     $Self->{Translation}->{'Calendar Import'} = 'Kalender importieren';
     $Self->{Translation}->{'Here you can upload a file to import calendar to your system. The file needs to be in .ics format.'} =
         'An dieser Stelle können Sie eine Datei hochladen, um Kalender in Ihr System zu importieren. Die Datei muss im ICS-Format vorliegen.';
@@ -64,17 +70,21 @@ sub Data {
     $Self->{Translation}->{'All occurrences'} = 'Alle Vorkommnisse';
     $Self->{Translation}->{'Just this occurrence'} = 'Nur diesen Termin';
     $Self->{Translation}->{'Dismiss'} = 'Verwerfen';
+    $Self->{Translation}->{'Show'} = 'Anzeigen';
     $Self->{Translation}->{'Basic information'} = 'Grundlegende Informationen';
     $Self->{Translation}->{'Date/Time'} = 'Datum/Zeit';
     $Self->{Translation}->{'End date'} = 'Endzeitpunkt';
     $Self->{Translation}->{'Repeat'} = 'Wiederholung';
     $Self->{Translation}->{'Copy public calendar URL'} = 'Öffentliche Kalender URL kopieren';
+    $Self->{Translation}->{'Add new Appointment'} = 'Einen neuen Termin anlegen';
 
     # Template: AgentAppointmentCalendarOverviewSeen
     $Self->{Translation}->{'Following appointments have been started'} = 'Die folgenden Termine haben begonnen';
     $Self->{Translation}->{'Start time'} = 'Startzeitpunkt';
     $Self->{Translation}->{'End time'} = 'Endzeitpunkt';
     $Self->{Translation}->{'Resource'} = 'Resource';
+    $Self->{Translation}->{'Click here to see the parent appointment.'} = 'Klicken Sie hier, um den Eltern-Termin anzuzeigen.';
+    $Self->{Translation}->{'Are you sure you want to delete this appointment? This operation cannot be undone.'} = 'Möchten Sie diesen Termin wirklich löschen? Diese Änderung kann nicht rückgängig gemacht werden.';
 
     # Template: AgentAppointmentEdit
     $Self->{Translation}->{'Team'} = 'Team';
@@ -110,6 +120,16 @@ sub Data {
     $Self->{Translation}->{'Change Team Relations for Agent'} = 'Ändere Team-Zuordnungen für Agent';
     $Self->{Translation}->{'Filter for agents'} = 'Filter für Agenten';
 
+    # Template: AgentDashboardAppointmentCalendar
+    $Self->{Translation}->{'Soon'} = 'Demnächst';
+    $Self->{Translation}->{'5 days'} = '5 Tage';
+    $Self->{Translation}->{'Refresh (minutes)'} = 'Aktualisierung (Minuten)';
+
+    # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
+    $Self->{Translation}->{'All appointments'} = 'Alle Termine';
+    $Self->{Translation}->{'Appointments assigned to me'} = 'Mir zugewiesene Termine';
+    $Self->{Translation}->{'Showing only appointments assigned to you! Change settings'} = 'Es werden nur Termine angezeigt, die Ihnen zugewiesen sind! Einstellungen ändern';
+
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Das System konnten den Kalender nicht erstellen!';
     $Self->{Translation}->{'No CalendarID!'} = 'Keine CalenderID!';
@@ -139,22 +159,25 @@ sub Data {
     $Self->{Translation}->{'Monthly'} = 'monatlich';
     $Self->{Translation}->{'Yearly'} = 'jährlich';
     $Self->{Translation}->{'Every'} = 'Alle';
+    $Self->{Translation}->{'every'} = 'alle';
     $Self->{Translation}->{'On'} = 'Am';
-    $Self->{Translation}->{'minutes before'} = 'Minuten vorher';
-    $Self->{Translation}->{'hour before'} = 'Stunde vorher';
-    $Self->{Translation}->{'hours before'} = 'Stunden vorher';
-    $Self->{Translation}->{'day before'} = 'Tag vorher';
-    $Self->{Translation}->{'days before'} = 'Tage vorher';
-    $Self->{Translation}->{'week before'} = 'Woche vorher';
+    $Self->{Translation}->{'for %s time(s)'} = 'für %s Wiederholungen';
+    $Self->{Translation}->{'until %s'} = 'bis %s';
+    $Self->{Translation}->{'%s minute(s) before'} = '%s Minute(n) vorher';
+    $Self->{Translation}->{'%s hour(s) before'} = '%s Stunde(n) vorher';
+    $Self->{Translation}->{'%s day(s) before'} = '%s Tag(e) vorher';
+    $Self->{Translation}->{'%s week before'} = '%s Woche(n) vorher';
     $Self->{Translation}->{'No notification'} = 'Keine Benachrichtigung';
     $Self->{Translation}->{'Relative point of time'} = 'Relativer Zeitpunkt';
     $Self->{Translation}->{'before the appointment starts'} = 'bevor der Termin beginnt';
     $Self->{Translation}->{'after the appointment has been started'} = 'nachdem der Termin begonnen hat';
     $Self->{Translation}->{'before the appointment ends'} = 'bevor der Termin endet';
     $Self->{Translation}->{'after the appointment has been ended'} = 'nachdem der Termin geendet hat';
+    $Self->{Translation}->{'Never'} = 'Niemals';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'Ongoing appointments'} = 'Laufende Termine';
+    $Self->{Translation}->{'+%d more'} = '+%d mehr';
 
     # Perl Module: Kernel/Modules/AgentAppointmentTeamList.pm
     $Self->{Translation}->{'Unassigned'} = 'Nicht zugeordnet';
@@ -163,6 +186,7 @@ sub Data {
     $Self->{Translation}->{'There was an error exporting the calendar!'} = 'Es ist ein Fehler beim Exportieren des Kalenders aufgetreten!';
 
     # SysConfig
+    $Self->{Translation}->{'Appointment calendar event module that prepares notification entries for appointments.'} = 'Terminkalender Event-Modul, welches Benachrichtigungseinträge für Termine vorbereitet.';
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Terminkalender Übersicht';
     $Self->{Translation}->{'Appointment edit screen.'} = 'Terminbearbeitungsansicht';
     $Self->{Translation}->{'Appointment list'} = 'Terminliste';
@@ -192,14 +216,16 @@ sub Data {
     $Self->{Translation}->{"OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default)."} = "OTRS unterstützt keine wiederholenden Termine oder Enddatum oder Anzahl an Iterationen. Während Import-Prozessen kann es passieren, dass ICS-Dateien solche Termine enthalten. OTRS wird stattdessen alle vergangenen Termine sowie alle Termine der kommenden n Monate (120 Monate / 10 Jahre standardmäßig) erstellen.";
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} = 'Zeigt einen Link im Menü der TicketZoom-Ansicht im Agenten-Interface an, um Termine zu erstellen, welche direkt mit dem entsprechenden Ticket verknüpft sind. Zusätzliche Zugriffskontrolle, ob der Menüpunkt angezeigt wird oder nicht, kann mit dem Schlüssel "Gruppe" und "Inhalt" wie z.B. ("rw:group1;move_into:group2") erreicht werden. Um Menüeinträge zu gruppieren, verwenden Sie den Schlüssel "ClusterName" und im Inhalt den Namen, welchen Sie in der Ansicht verwenden möchten. Verwenden Sie "ClusterPriority" um die Reihenfolge in der jeweiligen Gruppierung zu beeinflussen.';
     $Self->{Translation}->{'New Appointment'} = 'Neuer Termin';
+    $Self->{Translation}->{'Appointments'} = 'Termine';
     $Self->{Translation}->{'Create new appointment.'} = 'Einen neuen Termin erstellen';
     $Self->{Translation}->{'Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.'} = 'Maximale Anzahl an aktiven Kalendern in der Kalenderübersicht oder Resourcenübersicht. Bitte beachten Sie, dass sich zuviele gleichzeitig aktive Kalender aufgrund vieler gleichzeitiger Anfragen auf die Performance des Systems auswirken kann.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Erstellt einen neuen Termin in einem Kalender, welcher direkt mit diesem Ticket verknüpft ist';
-
     $Self->{Translation}->{'Appointment Notifications'} = 'Termin-Benachrichtigungen';
     $Self->{Translation}->{'Create and manage appointment notifications.'} = 'Termin-Benachrichtigungen erstellen und verwalten.';
     $Self->{Translation}->{'Appointment Notification Management'} = 'Verwaltung von Termin-Benachrichtigungen';
     $Self->{Translation}->{'Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module.'} = 'Hier können Sie eine Konfigurationsdatei hochladen, mit der Termin-Benachrichtigungen im System importiert werden können. Die Datei muss im .yml-Format vorliegen, so wie sie auch vom Termin-Benachrichtigungen exportiert wird. ';
+    $Self->{Translation}->{'List of all appointment events to be displayed in the GUI.'} = 'Liste aller Termin-Events, welche in der GUI angezeigt werden.';
+    $Self->{Translation}->{'Overview of all appointments.'} = 'Übersicht aller Termine';
 }
 
 1;

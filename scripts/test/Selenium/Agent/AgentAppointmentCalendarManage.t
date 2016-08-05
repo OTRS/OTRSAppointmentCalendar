@@ -62,7 +62,7 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarManage");
 
         # click Add new calendar
-        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->click();
+        $Selenium->find_element( '.SidebarColumn ul.ActionList a#Add', 'css' )->VerifiedClick();
 
         # write calendar name
         $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys("Calendar $RandomID");
@@ -98,7 +98,7 @@ $Selenium->RunTest(
         );
 
         # click ok to dismiss
-        $Selenium->find_element( 'div.Dialog button#DialogButton1', 'css' )->click();
+        $Selenium->find_element( 'div.Dialog button#DialogButton1', 'css' )->VerifiedClick();
 
         # wait for tooltip message
         $Selenium->WaitFor(
@@ -106,7 +106,7 @@ $Selenium->RunTest(
         );
 
         # update calendar name
-        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->click();
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->VerifiedClick();
         $Selenium->send_keys_to_active_element(' 2');
 
         # set it to invalid
@@ -145,7 +145,7 @@ $Selenium->RunTest(
             UserLanguage => $Language,
         );
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid'),
             'Calendar is marked invalid',
@@ -164,13 +164,12 @@ $Selenium->RunTest(
 
         # verify the calendar is invalid temporarily
         $Self->Is(
-            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(3)', 'css' )
+            $Selenium->find_element( '.ContentColumn table tbody tr:nth-of-type(2) td:nth-of-type(4)', 'css' )
                 ->get_text(),
             $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',
         );
-
-        }
+    },
 );
 
 1;

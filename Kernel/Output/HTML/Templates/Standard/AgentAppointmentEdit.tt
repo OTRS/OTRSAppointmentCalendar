@@ -358,36 +358,36 @@
 
             <label for="NotificationTemplate">[% Translate("Notification") | html %]:</label>
             <div class="Field">
+[% IF Data.PermissionLevel < 2 %]
+                <p id="NotificationTemplate" class="ReadOnlyValue">[% Data.NotificationValue | html %]</p>
+[% ELSE %]
                 [% Data.NotificationStrg %]
+[% END %]
             </div>
             <div class="Clear"></div>
 
             <div class="Field" id="NotificationCustomStringDiv">
 
-                <label for="Notification">[% Translate("Relative point of time") | html %]:</label>
+                <label for="NotificationCustomRelativeInput">[% Translate("Relative point of time") | html %]:</label>
 
                 <div class="FieldExplanation">
 
                     <input type="radio" name="NotificationCustomRelativeInput" value="" id="NotificationCustomRelativeInput" [% Data.NotificationCustomRelativeInputRadio %]>
                     <div class="FieldInline">
-                        <table style="border: 0;">
-                            <tr>
-                                <td>
-                                    <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>[% Data.NotificationCustomUnitsStrg %]</td>
-                            </tr>
-                            <tr>
-                                <td>[% Data.NotificationCustomUnitsPointOfTimeStrg %]</td>
-                            </tr>
-                        </table>
+                        <div>
+                            <input type="text" id="NotificationCustomRelativeUnitCount" name="NotificationCustomRelativeUnitCount" value="[% Data.NotificationCustomRelativeUnitCount | html %]" size="1" maxlength="2" />
+                        </div>
+                        <div class="SpacingTopSmall">
+                            [% Data.NotificationCustomUnitsStrg %]
+                        </div>
+                        <div class="SpacingTopSmall">
+                            [% Data.NotificationCustomUnitsPointOfTimeStrg %]
+                        </div>
                     </div>
 
                 </div>
 
-                <label for="Notification">[% Translate("Date/Time") | html %]:</label>
+                <label for="NotificationCustomDateTimeInput">[% Translate("Date/Time") | html %]:</label>
 
                 <div class="FieldExplanation">
                     <input type="radio" name="NotificationCustomDateTimeInput" value="" id="NotificationCustomDateTimeInput" [% Data.NotificationCustomDateTimeInputRadio %]>
@@ -534,13 +534,15 @@ $('#EditFormSubmit').on('click', function() {
 
 // Delete the appointment
 $('#EditFormDelete').on('click', function() {
-    Core.Agent.AppointmentCalendar.ShowWaitingDialog();
-    Core.Agent.AppointmentCalendar.EditAppointment({
-        CalendarID: [% Data.CalendarID | JSON %],
-        AppointmentID: [% Data.AppointmentID | JSON %],
-        Action: 'AgentAppointmentEdit',
-        Subaction: 'DeleteAppointment'
-    });
+    if (window.confirm([% Translate("Are you sure you want to delete this appointment? This operation cannot be undone.") | JSON %])) {
+        Core.Agent.AppointmentCalendar.ShowWaitingDialog();
+        Core.Agent.AppointmentCalendar.EditAppointment({
+            CalendarID: [% Data.CalendarID | JSON %],
+            AppointmentID: [% Data.AppointmentID | JSON %],
+            Action: 'AgentAppointmentEdit',
+            Subaction: 'DeleteAppointment'
+        });
+    }
 });
 
 [% END %]

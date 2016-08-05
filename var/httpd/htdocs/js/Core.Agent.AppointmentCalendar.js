@@ -79,6 +79,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {String} Params.Appointment.AppointmentCreate.Search - Search string for the plugin module search.
      * @param {String} Params.Appointment.AppointmentCreate.ObjectID - Object ID for the plugin module search.
      * @param {Integer} Params.Appointment.AppointmentID - Auto open appointment edit screen with specified appointment (optional).
+     * @param {String} Params.Appointment.AppointmentCreateButton - ID of the add appointment button.
      * @param {Object} Params.Calendars - Object with calendar parameters.
      * @param {Array} Params.Calendars.Sources - Array of calendar sources.
      * @param {jQueryObjects} Params.Calendars.Switches - Array of calendar switch elements.
@@ -230,7 +231,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     View: View,
                     Resource: Resource
                 };
-                OpenEditDialog(Params, Data);
+                TargetNS.OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
             eventClick: function(CalEvent) {
@@ -239,7 +240,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     End: CalEvent.end,
                     CalEvent: CalEvent
                 };
-                OpenEditDialog(Params, Data);
+                TargetNS.OpenEditDialog(Params, Data);
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc) {
@@ -261,33 +262,43 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 UpdateAppointment(Params, Data);
             },
             eventRender: function(CalEvent, $Element) {
-                if (CalEvent.allDay) {
-                    $Element.addClass('AllDay');
-                }
-                if (CalEvent.recurring) {
-                    $Element.addClass('RecurringParent');
-                }
-                else if (CalEvent.parentId) {
-                    $Element.addClass('RecurringChild');
-                }
+                var $IconContainer,
+                    $Icon;
 
-                if (CalEvent.notification) {
+                if (CalEvent.allDay
+                    || CalEvent.recurring
+                    || CalEvent.parentId
+                    || CalEvent.notification) {
 
-                    // check for already existing font-awesome
-                    // classes to prevent overwriting css-contents
-                    // on pseudo elements like .Class:before
-                    if ($Element.hasClass('AllDay')) {
-                        $Element.addClass('NotificationAllDay');
+                    // Create container and icon element
+                    $IconContainer = $('<div />').addClass('Icons');
+                    $Icon = $('<i />').addClass('fa');
+
+                    // Mark appointment with appropriate icon(s)
+                    if (CalEvent.allDay) {
+                        $Icon.clone()
+                            .addClass('fa-sun-o')
+                            .appendTo($IconContainer);
                     }
-                    else if ($Element.hasClass('RecurringParent')) {
-                        $Element.addClass('NotificationRecurringParent');
+                    if (CalEvent.recurring) {
+                        $Icon.clone()
+                            .addClass('fa-repeat')
+                            .appendTo($IconContainer);
                     }
-                    else if ($Element.hasClass('RecurringChild')) {
-                        $Element.addClass('NotificationRecurringChild');
+                    if (CalEvent.parentId) {
+                        $Icon.clone()
+                            .addClass('fa-link')
+                            .appendTo($IconContainer);
                     }
-                    else {
-                        $Element.addClass('Notification');
+                    if (CalEvent.notification) {
+                        $Icon.clone()
+                            .addClass('fa-bell')
+                            .appendTo($IconContainer);
                     }
+
+                    // Prepend container to the appointment
+                    $Element.find('.fc-content')
+                        .prepend($IconContainer);
                 }
             },
             eventResizeStart: function(CalEvent) {
@@ -307,7 +318,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     DocumentVisibleLeft = $(document).scrollLeft() + $(window).width(),
                     DocumentVisibleTop = $(document).scrollTop() + $(window).height(),
                     LastXPosition,
-                    LastYPosition;
+                    LastYPosition,
+                    $IconContainer,
+                    $Icon;
 
                 if (!JSEvent) {
                     JSEvent = window.event;
@@ -350,6 +363,41 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (LastXPosition > DocumentVisibleLeft) {
                         PosX = PosX - $TooltipObj.width() - 30;
                         $TooltipObj.css('left', PosX + 'px');
+                    }
+
+                    // Prepare appointment icons
+                    if (CalEvent.allDay
+                        || CalEvent.recurring
+                        || CalEvent.parentId
+                        || CalEvent.notification) {
+
+                        // Get container
+                        $IconContainer = $TooltipObj.find('.Icons');
+
+                        // Create icon element
+                        $Icon = $('<i />').addClass('fa');
+
+                        // Mark appointment with appropriate icon(s)
+                        if (CalEvent.allDay) {
+                            $Icon.clone()
+                                .addClass('fa-sun-o')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.recurring) {
+                            $Icon.clone()
+                                .addClass('fa-repeat')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.parentId) {
+                            $Icon.clone()
+                                .addClass('fa-link')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.notification) {
+                            $Icon.clone()
+                                .addClass('fa-bell')
+                                .appendTo($IconContainer);
+                        }
                     }
 
                     // Show the tooltip
@@ -412,7 +460,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // Auto open appointment create screen
             if (Params.Appointment.AppointmentCreate) {
-                OpenEditDialog(Params, {
+                TargetNS.OpenEditDialog(Params, {
                     Start: Params.Appointment.AppointmentCreate.Start ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.Start) : $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
                     End: Params.Appointment.AppointmentCreate.End ? $.fullCalendar.moment(Params.Appointment.AppointmentCreate.End) : $.fullCalendar.moment().add(2, 'hours').startOf('hour'),
                     PluginKey: Params.Appointment.AppointmentCreate.PluginKey ? Params.Appointment.AppointmentCreate.PluginKey : null,
@@ -423,8 +471,19 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // Auto open appointment edit screen
             else if (Params.Appointment.AppointmentID) {
-                OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
+                TargetNS.OpenEditDialog(Params, { CalEvent: { id: Params.Appointment.AppointmentID } });
             }
+
+            $('#' + Core.App.EscapeSelector(Params.Appointment.AppointmentCreateButton))
+                .off('click.AppointmentCalendar')
+                .on('click.AppointmentCalendar', function () {
+                    TargetNS.OpenEditDialog(Params, {
+                        Start: $.fullCalendar.moment().add(1, 'hours').startOf('hour'),
+                        End: $.fullCalendar.moment().add(2, 'hours').startOf('hour')
+                    });
+
+                    return false;
+                });
         }
 
         if (Params.CalendarSettingsButton) {
@@ -567,9 +626,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             ReplaceValue = CalEvent[Placeholder];
 
             // Special properties
-            if (Placeholder === 'calendarId') {
-                ReplaceValue = $('label[for="Calendar' + Core.App.EscapeSelector(ReplaceValue) + '"]').text();
-            } else if (Placeholder === 'recurring') {
+            if (Placeholder === 'recurring') {
                 if (CalEvent.parentId) {
                     ReplaceValue = true;
                 }
@@ -610,7 +667,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
-     * @private
+     * @public
      * @name OpenEditDialog
      * @memberof Core.Agent.AppointmentCalendar
      * @param {Object} Params - Hash with configuration.
@@ -631,7 +688,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @description
      *      This method opens the appointment dialog after selecting a time period or an appointment.
      */
-    function OpenEditDialog(Params, AppointmentData) {
+    TargetNS.OpenEditDialog = function (Params, AppointmentData) {
         var Data = {
             ChallengeToken: Params.ChallengeToken,
             Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
@@ -1183,6 +1240,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method initializes the reminder section behavior.
      */
     TargetNS.NotificationInit = function (Fields) {
+        var NotificationCustomStringDiv = Fields.$NotificationCustomStringDiv.attr('id');
 
         if (Fields.$NotificationTemplate.val() !== 'Custom') {
 
@@ -1203,9 +1261,9 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
             // enable relative date fields
             Fields.$NotificationCustomRelativeInput.val(1);
-            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', false).trigger('redraw.InputField');
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', false).prop('readonly', false);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', false);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', false);
 
             // disable the custom date time fields
             Fields.$NotificationCustomDateTimeInput.val('');
@@ -1229,10 +1287,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             // disable relative date fields
             Fields.$NotificationCustomRelativeInput.val('');
             Fields.$NotificationCustomRelativeInput.prop('checked', false);
-            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true);
-            Fields.$NotificationCustomRelativeUnit.prop('disabled', true).trigger('redraw.InputField');
-            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true).trigger('redraw.InputField');
+            Fields.$NotificationCustomRelativeUnitCount.prop('disabled', true).prop('readonly', true);
+            Fields.$NotificationCustomRelativeUnit.prop('disabled', true);
+            Fields.$NotificationCustomRelativePointOfTime.prop('disabled', true);
         }
+
+        // TODO: Workaround for InputFields bug in the framework (disabled attribute not checked after initialization)
+        Core.UI.InputFields.Deactivate('#' + Core.App.EscapeSelector(NotificationCustomStringDiv));
+        Core.UI.InputFields.Activate('#' + Core.App.EscapeSelector(NotificationCustomStringDiv));
 
         // Register change event handler
         Fields.$NotificationTemplate.off('change.AppointmentCalendar').on('change.AppointmentCalendar', function() {
@@ -1755,6 +1817,10 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      *      This method submits an edit appointment call to the backend and refreshes the view.
       */
     TargetNS.EditAppointment = function (Data) {
+        if (Core.Config.Get('AppointmentCalendarAgendaOverview')) {
+            $('.OverviewControl').addClass('Loading');
+        }
+
         Core.AJAX.FunctionCall(
             Core.Config.Get('CGIHandle'),
             Data,
@@ -1764,6 +1830,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                     // Close the dialog
                     Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
+
+                    // Reload page if necessary
+                    if (Core.Config.Get('AppointmentCalendarAgendaOverview')) {
+                        window.location.reload();
+                    }
                 }
                 else {
                     if (Response.Error) {

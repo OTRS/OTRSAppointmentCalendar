@@ -23,7 +23,7 @@ my $ElementReadOnly = sub {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -46,7 +46,7 @@ my $ElementExists = sub {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -131,7 +131,7 @@ $Selenium->RunTest(
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => [ 'users', $GroupName ],
             Language => $Language,
-        ) || die "Did not get test user";
+        ) || die 'Did not get test user';
 
         # get UserID
         my $UserID = $UserObject->UserLookup(
@@ -139,7 +139,8 @@ $Selenium->RunTest(
         );
 
         # create test customer user
-        my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate() || die "Did not get test customer user";
+        my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate()
+            || die 'Did not get test customer user';
 
         # start test
         $Selenium->Login(
@@ -210,7 +211,7 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # go to previous week in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -225,7 +226,8 @@ $Selenium->RunTest(
         );
 
         # click on the timeline view for an appointment dialog
-        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
+            ->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -269,7 +271,7 @@ $Selenium->RunTest(
         );
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
@@ -298,14 +300,14 @@ $Selenium->RunTest(
         # check data
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#Title').val();",
+                "return \$('#Title').val();"
             ),
             'Appointment 1',
             'Title matches',
         );
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('#CalendarID').val();",
+                "return \$('#CalendarID').val();"
             ),
             $Calendar1{CalendarID},
             'Calendar matches',
@@ -319,16 +321,17 @@ $Selenium->RunTest(
         );
 
         # cancel the dialog
-        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+        $Selenium->find_element( '#EditFormCancel', 'css' )->VerifiedClick();
 
         # go to previous week in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # click on the timeline view for another appointment dialog
-        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
+            ->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -340,10 +343,10 @@ $Selenium->RunTest(
                 . $Calendar2{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'AllDay', 'name' )->click();
+        $Selenium->find_element( 'AllDay', 'name' )->VerifiedClick();
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
@@ -352,7 +355,7 @@ $Selenium->RunTest(
         );
 
         # hide the first calendar from view
-        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->VerifiedClick();
 
         # verify second appointment is visible
         $Self->Is(
@@ -366,14 +369,15 @@ $Selenium->RunTest(
         # verify second appointment is an all day appointment
         $Self->Is(
             $Selenium->execute_script(
-                "return \$('.fc-timeline-event.AllDay').length;"
+                "return \$('.fc-timeline-event .fa-sun-o').length;"
             ),
             '1',
             'Second appointment in an all day appointment',
         );
 
         # click again on the timeline view for an appointment dialog
-        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )->click();
+        $Selenium->find_element( '.fc-timelineWeek-view .fc-slats td.fc-widget-content:nth-child(5)', 'css' )
+            ->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -391,7 +395,7 @@ $Selenium->RunTest(
         );
 
         # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
 
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
@@ -400,7 +404,7 @@ $Selenium->RunTest(
         );
 
         # hide the second calendar from view
-        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->VerifiedClick();
 
         # verify all third appointment occurences are visible
         $Self->Is(
@@ -412,13 +416,16 @@ $Selenium->RunTest(
         );
 
         # click on an appointment
-        $Selenium->find_element( '.fc-timeline-event', 'css' )->click();
+        $Selenium->find_element( '.fc-timeline-event', 'css' )->VerifiedClick();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # click on Delete
         $Selenium->find_element( '#EditFormDelete', 'css' )->click();
+
+        # confirm
+        $Selenium->accept_alert();
 
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
@@ -436,8 +443,8 @@ $Selenium->RunTest(
         );
 
         # show all three calendars
-        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
-        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->VerifiedClick();
+        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -452,7 +459,7 @@ $Selenium->RunTest(
         );
 
         # open datepicker
-        $Selenium->find_element( '.fc-toolbar .fc-jump-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-jump-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".AJAXLoading").length' );
@@ -467,7 +474,7 @@ $Selenium->RunTest(
         );
 
         # close datepicker
-        $Selenium->find_element( 'div#DatepickerOverlay', 'css' )->click();
+        $Selenium->find_element( 'div#DatepickerOverlay', 'css' )->VerifiedClick();
 
         # filter just third calendar
         $Selenium->find_element( 'input#FilterCalendars', 'css' )->send_keys('Calendar3');
@@ -510,7 +517,7 @@ $Selenium->RunTest(
 
         $Self->True(
             $AppointmentID,
-            "Permission Appointment created.",
+            'Permission Appointment created.',
         );
 
         # add ro permissions to the user
@@ -530,21 +537,23 @@ $Selenium->RunTest(
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
         # show the fourth calendar and hide all others
-        $Selenium->find_element( 'Calendar' . $Calendar4{CalendarID}, 'id' )->click();
-        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->click();
-        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
-        $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->click();
+        $Selenium->find_element( 'Calendar' . $Calendar4{CalendarID}, 'id' )->VerifiedClick();
+        $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->VerifiedClick();
+        $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->VerifiedClick();
+        $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->VerifiedClick();
 
         # go to previous week in order to disable realtime notification dialog
-        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
+        $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
+        # find the appointment link
+        my $AppointmentLink = $Selenium->find_element( '.fc-event-container a', 'css' );
+        $Selenium->mouse_move_to_location($AppointmentLink);
+
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->VerifiedClick();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -582,7 +591,7 @@ $Selenium->RunTest(
         }
 
         # click on cancel
-        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+        $Selenium->find_element( '#EditFormCancel', 'css' )->VerifiedClick();
 
         # add move_into permissions to the user
         $GroupObject->PermissionGroupUserAdd(
@@ -596,9 +605,7 @@ $Selenium->RunTest(
         );
 
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->VerifiedClick();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -643,7 +650,7 @@ $Selenium->RunTest(
         }
 
         # click on cancel
-        $Selenium->find_element( '#EditFormCancel', 'css' )->click();
+        $Selenium->find_element( '#EditFormCancel', 'css' )->VerifiedClick();
 
         # add create permissions to the user
         $GroupObject->PermissionGroupUserAdd(
@@ -658,9 +665,7 @@ $Selenium->RunTest(
         );
 
         # click on appointment
-        $Selenium->execute_script(
-            "return \$('.fc-scrollpane-inner a:first').click();",
-        );
+        $AppointmentLink->VerifiedClick();
 
         # wait for appointment
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
@@ -687,10 +692,7 @@ $Selenium->RunTest(
                 Value          => 1,
             );
         }
-
-        # sleep(20);
-
-        }
+    },
 );
 
 1;

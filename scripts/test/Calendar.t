@@ -12,9 +12,6 @@ use utf8;
 
 use vars (qw($Self));
 
-# get calendar object
-my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -24,8 +21,10 @@ $Kernel::OM->ObjectParamAdd(
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
 # get needed objects
-my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
-my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
+my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
+my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
+my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 
 # create test user
 my $UserLogin = $Helper->TestUserCreate();
@@ -36,8 +35,10 @@ $Self->True(
     "Test user $UserID created",
 );
 
+my $RandomID = $Helper->GetRandomID();
+
 # create test group
-my $GroupName = 'test-calendar-group-' . $Helper->GetRandomID();
+my $GroupName = 'test-calendar-group-' . $RandomID;
 my $GroupID   = $GroupObject->GroupAdd(
     Name    => $GroupName,
     ValidID => 1,
@@ -69,318 +70,700 @@ $Self->True(
     "Test user $UserID added to test group $GroupID",
 );
 
-# this will be ok
-my %Calendar1 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Test calendar',
-    Color        => '#3A87AD',
-    GroupID      => $GroupID,
-    UserID       => $UserID,
+my @CalendarIDs;
+
+#
+# Tests for CalendarCreate()
+#
+my @Tests = (
+    {
+        Name    => 'CalendarCreate - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Missing CalendarName',
+        Config => {
+            Color   => '#3A87AD',
+            GroupID => $GroupID,
+            UserID  => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Missing UserID',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            Color        => '#3A87AD',
+            GroupID      => $GroupID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Missing GroupID',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            Color        => '#3A87AD',
+            UserID       => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Missing Color',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            GroupID      => $GroupID,
+            UserID       => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Wrong Color',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            Color        => 'red',
+            GroupID      => $GroupID,
+            UserID       => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - All parameters',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            Color        => '#3A87AD',
+            GroupID      => $GroupID,
+            UserID       => $UserID,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarCreate - Same name',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            Color        => '#3A87AD',
+            GroupID      => $GroupID,
+            UserID       => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarCreate - Invalid state',
+        Config => {
+            CalendarName => "Calendar-$RandomID-2",
+            Color        => '#EC9073',
+            GroupID      => $GroupID,
+            UserID       => $UserID,
+            ValidID      => 2,
+        },
+        Success => 1,
+    },
 );
 
-for my $Key (qw(CalendarID GroupID CalendarName Color CreateTime CreateBy ChangeTime ChangeBy ValidID)) {
-    $Self->True(
-        $Calendar1{$Key},
-        "CalendarCreate( CalendarName => 'Test calendar', Color => '#3A87AD', GroupID => $GroupID, UserID => $UserID ) - $Key",
+for my $Test (@Tests) {
+
+    # make the call
+    my %Calendar = $CalendarObject->CalendarCreate(
+        %{ $Test->{Config} },
     );
+
+    # check data
+    if ( $Test->{Success} ) {
+        for my $Key (qw(CalendarID GroupID CalendarName Color CreateTime CreateBy ChangeTime ChangeBy ValidID)) {
+            $Self->True(
+                $Calendar{$Key},
+                "$Test->{Name} - $Key exists",
+            );
+        }
+
+        KEY:
+        for my $Key ( sort keys %{ $Test->{Config} } ) {
+            next KEY if $Key eq 'UserID';
+
+            $Self->Is(
+                $Test->{Config}->{$Key},
+                $Calendar{$Key},
+                "$Test->{Name} - Data for $Key",
+            );
+        }
+
+        push @CalendarIDs, $Calendar{CalendarID};
+    }
+    else {
+        $Self->False(
+            $Calendar{CalendarID},
+            "$Test->{Name} - No success",
+        );
+    }
 }
 
-# try with same name
-my %Calendar2 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Test calendar',
-    Color        => '#3A87AD',
-    GroupID      => $GroupID,
-    UserID       => $UserID,
+#
+# Tests for CalendarGet()
+#
+@Tests = (
+    {
+        Name    => 'CalendarGet - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarGet - Missing CalendarName and CalendarID',
+        Config => {
+            UserID => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarGet - First calendar',
+        Config => {
+            CalendarName => "Calendar-$RandomID",
+            UserID       => $UserID,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarGet - Second calendar',
+        Config => {
+            CalendarName => "Calendar-$RandomID-2",
+            UserID       => $UserID,
+        },
+        Success => 1,
+    },
 );
 
-$Self->False(
-    $Calendar2{CalendarID},
-    "CalendarCreate( CalendarName => 'Test calendar', Color => '#3A87AD', GroupID => $GroupID, UserID => $UserID ) again same name",
-);
+for my $Test (@Tests) {
 
-# try without calendar name
-my %Calendar3 = $CalendarObject->CalendarCreate(
-    Color   => '#3A87AD',
-    GroupID => $GroupID,
-    UserID  => $UserID,
-);
-
-$Self->False(
-    $Calendar3{CalendarID},
-    "CalendarCreate( GroupID => $GroupID, Color => '#3A87AD', UserID => $UserID ) without name",
-);
-
-# try without GroupID
-my %Calendar4 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Meetings',
-    Color        => '#3A87AD',
-    UserID       => $GroupID,
-);
-
-$Self->False(
-    $Calendar4{CalendarID},
-    "CalendarCreate( CalendarName => 'Meetings', Color => '#3A87AD', UserID => $UserID ) without GroupID",
-);
-
-# try without UserID
-my %Calendar5 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Meetings',
-    Color        => '#3A87AD',
-    GroupID      => $GroupID,
-);
-
-$Self->False(
-    $Calendar5{CalendarID},
-    "CalendarCreate( CalendarName => 'Meetings', Color => '#3A87AD', GroupID => $GroupID ) without UserID",
-);
-
-# try without Color
-my %Calendar6 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Meetings',
-    GroupID      => $GroupID,
-    UserID       => $UserID,
-);
-
-$Self->False(
-    $Calendar6{CalendarID},
-    "CalendarCreate( CalendarName => 'Meetings', GroupID => $GroupID, UserID => $UserID ) without Color",
-);
-
-# try with wrong color
-my %Calendar7 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Failure is always an option',
-    Color        => 'red',
-    GroupID      => $GroupID,
-    UserID       => $UserID,
-);
-
-$Self->False(
-    $Calendar7{CalendarID},
-    "CalendarCreate( CalendarName => 'Failure is always an option', Color => 'red', GroupID => $GroupID, UserID => $UserID ) wrong Color format",
-);
-
-my %Calendar8 = $CalendarObject->CalendarCreate(
-    CalendarName => 'Test calendar 2',
-    Color        => '#EC9073',
-    GroupID      => $GroupID,
-    UserID       => $UserID,
-    ValidID      => 2,
-);
-
-$Self->True(
-    $Calendar8{CalendarID},
-    "CalendarCreate( CalendarName => 'Meetings', GroupID => $GroupID, UserID => $UserID, ValidID => 2 ) invalid state",
-);
-
-my %CalendarGet1 = $CalendarObject->CalendarGet(
-    CalendarName => 'Test calendar',
-    UserID       => $UserID,
-);
-
-$Self->True(
-    $CalendarGet1{CalendarID},
-    "CalendarGet( CalendarName => 'Test calendar', UserID => $UserID )",
-);
-
-my %CalendarGet2 = $CalendarObject->CalendarGet(
-    CalendarID => $CalendarGet1{CalendarID},
-    UserID     => $UserID,
-);
-
-$Self->True(
-    $CalendarGet2{CalendarID},
-    "CalendarGet( CalendarID => $CalendarGet1{CalendarID}, UserID => $UserID )",
-);
-
-$Self->IsDeeply(
-    \%CalendarGet1,
-    \%CalendarGet2,
-    'Returned data is the same',
-);
-
-# try without params
-my %CalendarGet3 = $CalendarObject->CalendarGet();
-
-$Self->False(
-    $CalendarGet3{CalendarID},
-    'CalendarGet() without parameters',
-);
-
-# missing UserID
-my %CalendarGet4 = $CalendarObject->CalendarGet(
-    CalendarName => 'Test calendar',
-);
-
-$Self->True(
-    $CalendarGet4{CalendarID},
-    "CalendarGet( CalendarName => 'Test calendar') without UserID",
-);
-
-# missing CalendarName or CalendarID
-my %CalendarGet5 = $CalendarObject->CalendarGet(
-    UserID => $UserID,
-);
-
-$Self->False(
-    $CalendarGet5{CalendarID},
-    "CalendarGet(UserID => $UserID) without CalendarName or CalendarID",
-);
-
-# without params
-my @CalendarList1 = $CalendarObject->CalendarList();
-
-$Self->True(
-    scalar @CalendarList1 > 1,
-    'CalendarList() without parameters',
-);
-
-my %CalendarListItem1 = %{ $CalendarList1[0] };
-
-for my $Key (
-    qw(CalendarID GroupID CalendarName Color CreateTime CreateBy ChangeTime ChangeBy ValidID)
-    )
-{
-    $Self->True(
-        $CalendarListItem1{$Key},
-        "CalendarList() has $Key",
+    # make the call
+    my %Calendar = $CalendarObject->CalendarGet(
+        %{ $Test->{Config} },
     );
+
+    # check data
+    if ( $Test->{Success} ) {
+        for my $Key (qw(CalendarID GroupID CalendarName Color CreateTime CreateBy ChangeTime ChangeBy ValidID)) {
+            $Self->True(
+                $Calendar{$Key},
+                "$Test->{Name} - $Key exists",
+            );
+        }
+
+        # get by id
+        my %CalendarByID = $CalendarObject->CalendarGet(
+            CalendarID => $Calendar{CalendarID},
+        );
+
+        # compare returned data
+        $Self->IsDeeply(
+            \%Calendar,
+            \%CalendarByID,
+            "$Test->{Name} - Get by CalendarID",
+        );
+    }
+    else {
+        $Self->False(
+            $Calendar{CalendarID},
+            "$Test->{Name} - No success",
+        );
+    }
 }
 
-# with UserID
-my @CalendarList2 = $CalendarObject->CalendarList(
-    UserID => $UserID,
+#
+# Tests for CalendarList()
+#
+@Tests = (
+    {
+        Name    => 'CalendarList - No params',
+        Config  => {},
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarList - With UserID',
+        Config => {
+            UserID => $UserID,
+        },
+        Success => 1,
+        Count   => 2,
+    },
+    {
+        Name   => 'CalendarList - With UserID and only valid',
+        Config => {
+            ValidID => 1,
+            UserID  => $UserID,
+        },
+        Success => 1,
+        Count   => 1,
+    },
+    {
+        Name   => 'CalendarList - With UserID and only invalid',
+        Config => {
+            ValidID => 2,
+            UserID  => $UserID,
+        },
+        Success => 1,
+        Count   => 1,
+    },
 );
 
-$Self->True(
-    scalar @CalendarList2 == 2,
-    "CalendarList( UserID => $UserID ) with UserID",
+for my $Test (@Tests) {
+
+    # make the call
+    my @Result = $CalendarObject->CalendarList(
+        %{ $Test->{Config} },
+    );
+
+    # check data
+    if ( $Test->{Success} ) {
+
+        # check count
+        if ( $Test->{Count} ) {
+            $Self->Is(
+                scalar @Result,
+                $Test->{Count},
+                "$Test->{Name} - Result count",
+            );
+
+            # compare returned data
+            for my $Calendar (@Result) {
+                for my $Key (qw(CalendarID GroupID CalendarName Color CreateTime CreateBy ChangeTime ChangeBy ValidID))
+                {
+                    $Self->True(
+                        $Calendar->{$Key},
+                        "$Test->{Name} - $Key exists",
+                    );
+                }
+
+                # get by id
+                my %CalendarByID = $CalendarObject->CalendarGet(
+                    CalendarID => $Calendar->{CalendarID},
+                );
+
+                $Self->IsDeeply(
+                    $Calendar,
+                    \%CalendarByID,
+                    "$Test->{Name} - Compare returned data",
+                );
+            }
+        }
+        else {
+            $Self->True(
+                scalar @Result > 1,
+                "$Test->{Name} - Has result",
+            );
+        }
+    }
+    else {
+        $Self->False(
+            @Result,
+            "$Test->{Name} - No success",
+        );
+    }
+}
+
+#
+# Tests for CalendarUpdate()
+#
+@Tests = (
+    {
+        Name    => 'CalendarUpdate - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing CalendarID',
+        Config => {
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID",
+            Color        => '#FF9900',
+            UserID       => $UserID,
+            ValidID      => 2,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing GroupID',
+        Config => {
+            CalendarID   => $CalendarIDs[0],
+            CalendarName => "Change-$RandomID",
+            Color        => '#FF9900',
+            UserID       => $UserID,
+            ValidID      => 2,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing CalendarName',
+        Config => {
+            CalendarID => $CalendarIDs[0],
+            GroupID    => $GroupID,
+            Color      => '#FF9900',
+            UserID     => $UserID,
+            ValidID    => 2,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing Color',
+        Config => {
+            CalendarID   => $CalendarIDs[0],
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID",
+            UserID       => $UserID,
+            ValidID      => 2,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing UserID',
+        Config => {
+            CalendarID   => $CalendarIDs[0],
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID",
+            Color        => '#FF9900',
+            ValidID      => 2,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - Missing ValidID',
+        Config => {
+            CalendarID   => $CalendarIDs[0],
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID",
+            Color        => '#FF9900',
+            UserID       => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarUpdate - All params first',
+        Config => {
+            CalendarID   => $CalendarIDs[0],
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID",
+            Color        => '#FF9900',
+            UserID       => $UserID,
+            ValidID      => 2,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarUpdate - All params second',
+        Config => {
+            CalendarID   => $CalendarIDs[1],
+            GroupID      => $GroupID,
+            CalendarName => "Change-$RandomID-2",
+            Color        => '#FF9900',
+            UserID       => $UserID,
+            ValidID      => 1,
+        },
+        Success => 1,
+    },
 );
 
-# only valid
-my @CalendarList3 = $CalendarObject->CalendarList(
-    UserID  => $UserID,
-    ValidID => 1,
+for my $Test (@Tests) {
+
+    # make the call
+    my $Success = $CalendarObject->CalendarUpdate(
+        %{ $Test->{Config} },
+    );
+
+    # check data
+    if ( $Test->{Success} ) {
+        $Self->True(
+            $Success,
+            "$Test->{Name} - Success",
+        );
+
+        # get by id
+        my %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Test->{Config}->{CalendarID},
+        );
+
+        KEY:
+        for my $Key ( sort keys %{ $Test->{Config} } ) {
+            next KEY if $Key eq 'UserID';
+
+            $Self->Is(
+                $Test->{Config}->{$Key},
+                $Calendar{$Key},
+                "$Test->{Name} - Data for $Key",
+            );
+        }
+    }
+    else {
+        $Self->False(
+            $Success,
+            "$Test->{Name} - No success",
+        );
+    }
+}
+
+#
+# Tests for CalendarPermissionGet()
+#
+@Tests = (
+    {
+        Name    => 'CalendarPermissionGet - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarPermissionGet - Missing CalendarID',
+        Config => {
+            UserID => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarPermissionGet - Missing UserID',
+        Config => {
+            CalendarID => $CalendarIDs[0],
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarPermissionGet - All params first',
+        Config => {
+            CalendarID => $CalendarIDs[0],
+            UserID     => $UserID,
+        },
+        Success => 1,
+        Result  => 'rw',
+    },
+    {
+        Name   => 'CalendarPermissionGet - All params second',
+        Config => {
+            CalendarID => $CalendarIDs[1],
+            UserID     => $UserID,
+        },
+        Success => 1,
+        Result  => 'rw',
+    },
 );
 
-$Self->True(
-    scalar @CalendarList3 == 1,
-    "CalendarList(UserID => $UserID, ValidID => 1) valid state",
+for my $Test (@Tests) {
+
+    # make the call
+    my $Permission = $CalendarObject->CalendarPermissionGet(
+        %{ $Test->{Config} },
+    );
+
+    # check permission
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Permission,
+            $Test->{Result},
+            "$Test->{Name} - Permission",
+        );
+    }
+    else {
+        $Self->False(
+            $Permission,
+            "$Test->{Name} - No success",
+        );
+    }
+}
+
+#
+# Tests for GetTextColor()
+#
+@Tests = (
+    {
+        Name    => 'GetTextColor - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'GetTextColor - Invalid color',
+        Config => {
+            Background => '#CCCCC',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'GetTextColor - White',
+        Config => {
+            Background => '#FFF',
+        },
+        Success => 1,
+        Result  => '#000',
+    },
+    {
+        Name   => 'GetTextColor - Light Gray',
+        Config => {
+            Background => '#808080',
+        },
+        Success => 1,
+        Result  => '#000',
+    },
+    {
+        Name   => 'GetTextColor - Dark Gray',
+        Config => {
+            Background => '#797979',
+        },
+        Success => 1,
+        Result  => '#FFFFFF',
+    },
+    {
+        Name   => 'GetTextColor - Black',
+        Config => {
+            Background => '#000',
+        },
+        Success => 1,
+        Result  => '#FFFFFF',
+    },
 );
 
-# only invalid
-my @CalendarList4 = $CalendarObject->CalendarList(
-    UserID  => $UserID,
-    ValidID => 2,
+for my $Test (@Tests) {
+
+    # make the call
+    my $TextColor = $CalendarObject->GetTextColor(
+        %{ $Test->{Config} },
+    );
+
+    # check text color
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $TextColor,
+            $Test->{Result},
+            "$Test->{Name} - Text color",
+        );
+    }
+    else {
+        $Self->False(
+            $TextColor,
+            "$Test->{Name} - No success",
+        );
+    }
+}
+
+#
+# Tests for CalendarExport() and CalendarImport()
+#
+@Tests = (
+    {
+        Name    => 'CalendarExport/Import - No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarExport/Import - No CalendarData',
+        Config => {
+            UserID => $UserID,
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'CalendarExport/Import - All params with overwrite',
+        Export => {
+            CalendarID => $CalendarIDs[0],
+            UserID     => $UserID,
+        },
+        Config => {
+            UserID                    => $UserID,
+            OverwriteExistingEntities => 1,
+        },
+        Appointments => [
+            {
+                CalendarID => $CalendarIDs[0],
+                Title      => "Appointment1-$RandomID",
+                StartTime  => '2016-01-01 16:00:00',
+                EndTime    => '2016-01-01 17:00:00',
+                UserID     => $UserID,
+            },
+            {
+                CalendarID => $CalendarIDs[0],
+                Title      => "Appointment2-$RandomID",
+                StartTime  => '2016-01-01 16:00:00',
+                EndTime    => '2016-01-01 17:00:00',
+                UserID     => $UserID,
+            },
+        ],
+        Success => 1,
+    },
 );
 
-$Self->True(
-    scalar @CalendarList4 == 1,
-    "CalendarList(UserID => $UserID, ValidID => 2) invalid state",
-);
+for my $Test (@Tests) {
 
-# update an already added calendar
-my $Update1 = $CalendarObject->CalendarUpdate(
-    CalendarID   => $Calendar1{CalendarID},
-    Color        => '#6BAD54',
-    GroupID      => $GroupID,
-    CalendarName => 'Meetings',
-    UserID       => $UserID,
-    ValidID      => 2,
-);
+    # create appointments
+    if ( $Test->{Appointments} ) {
+        for my $Appointment ( @{ $Test->{Appointments} } ) {
+            my $AppointmentID = $AppointmentObject->AppointmentCreate(
+                %{$Appointment},
+            );
+            $Self->True(
+                $AppointmentID,
+                "$Test->{Name} - Created appointment ($AppointmentID)",
+            );
+        }
+    }
 
-$Self->True(
-    $Update1,
-    "CalendarUpdate( CalendarID => $Calendar1{CalendarID}, CalendarName => 'Meetings', Color => '#6BAD54', GroupID => $GroupID, UserID => $UserID, ValidID => 2 )",
-);
+    # export calendar
+    if ( $Test->{Export} ) {
+        my %Data = $CalendarObject->CalendarExport(
+            %{ $Test->{Export} },
+        );
 
-my %CalendarGet6 = $CalendarObject->CalendarGet(
-    CalendarID => $CalendarGet1{CalendarID},
-    UserID     => $UserID,
-);
+        $Test->{Config}->{Data} = \%Data;
+    }
 
-$Self->Is(
-    $CalendarGet6{CalendarName},
-    'Meetings',
-    "Check CalendarName",
-);
+    # make the call
+    my $Success = $CalendarObject->CalendarImport(
+        %{ $Test->{Config} },
+    );
 
-$Self->Is(
-    $CalendarGet6{ValidID},
-    2,
-    "Check ValidID",
-);
+    # check result
+    if ( $Test->{Success} ) {
+        $Self->True(
+            $Success,
+            "$Test->{Name} - Success",
+        );
 
-# without CalendarID
-my $CalendarPermission1 = $CalendarObject->CalendarPermissionGet(
-    UserID => $UserID,
-);
-$Self->False(
-    $CalendarPermission1,
-    "CalendarPermissionGet #1",
-);
+        my %Calendar = $CalendarObject->CalendarGet(
+            %{ $Test->{Export} },
+        );
 
-# without UserID
-my $CalendarPermission2 = $CalendarObject->CalendarPermissionGet(
-    CalendarID => $CalendarGet1{CalendarID},
-);
-$Self->False(
-    $CalendarPermission2,
-    "CalendarPermissionGet #2",
-);
+        # reset ChangeTime since it might differ by one second
+        $Calendar{ChangeTime} = undef;
+        $Test->{Config}->{Data}->{CalendarData}->{ChangeTime} = undef;
 
-# ok
-my $CalendarPermission3 = $CalendarObject->CalendarPermissionGet(
-    CalendarID => $CalendarGet1{CalendarID},
-    UserID     => $UserID,
-);
-$Self->Is(
-    $CalendarPermission3,
-    'rw',
-    "CalendarPermissionGet #3",
-);
+        $Self->IsDeeply(
+            \%Calendar,
+            $Test->{Config}->{Data}->{CalendarData},
+            "$Test->{Name} - Calendar data",
+        );
 
-# luminosity difference algorithm
-my $BestTextColor = $CalendarObject->GetTextColor(
-    Background => '#FFF',
-);
-$Self->Is(
-    $BestTextColor,
-    '#000',
-    'GetTextColor() - Background: #FFF',
-);
+        my @Appointments = $AppointmentObject->AppointmentList(
+            %{ $Test->{Export} },
+            Result => 'ARRAY',
+        );
 
-$BestTextColor = $CalendarObject->GetTextColor(
-    Background => '#000',
-);
-$Self->Is(
-    $BestTextColor,
-    '#FFFFFF',
-    'GetTextColor() - Background: #000',
-);
+        my @AppointmentData;
+        for my $AppointmentID (@Appointments) {
+            my %Appointment = $AppointmentObject->AppointmentGet(
+                AppointmentID => $AppointmentID,
+            );
+            $Appointment{AppointmentID} = undef;
 
-$BestTextColor = $CalendarObject->GetTextColor(
-    Background => '#808080',
-);
-$Self->Is(
-    $BestTextColor,
-    '#000',
-    'GetTextColor() - Background: #808080',
-);
+            push @AppointmentData, \%Appointment;
+        }
 
-$BestTextColor = $CalendarObject->GetTextColor(
-    Background => '#797979',
-);
-$Self->Is(
-    $BestTextColor,
-    '#FFFFFF',
-    'GetTextColor() - Background: #797979',
-);
+        for my $Appointment ( @{ $Test->{Config}->{Data}->{AppointmentData} } ) {
+            $Appointment->{AppointmentID} = undef;
+        }
 
-$BestTextColor = $CalendarObject->GetTextColor(
-    Background => '#CCCCC',
-);
-$Self->False(
-    $BestTextColor,
-    'GetTextColor() - Background: #CCCCC (invalid)',
-);
+        $Self->IsDeeply(
+            \@AppointmentData,
+            $Test->{Config}->{Data}->{AppointmentData},
+            "$Test->{Name} - Appointment data",
+        );
+    }
+    else {
+        $Self->False(
+            $Success,
+            "$Test->{Name} - No success",
+        );
+    }
+}
 
 1;

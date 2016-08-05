@@ -75,6 +75,10 @@ sub Run {
         }
 
         $LayoutObject->Block(
+            Name => 'AppointmentCreateButton',
+        );
+
+        $LayoutObject->Block(
             Name => 'CalendarDiv',
             Data => {
                 %Param,
