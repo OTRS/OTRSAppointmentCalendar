@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::Language qw(Translatable);
+use Kernel::System::VariableCheck qw(:all);
 
 our $ObjectManagerDisabled = 1;
 
@@ -235,83 +236,180 @@ sub Run {
             );
         }
 
-        # Redirect
+        # redirect
         return $LayoutObject->Redirect(
             OP => "Action=AgentAppointmentCalendarManage",
         );
-
     }
+    elsif ( $Self->{Subaction} eq 'CalendarImport' ) {
+
+        # challenge token check for write action
+        $LayoutObject->ChallengeTokenCheck();
+
+        # get the uploaded file content
+        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        my %UploadStuff = $ParamObject->GetUploadAll(
+            Param => 'FileUpload',
+        );
+        my $Content = $UploadStuff{Content};
+
+        # check for overwriting option
+        my $OverwriteExistingEntities = $ParamObject->GetParam( Param => 'OverwriteExistingEntities' ) || 0;
+
+        # extract the team data from the uploaded file
+        my $CalendarData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Content );
+        if ( ref $CalendarData ne 'HASH' ) {
+            return $LayoutObject->ErrorScreen(
+                Message =>
+                    "Couldn't read calendar configuration file. Please make sure your file is valid.",
+            );
+        }
+
+        # import the calendar
+        my $Success = $CalendarObject->CalendarImport(
+            Data                      => $CalendarData,
+            OverwriteExistingEntities => $OverwriteExistingEntities,
+            UserID                    => $Self->{UserID},
+        );
+
+        if ( !$Success ) {
+            $Param{NotifyMessage} = {
+                Priority => Translatable('Error'),
+                Info     => Translatable('Could not import the calendar!'),
+            };
+        }
+        else {
+            $Param{NotifyMessage} = {
+                Info => Translatable('Calendar imported!'),
+            };
+        }
+
+        %Param = $Self->_Overview(%Param);
+    }
+
+    elsif ( $Self->{Subaction} eq 'CalendarExport' ) {
+
+        # check for CalendarID
+        my $CalendarID = $ParamObject->GetParam( Param => 'CalendarID' ) || '';
+        if ( !$CalendarID ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('Need CalendarID!'),
+            );
+        }
+
+        # get calendar data
+        my %CalendarData = $CalendarObject->CalendarExport(
+            CalendarID => $CalendarID,
+            UserID     => $Self->{UserID},
+        );
+
+        if ( !IsHashRefWithData( \%CalendarData ) ) {
+            return $LayoutObject->ErrorScreen(
+                Message => Translatable('Could not retrieve data for given CalendarID'),
+            );
+        }
+
+        # convert the calendar data hash to string
+        my $CalendarDataYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump( Data => \%CalendarData );
+
+        # prepare calendar name to be part of the filename
+        my $CalendarName = $CalendarData{CalendarData}->{CalendarName};
+        $CalendarName =~ s/\s+/_/g;
+
+        # send the result to the browser
+        return $LayoutObject->Attachment(
+            ContentType => 'text/html; charset=' . $LayoutObject->{Charset},
+            Content     => $CalendarDataYAML,
+            Type        => 'attachment',
+            Filename    => 'Export_Calendar_' . $CalendarName . '.yml',
+            NoCache     => 1,
+        );
+    }
+
     else {
 
-        my $ImportSuccess = $ParamObject->GetParam( Param => 'ImportSuccess' ) || '';
-        if ($ImportSuccess) {
-            $LayoutObject->Block(
-                Name => 'ImportSuccess',
-                Data => {
-                    Name  => $ParamObject->GetParam( Param => 'Name' )  || '',
-                    Count => $ParamObject->GetParam( Param => 'Count' ) || 0,
-                },
-            );
+        if ( $ParamObject->GetParam( Param => 'ImportAppointmentsSuccess' ) || '' ) {
+            $Param{NotifyMessage} = {
+                Info => $LayoutObject->{LanguageObject}->Translate(
+                    'Successfully imported %s appointment(s) to calendar %s.',
+                    $ParamObject->GetParam( Param => 'Count' ) || 0,
+                    $ParamObject->GetParam( Param => 'Name' )  || '',
+                ),
+            };
         }
 
-        # get all calendars user has RW access to
-        my @Calendars = $CalendarObject->CalendarList(
-            UserID     => $Self->{UserID},
-            Permission => 'rw',
+        %Param = $Self->_Overview(%Param);
+    }
+
+    return $Self->_Mask(%Param);
+}
+
+sub _Overview {
+    my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+
+    # get all calendars user has RW access to
+    my @Calendars = $CalendarObject->CalendarList(
+        UserID     => $Self->{UserID},
+        Permission => 'rw',
+    );
+
+    $LayoutObject->Block(
+        Name => 'CalendarFilter',
+    );
+
+    $LayoutObject->Block(
+        Name => 'Overview',
+    );
+
+    $Param{ValidCount} = 0;
+    for my $Calendar (@Calendars) {
+
+        # group name
+        $Calendar->{Group} = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+            GroupID => $Calendar->{GroupID},
+        );
+
+        # valid text
+        $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
+            ValidID => $Calendar->{ValidID},
+        );
+        $Param{ValidCount}++ if $Calendar->{ValidID} == 1;
+
+        # get access tokens
+        $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
+            CalendarID => $Calendar->{CalendarID},
+            UserLogin  => $Self->{UserLogin},
         );
 
         $LayoutObject->Block(
-            Name => 'CalendarFilter',
-        );
-
-        $LayoutObject->Block(
-            Name => 'Overview',
-        );
-
-        $Param{ValidCount} = 0;
-        for my $Calendar (@Calendars) {
-
-            # group name
-            $Calendar->{Group} = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
-                GroupID => $Calendar->{GroupID},
-            );
-
-            # valid text
-            $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
-                ValidID => $Calendar->{ValidID},
-            );
-            $Param{ValidCount}++ if $Calendar->{ValidID} == 1;
-
-            # get access tokens
-            $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
-                CalendarID => $Calendar->{CalendarID},
-                UserLogin  => $Self->{UserLogin},
-            );
-
-            $LayoutObject->Block(
-                Name => 'Calendar',
-                Data => {
-                    %{$Calendar},
-                },
-            );
-        }
-
-        $LayoutObject->Block(
-            Name => 'CalendarNoDataRow',
-        ) if scalar @Calendars == 0;
-
-        $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
-        $Param{Overview} = 1;
-
-        $LayoutObject->Block(
-            Name => 'MainActions',
+            Name => 'Calendar',
             Data => {
-                %Param,
+                %{$Calendar},
             },
         );
     }
 
-    return $Self->_Mask(%Param);
+    $LayoutObject->Block(
+        Name => 'CalendarNoDataRow',
+    ) if scalar @Calendars == 0;
+
+    $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
+    $Param{Overview} = 1;
+
+    $LayoutObject->Block(
+        Name => 'MainActions',
+        Data => {
+            %Param,
+        },
+    );
+
+    $LayoutObject->Block( Name => 'ActionImport' );
+
+    return %Param;
 }
 
 sub _Mask {
@@ -323,6 +421,13 @@ sub _Mask {
     # output page
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
+
+    if ( $Param{NotifyMessage} ) {
+        $Output .= $LayoutObject->Notify(
+            %{ $Param{NotifyMessage} },
+        );
+    }
+
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarManage',
         Data         => {

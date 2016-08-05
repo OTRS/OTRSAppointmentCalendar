@@ -21,6 +21,7 @@ use vars qw(@ISA);
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
+    'Kernel::System::Calendar::Appointment',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
@@ -474,7 +475,7 @@ updates an existing calendar.
         ValidID          => 1,                   # (required) ValidID
     );
 
-returns 1 if successful:
+returns 1 if successful
 
 Events:
     CalendarUpdate
@@ -550,6 +551,203 @@ sub CalendarUpdate {
     );
 
     return 1;
+}
+
+=item CalendarImport()
+
+import a calendar
+
+    my $Success = $CalendarObject->CalendarImport(
+        Data => {
+            CalendarData => {
+                CalendarID   => 2,
+                GroupID      => 3,
+                CalendarName => 'Meetings',
+                Color        => '#FF7700',
+                ValidID      => 1,
+            },
+            AppointmentData => {
+                {
+                    AppointmentID       => 2,
+                    ParentID            => 1,
+                    CalendarID          => 1,
+                    UniqueID            => '20160101T160000-71E386@localhost',
+                    ...
+                },
+                ...
+            },
+        },
+        OverwriteExistingEntities => 0,     # (optional) Overwrite existing calendar and appointments, default: 0
+                                            # Calendar with same name will be overwritten
+                                            # Appointments with same UniqueID in existing calendar will be overwritten
+        UserID => 1,
+    );
+
+returns 1 if successful
+
+=cut
+
+sub CalendarImport {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(Data UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    return if !IsHashRefWithData( $Param{Data} );
+    return if !IsHashRefWithData( $Param{Data}->{CalendarData} );
+
+    # check for an existing calendar
+    my %ExistingCalendar = $Self->CalendarGet(
+        CalendarName => $Param{Data}->{CalendarData}->{CalendarName},
+    );
+
+    my $CalendarID;
+
+    # create new calendar
+    if ( !IsHashRefWithData( \%ExistingCalendar ) ) {
+        my %Calendar = $Self->CalendarCreate(
+            %{ $Param{Data}->{CalendarData} },
+            UserID => $Param{UserID},
+        );
+        return if !$Calendar{CalendarID};
+
+        $CalendarID = $Calendar{CalendarID};
+    }
+
+    # update existing calendar
+    else {
+        if ( $Param{OverwriteExistingEntities} ) {
+            my $Success = $Self->CalendarUpdate(
+                %{ $Param{Data}->{CalendarData} },
+                CalendarID => $ExistingCalendar{CalendarID},
+                UserID     => $Param{UserID},
+            );
+            return if !$Success;
+        }
+
+        $CalendarID = $ExistingCalendar{CalendarID};
+    }
+
+    # import appointments
+    if ( $CalendarID && IsArrayRefWithData( $Param{Data}->{AppointmentData} ) ) {
+        my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+        my $AppointmentID;
+
+        APPOINTMENT:
+        for my $Appointment ( @{ $Param{Data}->{AppointmentData} } ) {
+
+            # add to existing calendar
+            $Appointment->{CalendarID} = $CalendarID;
+
+            # create new appointment if NOT overwriting existing entities
+            $Appointment->{UniqueID} = undef if !$Param{OverwriteExistingEntities};
+
+            # skip adding automatic recurring occurences
+            $Appointment->{RecurringRaw} = 1 if $Appointment->{Recurring};
+
+            # set parent id to last appointment id
+            $Appointment->{ParentID} = $AppointmentID if $Appointment->{ParentID};
+
+            $AppointmentID = $AppointmentObject->AppointmentCreate(
+                %{$Appointment},
+                UserID => $Param{UserID},
+            );
+            return if !$AppointmentID;
+        }
+    }
+
+    return 1;
+}
+
+=item CalendarExport()
+
+export a calendar
+
+    my %Data = $CalendarObject->CalendarExport(
+        CalendarID => 2,
+        UserID     => 1,
+    }
+
+returns calendar hash with data:
+
+    %Data = (
+        CalendarData => {
+            CalendarID   => 2,
+            GroupID      => 3,
+            CalendarName => 'Meetings',
+            Color        => '#FF7700',
+            ValidID      => 1,
+        },
+        AppointmentData => (
+            {
+                AppointmentID       => 2,
+                ParentID            => 1,
+                CalendarID          => 1,
+                UniqueID            => '20160101T160000-71E386@localhost',
+                ...
+            },
+            ...
+        ),
+    );
+
+=cut
+
+sub CalendarExport {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID UserID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get calendar data
+    my %CalendarData = $Self->CalendarGet(
+        CalendarID => $Param{CalendarID},
+        UserID     => $Param{UserID},
+    );
+    return if !IsHashRefWithData( \%CalendarData );
+
+    # get appointment object
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+
+    # get list of appointments
+    my @Appointments = $AppointmentObject->AppointmentList(
+        CalendarID => $Param{CalendarID},
+        Result     => 'ARRAY',
+    );
+
+    my @AppointmentData;
+
+    APPOINTMENT:
+    for my $AppointmentID (@Appointments) {
+        my %Appointment = $AppointmentObject->AppointmentGet(
+            AppointmentID => $AppointmentID,
+        );
+        next APPOINTMENT if !%Appointment;
+
+        push @AppointmentData, \%Appointment;
+    }
+
+    my %Result = (
+        CalendarData    => \%CalendarData,
+        AppointmentData => \@AppointmentData,
+    );
+
+    return %Result;
 }
 
 =item CalendarPermissionGet()

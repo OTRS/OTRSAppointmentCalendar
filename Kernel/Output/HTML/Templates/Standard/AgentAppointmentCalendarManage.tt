@@ -6,12 +6,6 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-[% RenderBlockStart("ImportSuccess") %]
-<div class="MessageBox Notice">
-    <p>[% Translate("Successfully imported %s appointment(s) to calendar %s.", Data.Count, Data.Name) | html %]</p>
-</div>
-[% RenderBlockEnd("ImportSuccess") %]
-
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
 
     <h1 class="Header">[% Translate("Calendar Management") | html %]</h1>
@@ -52,17 +46,48 @@
                     </li>
                     <li>
 [% IF Data.ValidCount %]
-                        <a id="Import" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarImport" class="CallForAction Fullsize Center" title="[% Translate("Import Calendar") | html %]">
+                        <a id="ImportAppointments" href="[% Env("Baselink") %]Action=AgentAppointmentImport" class="CallForAction Fullsize Center" title="[% Translate("Import Appointments") | html %]">
 [% ELSE %]
-                        <a id="Import" class="CallForAction Fullsize Center Disabled" title="[% Translate("Import Calendar") | html %]">
+                        <a id="ImportAppointments" class="CallForAction Fullsize Center Disabled" title="[% Translate("Import Appointments") | html %]">
 [% END %]
-                            <span><i class="fa fa-upload"></i>[% Translate("Import Calendar") | html %]</span>
+                            <span><i class="fa fa-upload"></i>[% Translate("Import Appointments") | html %]</span>
                         </a>
                     </li>
 [% RenderBlockEnd("MainActions") %]
                 </ul>
             </div>
         </div>
+[% RenderBlockStart("ActionImport") %]
+        <div class="WidgetSimple">
+            <div class="Header">
+                <h2>[% Translate("Calendar Import") | html %]</h2>
+            </div>
+            <div class="Content">
+                <p class="FieldExplanation">
+                    [% Translate("Here you can upload a configuration file to import a calendar to your system. The file needs to be in .yml format as exported by calendar management module.") | html %]
+                </p>
+                <ul class="ActionList SpacingTop">
+                    <li>
+                        <form action="[% Env("CGIHandle") %]" method="post" enctype="multipart/form-data" class="Validate PreventMultipleSubmits">
+                            <input type="hidden" name="Action" value="[% Env("Action") %]"/>
+                            <input type="hidden" name="Subaction" value="CalendarImport"/>
+                            <input type="hidden" name="FormID" value="[% Data.FormID | html %]"/>
+                            <input name="FileUpload" id="FileUpload" type="file" size="18" class="Fixed W100pc Validate_Required [% Data.FileUploadInvalid | html %]"/>
+                            <div id="FileUploadError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <div id="FileUploadServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                            <fieldset class="SpacingTop">
+                                <input type="checkbox" id="OverwriteExistingEntitiesImport" name="OverwriteExistingEntities" value="1" checked="checked" />
+                                <label for="OverwriteExistingEntitiesImport">[% Translate("Overwrite existing entities") | html %]</label>
+                            </fieldset>
+                            <button class="CallForAction Fullsize Center SpacingTop" type="submit" value="[% Translate("Upload calendar configuration") | html %]">
+                                <span><i class="fa fa-upload"></i>[% Translate("Import Calendar") | html %]</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+[% RenderBlockEnd("ActionImport") %]
 [% RenderBlockStart("CalendarFilter") %]
         <div class="WidgetSimple">
             <div class="Header">
@@ -136,7 +161,7 @@
                             <td>[% Data.ChangeTime | html %]</td>
                             <td>[% Data.CreateTime | html %]</td>
                             <td class="Center">
-                                <a class="ExportLink" href="[% Config("HttpType") %]://[% Config("FQDN") %]/[% Config("ScriptAlias") %]public.pl?Action=PublicCalendar;CalendarID=[% Data.CalendarID | uri %];User=[% Env("UserLogin") | uri %];Token=[% Data.AccessToken | uri %]" title="[% Translate("Export calendar") | html %]">
+                                <a class="ExportLink" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=CalendarExport;CalendarID=[% Data.CalendarID | uri %]" title="[% Translate("Export calendar") | html %]">
                                     <i class="fa fa-download"></i>
                                     <span class="InvisibleText">[% Translate("Export calendar") | html %]</span>
                                 </a>
