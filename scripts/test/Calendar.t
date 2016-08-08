@@ -723,9 +723,11 @@ for my $Test (@Tests) {
             %{ $Test->{Export} },
         );
 
-        # reset ChangeTime since it might differ by one second
-        $Calendar{ChangeTime} = undef;
-        $Test->{Config}->{Data}->{CalendarData}->{ChangeTime} = undef;
+        # reset CreateTime and ChangeTime since they might differ
+        for my $Key (qw(CreateTime ChangeTime)) {
+            $Calendar{$Key} = undef;
+            $Test->{Config}->{Data}->{CalendarData}->{$Key} = undef;
+        }
 
         $Self->IsDeeply(
             \%Calendar,
@@ -745,11 +747,21 @@ for my $Test (@Tests) {
             );
             $Appointment{AppointmentID} = undef;
 
+            # reset CreateTime and ChangeTime since they might differ
+            for my $Key (qw(CreateTime ChangeTime)) {
+                $Appointment{$Key} = undef;
+            }
+
             push @AppointmentData, \%Appointment;
         }
 
         for my $Appointment ( @{ $Test->{Config}->{Data}->{AppointmentData} } ) {
             $Appointment->{AppointmentID} = undef;
+
+            # reset CreateTime and ChangeTime since they might differ
+            for my $Key (qw(CreateTime ChangeTime)) {
+                $Appointment->{$Key} = undef;
+            }
         }
 
         $Self->IsDeeply(
