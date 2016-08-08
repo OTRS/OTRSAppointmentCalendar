@@ -43,6 +43,17 @@
                     <Prio>6000</Prio>
                 </NavBar>
                 <NavBar>
+                    <Description Translatable="1">Resource Overview (OTRS Business Solution™)</Description>
+                    <Name Translatable="1">Resource Overview</Name>
+                    <Link>Action=AgentAppointmentCalendarOverview</Link>
+                    <LinkOption>class="OTRSBusinessRequired"</LinkOption>
+                    <NavBar>Calendar</NavBar>
+                    <Type></Type>
+                    <Block>ItemArea</Block>
+                    <AccessKey></AccessKey>
+                    <Prio>7000</Prio>
+                </NavBar>
+                <NavBar>
                     <Description Translatable="1">Create new appointment.</Description>
                     <Name Translatable="1">New Appointment</Name>
                     <Link>Action=AgentAppointmentCalendarOverview;Subaction=AppointmentCreate</Link>
@@ -61,42 +72,6 @@
                     <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.min.js</JavaScript>
                     <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
-                    <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
-                </Loader>
-            </FrontendModuleReg>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentAppointmentResourceOverview" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
-        <Setting>
-            <FrontendModuleReg>
-                <Description Translatable="1">Resource overview screen.</Description>
-                <Title Translatable="1">Resource Overview</Title>
-                <NavBarName>Calendar</NavBarName>
-                <NavBar>
-                    <Description Translatable="1">Resource overview page.</Description>
-                    <Name Translatable="1">Resource Overview</Name>
-                    <Link>Action=AgentAppointmentResourceOverview</Link>
-                    <LinkOption></LinkOption>
-                    <NavBar>Calendar</NavBar>
-                    <Type></Type>
-                    <Block>ItemArea</Block>
-                    <AccessKey></AccessKey>
-                    <Prio>7000</Prio>
-                </NavBar>
-                <Loader>
-                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css</CSS>
-                    <CSS>Core.AppointmentCalendar.css</CSS>
-                    <CSS>Core.AllocationList.css</CSS>
-                    <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
-                    <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
-                    <JavaScript>Core.UI.AllocationList.js</JavaScript>
-                    <JavaScript>Core.Agent.TableFilters.js</JavaScript>
                     <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -138,18 +113,6 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentAppointmentTeamList" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
-        <Setting>
-            <FrontendModuleReg>
-                <Description Translatable="1">Resources list.</Description>
-                <Title Translatable="1">Team list</Title>
-                <NavBarName></NavBarName>
-            </FrontendModuleReg>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="Frontend::Module###AgentAppointmentCalendarManage" Required="0" Valid="1">
         <Description Translatable="1">Frontend module registration for the agent interface.</Description>
         <Group>OTRSAppointmentCalendar</Group>
@@ -176,54 +139,6 @@
                     <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                     <JavaScript>thirdparty/spectrum-1.8.0/spectrum.js</JavaScript>
                 </Loader>
-            </FrontendModuleReg>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentAppointmentTeam" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
-        <Setting>
-            <FrontendModuleReg>
-                <Description Translatable="1">Team management screen.</Description>
-                <Title Translatable="1">Manage Teams</Title>
-                <NavBarName>Calendar</NavBarName>
-                <NavBar>
-                    <Group>admin</Group>
-                    <Description Translatable="1">Team management.</Description>
-                    <Name Translatable="1">Manage Teams</Name>
-                    <Link>Action=AgentAppointmentTeam</Link>
-                    <LinkOption></LinkOption>
-                    <NavBar>Calendar</NavBar>
-                    <Type></Type>
-                    <Block>ItemArea</Block>
-                    <AccessKey></AccessKey>
-                    <Prio>11000</Prio>
-                </NavBar>
-            </FrontendModuleReg>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Frontend::Module###AgentAppointmentTeamUser" Required="0" Valid="1">
-        <Description Translatable="1">Frontend module registration for the agent interface.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Frontend::Agent::ModuleRegistration</SubGroup>
-        <Setting>
-            <FrontendModuleReg>
-                <Description Translatable="1">Team agents management screen.</Description>
-                <Title Translatable="1">Manage Team Agents</Title>
-                <NavBarName>Calendar</NavBarName>
-                <NavBar>
-                    <Group>admin</Group>
-                    <Description Translatable="1">Manage team agents.</Description>
-                    <Name Translatable="1">Manage Team Agents</Name>
-                    <Link>Action=AgentAppointmentTeamUser</Link>
-                    <LinkOption></LinkOption>
-                    <NavBar>Calendar</NavBar>
-                    <Type></Type>
-                    <Block>ItemArea</Block>
-                    <AccessKey></AccessKey>
-                    <Prio>13000</Prio>
-                </NavBar>
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>

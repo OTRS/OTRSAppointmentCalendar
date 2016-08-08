@@ -28,7 +28,6 @@ my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 # get needed objects
 my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
-my $TeamObject  = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
 # create test user
 my $UserLogin = $Helper->TestUserCreate();
@@ -72,34 +71,46 @@ $Self->True(
     "Test user $UserID added to test group $GroupID",
 );
 
-# create test team
-$Success = $TeamObject->TeamAdd(
-    Name    => 'Test Team',
-    GroupID => 1,             # admin
-    ValidID => 1,
-    UserID  => 1,             # root
-);
+my @TeamID;
+my @ResourceID;
 
-$Self->True(
-    $Success,
-    'TeamAdd() - Test team created',
-);
+# check if team object is registered
+if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-my %Team = $TeamObject->TeamGet(
-    Name   => 'Test Team',
-    UserID => 1,
-);
+    my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
-$Success = $TeamObject->TeamUserAdd(
-    TeamID     => $Team{ID},
-    TeamUserID => 1,           # root
-    UserID     => 1,
-);
+    # create test team
+    $Success = $TeamObject->TeamAdd(
+        Name    => 'Test Team',
+        GroupID => 1,             # admin
+        ValidID => 1,
+        UserID  => 1,             # root
+    );
 
-$Self->True(
-    $Success,
-    'TeamUserAdd() - Added root user to test team',
-);
+    $Self->True(
+        $Success,
+        'TeamAdd() - Test team created',
+    );
+
+    my %Team = $TeamObject->TeamGet(
+        Name   => 'Test Team',
+        UserID => 1,
+    );
+
+    $Success = $TeamObject->TeamUserAdd(
+        TeamID     => $Team{ID},
+        TeamUserID => 1,           # root
+        UserID     => 1,
+    );
+
+    $Self->True(
+        $Success,
+        'TeamUserAdd() - Added root user to test team',
+    );
+
+    push @TeamID,     $Team{ID};
+    push @ResourceID, 1;
+}
 
 # this will be ok
 my %Calendar = $CalendarObject->CalendarCreate(
@@ -150,13 +161,11 @@ $Self->Is(
 
 my @Result = (
     {
-        'TeamID'     => [ $Team{ID} ],
-        'StartTime'  => '2016-04-05 00:00:00',
-        'CalendarID' => $Calendar{CalendarID},
-        'Title'      => 'All day',
-        'ResourceID' => [
-            '1'
-        ],
+        'TeamID'      => \@TeamID,
+        'StartTime'   => '2016-04-05 00:00:00',
+        'CalendarID'  => $Calendar{CalendarID},
+        'Title'       => 'All day',
+        'ResourceID'  => \@ResourceID,
         'EndTime'     => '2016-04-06 00:00:00',
         'Recurring'   => undef,
         'Description' => 'test all day event',

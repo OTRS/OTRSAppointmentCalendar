@@ -6,6 +6,8 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+[% SET OTRSBusinessLabel = '<strong>OTRS Business Solution</strong>™' %]
+
 [% RenderBlockStart("EditMask") %]
 <div class="InnerContent">
     <form id="EditAppointmentForm" class="Validate">
@@ -67,9 +69,9 @@
 [% END %]
             </div>
         </fieldset>
-[% IF Data.TeamIDStrg %]
         <fieldset class="TableLike">
             <legend><span>[% Translate("Resource") | html %]</span></legend>
+[% IF Data.TeamIDStrg %]
             <label for="TeamID">[% Translate("Team") | html %]:</label>
             <div class="Field">
 [% IF Data.PermissionLevel < 2 %]
@@ -87,8 +89,17 @@
                 [% Data.ResourceIDStrg %]
 [% END %]
             </div>
-        </fieldset>
+[% ELSE %]
+            <div class="Field">
+                <p class="FieldExplanation">
+                    [% Translate("This feature is currently not available.") | html %]
+                </p>
+            </div>
+            <div class="Field Info">
+                <a href="[% Env("Baselink") %]Action=AdminOTRSBusiness" class="Button"><i class="fa fa-angle-double-up"></i> [% Translate("Upgrade to %s", OTRSBusinessLabel) %]</a>
+            </div>
 [% END %]
+        </fieldset>
         <fieldset class="TableLike">
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
             <label for="StartDay">[% Translate("Start date") | html %]:</label>

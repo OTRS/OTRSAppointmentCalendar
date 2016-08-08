@@ -94,37 +94,6 @@ sub Data {
     # Template: AgentAppointmentEdit
     $Self->{Translation}->{'Team'} = 'Team';
 
-    # Template: AgentAppointmentResourceOverview
-    $Self->{Translation}->{'Resource Overview'} = 'Resourcenübersicht';
-    $Self->{Translation}->{'Manage Teams'} = 'Teams verwalten';
-    $Self->{Translation}->{'Manage Team Agents'} = 'Team-Agenten verwalten';
-    $Self->{Translation}->{'This is a resource overview page.'} = 'Dies ist eine Resourcenübersicht.';
-    $Self->{Translation}->{'No teams found. Please add a team first by using Manage Teams page.'} =
-        'Keine Teams gefunden. Bitte legen Sie zuerst ein Team über die Teamverwaltung an.';
-    $Self->{Translation}->{'No team agents found. Please assign agents to a team first by using Manage Team Agents page.'} =
-        'Keine Team-Agent gefunden. Bitte weisen Sie über die Team-Agenten-Verwaltung zuerst Agenten zum Team hinzu.';
-    $Self->{Translation}->{'Timeline Month'} = 'Zeitleiste Monat';
-    $Self->{Translation}->{'Timeline Week'} = 'Zeitleiste Woche';
-    $Self->{Translation}->{'Timeline Day'} = 'Zeitleiste Tag';
-    $Self->{Translation}->{'Resources'} = 'Resourcen';
-
-    # Template: AgentAppointmentTeam
-    $Self->{Translation}->{'Add Team'} = 'Team hinzufügen';
-    $Self->{Translation}->{'Filter for teams'} = 'Filter für Teams';
-    $Self->{Translation}->{'Edit Team'} = 'Team bearbeiten';
-    $Self->{Translation}->{'Team with same name already exists.'} = 'Ein Team mit dem selben Namen existiert bereits.';
-    $Self->{Translation}->{'Export'} = 'Exportieren';
-    $Self->{Translation}->{'Export team'} = 'Team exportieren';
-    $Self->{Translation}->{'Here you can upload a configuration file to import a team to your system. The file needs to be in .yml format as exported by team management module.'} = 'Hier können Sie eine Konfigurationsdatei hochladen, um ein Team in Ihr System zu importieren. Die Datei muss im YAML-Formal (.yml) vorliegen, wie sie im Team-Management-Modul exportiert wurde.';
-    $Self->{Translation}->{'Import team'} = 'Team importieren';
-    $Self->{Translation}->{'Team imported!'} = 'Team importiert!';
-
-    # Template: AgentAppointmentTeamUser
-    $Self->{Translation}->{'Manage Team-Agent Relations'} = 'Team-Agenten-Zuordnungen verwalten';
-    $Self->{Translation}->{'Change Agent Relations for Team'} = 'Ändere Agenten-Zuordnungen für Team';
-    $Self->{Translation}->{'Change Team Relations for Agent'} = 'Ändere Team-Zuordnungen für Agent';
-    $Self->{Translation}->{'Filter for agents'} = 'Filter für Agenten';
-
     # Template: AgentDashboardAppointmentCalendar
     $Self->{Translation}->{'Soon'} = 'Demnächst';
     $Self->{Translation}->{'5 days'} = '5 Tage';
@@ -188,9 +157,6 @@ sub Data {
     $Self->{Translation}->{'Ongoing appointments'} = 'Laufende Termine';
     $Self->{Translation}->{'+%d more'} = '+%d mehr';
 
-    # Perl Module: Kernel/Modules/AgentAppointmentTeamList.pm
-    $Self->{Translation}->{'Unassigned'} = 'Nicht zugeordnet';
-
     # Perl Module: Kernel/Modules/PublicCalendar.pm
     $Self->{Translation}->{'There was an error exporting the calendar!'} = 'Es ist ein Fehler beim Exportieren des Kalenders aufgetreten!';
 
@@ -210,16 +176,10 @@ sub Data {
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =
         'Liste an Farben in Hexadezimal RGB, welche verschiedenen Benutzerkalendern zugewiesen werden. Stellen Sie sicher, dass die Farben dunkel genug sind, um weißen Text darauf darzustellen. Sofern die Anzahl der Kalender die Anzahl der verfügbaren Farben überschreitet, wird diese Liste erneut von Anfang an genutzt.';
     $Self->{Translation}->{'Manage different calendars.'} = 'Verschiedene Kalender verwalten';
-    $Self->{Translation}->{'Manage team agents.'} = 'Team-Agenten verwalten';
     $Self->{Translation}->{'Plugin search'} = 'Pluginsuche';
     $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Module zur Pluginsuche für die Autovervollständigung.';
-    $Self->{Translation}->{'Resource overview page.'} = 'Resourcenübersichtsseite';
-    $Self->{Translation}->{'Resource overview screen.'} = 'Resourcenübersichtsseite';
-    $Self->{Translation}->{'Resources list.'} = 'Resourcenliste';
-    $Self->{Translation}->{'Team agents management screen.'} = 'Team-Agenten Verwaltungsansicht';
-    $Self->{Translation}->{'Team list'} = 'Teamliste';
-    $Self->{Translation}->{'Team management screen.'} = 'Teamverwaltungsansicht';
-    $Self->{Translation}->{'Team management.'} = 'Teamverwaltung';
+    $Self->{Translation}->{'Resource Overview (OTRS Business Solution™)'} = 'Resourcenübersicht (OTRS Business Solution™)';
+    $Self->{Translation}->{'Resource Overview'} = 'Resourcenübersicht';
     $Self->{Translation}->{'Defines the ticket plugin for calendar appointments.'} = 'Legt das Ticket-Plugin für Termine fest.';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Verknüpft Termine und Tickets mit einem Link vom Typ "Normal".';
     $Self->{Translation}->{"OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default)."} = "OTRS unterstützt keine wiederholenden Termine oder Enddatum oder Anzahl an Iterationen. Während Import-Prozessen kann es passieren, dass ICS-Dateien solche Termine enthalten. OTRS wird stattdessen alle vergangenen Termine sowie alle Termine der kommenden n Monate (120 Monate / 10 Jahre standardmäßig) erstellen.";

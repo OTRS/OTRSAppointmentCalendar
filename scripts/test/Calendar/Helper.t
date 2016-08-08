@@ -14,7 +14,6 @@ use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
 # override system timezone to UTC for duration of the test
-my $OldTZ = $ENV{TZ};
 $ENV{TZ} = 'UTC';
 
 # get calendar helper object
@@ -341,6 +340,6 @@ $Self->Is(
 );
 
 # restore timezone settings
-$ENV{TZ} = $OldTZ;
+delete $ENV{TZ};
 
 1;
