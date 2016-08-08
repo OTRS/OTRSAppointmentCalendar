@@ -15,6 +15,11 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AdminAppointmentNotificationEvent
+    $Self->{Translation}->{'Appointment Filter'} = 'Terminfilter';
+    $Self->{Translation}->{'Notify user just once per day about a single appointment using a selected transport.'} = 'Nur einmal am Tag pro Termin und Benachrichtigungs-Transportmethode versenden.';
+    $Self->{Translation}->{'Here you can choose which events will trigger this notification. An additional appointment filter can be applied below to only send for appointments with certain criteria.'} = 'Hier können Sie auswählen, welche Ereignisse diese Benachrichtigung auslösen. Ein zusätzlicher Termin-Filter kann weiter unten eingestellt werden, um die Benachrichtigung nur für Termine mit bestimmten Merkmalen zu versenden.';
+
     # Template: AgentAppointmentAgendaOverview
     $Self->{Translation}->{'Agenda Overview'} = 'Agendaübersicht';
     $Self->{Translation}->{'Add Appointment'} = 'Termin hinzufügen';
@@ -124,6 +129,10 @@ sub Data {
     $Self->{Translation}->{'Soon'} = 'Demnächst';
     $Self->{Translation}->{'5 days'} = '5 Tage';
     $Self->{Translation}->{'Refresh (minutes)'} = 'Aktualisierung (Minuten)';
+
+    # Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+    $Self->{Translation}->{'Agent who are selected within the appointment'} = 'Agenten, welche im Termin ausgewählt wurden';
+    $Self->{Translation}->{'All agents with write permission for the appointment (calendar)'} = 'Alle Agenten, welche Schreibberechtigungen auf den Termin (Kalender) haben.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
     $Self->{Translation}->{'All appointments'} = 'Alle Termine';

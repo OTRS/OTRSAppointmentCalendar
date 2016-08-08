@@ -225,7 +225,7 @@ $('.NotificationDelete').bind('click', function (Event) {
                             <div id="EventsServerError" class="TooltipErrorMessage">
                                 <p>[% Translate("This field is required.") | html %]</p>
                             </div>
-                            <p class="FieldExplanation">[% Translate("Here you can choose which events will trigger this notification. An additional ticket filter can be applied below to only send for ticket with certain criteria.") | html %]</p>
+                            <p class="FieldExplanation">[% Translate("Here you can choose which events will trigger this notification. An additional appointment filter can be applied below to only send for appointments with certain criteria.") | html %]</p>
                         </div>
                         <div class="Clear"></div>
 
@@ -238,7 +238,7 @@ $('.NotificationDelete').bind('click', function (Event) {
                     <div class="WidgetAction Toggle">
                         <a href="#" title="[% Translate("Toggle this widget") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
                     </div>
-                    <h2>[% Translate("Ticket Filter") | html %]</h2>
+                    <h2>[% Translate("Appointment Filter") | html %]</h2>
                 </div>
 
                 <div class="Content">
@@ -321,70 +321,6 @@ $('.NotificationDelete').bind('click', function (Event) {
                 </div>
             </div>
 
-            <div class="WidgetSimple SpacingTop Collapsed">
-                <div class="Header">
-                    <div class="WidgetAction Toggle">
-                        <a href="#" title="[% Translate("Toggle this widget") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
-                    </div>
-                    <h2>[% Translate("Article Filter") | html %] <span class="FieldExplanation">([% Translate("Only for ArticleCreate and ArticleSend event") | html %])</span></h2>
-                </div>
-
-                <div class="Content">
-                    <fieldset class="TableLike">
-
-                        <label for="ArticleTypeID">[% Translate("Article type") | html %]: </label>
-                        <div class="Field">
-                            [% Data.ArticleTypesStrg %]
-                            <p class="FieldExplanation">[% Translate("Only for ArticleCreate and ArticleSend event") | html %]</p>
-                            <div id="ArticleTypeIDServerError" class="TooltipErrorMessage">
-                                <p>[% Translate("If ArticleCreate or ArticleSend is used as a trigger event, you need to specify an article filter as well. Please select at least one of the article filter fields.") | html %]</p>
-                            </div>
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="ArticleSenderTypeID">[% Translate("Article sender type") | html %]: </label>
-                        <div class="Field">
-                            [% Data.ArticleSenderTypesStrg %]
-                            <p class="FieldExplanation">[% Translate("Only for ArticleCreate and ArticleSend event") | html %]</p>
-                            <div id="ArticleSenderTypeIDServerError" class="TooltipErrorMessage">
-                                <p>[% Translate("If ArticleCreate or ArticleSend is used as a trigger event, you need to specify an article filter as well. Please select at least one of the article filter fields.") | html %]</p>
-                            </div>
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="ArticleSubjectMatch">[% Translate("Subject match") | html %]: </label>
-                        <div class="Field">
-                            <input type="text" name="ArticleSubjectMatch" id="ArticleSubjectMatch" class="W75pc [% Data.ArticleSubjectMatchServerError %]" value="[% Data.ArticleSubjectMatch | html %]"/>
-                            <p class="FieldExplanation">[% Translate("Only for ArticleCreate and ArticleSend event") | html %]</p>
-                            <div id="ArticleSubjectMatchServerError" class="TooltipErrorMessage">
-                                <p>[% Translate("If ArticleCreate or ArticleSend is used as a trigger event, you need to specify an article filter as well. Please select at least one of the article filter fields.") | html %]</p>
-                            </div>
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="ArticleBodyMatch">
-                            [% Translate("Body match") | html %]:
-                        </label>
-                        <div class="Field">
-                            <input type="text" name="ArticleBodyMatch" id="ArticleBodyMatch" class="W75pc [% Data.ArticleBodyMatchServerError %]" value="[% Data.ArticleBodyMatch | html %]"/>
-                            <p class="FieldExplanation">[% Translate("Only for ArticleCreate and ArticleSend event") | html %]</p>
-                            <div id="ArticleBodyMatchServerError" class="TooltipErrorMessage">
-                                <p>[% Translate("If ArticleCreate or ArticleSend is used as a trigger event, you need to specify an article filter as well. Please select at least one of the article filter fields.") | html %]</p>
-                            </div>
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="ArticleAttachmentInclude">[% Translate("Include attachments to notification") | html %]: </label>
-                        <div class="Field">
-                            [% Data.ArticleAttachmentIncludeStrg %]
-                            <p class="FieldExplanation">[% Translate("Only for ArticleCreate and ArticleSend event") | html %]</p>
-                        </div>
-                        <div class="Clear"></div>
-
-                    </fieldset>
-                </div>
-            </div>
-
             <div class="WidgetSimple SpacingTop">
                 <div class="Header">
                     <div class="WidgetAction Toggle">
@@ -430,7 +366,7 @@ $('.NotificationDelete').bind('click', function (Event) {
                         <label for="OncePerDay">[% Translate("Once per day") | html %]: </label>
                         <div class="Field">
                             <input type="checkbox" name="OncePerDay" id="OncePerDay" value="1" [% Data.OncePerDayChecked %] />
-                            [% Translate("Notify user just once per day about a single ticket using a selected transport.") | html %]
+                            [% Translate("Notify user just once per day about a single appointment using a selected transport.") | html %]
                         </div>
                         <div class="Clear"></div>
 
