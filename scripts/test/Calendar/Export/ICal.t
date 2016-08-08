@@ -18,7 +18,6 @@ my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
 my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-my $TeamObject        = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 my $ExportObject      = $Kernel::OM->Get('Kernel::System::Calendar::Export::ICal');
 my $ImportObject      = $Kernel::OM->Get('Kernel::System::Calendar::Import::ICal');
 
@@ -72,35 +71,47 @@ $Self->True(
     "Test user $UserID added to test group $GroupID",
 );
 
-# create test team
-my $TeamName = 'test-team-' . $Helper->GetRandomID();
-$Success = $TeamObject->TeamAdd(
-    Name    => $TeamName,
-    GroupID => $GroupID,
-    ValidID => 1,
-    UserID  => $UserID,
-);
+my @TeamID;
+my @ResourceID;
 
-$Self->True(
-    $Success,
-    'TeamAdd() - Test team created',
-);
+# check if team object is registered
+if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-my %Team = $TeamObject->TeamGet(
-    Name   => $TeamName,
-    UserID => $UserID,
-);
+    my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
-$Success = $TeamObject->TeamUserAdd(
-    TeamID     => $Team{ID},
-    TeamUserID => $UserID,
-    UserID     => $UserID,
-);
+    # create test team
+    my $TeamName = 'test-team-' . $Helper->GetRandomID();
+    $Success = $TeamObject->TeamAdd(
+        Name    => $TeamName,
+        GroupID => $GroupID,
+        ValidID => 1,
+        UserID  => $UserID,
+    );
 
-$Self->True(
-    $Success,
-    'TeamUserAdd() - Added test user to test team',
-);
+    $Self->True(
+        $Success,
+        'TeamAdd() - Test team created',
+    );
+
+    my %Team = $TeamObject->TeamGet(
+        Name   => $TeamName,
+        UserID => $UserID,
+    );
+
+    $Success = $TeamObject->TeamUserAdd(
+        TeamID     => $Team{ID},
+        TeamUserID => $UserID,
+        UserID     => $UserID,
+    );
+
+    $Self->True(
+        $Success,
+        'TeamUserAdd() - Added test user to test team',
+    );
+
+    push @TeamID,     $Team{ID};
+    push @ResourceID, $UserID;
+}
 
 # create a test calendar for export
 my $ExportCalendarName = 'Export ' . $Helper->GetRandomID();
@@ -138,8 +149,8 @@ my @Appointments = (
         Title      => 'All-day Appointment',
         Location   => 'Sample location',
         UserID     => $UserID,
-        TeamID     => [ $Team{ID} ],
-        ResourceID => [$UserID],
+        TeamID     => \@TeamID,
+        ResourceID => \@ResourceID,
     },
 
     # recurring daily

@@ -470,50 +470,54 @@ sub Import {
             }
         }
 
-        # get team
-        if (
-            IsArrayRefWithData( $Properties->{'x-otrs-team'} )
-            && ref $Properties->{'x-otrs-team'}->[0] eq 'Data::ICal::Property'
-            && $Properties->{'x-otrs-team'}->[0]->{'value'}
-            )
-        {
-            my @Teams = split( ",", $Properties->{'x-otrs-team'}->[0]->{'value'} );
+        # check if team object is registered
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
 
-            if (@Teams) {
-                my @TeamIDs;
+            # get team
+            if (
+                IsArrayRefWithData( $Properties->{'x-otrs-team'} )
+                && ref $Properties->{'x-otrs-team'}->[0] eq 'Data::ICal::Property'
+                && $Properties->{'x-otrs-team'}->[0]->{'value'}
+                )
+            {
+                my @Teams = split( ",", $Properties->{'x-otrs-team'}->[0]->{'value'} );
 
-                # get team ids
-                for my $TeamName (@Teams) {
-                    my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
-                        Name   => $TeamName,
-                        UserID => $Param{UserID},
-                    );
-                    push @TeamIDs, $Team{ID} if $Team{ID};
+                if (@Teams) {
+                    my @TeamIDs;
+
+                    # get team ids
+                    for my $TeamName (@Teams) {
+                        my %Team = $Kernel::OM->Get('Kernel::System::Calendar::Team')->TeamGet(
+                            Name   => $TeamName,
+                            UserID => $Param{UserID},
+                        );
+                        push @TeamIDs, $Team{ID} if $Team{ID};
+                    }
+                    $Parameters{TeamID} = \@TeamIDs if @TeamIDs;
                 }
-                $Parameters{TeamID} = \@TeamIDs if @TeamIDs;
             }
-        }
 
-        # get resource
-        if (
-            IsArrayRefWithData( $Properties->{'x-otrs-resource'} )
-            && ref $Properties->{'x-otrs-resource'}->[0] eq 'Data::ICal::Property'
-            && $Properties->{'x-otrs-resource'}->[0]->{'value'}
-            )
-        {
-            my @Resources = split( ",", $Properties->{'x-otrs-resource'}->[0]->{'value'} );
+            # get resource
+            if (
+                IsArrayRefWithData( $Properties->{'x-otrs-resource'} )
+                && ref $Properties->{'x-otrs-resource'}->[0] eq 'Data::ICal::Property'
+                && $Properties->{'x-otrs-resource'}->[0]->{'value'}
+                )
+            {
+                my @Resources = split( ",", $Properties->{'x-otrs-resource'}->[0]->{'value'} );
 
-            if (@Resources) {
-                my @Users;
+                if (@Resources) {
+                    my @Users;
 
-                # get user ids
-                for my $UserLogin (@Resources) {
-                    my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-                        UserLogin => $UserLogin,
-                    );
-                    push @Users, $UserID if $UserID;
+                    # get user ids
+                    for my $UserLogin (@Resources) {
+                        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+                            UserLogin => $UserLogin,
+                        );
+                        push @Users, $UserID if $UserID;
+                    }
+                    $Parameters{ResourceID} = \@Users if @Users;
                 }
-                $Parameters{ResourceID} = \@Users if @Users;
             }
         }
 
