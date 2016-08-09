@@ -80,10 +80,14 @@ $Selenium->RunTest(
         );
 
         # get current time
-        my $StartTime = $CalendarHelperObject->CurrentSystemTime();
-        my $Today     = $CalendarHelperObject->TimestampGet(
-            SystemTime => $StartTime + 60 * 10,    # +10 minutes
+        my $StartTime      = $CalendarHelperObject->CurrentSystemTime();
+        my $StartTimestamp = $CalendarHelperObject->TimestampGet(
+            SystemTime => $StartTime,
         );
+
+        # just before midnight today
+        my $Today = substr( $StartTimestamp, 0, 10 ) . ' 23:59:59';
+
         my $Tomorrow = $CalendarHelperObject->TimestampGet(
             SystemTime => $StartTime + 60 * 60 * 24,    # +24 hours
         );
@@ -231,7 +235,7 @@ $Selenium->RunTest(
         }
 
         # make sure cache is correct
-        for my $Cache (qw(Calendar)) {
+        for my $Cache (qw(Calendar Appointment)) {
             $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
         }
     },
