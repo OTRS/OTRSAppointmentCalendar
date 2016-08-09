@@ -13,9 +13,6 @@ use utf8;
 use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
-# override system timezone to UTC for duration of the test
-$ENV{TZ} = 'UTC';
-
 # get calendar helper object
 my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
@@ -338,8 +335,5 @@ $Self->Is(
     19,
     "WeekDetailsGet missing SystemTime - CW",
 );
-
-# restore timezone settings
-delete $ENV{TZ};
 
 1;
