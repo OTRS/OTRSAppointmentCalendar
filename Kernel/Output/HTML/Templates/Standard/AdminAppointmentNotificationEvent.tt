@@ -251,6 +251,12 @@ $('.NotificationDelete').bind('click', function (Event) {
                         </div>
                         <div class="Clear"></div>
 [% RenderBlockEnd("OverviewUpdateType") %]
+                        <label for="CalendarID">[% Translate("Calendar") | html %]: </label>
+                        <div class="Field">
+                            [% Data.CalendarStrg %]
+                        </div>
+                        <div class="Clear"></div>
+
                         <label for="StateID">[% Translate("State") | html %]: </label>
                         <div class="Field">
                             [% Data.StatesStrg %]
@@ -301,21 +307,6 @@ $('.NotificationDelete').bind('click', function (Event) {
                             <input type="text" name="CustomerUserID" id="CustomerUserID" class="W75pc" value="[% Data.CustomerUserID | html %]"/>
                         </div>
                         <div class="Clear"></div>
-
-[% RenderBlockStart("DynamicField") %]
-                        <div class="SpacingTop"></div>
-                        <label><h4>[% Translate("Dynamic Fields") | html %]</h4></label>
-                        <div class="Clear"></div>
-                        <div class="SpacingTop"></div>
-[% RenderBlockStart("DynamicFieldElement") %]
-                        [% Data.Label %]
-                        <div class="Field">
-                            [% Data.Field %]
-                        </div>
-                        <div class="Clear"></div>
-[% RenderBlockEnd("DynamicFieldElement") %]
-                        <div class="SpacingTop"></div>
-[% RenderBlockEnd("DynamicField") %]
 
                     </fieldset>
                 </div>

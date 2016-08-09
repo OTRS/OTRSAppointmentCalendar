@@ -838,6 +838,35 @@ sub _Edit {
         Class      => 'Modernize W75pc',
     );
 
+
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+
+    my @CalendarList = $CalendarObject->CalendarList(
+        UserID     => 4,
+        Permission => 'ro',
+        ValidID    => 0,
+    );
+
+    my %CalendarList;
+
+    CALENDAR:
+    for my $Calendar (@CalendarList) {
+
+        next CALENDAR if !$Calendar;
+        next CALENDAR if !IsHashRefWithData($Calendar);
+
+        $CalendarList{ $Calendar->{CalendarID} } = $Calendar->{CalendarName};
+    }
+
+    $Param{CalendarStrg} = $LayoutObject->BuildSelection(
+        Data       => \%CalendarList,
+        Name       => 'CalendarID',
+        Multiple   => 1,
+        Size       => 5,
+        SelectedID => $Param{Data}->{CalendarID},
+        Class      => 'Modernize W75pc',
+    );
+
     $Param{QueuesStrg} = $LayoutObject->AgentQueueListOption(
         Data               => { $Kernel::OM->Get('Kernel::System::Queue')->GetAllQueues(), },
         Size               => 5,
