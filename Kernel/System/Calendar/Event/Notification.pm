@@ -100,46 +100,6 @@ sub Run {
 
         next NOTIFICATIONID if !$PassFilter;
 
-        # add attachments only on ArticleCreate or ArticleSend event
-        my @Attachments;
-        if (
-            ( ( $Param{Event} eq 'ArticleCreate' ) || ( $Param{Event} eq 'ArticleSend' ) )
-            && $Param{Data}->{ArticleID}
-            )
-        {
-
-            # add attachments to notification
-            if ( $Notification{Data}->{ArticleAttachmentInclude}->[0] ) {
-
-                # get article, it is needed for the correct behavior of the
-                # StripPlainBodyAsAttachment flag into the ArticleAttachmentIndex function
-                my %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
-                    ArticleID     => $Param{Data}->{ArticleID},
-                    UserID        => $Param{UserID},
-                    DynamicFields => 0,
-                );
-
-                #                my %Index = $TicketObject->ArticleAttachmentIndex(
-                #                    ArticleID                  => $Param{Data}->{ArticleID},
-                #                    Article                    => \%Article,
-                #                    UserID                     => $Param{UserID},
-                #                    StripPlainBodyAsAttachment => 3,
-                #                );
-                #                if (%Index) {
-                #                    FILE_ID:
-                #                    for my $FileID ( sort keys %Index ) {
-                #                        my %Attachment = $TicketObject->ArticleAttachment(
-                #                            ArticleID => $Param{Data}->{ArticleID},
-                #                            FileID    => $FileID,
-                #                            UserID    => $Param{UserID},
-                #                        );
-                #                        next FILE_ID if !%Attachment;
-                #                        push @Attachments, \%Attachment;
-                #                    }
-                #                }
-            }
-        }
-
         # get recipients
         my @RecipientUsers = $Self->_RecipientsGet(
             %Param,
@@ -263,7 +223,6 @@ sub Run {
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Bundle->{Recipient},
                     Event                 => $Param{Event},
-                    Attachments           => \@Attachments,
                     Transport             => $Transport,
                     TransportObject       => $TransportObject,
                     UserID                => $Param{UserID},
@@ -299,7 +258,6 @@ sub Run {
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Recipient,
                     Event                 => $Param{Event},
-                    Attachments           => \@Attachments,
                     Transport             => $Transport,
                     TransportObject       => $TransportObject,
                     UserID                => $Param{UserID},
