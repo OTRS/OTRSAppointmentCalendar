@@ -12,6 +12,9 @@ use utf8;
 
 use vars (qw($Self));
 
+# override local time zone for duration of the test
+local $ENV{TZ} = 'UTC';
+
 # get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
