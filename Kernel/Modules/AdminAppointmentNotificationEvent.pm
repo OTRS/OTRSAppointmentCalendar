@@ -103,8 +103,7 @@ sub Run {
         PARAMETER:
         for my $Parameter (
             qw(Recipients RecipientAgents RecipientGroups RecipientRoles
-            Events StateID QueueID PriorityID LockID TypeID ServiceID SLAID
-            CustomerID CustomerUserID
+            Events CalendarID ResourceID Title Location
             ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
@@ -824,21 +823,6 @@ sub _Edit {
         SelectedID => $Param{Data}->{Events},
     );
 
-    $Param{StatesStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            $Kernel::OM->Get('Kernel::System::State')->StateList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
-        Name       => 'StateID',
-        Multiple   => 1,
-        Size       => 5,
-        SelectedID => $Param{Data}->{StateID},
-        Class      => 'Modernize W75pc',
-    );
-
-
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     my @CalendarList = $CalendarObject->CalendarList(
@@ -867,44 +851,17 @@ sub _Edit {
         Class      => 'Modernize W75pc',
     );
 
-    $Param{QueuesStrg} = $LayoutObject->AgentQueueListOption(
-        Data               => { $Kernel::OM->Get('Kernel::System::Queue')->GetAllQueues(), },
-        Size               => 5,
-        Multiple           => 1,
-        Name               => 'QueueID',
-        TreeView           => $TreeView,
-        SelectedIDRefArray => $Param{Data}->{QueueID},
-        OnChangeSubmit     => 0,
-        Class              => 'Modernize W75pc',
-    );
-
-    $Param{PrioritiesStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            $Kernel::OM->Get('Kernel::System::Priority')->PriorityList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
-        Name       => 'PriorityID',
+    $Param{ResourceStrg} = $LayoutObject->BuildSelection(
+        Data       => \%AllAgents,
+        Name       => 'ResourceID',
         Multiple   => 1,
         Size       => 5,
-        SelectedID => $Param{Data}->{PriorityID},
+        SelectedID => $Param{Data}->{ResourceID},
         Class      => 'Modernize W75pc',
     );
 
-    $Param{LocksStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            $Kernel::OM->Get('Kernel::System::Lock')->LockList(
-                UserID => 1,
-                Action => $Self->{Action},
-            ),
-        },
-        Name       => 'LockID',
-        Multiple   => 1,
-        Size       => 3,
-        SelectedID => $Param{Data}->{LockID},
-        Class      => 'Modernize W75pc',
-    );
+    $Param{Title}    = $Param{Data}->{Title}->[0]    || '';
+    $Param{Location} = $Param{Data}->{Location}->[0] || '';
 
     # get valid list
     my %ValidList        = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
@@ -927,67 +884,6 @@ sub _Edit {
     }
     else {
         $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
-
-    # build type string
-    if ( $ConfigObject->Get('Ticket::Type') ) {
-        my %Type = $Kernel::OM->Get('Kernel::System::Type')->TypeList(
-            UserID => $Self->{UserID},
-        );
-        $Param{TypesStrg} = $LayoutObject->BuildSelection(
-            Data        => \%Type,
-            Name        => 'TypeID',
-            SelectedID  => $Param{Data}->{TypeID},
-            Sort        => 'AlphanumericValue',
-            Size        => 3,
-            Multiple    => 1,
-            Translation => 0,
-            Class       => 'Modernize W75pc',
-        );
-        $LayoutObject->Block(
-            Name => 'OverviewUpdateType',
-            Data => \%Param,
-        );
-    }
-
-    # build service string
-    if ( $ConfigObject->Get('Ticket::Service') ) {
-
-        # get list type
-        my %Service = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
-            Valid        => 1,
-            KeepChildren => $ConfigObject->Get('Ticket::Service::KeepChildren') // 0,
-            UserID       => $Self->{UserID},
-        );
-        $Param{ServicesStrg} = $LayoutObject->BuildSelection(
-            Data        => \%Service,
-            Name        => 'ServiceID',
-            SelectedID  => $Param{Data}->{ServiceID},
-            Size        => 5,
-            Multiple    => 1,
-            Translation => 0,
-            Max         => 200,
-            TreeView    => $TreeView,
-            Class       => 'Modernize W75pc',
-        );
-        my %SLA = $Kernel::OM->Get('Kernel::System::SLA')->SLAList(
-            UserID => $Self->{UserID},
-        );
-        $Param{SLAsStrg} = $LayoutObject->BuildSelection(
-            Data        => \%SLA,
-            Name        => 'SLAID',
-            SelectedID  => $Param{Data}->{SLAID},
-            Sort        => 'AlphanumericValue',
-            Size        => 5,
-            Multiple    => 1,
-            Translation => 0,
-            Max         => 200,
-            Class       => 'Modernize W75pc',
-        );
-        $LayoutObject->Block(
-            Name => 'OverviewUpdateService',
-            Data => \%Param,
-        );
     }
 
     # create dynamic field HTML for set with historical data options

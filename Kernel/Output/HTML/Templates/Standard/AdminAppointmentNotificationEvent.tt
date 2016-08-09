@@ -257,54 +257,21 @@ $('.NotificationDelete').bind('click', function (Event) {
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="StateID">[% Translate("State") | html %]: </label>
+                        <label for="Title">[% Translate("Title") | html %]: </label>
                         <div class="Field">
-                            [% Data.StatesStrg %]
+                            <input type="text" name="Title" id="Title" class="W75pc" value="[% Data.Title | html %]"/>
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="PriorityID">[% Translate("Priority") | html %]: </label>
+                        <label for="Location">[% Translate("Location") | html %]: </label>
                         <div class="Field">
-                            [% Data.PrioritiesStrg %]
+                            <input type="text" name="Location" id="Location" class="W75pc" value="[% Data.Location | html %]"/>
                         </div>
                         <div class="Clear"></div>
 
-                        <label for="QueueID">[% Translate("Queue") | html %]: </label>
+                        <label for="ResourceID">[% Translate("Resource") | html %]: </label>
                         <div class="Field">
-                            [% Data.QueuesStrg %]
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="LockID">[% Translate("Lock") | html %]: </label>
-                        <div class="Field">
-                            [% Data.LocksStrg %]
-                        </div>
-                        <div class="Clear"></div>
-
-[% RenderBlockStart("OverviewUpdateService") %]
-
-                        <label for="ServiceID">[% Translate("Service") | html %]: </label>
-                        <div class="Field">
-                            [% Data.ServicesStrg %]
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="SLAID">[% Translate("SLA") | html %]: </label>
-                        <div class="Field">
-                            [% Data.SLAsStrg %]
-                        </div>
-                        <div class="Clear"></div>
-[% RenderBlockEnd("OverviewUpdateService") %]
-
-                        <label for="CustomerID">[% Translate("CustomerID") | html %]: </label>
-                        <div class="Field">
-                            <input type="text" name="CustomerID" id="CustomerID" class="W75pc" value="[% Data.CustomerID | html %]"/>
-                        </div>
-                        <div class="Clear"></div>
-
-                        <label for="CustomerUserID">[% Translate("Customer") | html %]: </label>
-                        <div class="Field">
-                            <input type="text" name="CustomerUserID" id="CustomerUserID" class="W75pc" value="[% Data.CustomerUserID | html %]"/>
+                            [% Data.ResourceStrg %]
                         </div>
                         <div class="Clear"></div>
 
