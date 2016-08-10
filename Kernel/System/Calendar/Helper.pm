@@ -129,15 +129,12 @@ sub SystemTimeGet {
         }
     }
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
-
-    # check system time
-    return $GMTObject->TimeStamp2SystemTime(
+    # get system time
+    my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->TimeStamp2SystemTime(
         String => $Param{String},
     );
+
+    return $SystemTime;
 }
 
 =item TimestampGet()
@@ -166,15 +163,12 @@ sub TimestampGet {
         }
     }
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
-
     # get timestamp
-    return $GMTObject->SystemTime2TimeStamp(
+    my $Timestamp = $Kernel::OM->Get('Kernel::System::Time')->SystemTime2TimeStamp(
         SystemTime => $Param{SystemTime},
     );
+
+    return $Timestamp;
 }
 
 =item CurrentTimestampGet()
@@ -190,12 +184,10 @@ returns:
 sub CurrentTimestampGet {
     my ( $Self, %Param ) = @_;
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
+    # get current timestamp
+    my $CurrentTimestamp = $Kernel::OM->Get('Kernel::System::Time')->CurrentTimestamp();
 
-    return $GMTObject->CurrentTimestamp();
+    return $CurrentTimestamp;
 }
 
 =item CurrentSystemTime()
@@ -212,12 +204,10 @@ returns:
 sub CurrentSystemTime {
     my ( $Self, %Param ) = @_;
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
+    # get current system time
+    my $CurrentSystemTime = $Kernel::OM->Get('Kernel::System::Time')->SystemTime();
 
-    return $GMTObject->SystemTime();
+    return $CurrentSystemTime;
 }
 
 =item DateGet()
@@ -253,14 +243,10 @@ sub DateGet {
         }
     }
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
-
-    my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $GMTObject->SystemTime2Date(
+    my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) =
+        $Kernel::OM->Get('Kernel::System::Time')->SystemTime2Date(
         SystemTime => $Param{SystemTime},
-    );
+        );
     $Second    = int $Second;
     $Minute    = int $Minute;
     $Hour      = int $Hour;
@@ -311,14 +297,12 @@ sub Date2SystemTime {
     $Param{Minute} //= 0;
     $Param{Second} //= 0;
 
-    # create gmt based time object
-    local $ENV{TZ} = 'UTC';
-    local $Kernel::OM->Get('Kernel::Config')->{TimeZone} = 0;
-    my $GMTObject = Kernel::System::Time->new();
-
-    return $GMTObject->Date2SystemTime(
+    # get system time
+    my $SystemTime = $Kernel::OM->Get('Kernel::System::Time')->Date2SystemTime(
         %Param,
     );
+
+    return $SystemTime;
 }
 
 =item AddPeriod()
@@ -351,9 +335,6 @@ sub AddPeriod {
 
     $Param{Months} //= 0;
     $Param{Years}  //= 0;
-
-    # use gmt as base for next time function
-    local $ENV{TZ} = 'UTC';
 
     my $TimePiece = localtime( $Param{Time} );
     my $StartDay  = $TimePiece->day_of_month();

@@ -23,6 +23,10 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # get time zone offset
+    $Self->{TimeZone} = $Self->{UserTimeZone} || 0;
+    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;    # 60 * 60
+
     return $Self;
 }
 
@@ -47,11 +51,12 @@ sub Run {
     }
 
     # get needed objects
-    my $ConfigObject      = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject      = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+    my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
@@ -69,26 +74,21 @@ sub Run {
                 }
             }
 
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{StartTime},
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{EndTime},
             );
 
-            # get user timezone offset
-            my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-                UserID => $Self->{UserID},
-            );
+            # convert to local time
+            $StartTime -= $Self->{TimeSecDiff};
+            $EndTime   -= $Self->{TimeSecDiff};
 
-            # convert to UTC
-            $StartTime -= $Offset * 3600;
-            $EndTime   -= $Offset * 3600;
-
-            $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTime,
             );
-            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime,
             );
 
@@ -116,10 +116,10 @@ sub Run {
                 }
 
                 # get system times
-                my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                my $StartTime = $CalendarHelperObject->SystemTimeGet(
                     String => $Appointment->{StartTime},
                 );
-                my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                my $EndTime = $CalendarHelperObject->SystemTimeGet(
                     String => $Appointment->{EndTime},
                 );
 
@@ -133,20 +133,20 @@ sub Run {
                     if ( $EndTime < $StartTime ) {
                         $EndTime = $StartTime;
                     }
-                    $Appointment->{EndDate} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                    $Appointment->{EndDate} = $CalendarHelperObject->TimestampGet(
                         SystemTime => $EndTime,
                     );
                 }
 
                 # calculate local times for control
                 else {
-                    $StartTime += $Offset * 3600;
-                    $Appointment->{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                    $StartTime += $Self->{TimeSecDiff};
+                    $Appointment->{StartTime} = $CalendarHelperObject->TimestampGet(
                         SystemTime => $StartTime,
                     );
 
-                    $EndTime += $Offset * 3600;
-                    $Appointment->{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                    $EndTime += $Self->{TimeSecDiff};
+                    $Appointment->{EndTime} = $CalendarHelperObject->TimestampGet(
                         SystemTime => $EndTime,
                     );
                 }

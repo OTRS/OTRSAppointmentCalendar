@@ -25,6 +25,10 @@ sub new {
 
     $Self->{EmptyString} = '-';
 
+    # get time zone offset
+    $Self->{TimeZone} = $Self->{UserTimeZone} || 0;
+    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;    # 60 * 60
+
     return $Self;
 }
 
@@ -51,11 +55,12 @@ sub Run {
     }
 
     # get needed objects
-    my $ConfigObject      = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject      = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+    my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my $JSON = $LayoutObject->JSONEncode( Data => [] );
 
@@ -158,7 +163,7 @@ sub Run {
             );
 
             # get start time components
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
 
@@ -166,10 +171,10 @@ sub Run {
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
                 $Appointment{StartYear}, $Appointment{StartWeekDay}
-            ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $StartTime );
+            ) = $CalendarHelperObject->DateGet( SystemTime => $StartTime );
 
             # get end time components
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $Appointment{EndTime},
             );
 
@@ -184,11 +189,11 @@ sub Run {
             (
                 $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
-            ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $EndTime );
+            ) = $CalendarHelperObject->DateGet( SystemTime => $EndTime );
 
             # get recurrence until components
             if ( $Appointment{RecurrenceUntil} ) {
-                my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                my $RecurrenceUntil = $CalendarHelperObject->SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
                 );
 
@@ -196,14 +201,13 @@ sub Run {
                     $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
                     $Appointment{RecurrenceUntilYear}
-                ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet( SystemTime => $RecurrenceUntil );
+                ) = $CalendarHelperObject->DateGet( SystemTime => $RecurrenceUntil );
             }
 
             # recalculate year boundaries
-            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek )
-                = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
-                SystemTime => $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime(),
-                );
+            my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $CalendarHelperObject->CurrentSystemTime(),
+            );
             for my $Field (qw(Start End RecurrenceUntil)) {
                 if ( $Appointment{"${Field}Year"} ) {
                     my $Diff = $Appointment{"${Field}Year"} - $Year;
@@ -296,11 +300,11 @@ sub Run {
         );
 
         # get current day
-        my $SelectedSystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $SelectedSystemTime = $CalendarHelperObject->SystemTimeGet(
             String => $SelectedTimestamp,
         );
 
-        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+        my @DateInfo = $CalendarHelperObject->DateGet(
             SystemTime => $SelectedSystemTime,
         );
 
@@ -669,8 +673,8 @@ sub Run {
         if ( !$Appointment{RecurrenceUntil} ) {
 
             # get current and start time for difference
-            my $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentSystemTime();
-            my $StartTime  = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->Date2SystemTime(
+            my $SystemTime = $CalendarHelperObject->CurrentSystemTime();
+            my $StartTime  = $CalendarHelperObject->Date2SystemTime(
                 Year   => $Appointment{StartYear}   // $GetParam{StartYear},
                 Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
                 Day    => $Appointment{StartDay}    // $GetParam{StartDay},
@@ -841,9 +845,6 @@ sub Run {
         # extract the date units for the custom date selection
         my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek );
         if ( $Appointment{NotificationCustomDateTime} ) {
-
-            # get a local calendar helper object
-            my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
             ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
                 SystemTime => $CalendarHelperObject->SystemTimeGet(
@@ -1067,11 +1068,6 @@ sub Run {
             }
         }
 
-        # get user timezone offset
-        my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
-            UserID => $Self->{UserID},
-        );
-
         if ( $GetParam{AllDay} ) {
             $GetParam{StartTime} = sprintf(
                 "%04d-%02d-%02d 00:00:00",
@@ -1083,38 +1079,38 @@ sub Run {
             );
 
             # make end time inclusive, add whole day
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{EndTime},
             );
-            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime + 86400,
             );
         }
         elsif ( $GetParam{Recurring} && $GetParam{UpdateType} && $GetParam{UpdateDelta} ) {
 
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $Appointment{StartTime},
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $Appointment{EndTime},
             );
 
             # calculate new start/end times
             if ( $GetParam{UpdateType} eq 'StartTime' ) {
-                $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
                     SystemTime => $StartTime + $GetParam{UpdateDelta},
                 );
             }
             elsif ( $GetParam{UpdateType} eq 'EndTime' ) {
-                $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                     SystemTime => $EndTime + $GetParam{UpdateDelta},
                 );
             }
             else {
-                $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
                     SystemTime => $StartTime + $GetParam{UpdateDelta},
                 );
-                $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                     SystemTime => $EndTime + $GetParam{UpdateDelta},
                 );
             }
@@ -1131,31 +1127,31 @@ sub Run {
                 $GetParam{EndHour}, $GetParam{EndMinute}
             );
 
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{StartTime},
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{EndTime},
             );
 
-            # convert to UTC
-            $StartTime -= $Offset * 3600;
-            $EndTime   -= $Offset * 3600;
+            # convert to local time
+            $StartTime -= $Self->{TimeSecDiff};
+            $EndTime   -= $Self->{TimeSecDiff};
 
-            $GetParam{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTime,
             );
-            $GetParam{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime,
             );
         }
 
         # prevent recurrence until dates before start time
         if ( $Appointment{Recurring} && $Appointment{RecurrenceUntil} ) {
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{StartTime},
             );
-            my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $RecurrenceUntil = $CalendarHelperObject->SystemTimeGet(
                 String => $Appointment{RecurrenceUntil},
             );
             if ( $RecurrenceUntil < $StartTime ) {
@@ -1167,7 +1163,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType} eq 'Daily'
+                $GetParam{RecurrenceType}    eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1183,11 +1179,11 @@ sub Run {
                         $GetParam{RecurrenceFrequency} = \@Days;
                     }
                     else {
-                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        my $StartTime = $CalendarHelperObject->SystemTimeGet(
                             String => $GetParam{StartTime},
                         );
 
-                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                        my @DateInfo = $CalendarHelperObject->DateGet(
                             SystemTime => $StartTime,
                         );
 
@@ -1200,11 +1196,11 @@ sub Run {
                         $GetParam{RecurrenceFrequency} = \@MonthDays;
                     }
                     else {
-                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        my $StartTime = $CalendarHelperObject->SystemTimeGet(
                             String => $GetParam{StartTime},
                         );
 
-                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                        my @DateInfo = $CalendarHelperObject->DateGet(
                             SystemTime => $StartTime,
                         );
 
@@ -1217,11 +1213,11 @@ sub Run {
                         $GetParam{RecurrenceFrequency} = \@Months;
                     }
                     else {
-                        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        my $StartTime = $CalendarHelperObject->SystemTimeGet(
                             String => $GetParam{StartTime},
                         );
 
-                        my @DateInfo = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                        my @DateInfo = $CalendarHelperObject->DateGet(
                             SystemTime => $StartTime,
                         );
 
@@ -1235,8 +1231,8 @@ sub Run {
             # until ...
             if (
                 $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
+                $GetParam{RecurrenceUntilYear} &&
+                $GetParam{RecurrenceUntilMonth} &&
                 $GetParam{RecurrenceUntilDay}
                 )
             {
@@ -1275,14 +1271,14 @@ sub Run {
                 $GetParam{NotificationCustomDateTimeMinute}
             );
 
-            my $NotificationCustomDateTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $NotificationCustomDateTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{NotificationCustomDateTime},
             );
 
-            # convert to UTC
-            $NotificationCustomDateTime -= $Offset * 3600;
+            # convert to local time
+            $NotificationCustomDateTime -= $Self->{TimeSecDiff};
 
-            $GetParam{NotificationCustomDateTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $GetParam{NotificationCustomDateTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $NotificationCustomDateTime,
             );
         }
@@ -1550,12 +1546,8 @@ sub _DayOffsetGet {
         }
     }
 
+    # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-
-    # get user timezone offset
-    my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
-        UserID => $Self->{UserID},
-    );
 
     # convert timestamp to unix time
     my $OriginalTimeSystem = $CalendarHelperObject->SystemTimeGet(
@@ -1568,7 +1560,7 @@ sub _DayOffsetGet {
     );
 
     # calculate destination time (according to user timezone)
-    my $DestinationTimeSystem = $OriginalTimeSystem + $Offset * 3600;
+    my $DestinationTimeSystem = $OriginalTimeSystem + $Self->{TimeSecDiff};
 
     # get destination date info
     my @DestinationDateInfo = $CalendarHelperObject->DateGet(

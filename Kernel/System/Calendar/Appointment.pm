@@ -2298,10 +2298,13 @@ sub _AppointmentRecurringCreate {
         }
     }
 
-    my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    # get calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{Appointment}->{StartTime},
     );
-    my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+    my $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
         String => $Param{Appointment}->{EndTime},
     );
 
@@ -2320,7 +2323,7 @@ sub _AppointmentRecurringCreate {
     # until ...
     if ( $Param{Appointment}->{RecurrenceUntil} ) {
 
-        my $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $RecurrenceUntilSystem = $CalendarHelperObject->SystemTimeGet(
             String => $Param{Appointment}->{RecurrenceUntil},
         );
 
@@ -2347,19 +2350,19 @@ sub _AppointmentRecurringCreate {
             last UNTIL_TIME if !$StartTimeSystem;
             last UNTIL_TIME if $StartTimeSystem > $RecurrenceUntilSystem;
 
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            my $StartTime = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTimeSystem,
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            my $EndTime = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTimeSystem,
             );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
-            $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
+            $StartTime = $CalendarHelperObject->TimeCheck(
                 OriginalTime => $Param{Appointment}->{StartTime},
                 Time         => $StartTime,
             );
-            $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
+            $EndTime = $CalendarHelperObject->TimeCheck(
                 OriginalTime => $Param{Appointment}->{EndTime},
                 Time         => $EndTime,
             );
@@ -2402,19 +2405,19 @@ sub _AppointmentRecurringCreate {
 
             last COUNT if !$StartTimeSystem;
 
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            my $StartTime = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTimeSystem
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            my $EndTime = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTimeSystem
             );
 
             # bugfix: On some systems with older perl version system might calculate timezone difference
-            $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
+            $StartTime = $CalendarHelperObject->TimeCheck(
                 OriginalTime => $Param{Appointment}->{StartTime},
                 Time         => $StartTime,
             );
-            $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimeCheck(
+            $EndTime = $CalendarHelperObject->TimeCheck(
                 OriginalTime => $Param{Appointment}->{EndTime},
                 Time         => $EndTime,
             );
@@ -2622,7 +2625,7 @@ sub _CalculateRecurrenceTime {
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Monthly' ) {
 
         # add one month
-        $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->AddPeriod(
+        $SystemTime = $CalendarHelperObject->AddPeriod(
             Time   => $Param{OriginalTime},
             Months => $Param{Step},
         );
@@ -2656,7 +2659,7 @@ sub _CalculateRecurrenceTime {
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Yearly' ) {
 
         # add one year
-        $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->AddPeriod(
+        $SystemTime = $CalendarHelperObject->AddPeriod(
             Time  => $Param{OriginalTime},
             Years => $Param{Step},
         );
@@ -2671,7 +2674,7 @@ sub _CalculateRecurrenceTime {
 
         my $Found;
 
-        my ( $OriginalWeekDay, $OriginalCW ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->WeekDetailsGet(
+        my ( $OriginalWeekDay, $OriginalCW ) = $CalendarHelperObject->WeekDetailsGet(
             SystemTime => $Param{OriginalTime},
         );
 
@@ -2687,12 +2690,12 @@ sub _CalculateRecurrenceTime {
             if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
 
                 # in all day appointment, end time is usually midnight of the next day, so we need to check for 23:59:59
-                ( $WeekDay, $CW ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->WeekDetailsGet(
+                ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
                     SystemTime => $SystemTime - 1,
                 );
             }
             else {
-                ( $WeekDay, $CW ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->WeekDetailsGet(
+                ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
                     SystemTime => $SystemTime,
                 );
             }
@@ -2716,7 +2719,7 @@ sub _CalculateRecurrenceTime {
         my $Found;
 
         my ( $OriginalSec, $OriginalMin, $OriginalHour, $OriginalDay, $OriginalMonth, $OriginalYear, $OriginalWeekDay )
-            = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+            = $CalendarHelperObject->DateGet(
             SystemTime => $Param{OriginalTime},
             );
 
@@ -2729,16 +2732,14 @@ sub _CalculateRecurrenceTime {
 
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay );
             if ( $Param{IsEndTime} ) {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
                     SystemTime => $SystemTime - 1,
-                    );
+                );
             }
             else {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
                     SystemTime => $SystemTime,
-                    );
+                );
             }
 
             # Skip month if needed
@@ -2759,13 +2760,13 @@ sub _CalculateRecurrenceTime {
         my $Found;
 
         my ( $OriginalSec, $OriginalMin, $OriginalHour, $OriginalDay, $OriginalMonth, $OriginalYear, $OriginalWeekDay )
-            = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+            = $CalendarHelperObject->DateGet(
             SystemTime => $Param{OriginalTime},
             );
 
         my $RecurrenceUntilSystem;
         if ( $Param{Appointment}->{RecurrenceUntil} ) {
-            $RecurrenceUntilSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            $RecurrenceUntilSystem = $CalendarHelperObject->SystemTimeGet(
                 String => $Param{Appointment}->{RecurrenceUntil},
             );
         }
@@ -2774,7 +2775,7 @@ sub _CalculateRecurrenceTime {
         for ( my $Counter = 1;; $Counter++ ) {
 
             # Add one month
-            $SystemTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->AddPeriod(
+            $SystemTime = $CalendarHelperObject->AddPeriod(
                 Time   => $Param{OriginalTime},
                 Months => $Counter,
             );
@@ -2795,16 +2796,14 @@ sub _CalculateRecurrenceTime {
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay );
 
             if ( $Param{IsEndTime} ) {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
                     SystemTime => $SystemTime - 1,
-                    );
+                );
             }
             else {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay )
-                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
                     SystemTime => $SystemTime,
-                    );
+                );
             }
 
             # check if year is OK

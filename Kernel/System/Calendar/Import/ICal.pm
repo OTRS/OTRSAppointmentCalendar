@@ -203,18 +203,18 @@ sub Import {
             my $StartTimeICal = $Self->_FormatTime(
                 Time => $Properties->{'dtstart'}->[0]->{'value'},
             );
-            my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
                 String => $StartTimeICal,
             );
 
             if ($TimezoneID) {
-                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
                 );
                 $StartTime -= $Offset * 3600;
             }
 
-            $Parameters{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $Parameters{StartTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTime,
             );
         }
@@ -239,18 +239,18 @@ sub Import {
             my $EndTimeICal = $Self->_FormatTime(
                 Time => $Properties->{'dtend'}->[0]->{'value'},
             );
-            my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $EndTimeICal,
             );
 
             if ($TimezoneID) {
-                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
                 );
                 $EndTime -= $Offset * 3600;
             }
 
-            $Parameters{EndTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $Parameters{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime,
             );
         }
@@ -450,18 +450,18 @@ sub Import {
                             Time => $Exclude->{'value'},
                         );
 
-                        my $ExcludeTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                        my $ExcludeTime = $CalendarHelperObject->SystemTimeGet(
                             String => $ExcludeTimeICal,
                         );
 
                         if ($TimezoneID) {
-                            my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                            my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
                                 TimezoneID => $TimezoneID,
                             );
                             $ExcludeTime -= $Offset * 3600;
                         }
 
-                        push @RecurrenceExclude, $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                        push @RecurrenceExclude, $CalendarHelperObject->TimestampGet(
                             SystemTime => $ExcludeTime,
                         );
                     }
@@ -580,18 +580,18 @@ sub Import {
             my $RecurrenceIDICal = $Self->_FormatTime(
                 Time => $Properties->{'recurrence-id'}->[0]->{'value'},
             );
-            my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+            my $RecurrenceID = $CalendarHelperObject->SystemTimeGet(
                 String => $RecurrenceIDICal,
             );
 
             if ($TimezoneID) {
-                my $Offset = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimezoneOffsetGet(
+                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
                 );
                 $RecurrenceID -= $Offset * 3600;
             }
 
-            $Param{RecurrenceID} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            $Param{RecurrenceID} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $RecurrenceID,
             );
 

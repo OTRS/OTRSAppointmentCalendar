@@ -357,17 +357,17 @@ sub Run {
 
                 # end times for all day appointments are inclusive, subtract whole day
                 if ( $Appointment->{AllDay} ) {
-                    my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    my $StartTime = $CalendarHelperObject->SystemTimeGet(
                         String => $Appointment->{StartTime},
                     );
-                    my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    my $EndTime = $CalendarHelperObject->SystemTimeGet(
                         String => $Appointment->{EndTime},
                     );
                     $EndTime -= 86400;
                     if ( $EndTime < $StartTime ) {
                         $EndTime = $StartTime;
                     }
-                    $Appointment->{EndDate} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+                    $Appointment->{EndDate} = $CalendarHelperObject->TimestampGet(
                         SystemTime => $EndTime,
                     );
                 }

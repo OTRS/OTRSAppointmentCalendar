@@ -105,7 +105,7 @@
             <label for="StartDay">[% Translate("Start date") | html %]:</label>
             <div class="Field">
 [% IF Data.PermissionLevel < 2 %]
-                <p id="StartDay" class="ReadOnlyValue">[% Data.StartDate | html %]</p>
+                <p id="StartDay" class="ReadOnlyValue">[% Data.StartDate | Localize("TimeLong") %]</p>
 [% ELSE %]
                 <div id="StartDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
@@ -118,7 +118,7 @@
             <label for="EndDay">[% Translate("End date") | html %]:</label>
             <div class="Field">
 [% IF Data.PermissionLevel < 2 %]
-                <p id="EndDay" class="ReadOnlyValue">[% Data.EndDate | html %]</p>
+                <p id="EndDay" class="ReadOnlyValue">[% Data.EndDate | Localize("TimeLong") %]</p>
 [% ELSE %]
                 <div id="EndDayError" class="TooltipErrorMessage">
                     <p>[% Translate("Invalid date!") | html %]</p>
