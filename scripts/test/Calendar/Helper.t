@@ -24,321 +24,438 @@ $Kernel::OM->ObjectParamAdd(
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
 
-# missing Time
-my $TimeCheck1 = $CalendarHelperObject->TimeCheck(
-    OriginalTime => '2016-01-01 00:01:00',
-
-    # Time             => '2016-02-01 00:02:00',
+#
+# Tests for TimeCheck()
+#
+my @Tests = (
+    {
+        Name   => 'Missing Time',
+        Config => {
+            OriginalTime => '2016-01-01 00:01:00',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'Missing OriginalTime',
+        Config => {
+            Time => '2016-02-01 00:02:00',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'All params',
+        Config => {
+            OriginalTime => '2016-01-01 00:01:00',
+            Time         => '2016-02-01 00:02:00',
+        },
+        Result  => '2016-02-01 00:01:00',
+        Success => 1,
+    },
 );
 
-$Self->False(
-    $TimeCheck1,
-    "TimeCheck - Missing Time."
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->TimeCheck(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "TimeCheck - $Test->{Name} - Success",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "TimeCheck - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for SystemTimeGet()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'All params',
+        Config => {
+            String => '2016-01-01 00:01:00',
+        },
+        Result  => '1451606460',
+        Success => 1,
+    },
 );
 
-# missing OriginalTime
-my $TimeCheck2 = $CalendarHelperObject->TimeCheck(
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->SystemTimeGet(
+        %{ $Test->{Config} },
+    );
 
-    # OriginalTime     => '2016-01-01 00:01:00',
-    Time => '2016-02-01 00:02:00',
-);
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "SystemTimeGet - $Test->{Name} - Success",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "SystemTimeGet - $Test->{Name} - No success ",
+        );
+    }
+}
 
-$Self->False(
-    $TimeCheck2,
-    "TimeCheck - Missing OriginalTime."
-);
-
-# OK
-my $TimeCheck3 = $CalendarHelperObject->TimeCheck(
-    OriginalTime => '2016-01-01 00:01:00',
-    Time         => '2016-02-01 00:02:00',
-);
-
-$Self->Is(
-    $TimeCheck3,
-    '2016-02-01 00:01:00',
-    "TimeCheck - OK.",
-);
-
-my $SystemTimeGet1 = $CalendarHelperObject->SystemTimeGet();
-
-$Self->False(
-    $SystemTimeGet1,
-    "SystemTimeGet - without String"
-);
-
-my $SystemTimeGet2 = $CalendarHelperObject->SystemTimeGet(
-    String => '2016-01-01 00:01:00',
-);
-
-$Self->Is(
-    $SystemTimeGet2,
-    '1451606460',
-    "SystemTimeGet - OK",
+#
+# Tests for TimestampGet()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'All params',
+        Config => {
+            SystemTime => '1451606460',
+        },
+        Result  => '2016-01-01 00:01:00',
+        Success => 1,
+    },
 );
 
-my $TimestampGet1 = $CalendarHelperObject->TimestampGet();
-$Self->False(
-    $TimestampGet1,
-    "TimestampGet - without SystemTime"
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->TimestampGet(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "TimestampGet - $Test->{Name} - Success",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "TimestampGet - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for CurrentTimestampGet() and CurrentSystemTime()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 1,
+    },
 );
 
-my $TimestampGet2 = $CalendarHelperObject->TimestampGet(
-    SystemTime => '1451606460',
+for my $Test (@Tests) {
+    my $ResultTimestamp = $CalendarHelperObject->CurrentTimestampGet(
+        %{ $Test->{Config} },
+    );
+    my $ResultSystemTime = $CalendarHelperObject->CurrentSystemTime(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->True(
+            $ResultTimestamp,
+            "CurrentTimestampGet - $Test->{Name} - Success",
+        );
+        $Self->True(
+            $ResultSystemTime,
+            "CurrentSystemTime - $Test->{Name} - Success",
+        );
+
+        $Self->True(
+            $ResultTimestamp =~ /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/,
+            "CurrentTimestampGet - Expected format",
+        );
+
+        $Self->True(
+            IsInteger($ResultSystemTime) && $ResultSystemTime > 1463081781,
+            "CurrentSystemTime - Expected format",
+        );
+    }
+    else {
+        $Self->False(
+            $ResultTimestamp,
+            "CurrentTimestampGet - $Test->{Name} - No success ",
+        );
+        $Self->False(
+            $ResultSystemTime,
+            "CurrentSystemTime - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for DateGet()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'Friday, 2016-12-23 14:05:10',
+        Config => {
+            SystemTime => '1482501910',
+        },
+        Result => [
+            10,
+            5,
+            14,
+            23,
+            12,
+            2016,
+            5,
+        ],
+        Success => 1,
+    },
+    {
+        Name   => 'Sunday, 2016-05-08 02:03:04',
+        Config => {
+            SystemTime => '1462672984',
+        },
+        Result => [
+            4,
+            3,
+            2,
+            8,
+            5,
+            2016,
+            7,
+        ],
+        Success => 1,
+    },
 );
 
-$Self->Is(
-    $TimestampGet2,
-    '2016-01-01 00:01:00',
-    "TimestampGet - OK",
+for my $Test (@Tests) {
+    my @Result = $CalendarHelperObject->DateGet(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->IsDeeply(
+            \@Result,
+            $Test->{Result},
+            "DateGet - $Test->{Name} - Result",
+        );
+    }
+    else {
+        $Self->False(
+            scalar @Result,
+            "DateGet - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for Date2SystemTime()
+#
+@Tests = (
+    {
+        Name   => 'Mising Year',
+        Config => {
+            Month  => '1',
+            Day    => '1',
+            Hour   => '1',
+            Minute => '0',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'Mising Month',
+        Config => {
+            Year   => '2016',
+            Day    => '1',
+            Hour   => '1',
+            Minute => '0',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'Mising Day',
+        Config => {
+            Year   => '2016',
+            Month  => '1',
+            Hour   => '1',
+            Minute => '0',
+        },
+        Success => 0,
+    },
+    {
+        Name   => '2016-01-01 01:00:00',
+        Config => {
+            Year   => '2016',
+            Month  => '1',
+            Day    => '1',
+            Hour   => '1',
+            Minute => '0',
+        },
+        Result  => '1451610000',
+        Success => 1,
+    },
 );
 
-my $CurrentTimestampGet = $CalendarHelperObject->CurrentTimestampGet();
-$Self->True(
-    $CurrentTimestampGet =~ /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/,
-    "CurrentTimestampGet - OK",
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->Date2SystemTime(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "Date2SystemTime - $Test->{Name} - Result",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "Date2SystemTime - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for AddPeriod()
+#
+@Tests = (
+    {
+        Name   => 'Mising Time',
+        Config => {
+            Years  => '1',
+            Months => '1',
+        },
+        Success => 0,
+    },
+    {
+        Name   => 'All params',
+        Config => {
+            Time   => '1462871162',
+            Years  => '1',
+            Months => '1',
+        },
+        Result  => '1497085562',
+        Success => 1,
+    },
 );
 
-my $CurrentSystemTime = $CalendarHelperObject->CurrentSystemTime();
-$Self->True(
-    IsInteger($CurrentSystemTime) && $CurrentSystemTime > 1463081781,
-    "CurrentSystemTime - OK",
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->AddPeriod(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "AddPeriod - $Test->{Name} - Result",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "AddPeriod - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for TimezoneOffsetGet()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'TimezoneID',
+        Config => {
+            TimezoneID => 'Europe/Berlin',
+        },
+        Result  => 2,
+        Success => 1,
+    },
 );
 
-my ( $Second1, $Minute1, $Hour1, $Day1, $Month1, $Year1, $DayOfWeek1 ) = $CalendarHelperObject->DateGet();
-$Self->False(
-    $Year1,
-    "DateGet without SystemTime (Year)",
-);
-$Self->False(
-    $Month1,
-    "DateGet without SystemTime (Month)",
-);
-$Self->False(
-    $Day1,
-    "DateGet without SystemTime (Day)",
-);
-$Self->False(
-    $Hour1,
-    "DateGet without SystemTime (Hour)",
-);
-$Self->False(
-    $Minute1,
-    "DateGet without SystemTime (Minute)",
-);
-$Self->False(
-    $Second1,
-    "DateGet without SystemTime (Second)",
-);
-$Self->False(
-    $DayOfWeek1,
-    "DateGet without SystemTime (DayOfWeek)",
+for my $Test (@Tests) {
+    my $Result = $CalendarHelperObject->TimezoneOffsetGet(
+        %{ $Test->{Config} },
+    );
+
+    if ( $Test->{Success} ) {
+        $Self->Is(
+            $Result,
+            $Test->{Result},
+            "TimezoneOffsetGet - $Test->{Name} - Result",
+        );
+    }
+    else {
+        $Self->False(
+            $Result,
+            "TimezoneOffsetGet - $Test->{Name} - No success ",
+        );
+    }
+}
+
+#
+# Tests for WeekDetailsGet()
+#
+@Tests = (
+    {
+        Name    => 'No params',
+        Config  => {},
+        Success => 0,
+    },
+    {
+        Name   => 'Sunday, 2017-05-14 05:05:05, CW19',
+        Config => {
+            SystemTime => '1494738305',
+        },
+        Result => [
+            7,
+            19,
+        ],
+        Success => 1,
+    },
 );
 
-my ( $Second2, $Minute2, $Hour2, $Day2, $Month2, $Year2, $DayOfWeek2 ) = $CalendarHelperObject->DateGet(
-    SystemTime => '1482501910',
-);
-$Self->Is(
-    $Year2,
-    2016,
-    "DateGet OK (Year)",
-);
-$Self->Is(
-    $Month2,
-    12,
-    "DateGet OK (Month)",
-);
-$Self->Is(
-    $Day2,
-    23,
-    "DateGet OK (Day)",
-);
-$Self->Is(
-    $Hour2,
-    14,
-    "DateGet OK (Hour)",
-);
-$Self->Is(
-    $Minute2,
-    5,
-    "DateGet OK (Minute)",
-);
-$Self->Is(
-    $Second2,
-    10,
-    "DateGet OK (Second)",
-);
-$Self->Is(
-    $DayOfWeek2,
-    5,
-    "DateGet OK (DayOfWeek)",
-);
+for my $Test (@Tests) {
+    my @Result = $CalendarHelperObject->WeekDetailsGet(
+        %{ $Test->{Config} },
+    );
 
-my ( $Second3, $Minute3, $Hour3, $Day3, $Month3, $Year3, $DayOfWeek3 ) = $CalendarHelperObject->DateGet(
-    SystemTime => '1462672984',
-);
-$Self->Is(
-    $Year3,
-    2016,
-    "DateGet OK (Year)",
-);
-$Self->Is(
-    $Month3,
-    5,
-    "DateGet OK (Month)",
-);
-$Self->Is(
-    $Day3,
-    8,
-    "DateGet OK (Day)",
-);
-$Self->Is(
-    $Hour3,
-    2,
-    "DateGet OK (Hour)",
-);
-$Self->Is(
-    $Minute3,
-    3,
-    "DateGet OK (Minute)",
-);
-$Self->Is(
-    $Second3,
-    4,
-    "DateGet OK (Second)",
-);
-$Self->Is(
-    $DayOfWeek3,
-    7,
-    "DateGet OK (DayOfWeek)",
-);
-
-# missing year
-my $Date2SystemTime1 = $CalendarHelperObject->Date2SystemTime(
-    Month  => '1',
-    Day    => '1',
-    Hour   => '1',
-    Minute => '0',
-);
-$Self->False(
-    $Date2SystemTime1,
-    "Date2SystemTime missing Year",
-);
-
-# missing month
-my $Date2SystemTime2 = $CalendarHelperObject->Date2SystemTime(
-    Year   => '2016',
-    Day    => '1',
-    Hour   => '1',
-    Minute => '0',
-);
-$Self->False(
-    $Date2SystemTime2,
-    "Date2SystemTime missing Month",
-);
-
-# missing day
-my $Date2SystemTime3 = $CalendarHelperObject->Date2SystemTime(
-    Year   => '2016',
-    Month  => '1',
-    Hour   => '1',
-    Minute => '0',
-);
-$Self->False(
-    $Date2SystemTime3,
-    "Date2SystemTime missing Day",
-);
-
-# missing Minute
-my $Date2SystemTime4 = $CalendarHelperObject->Date2SystemTime(
-    Year   => '2016',
-    Month  => '1',
-    Day    => '1',
-    Hour   => '1',
-    Minute => '0',
-);
-$Self->Is(
-    $Date2SystemTime4,
-    1451610000,
-    "Date2SystemTime OK",
-);
-
-# Missing Time
-my $AddPeriod1 = $CalendarHelperObject->AddPeriod(
-    Years  => '1',
-    Months => '1',
-);
-$Self->False(
-    $AddPeriod1,
-    "AddPeriod missing Time",
-);
-
-my $AddPeriod2 = $CalendarHelperObject->AddPeriod(
-    Time   => '1462871162',
-    Years  => '1',
-    Months => '1',
-);
-
-# ---
-# TODO temporarily disabled
-# ---
-#$Self->Is(
-#    $AddPeriod2,
-#    1497085562,
-#    "AddPeriod OK",
-#);
-# ---
-
-# missing parameters
-my $Offset1 = $CalendarHelperObject->TimezoneOffsetGet(
-
-    # UserID      => 2,                   # (optional)
-    # or
-    # TimezoneID  => 'Europe/Berlin'      # (optional) Timezone name
-);
-$Self->False(
-    $Offset1,
-    "TimezoneOffsetGet missing parameters",
-);
-
-my $Offset2 = $CalendarHelperObject->TimezoneOffsetGet(
-    TimezoneID => 'Europe/Berlin',
-);
-$Self->Is(
-    $Offset2,
-    2,
-    "TimezoneOffsetGet - TimezoneID provided",
-);
-
-# TODO: test TimezoneOffsetGet with UserID
-
-# missing SystemTime
-my ( $WeekDay1, $CW1 ) = $CalendarHelperObject->WeekDetailsGet(
-
-    # SystemTime => '1462880778',
-);
-$Self->False(
-    $WeekDay1,
-    "WeekDetailsGet missing SystemTime - WeekDay",
-);
-$Self->False(
-    $CW1,
-    "WeekDetailsGet missing SystemTime - CW",
-);
-
-# ok
-my ( $WeekDay2, $CW2 ) = $CalendarHelperObject->WeekDetailsGet(
-    SystemTime => '1494738305',
-);
-$Self->Is(
-    $WeekDay2,
-    7,
-    "WeekDetailsGet missing SystemTime - WeekDay",
-);
-$Self->Is(
-    $CW2,
-    19,
-    "WeekDetailsGet missing SystemTime - CW",
-);
+    if ( $Test->{Success} ) {
+        $Self->IsDeeply(
+            \@Result,
+            $Test->{Result},
+            "WeekDetailsGet - $Test->{Name} - Result",
+        );
+    }
+    else {
+        $Self->False(
+            scalar @Result,
+            "WeekDetailsGet - $Test->{Name} - No success ",
+        );
+    }
+}
 
 1;
