@@ -18,23 +18,19 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::System::AutoResponse',
+    'Kernel::System::Calendar',
+    'Kernel::System::Calendar::Appointment',
+
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::CustomerUser',
     'Kernel::System::DynamicField',
     'Kernel::System::DynamicField::Backend',
-    'Kernel::System::Encode',
     'Kernel::System::HTMLUtils',
+    'Kernel::System::JSON',
     'Kernel::System::Log',
     'Kernel::System::Queue',
-    'Kernel::System::Salutation',
-    'Kernel::System::Signature',
-    'Kernel::System::StandardTemplate',
-    'Kernel::System::SystemAddress',
     'Kernel::System::Ticket',
     'Kernel::System::User',
-    'Kernel::Output::HTML::Layout',
-    'Kernel::System::JSON',
-
 );
 
 =head1 NAME
@@ -77,12 +73,11 @@ sub new {
 
 replace all OTRS smart tags in the notification body and subject
 
-    my %NotificationEvent = $TemplateGeneratorObject->NotificationEvent(
-        AppointmentID         => 123,
-        Recipient             => $UserDataHashRef,          # Agent or Customer data get result
-        Notification          => $NotificationDataHashRef,
-        CustomerMessageParams => $ArticleHashRef,           # optional
-        UserID                => 123,
+    my %NotificationEvent = $CalendarTemplateGeneratorObject->NotificationEvent(
+        AppointmentID => 123,
+        Recipient     => $UserDataHashRef,          # Agent data get result
+        Notification  => $NotificationDataHashRef,
+        UserID        => 123,
     );
 
 =cut
@@ -111,62 +106,20 @@ sub NotificationEvent {
 
     my %Notification = %{ $Param{Notification} };
 
-    # exchanging original reference prevent it to grow up
-    if ( ref $Param{CustomerMessageParams} && ref $Param{CustomerMessageParams} eq 'HASH' ) {
-        my %LocalCustomerMessageParams = %{ $Param{CustomerMessageParams} };
-        $Param{CustomerMessageParams} = \%LocalCustomerMessageParams;
-    }
+    # get needed objects
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    # get ticket
-    my %Ticket = $TicketObject->TicketGet(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    # get appointment data
+    my %Appointment = $AppointmentObject->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
     );
 
-    # get last article from customer
-    my %Article = $TicketObject->ArticleLastCustomerArticle(
-        TicketID      => $Param{TicketID},
-        DynamicFields => 0,
+    # get calendar data
+    my %Calendar = $CalendarObject->CalendarGet(
+        CalendarID => $Appointment{CalendarID},
+        UserID     => $Param{UserID},
     );
-
-    # get last article from agent
-    my @ArticleBoxAgent = $TicketObject->ArticleGet(
-        TicketID      => $Param{TicketID},
-        UserID        => $Param{UserID},
-        DynamicFields => 0,
-    );
-
-    my %ArticleAgent;
-
-    ARTICLE:
-    for my $Article ( reverse @ArticleBoxAgent ) {
-
-        next ARTICLE if $Article->{SenderType} ne 'agent';
-
-        %ArticleAgent = %{$Article};
-
-        last ARTICLE;
-    }
-
-    # get  HTMLUtils object
-    my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
-
-    # set the accounted time as part of the articles information
-    ARTICLE:
-    for my $ArticleData ( \%Article, \%ArticleAgent ) {
-
-        next ARTICLE if !$ArticleData->{ArticleID};
-
-        # get accounted time
-        my $AccountedTime = $TicketObject->ArticleAccountedTimeGet(
-            ArticleID => $ArticleData->{ArticleID},
-        );
-
-        $ArticleData->{TimeUnit} = $AccountedTime;
-    }
 
     # get system default language
     my $DefaultLanguage = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
@@ -195,40 +148,6 @@ sub NotificationEvent {
         $Notification{$Attribute} = $Notification{Message}->{$Language}->{$Attribute};
     }
 
-    for my $Key (qw(From To Cc Subject Body ContentType ArticleType)) {
-        if ( !$Param{CustomerMessageParams}->{$Key} ) {
-            $Param{CustomerMessageParams}->{$Key} = $Article{$Key} || '';
-        }
-        chomp $Param{CustomerMessageParams}->{$Key};
-    }
-
-    # format body (only if longer the 86 chars)
-    if ( $Param{CustomerMessageParams}->{Body} ) {
-        if ( length $Param{CustomerMessageParams}->{Body} > 86 ) {
-            my @Lines = split /\n/, $Param{CustomerMessageParams}->{Body};
-            LINE:
-            for my $Line (@Lines) {
-                my $LineWrapped = $Line =~ s/(^>.+|.{4,86})(?:\s|\z)/$1\n/gm;
-
-                next LINE if $LineWrapped;
-
-                # if the regex does not match then we need
-                # to add the missing new line of the split
-                # else we will lose e.g. empty lines of the body.
-                # (bug#10679)
-                $Line .= "\n";
-            }
-            $Param{CustomerMessageParams}->{Body} = join '', @Lines;
-        }
-    }
-
-    # fill up required attributes
-    for my $Text (qw(Subject Body)) {
-        if ( !$Param{CustomerMessageParams}->{$Text} ) {
-            $Param{CustomerMessageParams}->{$Text} = "No $Text";
-        }
-    }
-
     my $Start = '<';
     my $End   = '>';
     if ( $Notification{ContentType} =~ m{text\/html} ) {
@@ -236,21 +155,13 @@ sub NotificationEvent {
         $End   = '&gt;';
     }
 
-    # replace <OTRS_CUSTOMER_DATA_*> tags early from CustomerMessageParams, the rests will be replaced
-    # by ticket customer user
-    KEY:
-    for my $Key ( sort keys %{ $Param{CustomerMessageParams} || {} } ) {
-
-        next KEY if !$Param{CustomerMessageParams}->{$Key};
-
-        $Notification{Body} =~ s/${Start}OTRS_CUSTOMER_DATA_$Key${End}/$Param{CustomerMessageParams}->{$Key}/gi;
-        $Notification{Subject} =~ s/<OTRS_CUSTOMER_DATA_$Key>/$Param{CustomerMessageParams}->{$Key}{$_}/gi;
-    }
+    # get html utils object
+    my $HTMLUtilsObject = $Kernel::OM->Get('Kernel::System::HTMLUtils');
 
     # do text/plain to text/html convert
     if ( $Self->{RichText} && $Notification{ContentType} =~ /text\/plain/i ) {
         $Notification{ContentType} = 'text/html';
-        $Notification{Body}        = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
+        $Notification{Body}        = $HTMLUtilsObject->ToHTML(
             String => $Notification{Body},
         );
     }
@@ -258,7 +169,7 @@ sub NotificationEvent {
     # do text/html to text/plain convert
     if ( !$Self->{RichText} && $Notification{ContentType} =~ /text\/html/i ) {
         $Notification{ContentType} = 'text/plain';
-        $Notification{Body}        = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToAscii(
+        $Notification{Body}        = $HTMLUtilsObject->ToAscii(
             String => $Notification{Body},
         );
     }
@@ -270,38 +181,32 @@ sub NotificationEvent {
         }
     }
 
-    # replace place holder stuff
-    $Notification{Body} = $Self->_Replace(
-        RichText  => $Self->{RichText},
-        Text      => $Notification{Body},
-        Recipient => $Param{Recipient},
-        Data      => $Param{CustomerMessageParams},
-        DataAgent => \%ArticleAgent,
-        TicketID  => $Param{TicketID},
-        UserID    => $Param{UserID},
-        Language  => $Language,
-    );
-    $Notification{Subject} = $Self->_Replace(
-        RichText  => 0,
-        Text      => $Notification{Subject},
-        Recipient => $Param{Recipient},
-        Data      => $Param{CustomerMessageParams},
-        DataAgent => \%ArticleAgent,
-        TicketID  => $Param{TicketID},
-        UserID    => $Param{UserID},
-        Language  => $Language,
-    );
-
-    $Notification{Subject} = $TicketObject->TicketSubjectBuild(
-        TicketNumber => $Ticket{TicketNumber},
-        Subject      => $Notification{Subject} || '',
-        Type         => 'New',
-    );
+    #    # replace place holder stuff
+    #    $Notification{Body} = $Self->_Replace(
+    #        RichText  => $Self->{RichText},
+    #        Text      => $Notification{Body},
+    #        Recipient => $Param{Recipient},
+    #        Data      => $Param{CustomerMessageParams},
+    #        DataAgent => \%ArticleAgent,
+    #        TicketID  => $Param{TicketID},
+    #        UserID    => $Param{UserID},
+    #        Language  => $Language,
+    #    );
+    #    $Notification{Subject} = $Self->_Replace(
+    #        RichText  => 0,
+    #        Text      => $Notification{Subject},
+    #        Recipient => $Param{Recipient},
+    #        Data      => $Param{CustomerMessageParams},
+    #        DataAgent => \%ArticleAgent,
+    #        TicketID  => $Param{TicketID},
+    #        UserID    => $Param{UserID},
+    #        Language  => $Language,
+    #    );
 
     # add URLs and verify to be full HTML document
     if ( $Self->{RichText} ) {
 
-        $Notification{Body} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->LinkQuote(
+        $Notification{Body} = $HTMLUtilsObject->LinkQuote(
             String => $Notification{Body},
         );
     }

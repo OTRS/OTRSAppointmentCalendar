@@ -115,11 +115,10 @@ sub Run {
         for my $Recipient (@RecipientUsers) {
 
             my %ReplacedNotification = $TemplateGeneratorObject->NotificationEvent(
-                TicketID              => $Param{Data}->{TicketID},
-                Recipient             => $Recipient,
-                Notification          => \%Notification,
-                CustomerMessageParams => $Param{Data}->{CustomerMessageParams},
-                UserID                => $Param{UserID},
+                AppointmentID => $Param{Data}->{AppointmentID},
+                Recipient     => $Recipient,
+                Notification  => \%Notification,
+                UserID        => $Param{UserID},
             );
 
             my $UserNotificationTransport = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
@@ -217,7 +216,7 @@ sub Run {
                 }
 
                 my $Success = $Self->_SendRecipientNotification(
-                    TicketID              => $Param{Data}->{TicketID},
+                    AppointmentID         => $Param{Data}->{AppointmentID},
                     Notification          => $Bundle->{Notification},
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Bundle->{Recipient},
@@ -244,7 +243,7 @@ sub Run {
 
                 # replace all notification tags for each special recipient
                 my %ReplacedNotification = $TemplateGeneratorObject->NotificationEvent(
-                    TicketID              => $Param{Data}->{TicketID},
+                    AppointmentID         => $Param{Data}->{AppointmentID},
                     Recipient             => $Recipient,
                     Notification          => \%Notification,
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
@@ -252,7 +251,7 @@ sub Run {
                 );
 
                 my $Success = $Self->_SendRecipientNotification(
-                    TicketID              => $Param{Data}->{TicketID},
+                    AppointmentID         => $Param{Data}->{AppointmentID},
                     Notification          => \%ReplacedNotification,
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Recipient,
@@ -305,7 +304,7 @@ sub _NotificationFilter {
     KEY:
     for my $Key ( sort keys %{ $Notification{Data} } ) {
 
-        # ignore not ticket related attributes
+        # ignore not appointment related attributes
         next KEY if $Key eq 'Recipients';
         next KEY if $Key eq 'SkipRecipients';
         next KEY if $Key eq 'RecipientAgents';
@@ -332,7 +331,7 @@ sub _NotificationFilter {
             next KEY;
         }
 
-        # check ticket attributes
+        # check appointment attributes
         next KEY if !$Notification{Data}->{$Key};
         next KEY if !@{ $Notification{Data}->{$Key} };
         next KEY if !$Notification{Data}->{$Key}->[0];
@@ -622,7 +621,7 @@ sub _SendRecipientNotification {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(TicketID UserID Notification Recipient Event Transport TransportObject)) {
+    for my $Needed (qw(AppointmentID UserID Notification Recipient Event Transport TransportObject)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
