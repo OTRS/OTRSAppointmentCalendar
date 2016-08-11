@@ -75,7 +75,13 @@ sub Run {
     );
 
     # return if no notification for event exists
-    return 1 if !@IDs;
+    if ( !IsArrayRefWithData( \@IDs ) ) {
+
+        # update the future tasks
+        $Self->_FutureTaskUpdate();
+
+        return 1 if !@IDs;
+    }
 
     # get a local appointment object
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');

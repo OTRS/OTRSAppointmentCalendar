@@ -2247,6 +2247,10 @@ sub AppointmentNotification {
 
     return if !IsArrayRefWithData( \@UpcomingAppointments );
 
+    # sleep at least 1 second to make sure the timestamp doesn't
+    # equals the last one for update upcoming future tasks
+    sleep 1;
+
     UPCOMINGAPPOINTMENT:
     for my $UpcomingAppointment (@UpcomingAppointments) {
 
@@ -2260,21 +2264,8 @@ sub AppointmentNotification {
             Data  => {
                 AppointmentID => $UpcomingAppointment->{AppointmentID},
             },
+            UserID => 1,
         );
-    }
-
-    # sleep at least 1 second to make sure the timestamp doesn't
-    # equals the last one for update upcoming future tasks
-    sleep 1;
-
-    my $Success = $Self->AppointmentFutureTasksUpdate();
-
-    if ( !$Success ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Could not update appointment future tasks!',
-        );
-        return;
     }
 
     return 1;
