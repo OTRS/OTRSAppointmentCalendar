@@ -21,7 +21,7 @@ our @ObjectDependencies = (
     'Kernel::System::JSON',
     'Kernel::System::Log',
     'Kernel::System::NotificationEvent',
-    'Kernel::System::TemplateGenerator',
+    'Kernel::System::CalendarTemplateGenerator',
     'Kernel::System::Ticket',
     'Kernel::System::Time',
     'Kernel::System::User',
@@ -109,7 +109,7 @@ sub Run {
         my @NotificationBundle;
 
         # get template generator object;
-        my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::TemplateGenerator');
+        my $TemplateGeneratorObject = $Kernel::OM->Get('Kernel::System::CalendarTemplateGenerator');
 
         # parse all notification tags for each user
         for my $Recipient (@RecipientUsers) {
