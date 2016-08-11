@@ -13,11 +13,6 @@ use utf8;
 use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
-# set system time zone to UTC for duration of the test
-# necessary only for OTRS 5 where old Time object is used
-my $EnvTZ = $ENV{TZ};
-$ENV{TZ} = 'UTC';
-
 # get needed objects
 my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
@@ -358,8 +353,5 @@ for my $ImportedAppointment (@ImportedAppointments) {
     );
     $Count++;
 }
-
-# restore original system time zone
-$ENV{TZ} = $EnvTZ;
 
 1;

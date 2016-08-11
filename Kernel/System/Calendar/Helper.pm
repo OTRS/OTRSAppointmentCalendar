@@ -352,6 +352,9 @@ sub AddPeriod {
     $Param{Months} //= 0;
     $Param{Years}  //= 0;
 
+    # use gmt as base for next time function
+    local $ENV{TZ} = 'UTC';
+
     my $TimePiece = localtime( $Param{Time} );
     my $StartDay  = $TimePiece->day_of_month();
 
@@ -372,7 +375,7 @@ sub AddPeriod {
 
 =item TimezoneOffsetGet()
 
-adds time period (years and months) to the time given in Unix format.
+returns offset of specified time zone or user's time zone.
 
     my $Result = $CalendarHelperObject->TimezoneOffsetGet(
         UserID      => 2,                   # (optional)
@@ -382,6 +385,7 @@ adds time period (years and months) to the time given in Unix format.
 
 returns:
     $Result = 2;
+
 =cut
 
 sub TimezoneOffsetGet {
