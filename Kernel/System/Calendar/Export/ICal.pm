@@ -93,9 +93,10 @@ sub Export {
     }
 
     # needed objects
-    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+    my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
 
     my %Calendar = $CalendarObject->CalendarGet(
         CalendarID => $Param{CalendarID},
@@ -125,7 +126,7 @@ sub Export {
         return if !$Appointment{AppointmentID};
 
         # calculate start time
-        my $StartTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $StartTime = $CalendarHelperObject->SystemTimeGet(
             String => $Appointment{StartTime},
         );
         my $ICalStartTime = Date::ICal->new(
@@ -133,7 +134,7 @@ sub Export {
         );
 
         # calculate end time
-        my $EndTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $EndTime = $CalendarHelperObject->SystemTimeGet(
             String => $Appointment{EndTime},
         );
         my $ICalEndTime = Date::ICal->new(
@@ -142,17 +143,16 @@ sub Export {
 
         # recalculate for all day appointment, discard time data
         if ( $Appointment{AllDay} ) {
-            my ( $Sec, $Min, $Hour, $Day, $Month, $Year )
-                = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+            my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $CalendarHelperObject->DateGet(
                 SystemTime => $StartTime,
-                );
+            );
             $ICalStartTime = Date::ICal->new(
                 year   => $Year,
                 month  => $Month,
                 day    => $Day,
                 offset => '+0000',    # UTC
             );
-            ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+            ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $CalendarHelperObject->DateGet(
                 SystemTime => $EndTime,
             );
             $ICalEndTime = Date::ICal->new(
@@ -235,10 +235,9 @@ sub Export {
 
             }
             elsif ( $Appointment{RecurrenceType} eq 'CustomYearly' ) {
-                my ( $Sec, $Min, $Hour, $Day, $Month, $Year )
-                    = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->DateGet(
+                my ( $Sec, $Min, $Hour, $Day, $Month, $Year ) = $CalendarHelperObject->DateGet(
                     SystemTime => $StartTime,
-                    );
+                );
 
                 $ICalEventProperties{rrule} .= "FREQ=YEARLY;INTERVAL=$Appointment{RecurrenceInterval};BYMONTHDAY=$Day";
                 $ICalEventProperties{rrule} .= ";BYMONTH=" . join( ",", @{ $Appointment{RecurrenceFrequency} } );
@@ -247,7 +246,7 @@ sub Export {
             }
 
             if ( $Appointment{RecurrenceUntil} ) {
-                my $RecurrenceUntil = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                my $RecurrenceUntil = $CalendarHelperObject->SystemTimeGet(
                     String => $Appointment{RecurrenceUntil},
                 );
                 my $ICalRecurrenceUntil = Date::ICal->new(
@@ -262,7 +261,7 @@ sub Export {
                 RECURRENCE_EXCLUDE:
                 for my $RecurrenceExclude ( @{ $Appointment{RecurrenceExclude} } ) {
                     next RECURRENCE_EXCLUDE if !$RecurrenceExclude;
-                    my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                    my $RecurrenceID = $CalendarHelperObject->SystemTimeGet(
                         String => $RecurrenceExclude,
                     );
                     my $ICalRecurrenceID = Date::ICal->new(
@@ -290,7 +289,7 @@ sub Export {
             {
 
                 # calculate recurrence id
-                my $RecurrenceID = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+                my $RecurrenceID = $CalendarHelperObject->SystemTimeGet(
                     String => $Appointment{RecurrenceID},
                 );
                 my $ICalRecurrenceID = Date::ICal->new(
@@ -308,7 +307,7 @@ sub Export {
         }
 
         # calculate last modified time
-        my $ChangeTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $ChangeTime = $CalendarHelperObject->SystemTimeGet(
             String => $Appointment{ChangeTime},
         );
         my $ICalChangeTime = Date::ICal->new(

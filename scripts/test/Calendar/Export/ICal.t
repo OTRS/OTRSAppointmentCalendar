@@ -13,6 +13,9 @@ use utf8;
 use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
+# override local time zone for duration of the test
+local $ENV{TZ} = 'UTC';
+
 # get needed objects
 my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');

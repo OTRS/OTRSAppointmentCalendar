@@ -13,8 +13,8 @@ use utf8;
 use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
-# get calendar helper object
-my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+# override local time zone for duration of the test
+local $ENV{TZ} = 'UTC';
 
 # get helper object
 $Kernel::OM->ObjectParamAdd(
@@ -23,6 +23,9 @@ $Kernel::OM->ObjectParamAdd(
     },
 );
 my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+# get calendar helper object
+my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
 #
 # Tests for TimeCheck()
