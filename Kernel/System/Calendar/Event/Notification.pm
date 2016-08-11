@@ -15,19 +15,12 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Calendar',
     'Kernel::System::Calendar::Appointment',
-    'Kernel::System::CustomerUser',
-    'Kernel::System::DB',
-    'Kernel::System::DynamicField',
-    'Kernel::System::DynamicField::Backend',
-    'Kernel::System::Email',
     'Kernel::System::Group',
-    'Kernel::System::HTMLUtils',
     'Kernel::System::JSON',
     'Kernel::System::Log',
     'Kernel::System::NotificationEvent',
-    'Kernel::System::Queue',
-    'Kernel::System::SystemAddress',
     'Kernel::System::TemplateGenerator',
     'Kernel::System::Ticket',
     'Kernel::System::Time',
@@ -109,7 +102,7 @@ sub Run {
         # get recipients
         my @RecipientUsers = $Self->_RecipientsGet(
             %Param,
-            Ticket       => \%Appointment,
+            Appointment  => \%Appointment,
             Notification => \%Notification,
         );
 
@@ -387,18 +380,19 @@ sub _RecipientsGet {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    for my $Needed (qw(Ticket Notification)) {
+    for my $Needed (qw(Appointment Notification)) {
         return if !$Param{$Needed};
     }
 
     # set local values
     my %Notification = %{ $Param{Notification} };
-    my %Ticket       = %{ $Param{Ticket} };
+    my %Appointment  = %{ $Param{Appointment} };
 
     # get needed objects
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $GroupObject  = $Kernel::OM->Get('Kernel::System::Group');
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
+    my $ConfigObject      = $Kernel::OM->Get('Kernel::Config');
 
     my @RecipientUserIDs;
     my @RecipientUsers;
@@ -414,202 +408,68 @@ sub _RecipientsGet {
     # get recipients by Recipients
     if ( $Notification{Data}->{Recipients} ) {
 
-        # get needed objects
-        my $QueueObject        = $Kernel::OM->Get('Kernel::System::Queue');
-        my $CustomerUserObject = $Kernel::OM->Get('Kernel::System::CustomerUser');
-
         RECIPIENT:
         for my $Recipient ( @{ $Notification{Data}->{Recipients} } ) {
 
             if (
                 $Recipient
-                =~ /^Agent(Owner|Responsible|Watcher|WritePermissions|MyQueues|MyServices|MyQueuesMyServices)$/
+                =~ /^Appointment(Agents|AgentReadPermissions|AgentWritePermissions)$/
                 )
             {
+                if ( $Recipient eq 'AppointmentAgents' ) {
 
-                if ( $Recipient eq 'AgentOwner' ) {
-                    push @{ $Notification{Data}->{RecipientAgents} }, $Ticket{OwnerID};
-                }
-                elsif ( $Recipient eq 'AgentResponsible' ) {
+                    RESOURCEID:
+                    for my $ResourceID ( @{ $Appointment{ResourceID} } ) {
 
-                    # add the responsible agent to the notification list
-                    if ( $ConfigObject->Get('Ticket::Responsible') && $Ticket{ResponsibleID} ) {
+                        next RESOURCEID if !$ResourceID;
 
-                        push @{ $Notification{Data}->{RecipientAgents} },
-                            $Ticket{ResponsibleID};
+                        push @{ $Notification{Data}->{RecipientAgents} }, $ResourceID;
                     }
                 }
-                elsif ( $Recipient eq 'AgentWatcher' ) {
+                elsif ( $Recipient eq 'AppointmentAgentReadPermissions' ) {
 
-                    # is not needed to check Ticket::Watcher,
-                    # its checked on TicketWatchGet function
-                    push @{ $Notification{Data}->{RecipientAgents} }, $TicketObject->TicketWatchGet(
-                        TicketID => $Param{Data}->{TicketID},
-                        Result   => 'ARRAY',
+                    # get calendar information
+                    my %Calendar = $CalendarObject->CalendarGet(
+                        CalendarID => $Appointment{CalendarID},
+                        UserID     => 1,
                     );
+
+                    # get a list of read access users for the related calendar
+                    my %Users = $GroupObject->PermissionGroupGet(
+                        GroupID => $Calendar{GroupID},
+                        Type    => 'ro',
+                    );
+
+                    USERID:
+                    for my $UserID ( sort keys %Users ) {
+
+                        next USERID if !$UserID;
+
+                        push @{ $Notification{Data}->{RecipientAgents} }, $UserID;
+                    }
                 }
-                elsif ( $Recipient eq 'AgentWritePermissions' ) {
+                elsif ( $Recipient eq 'AppointmentAgentWritePermissions' ) {
 
-                    my $GroupID = $QueueObject->GetQueueGroupID(
-                        QueueID => $Ticket{QueueID},
+                    # get calendar information
+                    my %Calendar = $CalendarObject->CalendarGet(
+                        CalendarID => $Appointment{CalendarID},
+                        UserID     => 1,
                     );
 
-                    my %UserList = $GroupObject->PermissionGroupUserGet(
-                        GroupID => $GroupID,
+                    # get a list of read access users for the related calendar
+                    my %Users = $GroupObject->PermissionGroupGet(
+                        GroupID => $Calendar{GroupID},
                         Type    => 'rw',
-                        UserID  => $Param{UserID},
                     );
 
-                    my %RoleList = $GroupObject->PermissionGroupRoleGet(
-                        GroupID => $GroupID,
-                        Type    => 'rw',
-                    );
-                    for my $RoleID ( sort keys %RoleList ) {
-                        my %RoleUserList = $GroupObject->PermissionRoleUserGet(
-                            RoleID => $RoleID,
-                        );
-                        %UserList = ( %RoleUserList, %UserList );
-                    }
+                    USERID:
+                    for my $UserID ( sort keys %Users ) {
 
-                    my @UserIDs = sort keys %UserList;
+                        next USERID if !$UserID;
 
-                    push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
-                }
-                elsif ( $Recipient eq 'AgentMyQueues' ) {
-
-                    # get subscribed users
-                    my %MyQueuesUserIDs = map { $_ => 1 } $TicketObject->GetSubscribedUserIDsByQueueID(
-                        QueueID => $Ticket{QueueID}
-                    );
-
-                    my @UserIDs = sort keys %MyQueuesUserIDs;
-
-                    push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
-                }
-                elsif ( $Recipient eq 'AgentMyServices' ) {
-
-                    # get subscribed users
-                    my %MyServicesUserIDs;
-                    if ( $Ticket{ServiceID} ) {
-                        %MyServicesUserIDs = map { $_ => 1 } $TicketObject->GetSubscribedUserIDsByServiceID(
-                            ServiceID => $Ticket{ServiceID},
-                        );
-                    }
-
-                    my @UserIDs = sort keys %MyServicesUserIDs;
-
-                    push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
-                }
-                elsif ( $Recipient eq 'AgentMyQueuesMyServices' ) {
-
-                    # get subscribed users
-                    my %MyQueuesUserIDs = map { $_ => 1 } $TicketObject->GetSubscribedUserIDsByQueueID(
-                        QueueID => $Ticket{QueueID}
-                    );
-
-                    # get subscribed users
-                    my %MyServicesUserIDs;
-                    if ( $Ticket{ServiceID} ) {
-                        %MyServicesUserIDs = map { $_ => 1 } $TicketObject->GetSubscribedUserIDsByServiceID(
-                            ServiceID => $Ticket{ServiceID},
-                        );
-                    }
-
-                    # combine both subscribed users list (this will also remove duplicates)
-                    my %SubscribedUserIDs = ( %MyQueuesUserIDs, %MyServicesUserIDs );
-
-                    for my $UserID ( sort keys %SubscribedUserIDs ) {
-                        if ( !$MyQueuesUserIDs{$UserID} || !$MyServicesUserIDs{$UserID} ) {
-                            delete $SubscribedUserIDs{$UserID};
-                        }
-                    }
-
-                    my @UserIDs = sort keys %SubscribedUserIDs;
-
-                    push @{ $Notification{Data}->{RecipientAgents} }, @UserIDs;
-                }
-            }
-
-            # Other OTRS packages might add other kind of recipients that are normally handled by
-            #   other modules then an elsif condition here is useful.
-            elsif ( $Recipient eq 'Customer' ) {
-
-                # get old article for quoting
-                my %Article = $TicketObject->ArticleLastCustomerArticle(
-                    TicketID      => $Param{Data}->{TicketID},
-                    DynamicFields => 0,
-                );
-
-                # If the ticket has no articles yet, get the raw ticket data
-                if ( !%Article ) {
-                    %Article = $TicketObject->TicketGet(
-                        TicketID      => $Param{Data}->{TicketID},
-                        DynamicFields => 0,
-                    );
-                }
-
-                my %Recipient;
-
-                # ArticleLastCustomerArticle() returns the latest customer article but if there
-                # is no customer article, it returns the latest agent article. In this case
-                # notification must not be send to the "From", but to the "To" article field.
-
-                # Check if we actually do have an article
-                if ( defined $Article{SenderType} ) {
-                    if ( $Article{SenderType} eq 'customer' ) {
-                        $Recipient{UserEmail} = $Article{From};
-                    }
-                    else {
-                        $Recipient{UserEmail} = $Article{To};
+                        push @{ $Notification{Data}->{RecipientAgents} }, $UserID;
                     }
                 }
-                $Recipient{Type} = 'Customer';
-
-                # check if customer notifications should be send
-                if (
-                    $ConfigObject->Get('CustomerNotifyJustToRealCustomer')
-                    && !$Article{CustomerUserID}
-                    )
-                {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'info',
-                        Message  => 'Send no customer notification because no customer is set!',
-                    );
-                    next RECIPIENT;
-                }
-
-                # get language and send recipient
-                $Recipient{Language} = $ConfigObject->Get('DefaultLanguage') || 'en';
-
-                if ( $Article{CustomerUserID} ) {
-
-                    my %CustomerUser = $CustomerUserObject->CustomerUserDataGet(
-                        User => $Article{CustomerUserID},
-
-                    );
-
-                    # join Recipient data with CustomerUser data
-                    %Recipient = ( %Recipient, %CustomerUser );
-
-                    # get user language
-                    if ( $CustomerUser{UserLanguage} ) {
-                        $Recipient{Language} = $CustomerUser{UserLanguage};
-                    }
-                }
-
-                # get real name
-                if ( $Article{CustomerUserID} ) {
-                    $Recipient{Realname} = $CustomerUserObject->CustomerName(
-                        UserLogin => $Article{CustomerUserID},
-                    );
-                }
-                if ( !$Recipient{Realname} ) {
-                    $Recipient{Realname} = $Article{From} || '';
-                    $Recipient{Realname} =~ s/<.*>|\(.*\)|\"|;|,//g;
-                    $Recipient{Realname} =~ s/( $)|(  $)//g;
-                }
-
-                push @RecipientUsers, \%Recipient;
             }
         }
     }
@@ -746,15 +606,6 @@ sub _RecipientsGet {
             next RECIPIENT if $TimeStart < $Time && $TimeEnd > $Time;
         }
 
-        # skip users with out ro permissions
-        my $Permission = $TicketObject->TicketPermission(
-            Type     => 'ro',
-            TicketID => $Ticket{TicketID},
-            UserID   => $User{UserID}
-        );
-
-        next RECIPIENT if !$Permission;
-
         # skip PostMasterUserID
         my $PostmasterUserID = $ConfigObject->Get('PostmasterUserID') || 1;
         next RECIPIENT if $User{UserID} == $PostmasterUserID;
@@ -877,47 +728,6 @@ sub _SendRecipientNotification {
     # ticket event
     $TicketObject->EventHandler(
         %EventData,
-    );
-
-    return 1;
-}
-
-sub _ArticleToUpdate {
-    my ( $Self, %Param ) = @_;
-
-    # check needed params
-    for my $Needed (qw(ArticleID ArticleType UserIDs UserID)) {
-        return if !$Param{$Needed};
-    }
-
-    # not update for User 1
-    return 1 if $Param{UserID} eq 1;
-
-    # get needed objects
-    my $DBObject   = $Kernel::OM->Get('Kernel::System::DB');
-    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
-    # not update if its not a note article
-    return 1 if $Param{ArticleType} !~ /^note\-/;
-
-    my $NewTo = $Param{To} || '';
-    for my $UserID ( sort keys %{ $Param{UserIDs} } ) {
-        my %UserData = $UserObject->GetUserData(
-            UserID => $UserID,
-            Valid  => 1,
-        );
-        if ($NewTo) {
-            $NewTo .= ', ';
-        }
-        $NewTo .= "$UserData{UserFirstname} $UserData{UserLastname} <$UserData{UserEmail}>";
-    }
-
-    # not update if To is the same
-    return 1 if !$NewTo;
-
-    return if !$DBObject->Do(
-        SQL  => 'UPDATE article SET a_to = ? WHERE id = ?',
-        Bind => [ \$NewTo, \$Param{ArticleID} ],
     );
 
     return 1;

@@ -732,7 +732,9 @@ sub _Edit {
 
     $Param{RecipientsStrg} = $LayoutObject->BuildSelection(
         Data => {
-            AppointmentAgents => Translatable('Agent who are selected within the appointment'),
+            AppointmentAgents => Translatable('Agent (resources), who are selected within the appointment'),
+            AppointmentAgentReadPermissions =>
+                Translatable('All agents with (at least) read permission for the appointment (calendar)'),
             AppointmentAgentWritePermissions =>
                 Translatable('All agents with write permission for the appointment (calendar)'),
         },

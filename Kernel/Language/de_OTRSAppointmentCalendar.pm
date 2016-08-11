@@ -100,7 +100,8 @@ sub Data {
     $Self->{Translation}->{'Refresh (minutes)'} = 'Aktualisierung (Minuten)';
 
     # Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
-    $Self->{Translation}->{'Agent who are selected within the appointment'} = 'Agenten, welche im Termin ausgewählt wurden';
+    $Self->{Translation}->{'Agent (resources), who are selected within the appointment'} = 'Agenten (Resourcen), welche im Termin ausgewählt wurden';
+    $Self->{Translation}->{'All agents with (at least) read permission for the appointment (calendar)'} = 'Alle Agenten, welche (mindestens) Schreibberechtigungen auf den Termin (Kalender) haben.';
     $Self->{Translation}->{'All agents with write permission for the appointment (calendar)'} = 'Alle Agenten, welche Schreibberechtigungen auf den Termin (Kalender) haben.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
