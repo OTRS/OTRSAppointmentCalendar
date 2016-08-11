@@ -106,21 +106,6 @@ sub NotificationEvent {
 
     my %Notification = %{ $Param{Notification} };
 
-    # get needed objects
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-
-    # get appointment data
-    my %Appointment = $AppointmentObject->AppointmentGet(
-        AppointmentID => $Param{AppointmentID},
-    );
-
-    # get calendar data
-    my %Calendar = $CalendarObject->CalendarGet(
-        CalendarID => $Appointment{CalendarID},
-        UserID     => $Param{UserID},
-    );
-
     # get system default language
     my $DefaultLanguage = $Kernel::OM->Get('Kernel::Config')->Get('DefaultLanguage') || 'en';
 
@@ -181,27 +166,24 @@ sub NotificationEvent {
         }
     }
 
-    #    # replace place holder stuff
-    #    $Notification{Body} = $Self->_Replace(
-    #        RichText  => $Self->{RichText},
-    #        Text      => $Notification{Body},
-    #        Recipient => $Param{Recipient},
-    #        Data      => $Param{CustomerMessageParams},
-    #        DataAgent => \%ArticleAgent,
-    #        TicketID  => $Param{TicketID},
-    #        UserID    => $Param{UserID},
-    #        Language  => $Language,
-    #    );
-    #    $Notification{Subject} = $Self->_Replace(
-    #        RichText  => 0,
-    #        Text      => $Notification{Subject},
-    #        Recipient => $Param{Recipient},
-    #        Data      => $Param{CustomerMessageParams},
-    #        DataAgent => \%ArticleAgent,
-    #        TicketID  => $Param{TicketID},
-    #        UserID    => $Param{UserID},
-    #        Language  => $Language,
-    #    );
+    # replace place holder stuff
+    $Notification{Body} = $Self->_Replace(
+        RichText      => $Self->{RichText},
+        Text          => $Notification{Body},
+        Recipient     => $Param{Recipient},
+        AppointmentID => $Param{AppointmentID},
+        UserID        => $Param{UserID},
+        Language      => $Language,
+    );
+
+    $Notification{Subject} = $Self->_Replace(
+        RichText      => 0,
+        Text          => $Notification{Subject},
+        Recipient     => $Param{Recipient},
+        AppointmentID => $Param{AppointmentID},
+        UserID        => $Param{UserID},
+        Language      => $Language,
+    );
 
     # add URLs and verify to be full HTML document
     if ( $Self->{RichText} ) {
@@ -222,7 +204,7 @@ sub _Replace {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Text RichText Data UserID)) {
+    for (qw(Text AppointmentID Calendar RichText Data UserID)) {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -274,6 +256,21 @@ sub _Replace {
         $End   = '&gt;';
         $Param{Text} =~ s/(\n|\r)//g;
     }
+
+    # get needed objects
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
+
+    # get appointment data
+    my %Appointment = $AppointmentObject->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
+    );
+
+    # get calendar data
+    my %Calendar = $CalendarObject->CalendarGet(
+        CalendarID => $Appointment{CalendarID},
+        UserID     => $Param{UserID},
+    );
 
     my %Ticket;
     if ( $Param{TicketID} ) {
