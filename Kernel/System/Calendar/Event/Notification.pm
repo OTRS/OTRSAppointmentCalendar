@@ -80,7 +80,7 @@ sub Run {
         # update the future tasks
         $Self->_FutureTaskUpdate();
 
-        return 1 if !@IDs;
+        return 1;
     }
 
     # get a local appointment object
@@ -309,9 +309,6 @@ sub _NotificationFilter {
     # set local values
     my %Notification = %{ $Param{Notification} };
 
-    # get dynamic field backend object
-    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
-
     KEY:
     for my $Key ( sort keys %{ $Notification{Data} } ) {
 
@@ -346,6 +343,7 @@ sub _NotificationFilter {
         next KEY if !$Notification{Data}->{$Key};
         next KEY if !@{ $Notification{Data}->{$Key} };
         next KEY if !$Notification{Data}->{$Key}->[0];
+
         my $Match = 0;
 
         VALUE:
@@ -353,37 +351,25 @@ sub _NotificationFilter {
 
             next VALUE if !$Value;
 
-            # check if key is a search dynamic field
-            if ( $Key =~ m{\A Search_DynamicField_}xms ) {
+            if ( $Key eq 'ResourceID' ) {
 
-                # remove search prefix
-                my $DynamicFieldName = $Key;
+                # check for existing resource ids in appointment
+                next KEY if !IsHashRefWithData( $Param{Appointment}->{$Key} );
 
-                $DynamicFieldName =~ s{Search_DynamicField_}{};
+                RESOURCEID:
+                for my $ResourceID ( @{ $Param{Appointment}->{$Key} } ) {
 
-                # get the dynamic field config for this field
-                my $DynamicFieldConfig = $Param{DynamicFieldConfigLookup}->{$DynamicFieldName};
+                    next RESOURCEID if !$ResourceID;
 
-                next VALUE if !$DynamicFieldConfig;
-
-                my $IsNotificationEventCondition = $DynamicFieldBackendObject->HasBehavior(
-                    DynamicFieldConfig => $DynamicFieldConfig,
-                    Behavior           => 'IsNotificationEventCondition',
-                );
-
-                next VALUE if !$IsNotificationEventCondition;
-
-                $Match = $DynamicFieldBackendObject->ObjectMatch(
-                    DynamicFieldConfig => $DynamicFieldConfig,
-                    Value              => $Value,
-                    ObjectAttributes   => $Param{Ticket},
-                );
-
-                last VALUE if $Match;
+                    if ( $Value eq $ResourceID ) {
+                        $Match = 1;
+                        last VALUE;
+                    }
+                }
             }
             else {
 
-                if ( $Value eq $Param{Ticket}->{$Key} ) {
+                if ( $Value eq $Param{Appointment}->{$Key} ) {
                     $Match = 1;
                     last VALUE;
                 }
@@ -391,77 +377,6 @@ sub _NotificationFilter {
         }
 
         return if !$Match;
-    }
-
-    # match article types only on ArticleCreate or ArticleSend event
-    if (
-        ( ( $Param{Event} eq 'ArticleCreate' ) || ( $Param{Event} eq 'ArticleSend' ) )
-        && $Param{Data}->{ArticleID}
-        )
-    {
-
-        my %Article = $Kernel::OM->Get('Kernel::System::Ticket')->ArticleGet(
-            ArticleID     => $Param{Data}->{ArticleID},
-            UserID        => $Param{UserID},
-            DynamicFields => 0,
-        );
-
-        # check article type
-        if ( $Notification{Data}->{ArticleTypeID} ) {
-
-            my $Match = 0;
-            VALUE:
-            for my $Value ( @{ $Notification{Data}->{ArticleTypeID} } ) {
-
-                next VALUE if !$Value;
-
-                if ( $Value == $Article{ArticleTypeID} ) {
-                    $Match = 1;
-                    last VALUE;
-                }
-            }
-
-            return if !$Match;
-        }
-
-        # check article sender type
-        if ( $Notification{Data}->{ArticleSenderTypeID} ) {
-
-            my $Match = 0;
-            VALUE:
-            for my $Value ( @{ $Notification{Data}->{ArticleSenderTypeID} } ) {
-
-                next VALUE if !$Value;
-
-                if ( $Value == $Article{SenderTypeID} ) {
-                    $Match = 1;
-                    last VALUE;
-                }
-            }
-
-            return if !$Match;
-        }
-
-        # check subject & body
-        KEY:
-        for my $Key (qw(Subject Body)) {
-
-            next KEY if !$Notification{Data}->{ 'Article' . $Key . 'Match' };
-
-            my $Match = 0;
-            VALUE:
-            for my $Value ( @{ $Notification{Data}->{ 'Article' . $Key . 'Match' } } ) {
-
-                next VALUE if !$Value;
-
-                if ( $Article{$Key} =~ /\Q$Value\E/i ) {
-                    $Match = 1;
-                    last VALUE;
-                }
-            }
-
-            return if !$Match;
-        }
     }
 
     return 1;
