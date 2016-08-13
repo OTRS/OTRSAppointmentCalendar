@@ -172,7 +172,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -1117,7 +1117,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType}    eq 'CustomWeekly'
+                $Param{RecurrenceType} eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
