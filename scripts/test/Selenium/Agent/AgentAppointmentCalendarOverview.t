@@ -242,7 +242,8 @@ $Selenium->RunTest(
         }
 
         # enter some data
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
+        $Selenium->find_element( 'Title',    'name' )->send_keys('Appointment 1');
+        $Selenium->find_element( 'Location', 'name' )->send_keys('Straubing');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar1{CalendarID}
@@ -268,6 +269,13 @@ $Selenium->RunTest(
             ),
             "$TicketNumber Link Ticket $RandomID",
             'Link ticket visible',
+        );
+
+        # check location link contains correct value
+        my $LocationLinkURL = $Selenium->find_element( '.LocationLink', 'css' )->get_attribute('href');
+        $Self->True(
+            $LocationLinkURL =~ /Straubing$/,
+            'Location link contains correct value',
         );
 
         # click on Save
@@ -318,6 +326,13 @@ $Selenium->RunTest(
             ),
             "$TicketNumber Link Ticket $RandomID",
             'Link ticket matches',
+        );
+
+        # check location link contains correct value
+        $LocationLinkURL = $Selenium->find_element( '.LocationLink', 'css' )->get_attribute('href');
+        $Self->True(
+            $LocationLinkURL =~ /Straubing$/,
+            'Location link contains correct value',
         );
 
         # cancel the dialog

@@ -524,4 +524,18 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AgentAppointmentEdit::Location::Link###1-GoogleMaps" Required="0" Valid="1">
+        <Description Translatable="1">Defines an icon with link to the google map page of the current location in appointment edit screen.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="CSSClass">GoogleMaps</Item>
+                <Item Key="Target">_blank</Item>
+                <Item Key="Text">Location</Item>
+                <Item Key="URL">http://maps.google.com/maps?z=7&amp;q=</Item>
+                <Item Key="IconName">fa-globe fa-lg</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
 </otrs_config>

@@ -52,6 +52,11 @@
 [% ELSE %]
                 <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
 [% END %]
+[% RenderBlockStart("LocationLink") %]
+                <a class="LocationLink Hidden [% Data.CSSClass | html %]" href="[% Data.URL | html %][% Data.Location | uri %]" data-base-url="[% Data.URL | html %]" title="[% Data.Text | html %]" target="[% Data.Target | html %]">
+                    <i class="fa [% Data.IconName | html %]"></i>
+                </a>
+[% RenderBlockEnd("LocationLink") %]
             </div>
             <div class="Clear"></div>
             <label for="CalendarID"[% IF Data.PermissionLevel >= 3 %] class="Mandatory"[% END %]>[% IF Data.PermissionLevel >= 3 %]<span class="Marker">*</span> [% END %][% Translate("Calendar") | html %]:</label>
@@ -451,6 +456,7 @@
 <script type="text/javascript">//<![CDATA[
 
 Core.Form.Validate.Init();
+Core.Agent.AppointmentCalendar.LocationLinkInit($('#Location'), $('.LocationLink'));
 Core.Agent.AppointmentCalendar.AllDayInit($('#AllDay'));
 Core.Agent.AppointmentCalendar.RecurringInit({
     $Recurring: $('#Recurring'),
