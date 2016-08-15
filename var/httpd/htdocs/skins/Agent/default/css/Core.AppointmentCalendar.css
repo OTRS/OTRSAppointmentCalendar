@@ -145,6 +145,10 @@
         margin-top: 5px;
     }
 
+    .ReadOnlyValue#Location {
+        display: inline-block;
+    }
+
     #RecurrenceCustomTypeStringDiv .FieldExplanation:nth-child(2) {
         margin-bottom: 0;
     }
