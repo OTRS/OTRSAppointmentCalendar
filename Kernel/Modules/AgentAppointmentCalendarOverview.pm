@@ -185,6 +185,15 @@ sub Run {
         $Param{DefaultView} = $Preferences{ 'User' . $Self->{OverviewScreen} . 'DefaultView' }
             || 'timelineWeek';
 
+        # check if team object is registered
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+
+            # show resource block in tooltips
+            $LayoutObject->Block(
+                Name => 'TooltipTemplateResource',
+            );
+        }
+
         # get plugin list
         $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
 

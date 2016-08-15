@@ -369,6 +369,7 @@ Core.Agent.AppointmentCalendar.Init({
             <label>[% Translate("Calendar") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
+[% RenderBlockStart("TooltipTemplateResource") %]
         <fieldset>
             <legend><span>[% Translate("Resource") | html %]</span></legend>
             <p class="Value">%teamNames%</p>
@@ -378,6 +379,7 @@ Core.Agent.AppointmentCalendar.Init({
             <label>[% Translate("Agent") | html %]:</label>
             <div class="Clear"></div>
         </fieldset>
+[% RenderBlockEnd("TooltipTemplateResource") %]
         <fieldset>
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
             <p class="Value">%startDate%</p>
