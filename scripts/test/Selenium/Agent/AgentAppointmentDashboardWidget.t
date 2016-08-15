@@ -36,7 +36,7 @@ $Selenium->RunTest(
         # turn on dashboard widget by default
         my $DashboardConfig = $Kernel::OM->Get('Kernel::Config')->Get('DashboardBackend')->{$DashboardConfigKey};
         $DashboardConfig->{Default} = 1;
-        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => "DashboardBackend###$DashboardConfigKey",
             Value => $DashboardConfig,
