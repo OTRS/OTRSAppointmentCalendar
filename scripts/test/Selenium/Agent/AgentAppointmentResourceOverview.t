@@ -19,12 +19,11 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
-        my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
-        my $TeamObject      = $Kernel::OM->Get('Kernel::System::Calendar::Team');
-        my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
+        my $Helper         = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $GroupObject    = $Kernel::OM->Get('Kernel::System::Group');
+        my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+        my $TeamObject     = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+        my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
 
