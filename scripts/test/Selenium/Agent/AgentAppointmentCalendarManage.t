@@ -19,14 +19,8 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
+        my $Helper      = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
 
         my $RandomID = $Helper->GetRandomID();
 

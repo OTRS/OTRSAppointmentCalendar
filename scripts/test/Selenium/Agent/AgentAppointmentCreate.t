@@ -22,11 +22,6 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
