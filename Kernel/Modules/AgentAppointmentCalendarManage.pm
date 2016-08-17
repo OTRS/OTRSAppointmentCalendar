@@ -42,6 +42,8 @@ sub Run {
         my $ColorPalette   = $Self->_ColorPaletteGet();
         my $ValidSelection = $Self->_ValidSelectionGet();
 
+        my %TicketAppointments = $Self->_TicketAppointments();
+
         $LayoutObject->Block(
             Name => 'CalendarEdit',
             Data => {
@@ -50,9 +52,10 @@ sub Run {
                 ValidID      => $ValidSelection,
                 Subaction    => 'StoreNew',
                 Color        => $ColorPalette->[ int rand( scalar @{$ColorPalette} ) ],
+                Title        => Translatable('Add new Calendar'),
+                %TicketAppointments,
             },
         );
-        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
 
@@ -82,9 +85,6 @@ sub Run {
 
         if (%Error) {
 
-            # add title
-            $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Add new Calendar");
-
             # get selections
             my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
             my $ColorPalette   = $Self->_ColorPaletteGet();
@@ -99,6 +99,7 @@ sub Run {
                     ColorPalette => $ColorPalette,
                     ValidID      => $ValidSelection,
                     Subaction    => 'StoreNew',
+                    Title        => Translatable('Add new Calendar'),
                 },
             );
             return $Self->_Mask(%Param);
@@ -163,11 +164,9 @@ sub Run {
                 ColorPalette => $ColorPalette,
                 ValidID      => $ValidSelection,
                 Subaction    => 'Update',
+                Title        => Translatable('Edit Calendar'),
             },
         );
-
-        # set title
-        $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
     }
     elsif ( $Self->{Subaction} eq 'Update' ) {
 
@@ -182,7 +181,6 @@ sub Run {
         for my $Needed (qw(CalendarID CalendarName Color GroupID)) {
             if ( !$GetParam{$Needed} ) {
                 $Error{ $Needed . 'Invalid' } = 'ServerError';
-                $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
 
                 return $Self->_Mask( %Param, %GetParam, %Error );
             }
@@ -201,9 +199,6 @@ sub Run {
 
         if (%Error) {
 
-            # set title
-            $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Edit Calendar");
-
             # get selections
             my $GroupSelection = $Self->_GroupSelectionGet(%GetParam);
             my $ColorPalette   = $Self->_ColorPaletteGet();
@@ -218,6 +213,7 @@ sub Run {
                     ColorPalette => $ColorPalette,
                     ValidID      => $ValidSelection,
                     Subaction    => 'Update',
+                    Title        => Translatable('Edit Calendar'),
                 },
             );
             return $Self->_Mask(%Param);
@@ -363,6 +359,9 @@ sub _Overview {
 
     $LayoutObject->Block(
         Name => 'Overview',
+        Data => {
+            Title => Translatable('Calendars'),
+        },
     );
 
     $Param{ValidCount} = 0;
@@ -397,7 +396,6 @@ sub _Overview {
         Name => 'CalendarNoDataRow',
     ) if scalar @Calendars == 0;
 
-    $Param{Title}    = $LayoutObject->{LanguageObject}->Translate("Calendars");
     $Param{Overview} = 1;
 
     $LayoutObject->Block(
@@ -431,6 +429,7 @@ sub _Mask {
     $Output .= $LayoutObject->Output(
         TemplateFile => 'AgentAppointmentCalendarManage',
         Data         => {
+            Title => Translatable('Edit Calendar'),
             %Param,
         },
     );
@@ -485,16 +484,149 @@ sub _ValidSelectionGet {
 
     my %Valid          = $ValidObject->ValidList();
     my $ValidSelection = $LayoutObject->BuildSelection(
-        Data  => \%Valid,
-        Name  => 'ValidID',
-        ID    => 'ValidID',
-        Class => 'Modernize Validate_Required',
-
+        Data       => \%Valid,
+        Name       => 'ValidID',
+        ID         => 'ValidID',
+        Class      => 'Modernize Validate_Required',
         SelectedID => $Param{ValidID} || 1,
-        Title => Translatable("Valid"),
+        Title      => Translatable("Valid"),
     );
 
     return $ValidSelection;
+}
+
+sub _TicketAppointments {
+    my ( $Self, %Param ) = @_;
+
+    # get needed objects
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
+
+    my %TicketAppointments;
+
+    # get create permission queues
+    my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        UserID => $Self->{UserID},
+        Type   => 'create',
+    );
+
+    my %Queues = $QueueObject->QueueList();
+    my %AvailableQueues;
+
+    # build selection string
+    QUEUEID:
+    for my $QueueID ( sort keys %Queues ) {
+        my %QueueData = $QueueObject->QueueGet( ID => $QueueID );
+
+        # permission check, can we create new tickets in queue
+        next QUEUEID if !$UserGroups{ $QueueData{GroupID} };
+
+        $AvailableQueues{$QueueID} = $QueueData{Name};
+    }
+
+    # get list type
+    my $TreeView = 0;
+    if ( $ConfigObject->Get('Ticket::Frontend::ListType') eq 'tree' ) {
+        $TreeView = 1;
+    }
+
+    $TicketAppointments{QueueIDStrg} = $LayoutObject->AgentQueueListOption(
+        Class          => 'Validate_Required Modernize',
+        Data           => \%AvailableQueues,
+        Multiple       => 1,
+        Size           => 0,
+        Name           => 'QueueID',
+        TreeView       => $TreeView,
+        OnChangeSubmit => 0,
+    );
+
+    # get ticket appointment types
+    my $TicketAppointmentConfig = $ConfigObject->Get('AppointmentCalendar::TicketAppointmentType') // {};
+    my @AppointmentTypes;
+    my @DynamicFieldTypes;
+
+    TYPE:
+    for my $TypeKey ( sort keys %{$TicketAppointmentConfig} ) {
+        next TYPE if !$TicketAppointmentConfig->{$TypeKey}->{Key};
+        next TYPE if !$TicketAppointmentConfig->{$TypeKey}->{Name};
+
+        if ( $TypeKey =~ /DynamicField$/ ) {
+            my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+            # get list of all valid date and date/time dynamic fields
+            my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
+                ObjectType => 'Ticket',
+            );
+
+            DYNAMICFIELD:
+            for my $DynamicField ( @{$DynamicFieldList} ) {
+                next DYNAMICFIELD if $DynamicField->{FieldType} ne 'Date' && $DynamicField->{FieldType} ne 'DateTime';
+
+                push @DynamicFieldTypes, {
+                    Key   => sprintf( $TicketAppointmentConfig->{$TypeKey}->{Key},  $DynamicField->{Name} ),
+                    Value => sprintf( $TicketAppointmentConfig->{$TypeKey}->{Name}, $DynamicField->{Name} ),
+                };
+            }
+
+            next TYPE;
+        }
+
+        push @AppointmentTypes, {
+            Key   => $TicketAppointmentConfig->{$TypeKey}->{Key},
+            Value => $TicketAppointmentConfig->{$TypeKey}->{Name},
+        };
+    }
+
+    my @StartDateTypes = ( @AppointmentTypes, @DynamicFieldTypes );
+    $TicketAppointments{StartDateStrg} = $LayoutObject->BuildSelection(
+        Class    => 'Modernize',
+        Data     => \@StartDateTypes,
+        Multiple => 0,
+        Size     => 0,
+        Name     => 'StartDate',
+    );
+
+    my @EndPlusTypes = (
+        {
+            Key   => 'Plus_5',
+            Value => $LayoutObject->{LanguageObject}->Translate('+5 minutes'),
+        },
+        {
+            Key   => 'Plus_15',
+            Value => $LayoutObject->{LanguageObject}->Translate('+15 minutes'),
+        },
+        {
+            Key   => 'Plus_30',
+            Value => $LayoutObject->{LanguageObject}->Translate('+30 minutes'),
+        },
+        {
+            Key   => 'Plus_60',
+            Value => $LayoutObject->{LanguageObject}->Translate('+1 hour'),
+        },
+    );
+
+    my @EndDateTypes = ( @EndPlusTypes, @DynamicFieldTypes );
+    $TicketAppointments{EndDateStrg} = $LayoutObject->BuildSelection(
+        Class    => 'Modernize',
+        Data     => \@EndDateTypes,
+        Multiple => 0,
+        Size     => 0,
+        Name     => 'EndDate',
+    );
+
+    my $TicketAppointmentAdvancedParamsConfig =
+        $ConfigObject->Get('AppointmentCalendar::TicketAppointmentAdvancedParams') // [];
+
+    $TicketAppointments{AdvancedParamsStrg} = $LayoutObject->BuildSelection(
+        Class    => 'Modernize',
+        Data     => $TicketAppointmentAdvancedParamsConfig,
+        Multiple => 0,
+        Size     => 0,
+        Name     => 'AdvancedParams',
+    );
+
+    return %TicketAppointments;
 }
 
 1;
