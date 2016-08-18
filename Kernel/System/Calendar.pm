@@ -106,7 +106,7 @@ creates a new calendar for given user.
             StartDate => 'FirstResponse',
             EndDate   => 'Plus_5',
             QueueID   => 2,
-            AdvancedParams => {
+            SearchParams => {
                 Title => 'This is a title',
                 Types => 'This is a type',
             },
@@ -155,15 +155,9 @@ sub CalendarCreate {
         return;
     }
 
-    # check ticket appointments
-    if ( $Param{TicketAppointments} ) {
-        if ( !IsArrayRefWithData( $Param{TicketAppointments} ) ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => 'TicketAppointments must be an array ref!',
-            );
-            return;
-        }
+    # reset ticket appointments
+    if ( !( scalar @{ $Param{TicketAppointments} // [] } ) ) {
+        $Param{TicketAppointments} = undef;
     }
 
     # make it uppercase for the sake of consistency
@@ -250,18 +244,24 @@ get calendar by name od id.
 
 returns Calendar data:
     %Calendar = (
-        CalendarID   => 2,
-        GroupID      => 3,
-        CalendarName => 'Meetings',
-        Color        => '#FF7700',
+        CalendarID         => 2,
+        GroupID            => 3,
+        CalendarName       => 'Meetings',
+        Color              => '#FF7700',
         TicketAppointments => {
-
+            StartDate => 'FirstResponse',
+            EndDate   => 'Plus_5',
+            QueueID   => 2,
+            SearchParams => {
+                Title => 'This is a title',
+                Types => 'This is a type',
+            },
         },
-        CreateTime   => '2016-01-01 08:00:00',
-        CreateBy     => 1,
-        ChangeTime   => '2016-01-01 08:00:00',
-        ChangeBy     => 1,
-        ValidID      => 1,
+        CreateTime => '2016-01-01 08:00:00',
+        CreateBy   => 1,
+        ChangeTime => '2016-01-01 08:00:00',
+        ChangeBy   => 1,
+        ValidID    => 1,
     );
 
 =cut
@@ -515,6 +515,16 @@ updates an existing calendar.
         Color            => '#FF9900',           # (required) Color in hexadecimal RGB notation
         UserID           => 4,                   # (required) UserID (who made update)
         ValidID          => 1,                   # (required) ValidID
+
+        TicketAppointments => {                 # (optional) Ticket appointments
+            StartDate => 'FirstResponse',
+            EndDate   => 'Plus_5',
+            QueueID   => 2,
+            SearchParams => {
+                Title => 'This is a title',
+                Types => 'This is a type',
+            },
+        },
     );
 
 returns 1 if successful
@@ -547,17 +557,31 @@ sub CalendarUpdate {
         return;
     }
 
+    # reset ticket appointments
+    if ( !( scalar @{ $Param{TicketAppointments} // [] } ) ) {
+        $Param{TicketAppointments} = undef;
+    }
+
     # make it uppercase for the sake of consistency
     $Param{Color} = uc $Param{Color};
 
+    # convert the ticket appointment data hash to string
+    my $TicketAppointmentsYAML;
+    if ( $Param{TicketAppointments} ) {
+        $TicketAppointmentsYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
+            Data => $Param{TicketAppointments},
+        );
+    }
+
     my $SQL = '
         UPDATE calendar
-        SET group_id=?, name=?, color=?, change_time=current_timestamp, change_by=?, valid_id=?
+        SET group_id=?, name=?, color=?, ticket_appointments=?, change_time=current_timestamp,
+        change_by=?, valid_id=?
     ';
 
     my @Bind;
-    push @Bind, \$Param{GroupID}, \$Param{CalendarName}, \$Param{Color}, \$Param{UserID},
-        \$Param{ValidID};
+    push @Bind, \$Param{GroupID}, \$Param{CalendarName}, \$Param{Color}, \$TicketAppointmentsYAML,
+        \$Param{UserID}, \$Param{ValidID};
 
     $SQL .= '
         WHERE id=?

@@ -322,8 +322,8 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AppointmentCalendar::TicketAppointmentAdvancedParams" Required="0" Valid="1">
-        <Description Translatable="1">Defines the list of advanced params that can be passed to ticket search function.</Description>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentSearchParams" Required="0" Valid="1">
+        <Description Translatable="1">Defines the list of params that can be passed to ticket search function.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
         <Setting>

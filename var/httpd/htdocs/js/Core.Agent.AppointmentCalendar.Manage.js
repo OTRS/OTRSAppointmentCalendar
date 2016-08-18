@@ -32,20 +32,16 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
      */
     TargetNS.InitTicketAppointments = function (InitialRuleCount) {
         var $AddRuleObj = $('#AddRuleButton'),
-            $TemplateObj = $('#TicketAppointmentRulesTemplate'),
-            $AdvancedParamTemplateObj = $('#TicketAppointmentAdvancedParamTemplate');
+            $TemplateObj = $('#TicketAppointmentRulesTemplate');
 
         if (InitialRuleCount) {
-            RuleCount = InitialRuleCount;
+            RuleCount = parseInt(InitialRuleCount, 10);
         }
 
         $AddRuleObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
             var RuleID = ++RuleCount,
                 $RuleObj = $($TemplateObj.html()),
-                $ContainerObj = $AddRuleObj.parents('fieldset'),
-                $RemoveObj = $RuleObj.find('legend .RemoveButton'),
-                $ParamObj = $RuleObj.find('#AdvancedParams'),
-                $AddParamObj = $RuleObj.find('.AddButton');
+                $ContainerObj = $AddRuleObj.parents('fieldset');
 
             $RuleObj
 
@@ -92,61 +88,96 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
 
             Core.UI.InputFields.Activate($RuleObj);
 
-            $RemoveObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-                $RuleObj.remove();
+            // Initialize rule buttons
+            TargetNS.InitTicketAppointmentRule(RuleID, $RuleObj);
+
+            return false;
+        });
+    }
+
+    /**
+     * @name InitTicketAppointmentRule
+     * @memberof Core.Agent.AppointmentCalendar.Manage
+     * @param {Integer} RuleID - ID of the rule (1, 2, 3...)
+     * @param {jQueryObject} $RuleObj - Rule object
+     * @description
+     *      Initialize the ticket appointment rule buttons behavior.
+     */
+    TargetNS.InitTicketAppointmentRule = function (RuleID, $RuleObj) {
+        var $RemoveObj = $RuleObj.find('legend .RemoveButton'),
+            $RemoveParamObj = $RuleObj.find('.Field > .RemoveButton'),
+            $AddParamObj = $RuleObj.find('.AddButton'),
+            $ParamObj = $RuleObj.find('.SearchParams'),
+            $TemplateObj = $('#TicketAppointmentSearchParamTemplate');
+
+        $ParamObj.val($ParamObj.find('option:enabled').first().attr('value'));
+
+        $RemoveObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+            $RuleObj.remove();
+            return false;
+        });
+
+        $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+            var $SearchParamObj = $(this).parent(),
+                ParamName = $SearchParamObj.find('input.SearchParam').data('param');
+
+            $SearchParamObj.remove();
+            $ParamObj.find('option[value="' + ParamName + '"]')
+                .prop('disabled', false)
+                .end()
+                .val($ParamObj.find('option:enabled').first().attr('value'))
+                .trigger('redraw.InputField');
+
+            return false;
+        });
+
+        $AddParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+            var $SearchParamObj = $($TemplateObj.html()),
+                $SearchParamContainerObj = $RuleObj.find('.SearchParamsContainer'),
+                $RemoveParamObj = $SearchParamObj.find('.RemoveButton'),
+                ParamName = $ParamObj.val();
+
+            if (!ParamName) {
                 return false;
-            });
+            }
 
-            $AddParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-                var $AdvancedParamObj = $($AdvancedParamTemplateObj.html()),
-                    $AdvancedParamContainerObj = $RuleObj.find('.AdvancedParamsContainer'),
-                    $RemoveParamObj = $AdvancedParamObj.find('.RemoveButton'),
-                    ParamName = $ParamObj.val();
+            $ParamObj.find('option[value="' + ParamName + '"]')
+                .prop('disabled', true)
+                .end()
+                .val($ParamObj.find('option:enabled').first().attr('value'))
+                .trigger('redraw.InputField');
 
-                if (!ParamName) {
+            $SearchParamObj
+
+                // Label
+                .find('label')
+                .attr('for', 'SearchParam_' + RuleID + '_' + ParamName)
+                .find('span')
+                .after(' ' + ParamName + ':')
+                .end()
+                .end()
+
+                // Input field and error message
+                .find('input')
+                .attr('id', 'SearchParam_' + RuleID + '_' + ParamName)
+                .attr('name', 'SearchParam_' + RuleID + '_' + ParamName)
+                .end()
+                .find('#SearchParamError')
+                .attr('id', 'SearchParam_' + RuleID + '_' + ParamName + 'Error')
+                .end()
+
+                .appendTo($SearchParamContainerObj);
+
+                $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+                    $SearchParamObj.remove();
+                    $ParamObj.find('option[value="' + ParamName + '"]')
+                        .prop('disabled', false)
+                        .end()
+                        .val($ParamObj.find('option:enabled').first().attr('value'))
+                        .trigger('redraw.InputField');
+
                     return false;
-                }
-
-                $ParamObj.find('option[value="' + ParamName + '"]')
-                    .prop('disabled', true)
-                    .end()
-                    .val($ParamObj.find('option:enabled').first().attr('value'))
-                    .trigger('redraw.InputField');
-
-                $AdvancedParamObj
-
-                    // Label
-                    .find('label')
-                    .attr('for', 'AdvancedParam_' + RuleID + '_' + ParamName)
-                    .find('span')
-                    .after(' ' + ParamName + ':')
-                    .end()
-                    .end()
-
-                    // Input field and error message
-                    .find('input')
-                    .attr('id', 'AdvancedParam_' + RuleID + '_' + ParamName)
-                    .attr('name', 'AdvancedParam_' + RuleID + '_' + ParamName)
-                    .end()
-                    .find('#AdvancedParamError')
-                    .attr('id', 'AdvancedParam_' + RuleID + '_' + ParamName + 'Error')
-                    .end()
-
-                    .appendTo($AdvancedParamContainerObj);
-
-                    $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-                        $AdvancedParamObj.remove();
-                        $ParamObj.find('option[value="' + ParamName + '"]')
-                            .prop('disabled', false)
-                            .end()
-                            .val($ParamObj.find('option:enabled').first().attr('value'))
-                            .trigger('redraw.InputField');
-
-                        return false;
-                    });
-
-                return false;
-            });
+                });
 
             return false;
         });
