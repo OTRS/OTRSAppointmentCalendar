@@ -290,13 +290,6 @@ sub _Replace {
         }
     }
 
-    my %Queue;
-    if ( $Param{QueueID} ) {
-        %Queue = $Kernel::OM->Get('Kernel::System::Queue')->QueueGet(
-            ID => $Param{QueueID},
-        );
-    }
-
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -380,69 +373,6 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$RecipientTag.+?$End/-/gi;
 
-    # get owner data and replace it with <OTRS_OWNER_...
-    $Tag = $Start . 'OTRS_OWNER_';
-
-    # include more readable version <OTRS_TICKET_OWNER
-    my $OwnerTag = $Start . 'OTRS_TICKET_OWNER_';
-
-    if ( $Ticket{OwnerID} ) {
-
-        my %Owner = $UserObject->GetUserData(
-            UserID        => $Ticket{OwnerID},
-            NoOutOfOffice => 1,
-        );
-
-        # html quoting of content
-        if ( $Param{RichText} ) {
-
-            ATTRIBUTE:
-            for my $Attribute ( sort keys %Owner ) {
-                next ATTRIBUTE if !$Owner{$Attribute};
-                $Owner{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                    String => $Owner{$Attribute},
-                );
-            }
-        }
-
-        $HashGlobalReplace->( "$Tag|$OwnerTag", %Owner );
-    }
-
-    # cleanup
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
-    $Param{Text} =~ s/$OwnerTag.+?$End/-/gi;
-
-    # get owner data and replace it with <OTRS_RESPONSIBLE_...
-    $Tag = $Start . 'OTRS_RESPONSIBLE_';
-
-    # include more readable version <OTRS_TICKET_RESPONSIBLE
-    my $ResponsibleTag = $Start . 'OTRS_TICKET_RESPONSIBLE_';
-
-    if ( $Ticket{ResponsibleID} ) {
-        my %Responsible = $UserObject->GetUserData(
-            UserID        => $Ticket{ResponsibleID},
-            NoOutOfOffice => 1,
-        );
-
-        # HTML quoting of content
-        if ( $Param{RichText} ) {
-
-            ATTRIBUTE:
-            for my $Attribute ( sort keys %Responsible ) {
-                next ATTRIBUTE if !$Responsible{$Attribute};
-                $Responsible{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                    String => $Responsible{$Attribute},
-                );
-            }
-        }
-
-        $HashGlobalReplace->( "$Tag|$ResponsibleTag", %Responsible );
-    }
-
-    # cleanup
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
-    $Param{Text} =~ s/$ResponsibleTag.+?$End/-/gi;
-
     $Tag = $Start . 'OTRS_Agent_';
     my $Tag2        = $Start . 'OTRS_CURRENT_';
     my %CurrentUser = $UserObject->GetUserData(
@@ -471,102 +401,27 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag2.+?$End/-/gi;
 
-    # ticket data
-    $Tag = $Start . 'OTRS_TICKET_';
+    # calendar data
+    $Tag = $Start . 'OTRS_CALENDAR_';
 
     # html quoting of content
     if ( $Param{RichText} ) {
 
         ATTRIBUTE:
-        for my $Attribute ( sort keys %Ticket ) {
-            next ATTRIBUTE if !$Ticket{$Attribute};
-            $Ticket{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                String => $Ticket{$Attribute},
+        for my $Attribute ( sort keys %Calendar ) {
+            
+            next ATTRIBUTE if !$Calendar{$Attribute};
+            
+            $Calendar{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
+                String => $Calendar{$Attribute},
             );
         }
     }
-
-    # Dropdown, Checkbox and MultipleSelect DynamicFields, can store values (keys) that are
-    # different from the the values to display
-    # <OTRS_TICKET_DynamicField_NameX> returns the stored key
-    # <OTRS_TICKET_DynamicField_NameX_Value> returns the display value
-
-    my %DynamicFields;
-
-    # For systems with many Dynamic fields we do not want to load them all unless needed
-    # Find what Dynamic Field Values are requested
-    while ( $Param{Text} =~ m/$Tag DynamicField_(\S+?)(_Value)? $End/gixms ) {
-        $DynamicFields{$1} = 1;
-    }
-
-    # to store all the required DynamicField display values
-    my %DynamicFieldDisplayValues;
-
-    # get dynamic field objects
-    my $DynamicFieldObject        = $Kernel::OM->Get('Kernel::System::DynamicField');
-    my $DynamicFieldBackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
-
-    # get the dynamic fields for ticket object
-    my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
-        Valid      => 1,
-        ObjectType => ['Ticket'],
-    ) || [];
-
-    # cycle through the activated Dynamic Fields for this screen
-    DYNAMICFIELD:
-    for my $DynamicFieldConfig ( @{$DynamicFieldList} ) {
-
-        next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-
-        # we only load the ones requested
-        next DYNAMICFIELD if !$DynamicFields{ $DynamicFieldConfig->{Name} };
-
-        my $LanguageObject;
-
-        # translate values if needed
-        if ( $Param{Language} ) {
-            $LanguageObject = Kernel::Language->new(
-                UserLanguage => $Param{Language},
-            );
-        }
-
-        # get the display value for each dynamic field
-        my $DisplayValue = $DynamicFieldBackendObject->ValueLookup(
-            DynamicFieldConfig => $DynamicFieldConfig,
-            Key                => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
-            LanguageObject     => $LanguageObject,
-        );
-
-        # get the readable value (value) for each dynamic field
-        my $DisplayValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
-            DynamicFieldConfig => $DynamicFieldConfig,
-            Value              => $DisplayValue,
-        );
-
-        # fill the DynamicFielsDisplayValues
-        if ($DisplayValueStrg) {
-            $DynamicFieldDisplayValues{ 'DynamicField_' . $DynamicFieldConfig->{Name} . '_Value' }
-                = $DisplayValueStrg->{Value};
-        }
-
-        # get the readable value (key) for each dynamic field
-        my $ValueStrg = $DynamicFieldBackendObject->ReadableValueRender(
-            DynamicFieldConfig => $DynamicFieldConfig,
-            Value              => $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} },
-        );
-
-        # replace ticket content with the value from ReadableValueRender (if any)
-        if ( IsHashRefWithData($ValueStrg) ) {
-            $Ticket{ 'DynamicField_' . $DynamicFieldConfig->{Name} } = $ValueStrg->{Value};
-        }
-    }
-
-    # replace it
-    $HashGlobalReplace->( $Tag, %Ticket, %DynamicFieldDisplayValues );
 
     # COMPAT
     $Param{Text} =~ s/$Start OTRS_TICKET_ID $End/$Ticket{TicketID}/gixms;
     $Param{Text} =~ s/$Start OTRS_TICKET_NUMBER $End/$Ticket{TicketNumber}/gixms;
+    
     if ( $Param{TicketID} ) {
         $Param{Text} =~ s/$Start OTRS_QUEUE $End/$Ticket{Queue}/gixms;
     }
@@ -576,193 +431,6 @@ sub _Replace {
 
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
-
-    # get customer and agent params and replace it with <OTRS_CUSTOMER_... or <OTRS_AGENT_...
-    my %ArticleData = (
-        'OTRS_CUSTOMER_' => $Param{Data}      || {},
-        'OTRS_AGENT_'    => $Param{DataAgent} || {},
-    );
-
-    # use a list to get customer first
-    for my $DataType (qw(OTRS_CUSTOMER_ OTRS_AGENT_)) {
-        my %Data = %{ $ArticleData{$DataType} };
-
-        # HTML quoting of content
-        if (
-            $Param{RichText}
-            && ( !$Data{ContentType} || $Data{ContentType} !~ /application\/json/ )
-            )
-        {
-
-            ATTRIBUTE:
-            for my $Attribute ( sort keys %Data ) {
-                next ATTRIBUTE if !$Data{$Attribute};
-
-                $Data{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                    String => $Data{$Attribute},
-                );
-            }
-        }
-
-        if (%Data) {
-
-            # Check if content type is JSON
-            if ( $Data{'ContentType'} && $Data{'ContentType'} =~ /application\/json/ ) {
-
-                # if article is chat related
-                if ( $Data{'ArticleType'} =~ /chat/ ) {
-
-                    # remove spaces
-                    $Data{Body} =~ s/\n/ /gms;
-
-                    my $Body = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-                        Data => $Data{Body},
-                    );
-
-                    # replace body with HTML text
-                    $Data{Body} = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->Output(
-                        TemplateFile => "ChatDisplay",
-                        Data         => {
-                            ChatMessages => $Body,
-                        },
-                    );
-                }
-            }
-
-            # check if original content isn't text/plain, don't use it
-            if ( $Data{'Content-Type'} && $Data{'Content-Type'} !~ /(text\/plain|\btext\b)/i ) {
-                $Data{Body} = '-> no quotable message <-';
-            }
-
-            # replace <OTRS_CUSTOMER_*> and <OTRS_AGENT_*> tags
-            $Tag = $Start . $DataType;
-            $HashGlobalReplace->( $Tag, %Data );
-
-            # prepare body (insert old email) <OTRS_CUSTOMER_EMAIL[n]>, <OTRS_CUSTOMER_NOTE[n]>
-            #   <OTRS_CUSTOMER_BODY[n]>, <OTRS_AGENT_EMAIL[n]>..., <OTRS_COMMENT>
-            if ( $Param{Text} =~ /$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/g ) {
-
-                my $Line       = $2 || 2500;
-                my $NewOldBody = '';
-                my @Body       = split( /\n/, $Data{Body} );
-
-                for my $Counter ( 0 .. $Line - 1 ) {
-
-                    # 2002-06-14 patch of Pablo Ruiz Garcia
-                    # http://lists.otrs.org/pipermail/dev/2002-June/000012.html
-                    if ( $#Body >= $Counter ) {
-
-                        # add no quote char, do it later by using DocumentCleanup()
-                        if ( $Param{RichText} ) {
-                            $NewOldBody .= $Body[$Counter];
-                        }
-
-                        # add "> " as quote char
-                        else {
-                            $NewOldBody .= "> $Body[$Counter]";
-                        }
-
-                        # add new line
-                        if ( $Counter < ( $Line - 1 ) ) {
-                            $NewOldBody .= "\n";
-                        }
-                    }
-                    $Counter++;
-                }
-
-                chomp $NewOldBody;
-
-                # HTML quoting of content
-                if ( $Param{RichText} && $NewOldBody ) {
-
-                    # remove trailing new lines
-                    for ( 1 .. 10 ) {
-                        $NewOldBody =~ s/(<br\/>)\s{0,20}$//gs;
-                    }
-
-                    # add quote
-                    $NewOldBody = "<blockquote type=\"cite\">$NewOldBody</blockquote>";
-                    $NewOldBody = $Kernel::OM->Get('Kernel::System::HTMLUtils')->DocumentCleanup(
-                        String => $NewOldBody,
-                    );
-                }
-
-                # replace tag
-                $Param{Text}
-                    =~ s/$Start(?:(?:$DataType(EMAIL|NOTE|BODY)\[(.+?)\])|(?:OTRS_COMMENT))$End/$NewOldBody/g;
-            }
-
-            # replace <OTRS_CUSTOMER_SUBJECT[]>  and  <OTRS_AGENT_SUBJECT[]> tags
-            $Tag = "$Start$DataType" . 'SUBJECT';
-            if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
-
-                my $SubjectChar = $1;
-                my $Subject     = $Kernel::OM->Get('Kernel::System::Ticket')->TicketSubjectClean(
-                    TicketNumber => $Ticket{TicketNumber},
-                    Subject      => $Data{Subject},
-                );
-
-                $Subject =~ s/^(.{$SubjectChar}).*$/$1 [...]/;
-                $Param{Text} =~ s/$Tag\[.+?\]$End/$Subject/g;
-            }
-
-            if ( $DataType eq 'OTRS_CUSTOMER_' ) {
-
-                # Arnold Ligtvoet - otrs@ligtvoet.org
-                # get <OTRS_EMAIL_DATE[]> from body and replace with received date
-                use POSIX qw(strftime);
-                $Tag = $Start . 'OTRS_EMAIL_DATE';
-
-                if ( $Param{Text} =~ /$Tag\[(.+?)\]$End/g ) {
-
-                    my $TimeZone = $1;
-                    my $EmailDate = strftime( '%A, %B %e, %Y at %T ', localtime );    ## no critic
-                    $EmailDate .= "($TimeZone)";
-                    $Param{Text} =~ s/$Tag\[.+?\]$End/$EmailDate/g;
-                }
-            }
-        }
-
-        if ( $DataType eq 'OTRS_CUSTOMER_' ) {
-
-            # get and prepare realname
-            $Tag = $Start . 'OTRS_CUSTOMER_REALNAME';
-            if ( $Param{Text} =~ /$Tag$End/i ) {
-
-                my $From;
-
-                if ( $Ticket{CustomerUserID} ) {
-
-                    $From = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerName(
-                        UserLogin => $Ticket{CustomerUserID}
-                    );
-                }
-
-                # try to get the real name directly from the data
-                $From //= $Recipient{RealName};
-
-                # get real name based on reply-to
-                if ( $Data{ReplyTo} ) {
-                    $From = $Data{ReplyTo} || '';
-                }
-
-                # generate real name based on sender line
-                if ( !$From ) {
-                    $From = $Data{From} || '';
-
-                    # remove email addresses
-                    $From =~ s/&lt;.*&gt;|<.*>|\(.*\)|\"|&quot;|;|,//g;
-
-                    # remove leading/trailing spaces
-                    $From =~ s/^\s+//g;
-                    $From =~ s/\s+$//g;
-                }
-
-                # replace <OTRS_CUSTOMER_REALNAME> with from
-                $Param{Text} =~ s/$Tag$End/$From/g;
-            }
-        }
-    }
 
     # get customer data and replace it with <OTRS_CUSTOMER_DATA_...
     $Tag  = $Start . 'OTRS_CUSTOMER_';
