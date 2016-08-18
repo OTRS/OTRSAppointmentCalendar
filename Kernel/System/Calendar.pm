@@ -26,6 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::YAML',
 );
 
 =head1 NAME
@@ -100,7 +101,18 @@ creates a new calendar for given user.
         GroupID         => 3,                   # (required) GroupID
         Color           => '#FF7700',           # (required) Color in hexadecimal RGB notation
         UserID          => 4,                   # (required) UserID
-        ValidID         => 1,                   # (optional) Default is 1.
+
+        TicketAppointments => {                 # (optional) Ticket appointments
+            StartDate => 'FirstResponse',
+            EndDate   => 'Plus_5',
+            QueueID   => 2,
+            AdvancedParams => {
+                Title => 'This is a title',
+                Types => 'This is a type',
+            },
+        },
+
+        ValidID => 1,                   # (optional) Default is 1.
     );
 
 returns Calendar hash if successful:
@@ -143,6 +155,17 @@ sub CalendarCreate {
         return;
     }
 
+    # check ticket appointments
+    if ( $Param{TicketAppointments} ) {
+        if ( !IsArrayRefWithData( $Param{TicketAppointments} ) ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => 'TicketAppointments must be an array ref!',
+            );
+            return;
+        }
+    }
+
     # make it uppercase for the sake of consistency
     $Param{Color} = uc $Param{Color};
 
@@ -158,19 +181,27 @@ sub CalendarCreate {
     # create salt string
     my $SaltString = $Self->GetRandomString( Length => 64 );
 
+    # convert the ticket appointment data hash to string
+    my $TicketAppointmentsYAML;
+    if ( $Param{TicketAppointments} ) {
+        $TicketAppointmentsYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
+            Data => $Param{TicketAppointments},
+        );
+    }
+
     my $SQL = '
         INSERT INTO calendar
-            (group_id, name, salt_string, color, create_time, create_by, change_time, change_by,
-            valid_id)
-        VALUES (?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?, ?)
+            (group_id, name, salt_string, color, ticket_appointments, create_time, create_by,
+            change_time, change_by, valid_id)
+        VALUES (?, ?, ?, ?, ?, current_timestamp, ?, current_timestamp, ?, ?)
     ';
 
     # create db record
     return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
         SQL  => $SQL,
         Bind => [
-            \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{Color}, \$Param{UserID},
-            \$Param{UserID}, \$ValidID
+            \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{Color},
+            \$TicketAppointmentsYAML, \$Param{UserID}, \$Param{UserID}, \$ValidID
         ],
     );
 
@@ -223,6 +254,9 @@ returns Calendar data:
         GroupID      => 3,
         CalendarName => 'Meetings',
         Color        => '#FF7700',
+        TicketAppointments => {
+
+        },
         CreateTime   => '2016-01-01 08:00:00',
         CreateBy     => 1,
         ChangeTime   => '2016-01-01 08:00:00',
@@ -265,8 +299,8 @@ sub CalendarGet {
         my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
         my $SQL = '
-            SELECT id, group_id, name, color, create_time, create_by, change_time, change_by,
-            valid_id
+            SELECT id, group_id, name, color, ticket_appointments, create_time, create_by,
+            change_time, change_by, valid_id
             FROM calendar
             WHERE
         ';
@@ -293,15 +327,23 @@ sub CalendarGet {
         );
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            $Calendar{CalendarID}   = $Row[0];
-            $Calendar{GroupID}      = $Row[1];
-            $Calendar{CalendarName} = $Row[2];
-            $Calendar{Color}        = $Row[3];
-            $Calendar{CreateTime}   = $Row[4];
-            $Calendar{CreateBy}     = $Row[5];
-            $Calendar{ChangeTime}   = $Row[6];
-            $Calendar{ChangeBy}     = $Row[7];
-            $Calendar{ValidID}      = $Row[8];
+
+            # convert ticket appointment yml data to hash
+            my $TicketAppointments = $Kernel::OM->Get('Kernel::System::YAML')->Load(
+                Data => $Row[4],
+            );
+            $TicketAppointments = undef if ref $TicketAppointments ne 'ARRAY';
+
+            $Calendar{CalendarID}         = $Row[0];
+            $Calendar{GroupID}            = $Row[1];
+            $Calendar{CalendarName}       = $Row[2];
+            $Calendar{Color}              = $Row[3];
+            $Calendar{TicketAppointments} = $TicketAppointments;
+            $Calendar{CreateTime}         = $Row[5];
+            $Calendar{CreateBy}           = $Row[6];
+            $Calendar{ChangeTime}         = $Row[7];
+            $Calendar{ChangeBy}           = $Row[8];
+            $Calendar{ValidID}            = $Row[9];
         }
 
         if ( $Param{CalendarID} ) {

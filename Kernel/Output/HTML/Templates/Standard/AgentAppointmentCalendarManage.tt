@@ -369,8 +369,11 @@
         </div>
         <div id="TicketAppointmentAdvancedParamTemplate" class="Hidden">
             <div class="Field SpacingTopSmall">
-                <label></label>
-                <input type="text" />
+                <label for="AdvancedParam" class="Mandatory">
+                    <span class="Marker">*</span>
+                </label>
+                <input id="AdvancedParam" name="AdvancedParam" type="text" class="Validate_Required" />
+                <div id="AdvancedParamError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                 <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
                     <i class="fa fa-minus-square-o"></i>
                     <span class="InvisibleText">[% Translate("Remove") | html %]</span>

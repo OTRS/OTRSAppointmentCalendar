@@ -117,12 +117,19 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
 
                     // Label
                     .find('label')
-                    .text(ParamName + ':')
+                    .attr('for', 'AdvancedParam_' + RuleID + '_' + ParamName)
+                    .find('span')
+                    .after(' ' + ParamName + ':')
+                    .end()
                     .end()
 
-                    // Input field
+                    // Input field and error message
                     .find('input')
+                    .attr('id', 'AdvancedParam_' + RuleID + '_' + ParamName)
                     .attr('name', 'AdvancedParam_' + RuleID + '_' + ParamName)
+                    .end()
+                    .find('#AdvancedParamError')
+                    .attr('id', 'AdvancedParam_' + RuleID + '_' + ParamName + 'Error')
                     .end()
 
                     .appendTo($AdvancedParamContainerObj);

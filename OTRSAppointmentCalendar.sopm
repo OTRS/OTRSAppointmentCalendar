@@ -101,6 +101,7 @@
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.Manage.js"/>
         <File Permission="640" Location="var/packagesetup/OTRSAppointmentCalendar.pm"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
@@ -153,6 +154,7 @@
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
             <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
             <Column Name="color" Required="true" Size="7" Type="VARCHAR"/>
+            <Column Name="ticket_appointments" Size="3800" Type="VARCHAR"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />

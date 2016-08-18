@@ -34,7 +34,15 @@ sub Run {
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
     my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
 
+    # get names of all parameters
+    my @ParamNames = $ParamObject->GetParamNames();
+
+    # get params
     my %GetParam;
+    PARAMNAME:
+    for my $Key (@ParamNames) {
+        $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
+    }
 
     if ( $Self->{Subaction} eq 'New' ) {
 
@@ -58,11 +66,6 @@ sub Run {
         );
     }
     elsif ( $Self->{Subaction} eq 'StoreNew' ) {
-
-        # get data
-        for my $Param (qw(CalendarName GroupID Color ValidID)) {
-            $GetParam{$Param} = $ParamObject->GetParam( Param => $Param ) || '';
-        }
 
         my %Error;
 
@@ -90,6 +93,8 @@ sub Run {
             my $ColorPalette   = $Self->_ColorPaletteGet();
             my $ValidSelection = $Self->_ValidSelectionGet(%GetParam);
 
+            my %TicketAppointments = $Self->_TicketAppointments(%GetParam);
+
             $LayoutObject->Block(
                 Name => 'CalendarEdit',
                 Data => {
@@ -104,6 +109,13 @@ sub Run {
             );
             return $Self->_Mask(%Param);
         }
+
+        # get ticket appointment parameters
+        $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => $Kernel::OM->Get('Kernel::System::Main')->Dump( $GetParam{TicketAppointments} ),
+        );
 
         # create calendar
         my %Calendar = $CalendarObject->CalendarCreate(
@@ -627,6 +639,38 @@ sub _TicketAppointments {
     );
 
     return %TicketAppointments;
+}
+
+sub _GetTicketAppointmentParams {
+    my ( $Self, %Param ) = @_;
+
+    # create data structure
+    my %TicketAppointmentParams;
+    for my $Key ( sort keys %Param ) {
+        for my $Field (qw(StartDate EndDate QueueID AdvancedParam)) {
+            if ( $Key =~ /^${Field}_([0-9]+)/ ) {
+                my $RuleID = $1;
+                $TicketAppointmentParams{$RuleID}->{RuleID} = $RuleID;
+                if ( $Field eq 'AdvancedParam' ) {
+                    if ( $Key =~ /^AdvancedParam_${RuleID}_([A-Za-z]+)$/ ) {
+                        my $AdvancedParam = $1;
+                        $TicketAppointmentParams{$RuleID}->{AdvancedParam}->{$AdvancedParam} = $Param{$Key};
+                    }
+                }
+                else {
+                    $TicketAppointmentParams{$RuleID}->{$Field} = $Param{$Key};
+                }
+            }
+        }
+    }
+
+    # transform to array
+    my @TicketAppointmentData;
+    for my $RuleID ( sort keys %TicketAppointmentParams ) {
+        push @TicketAppointmentData, $TicketAppointmentParams{$RuleID};
+    }
+
+    return \@TicketAppointmentData;
 }
 
 1;
