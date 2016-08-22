@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Digest::MD5;
+use MIME::Base64;
 
 use Kernel::System::EventHandler;
 use Kernel::Language qw(Translatable);
@@ -22,11 +23,12 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
     'Kernel::System::Calendar::Appointment',
+    'Kernel::System::Encode',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
-    'Kernel::System::YAML',
+    'Kernel::System::Storable',
 );
 
 =head1 NAME
@@ -102,15 +104,17 @@ creates a new calendar for given user.
         Color           => '#FF7700',           # (required) Color in hexadecimal RGB notation
         UserID          => 4,                   # (required) UserID
 
-        TicketAppointments => {                 # (optional) Ticket appointments
-            StartDate => 'FirstResponse',
-            EndDate   => 'Plus_5',
-            QueueID   => 2,
-            SearchParams => {
-                Title => 'This is a title',
-                Types => 'This is a type',
+        TicketAppointments => [                 # (optional) Ticket appointments, array ref of hashes
+            {
+                StartDate => 'FirstResponse',
+                EndDate   => 'Plus_5',
+                QueueID   => 2,
+                SearchParams => {
+                    Title => 'This is a title',
+                    Types => 'This is a type',
+                },
             },
-        },
+        ],
 
         ValidID => 1,                   # (optional) Default is 1.
     );
@@ -175,12 +179,14 @@ sub CalendarCreate {
     # create salt string
     my $SaltString = $Self->GetRandomString( Length => 64 );
 
-    # convert the ticket appointment data hash to string
-    my $TicketAppointmentsYAML;
+    # serialize and encode ticket appointment data
+    my $TicketAppointments;
     if ( $Param{TicketAppointments} ) {
-        $TicketAppointmentsYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
+        $TicketAppointments = $Kernel::OM->Get('Kernel::System::Storable')->Serialize(
             Data => $Param{TicketAppointments},
         );
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput($TicketAppointments);
+        $TicketAppointments = encode_base64($TicketAppointments);
     }
 
     my $SQL = '
@@ -195,7 +201,7 @@ sub CalendarCreate {
         SQL  => $SQL,
         Bind => [
             \$Param{GroupID}, \$Param{CalendarName}, \$SaltString, \$Param{Color},
-            \$TicketAppointmentsYAML, \$Param{UserID}, \$Param{UserID}, \$ValidID
+            \$TicketAppointments, \$Param{UserID}, \$Param{UserID}, \$ValidID
         ],
     );
 
@@ -248,15 +254,17 @@ returns Calendar data:
         GroupID            => 3,
         CalendarName       => 'Meetings',
         Color              => '#FF7700',
-        TicketAppointments => {
-            StartDate => 'FirstResponse',
-            EndDate   => 'Plus_5',
-            QueueID   => 2,
-            SearchParams => {
-                Title => 'This is a title',
-                Types => 'This is a type',
+        TicketAppointments => [
+            {
+                StartDate => 'FirstResponse',
+                EndDate   => 'Plus_5',
+                QueueID   => 2,
+                SearchParams => {
+                    Title => 'This is a title',
+                    Types => 'This is a type',
+                },
             },
-        },
+        ],
         CreateTime => '2016-01-01 08:00:00',
         CreateBy   => 1,
         ChangeTime => '2016-01-01 08:00:00',
@@ -328,11 +336,15 @@ sub CalendarGet {
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
 
-            # convert ticket appointment yml data to hash
-            my $TicketAppointments = $Kernel::OM->Get('Kernel::System::YAML')->Load(
-                Data => $Row[4],
-            );
-            $TicketAppointments = undef if ref $TicketAppointments ne 'ARRAY';
+            # decode and deserialize ticket appointment data
+            my $TicketAppointments;
+            if ( $Row[4] ) {
+                my $DecodedData = decode_base64( $Row[4] );
+                $TicketAppointments = $Kernel::OM->Get('Kernel::System::Storable')->Deserialize(
+                    Data => $DecodedData,
+                );
+                $TicketAppointments = undef if ref $TicketAppointments ne 'ARRAY';
+            }
 
             $Calendar{CalendarID}         = $Row[0];
             $Calendar{GroupID}            = $Row[1];
@@ -516,15 +528,17 @@ updates an existing calendar.
         UserID           => 4,                   # (required) UserID (who made update)
         ValidID          => 1,                   # (required) ValidID
 
-        TicketAppointments => {                 # (optional) Ticket appointments
-            StartDate => 'FirstResponse',
-            EndDate   => 'Plus_5',
-            QueueID   => 2,
-            SearchParams => {
-                Title => 'This is a title',
-                Types => 'This is a type',
+        TicketAppointments => [                 # (optional) Ticket appointments, array ref of hashes
+            {
+                StartDate => 'FirstResponse',
+                EndDate   => 'Plus_5',
+                QueueID   => 2,
+                SearchParams => {
+                    Title => 'This is a title',
+                    Types => 'This is a type',
+                },
             },
-        },
+        ],
     );
 
 returns 1 if successful
@@ -565,12 +579,14 @@ sub CalendarUpdate {
     # make it uppercase for the sake of consistency
     $Param{Color} = uc $Param{Color};
 
-    # convert the ticket appointment data hash to string
-    my $TicketAppointmentsYAML;
+    # serialize and encode ticket appointment data
+    my $TicketAppointments;
     if ( $Param{TicketAppointments} ) {
-        $TicketAppointmentsYAML = $Kernel::OM->Get('Kernel::System::YAML')->Dump(
+        $TicketAppointments = $Kernel::OM->Get('Kernel::System::Storable')->Serialize(
             Data => $Param{TicketAppointments},
         );
+        $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput($TicketAppointments);
+        $TicketAppointments = encode_base64($TicketAppointments);
     }
 
     my $SQL = '
@@ -580,7 +596,7 @@ sub CalendarUpdate {
     ';
 
     my @Bind;
-    push @Bind, \$Param{GroupID}, \$Param{CalendarName}, \$Param{Color}, \$TicketAppointmentsYAML,
+    push @Bind, \$Param{GroupID}, \$Param{CalendarName}, \$Param{Color}, \$TicketAppointments,
         \$Param{UserID}, \$Param{ValidID};
 
     $SQL .= '
