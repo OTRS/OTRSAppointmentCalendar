@@ -156,7 +156,9 @@ sub CalendarCreate {
     return if %Calendar;
 
     # create salt string
-    my $SaltString = $Self->GetRandomString( Length => 64 );
+    my $SaltString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
+        Length => 64,
+    );
 
     my $SQL = '
         INSERT INTO calendar
@@ -854,48 +856,6 @@ sub GetAccessToken {
     my $MD5    = Digest::MD5->new()->add($String)->hexdigest();
 
     return $MD5;
-}
-
-=item GetRandomString()
-
-returns random string of specified length from the set of ASCII characters.
-
-    my $RandomString = $CalendarObject->GetRandomString(
-        Length => 8,    # (required)
-    );
-
-returns:
-    $RandomString = ']t%C`L9q';
-
-=cut
-
-sub GetRandomString {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(Length)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    return if !int $Param{Length};
-
-    my @Characters = (
-        '0' .. '9', 'a' .. 'z', '`', '~', '!', '@', '$', '%', '^', '&', '*', '(', ')', '-', '_',
-        '=', '+', '[', ']', ';', ':', '\'', '"', '\\', '|', '.', '<', ',', '>', '?', '/'
-    );
-
-    my $Result;
-    while ( $Param{Length}-- ) {
-        $Result .= $Characters[ rand @Characters ];
-    }
-
-    return $Result;
 }
 
 =item GetTextColor()
