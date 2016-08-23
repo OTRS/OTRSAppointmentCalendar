@@ -60,6 +60,7 @@ sub Run {
                 Subaction    => 'StoreNew',
                 Color        => $ColorPalette->[ int rand( scalar @{$ColorPalette} ) ],
                 Title        => Translatable('Add new Calendar'),
+                WidgetStatus => 'Collapsed',
                 %TicketAppointments,
             },
         );
@@ -85,6 +86,9 @@ sub Run {
             }
         }
 
+        # get ticket appointment parameters
+        $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
+
         if (%Error) {
 
             # get selections
@@ -92,6 +96,9 @@ sub Run {
             my $ColorPalette       = $Self->_ColorPaletteGet();
             my $ValidSelection     = $Self->_ValidSelectionGet(%GetParam);
             my %TicketAppointments = $Self->_TicketAppointments();
+
+            # get rule count
+            my $RuleCount = scalar @{ $GetParam{TicketAppointments} || [] };
 
             $LayoutObject->Block(
                 Name => 'CalendarEdit',
@@ -103,14 +110,37 @@ sub Run {
                     ValidID      => $ValidSelection,
                     Subaction    => 'StoreNew',
                     Title        => Translatable('Add new Calendar'),
+                    WidgetStatus => $RuleCount ? 'Expanded' : 'Collapsed',
                     %TicketAppointments,
                 },
             );
+
+            # show ticket appointment rules
+            for my $Rule ( @{ $GetParam{TicketAppointments} || [] } ) {
+                my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentRule',
+                    Data => {
+                        %{$Rule},
+                        %TicketAppointmentRule,
+                    },
+                );
+
+                # show search parameters
+                for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
+                    $LayoutObject->Block(
+                        Name => 'TicketAppointmentRuleSearchParam',
+                        Data => {
+                            ParamName  => $ParamName,
+                            ParamValue => $Rule->{SearchParam}->{$ParamName},
+                            %{$Rule},
+                        },
+                    );
+                }
+            }
+
             return $Self->_Mask(%Param);
         }
-
-        # get ticket appointment parameters
-        $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
 
         # create calendar
         my %Calendar = $CalendarObject->CalendarCreate(
