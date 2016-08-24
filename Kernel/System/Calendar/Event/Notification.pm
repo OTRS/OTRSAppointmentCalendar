@@ -684,7 +684,7 @@ sub _SendRecipientNotification {
 
     # send notification to each recipient
     my $Success = $TransportObject->SendNotification(
-        TicketID              => $Param{TicketID},
+        AppointmentID         => $Param{AppointmentID},
         UserID                => $Param{UserID},
         Notification          => $Param{Notification},
         CustomerMessageParams => $Param{CustomerMessageParams},
