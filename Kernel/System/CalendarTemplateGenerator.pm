@@ -20,16 +20,10 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Appointment',
-
-    'Kernel::Output::HTML::Layout',
-    'Kernel::System::CustomerUser',
-    'Kernel::System::DynamicField',
-    'Kernel::System::DynamicField::Backend',
+    'Kernel::System::Calendar::Helper',
     'Kernel::System::HTMLUtils',
-    'Kernel::System::JSON',
     'Kernel::System::Log',
-    'Kernel::System::Queue',
-    'Kernel::System::Ticket',
+    'Kernel::System::Time',
     'Kernel::System::User',
 );
 
@@ -204,7 +198,7 @@ sub _Replace {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Text AppointmentID Calendar RichText Data UserID)) {
+    for (qw(Text AppointmentID RichText UserID)) {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -272,23 +266,23 @@ sub _Replace {
         UserID     => $Param{UserID},
     );
 
-    my %Ticket;
-    if ( $Param{TicketID} ) {
-        %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-            TicketID      => $Param{TicketID},
-            DynamicFields => 1,
-        );
-    }
-
-    # translate ticket values if needed
-    if ( $Param{Language} ) {
-        my $LanguageObject = Kernel::Language->new(
-            UserLanguage => $Param{Language},
-        );
-        for my $Field (qw(Type State StateType Lock Priority)) {
-            $Ticket{$Field} = $LanguageObject->Translate( $Ticket{$Field} );
-        }
-    }
+    #    my %Ticket;
+    #    if ( $Param{TicketID} ) {
+    #        %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+    #            TicketID      => $Param{TicketID},
+    #            DynamicFields => 1,
+    #        );
+    #    }
+    #
+    #    # translate ticket values if needed
+    #    if ( $Param{Language} ) {
+    #        my $LanguageObject = Kernel::Language->new(
+    #            UserLanguage => $Param{Language},
+    #        );
+    #        for my $Field (qw(Type State StateType Lock Priority)) {
+    #            $Ticket{$Field} = $LanguageObject->Translate( $Ticket{$Field} );
+    #        }
+    #    }
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -333,6 +327,87 @@ sub _Replace {
         );
     }
 
+    # get a local helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # get timezone offset for current recipient
+    my $TimezoneOffsetRaw = $CalendarHelperObject->TimezoneOffsetGet(
+        UserID => $Recipient{UserID},
+    ) || 0;
+
+    my $TimezoneOffset = $TimezoneOffsetRaw * 60 * 60;
+
+    # instanciate a new language object with the given language
+    my $LanguageObject = Kernel::Language->new(
+        UserLanguage => $Param{Language} || 'en',
+    );
+
+    # supported appointment fields
+    my %AppointmentTags = (
+        'STARTTIME'        => 'StartTime',
+        'ENDTIME'          => 'EndTime',
+        'NOTIFICATIONTIME' => 'NotificationDate',
+        'TITLE'            => 'Title',
+        'DESCRIPTION'      => 'Description',
+        'LOCATION'         => 'Location',
+    );
+
+    # replace config options
+    $Tag = $Start . 'OTRS_APPOINTMENT_';
+
+    # get a local time object
+    my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # replace appointment tags
+    for my $AppointmentTag ( sort keys %AppointmentTags ) {
+
+        if (
+            $AppointmentTag eq 'STARTTIME'
+            || $AppointmentTag eq 'ENDTIME'
+            || $AppointmentTag eq 'NOTIFICATIONTIME'
+            )
+        {
+            my $TagSystemTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Appointment{ $AppointmentTags{$AppointmentTag} },
+            );
+
+            my ( $ASecond, $AMinute, $AHour, $ADay, $AMonth, $AYear, $ADayOfWeek ) = $CalendarHelperObject->DateGet(
+                SystemTime => $TagSystemTime + $TimezoneOffset,
+            );
+
+            my $NewTimeStamp = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $TagSystemTime + $TimezoneOffset,
+            );
+
+            # prepare dates and times
+            my $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+
+            $Param{Text} =~ s{$Tag(.+?)$End}{$Replacement}egx;
+        }
+        else {
+            $Param{Text} =~ s{$Tag(.+?)$End}{$Appointment{$AppointmentTags{$1}} // ''}egx;
+        }
+    }
+
+    # cleanup
+    $Param{Text} =~ s/$Tag.+?$End/-/gi;
+
+    # supported calendar fields
+    my %CalendarTags = (
+        'NAME' => 'CalendarName',
+    );
+
+    # replace config options
+    $Tag = $Start . 'OTRS_CALENDAR_';
+
+    # replace appointment tags
+    for my $CalendarTag ( sort keys %CalendarTags ) {
+        $Param{Text} =~ s{$Tag(.+?)$End}{$Calendar{$CalendarTags{$1}} // ''}egx;
+    }
+
+    # cleanup
+    $Param{Text} =~ s/$Tag.+?$End/-/gi;
+
     my $HashGlobalReplace = sub {
         my ( $Tag, %H ) = @_;
 
@@ -372,100 +447,6 @@ sub _Replace {
 
     # cleanup
     $Param{Text} =~ s/$RecipientTag.+?$End/-/gi;
-
-    $Tag = $Start . 'OTRS_Agent_';
-    my $Tag2        = $Start . 'OTRS_CURRENT_';
-    my %CurrentUser = $UserObject->GetUserData(
-        UserID        => $Param{UserID},
-        NoOutOfOffice => 1,
-    );
-
-    # HTML quoting of content
-    if ( $Param{RichText} ) {
-
-        ATTRIBUTE:
-        for my $Attribute ( sort keys %CurrentUser ) {
-            next ATTRIBUTE if !$CurrentUser{$Attribute};
-            $CurrentUser{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                String => $CurrentUser{$Attribute},
-            );
-        }
-    }
-
-    $HashGlobalReplace->( "$Tag|$Tag2", %CurrentUser );
-
-    # replace other needed stuff
-    $Param{Text} =~ s/$Start OTRS_FIRST_NAME $End/$CurrentUser{UserFirstname}/gxms;
-    $Param{Text} =~ s/$Start OTRS_LAST_NAME $End/$CurrentUser{UserLastname}/gxms;
-
-    # cleanup
-    $Param{Text} =~ s/$Tag2.+?$End/-/gi;
-
-    # calendar data
-    $Tag = $Start . 'OTRS_CALENDAR_';
-
-    # html quoting of content
-    if ( $Param{RichText} ) {
-
-        ATTRIBUTE:
-        for my $Attribute ( sort keys %Calendar ) {
-            
-            next ATTRIBUTE if !$Calendar{$Attribute};
-            
-            $Calendar{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                String => $Calendar{$Attribute},
-            );
-        }
-    }
-
-    # COMPAT
-    $Param{Text} =~ s/$Start OTRS_TICKET_ID $End/$Ticket{TicketID}/gixms;
-    $Param{Text} =~ s/$Start OTRS_TICKET_NUMBER $End/$Ticket{TicketNumber}/gixms;
-    
-    if ( $Param{TicketID} ) {
-        $Param{Text} =~ s/$Start OTRS_QUEUE $End/$Ticket{Queue}/gixms;
-    }
-    if ( $Param{QueueID} ) {
-        $Param{Text} =~ s/$Start OTRS_TICKET_QUEUE $End/$Queue{Name}/gixms;
-    }
-
-    # cleanup
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
-
-    # get customer data and replace it with <OTRS_CUSTOMER_DATA_...
-    $Tag  = $Start . 'OTRS_CUSTOMER_';
-    $Tag2 = $Start . 'OTRS_CUSTOMER_DATA_';
-
-    if ( $Ticket{CustomerUserID} || $Param{Data}->{CustomerUserID} ) {
-
-        my $CustomerUserID = $Param{Data}->{CustomerUserID} || $Ticket{CustomerUserID};
-
-        my %CustomerUser = $Kernel::OM->Get('Kernel::System::CustomerUser')->CustomerUserDataGet(
-            User => $CustomerUserID,
-        );
-
-        # HTML quoting of content
-        if ( $Param{RichText} ) {
-
-            ATTRIBUTE:
-            for my $Attribute ( sort keys %CustomerUser ) {
-                next ATTRIBUTE if !$CustomerUser{$Attribute};
-                $CustomerUser{$Attribute} = $Kernel::OM->Get('Kernel::System::HTMLUtils')->ToHTML(
-                    String => $CustomerUser{$Attribute},
-                );
-            }
-        }
-
-        # replace it
-        $HashGlobalReplace->( "$Tag|$Tag2", %CustomerUser );
-    }
-
-    # cleanup all not needed <OTRS_CUSTOMER_DATA_ tags
-    $Param{Text} =~ s/(?:$Tag|$Tag2).+?$End/-/gi;
-
-    # cleanup all not needed <OTRS_AGENT_ tags
-    $Tag = $Start . 'OTRS_AGENT_';
-    $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
     return $Param{Text};
 }
