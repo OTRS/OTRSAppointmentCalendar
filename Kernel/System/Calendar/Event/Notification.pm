@@ -136,7 +136,7 @@ sub Run {
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
         # get notification transport config
-        my %TransportConfig = %{ $ConfigObject->Get('Notification::Transport') || {} };
+        my %TransportConfig = %{ $ConfigObject->Get('AppointmentNotification::Transport') || {} };
 
         # remember already sent agent notifications
         my %AlreadySent;

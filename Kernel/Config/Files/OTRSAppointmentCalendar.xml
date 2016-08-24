@@ -337,7 +337,6 @@
             </FrontendModuleReg>
         </Setting>
     </ConfigItem>
-
     <ConfigItem Name="Frontend::Admin::AdminAppointmentNotificationEvent###RichText" Required="0" Valid="1">
         <Description Translatable="1">Uses richtext for viewing and editing ticket notification.</Description>
         <Group>Ticket</Group>
@@ -427,7 +426,6 @@
             </Hash>
         </Setting>
     </ConfigItem>
-
     <ConfigItem Name="Notification::CharactersPerLine" Required="1" Valid="1">
         <Description Translatable="1">Defines the number of character per line used in case an HTML article preview replacement on TemplateGenerator for EventNotifications.</Description>
         <Group>Ticket</Group>
@@ -436,6 +434,54 @@
             <String Regex="">80</String><!-- default 1 hour -->
         </Setting>
     </ConfigItem>
+
+    <!-- notification transports -->
+
+    <ConfigItem Name="AppointmentNotification::Transport###Email" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Event::Transport::Email</Item>
+                <Item Key="Name" Translatable="1">Email</Item>
+                <Item Key="Icon">fa fa-envelope</Item>
+                <Item Key="Prio">100</Item>
+                <Item Key="IsOTRSBusinessTransport">0</Item>
+                <Item Key="AgentEnabledByDefault">1</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <!-- <ConfigItem Name="Notification::Transport###NotificationView" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::NotificationView</Item>
+                <Item Key="Name" Translatable="1">Web View</Item>
+                <Item Key="Icon">fa fa-th-list</Item>
+                <Item Key="Prio">110</Item>
+                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="AgentEnabledByDefault">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Notification::Transport###SMS" Required="0" Valid="1">
+        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
+        <Group>Ticket</Group>
+        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::SMS</Item>
+                <Item Key="Name" Translatable="1">SMS (Short Message Service)</Item>
+                <Item Key="Icon">fa fa-mobile</Item>
+                <Item Key="Prio">120</Item>
+                <Item Key="IsOTRSBusinessTransport">1</Item>
+                <Item Key="AgentEnabledByDefault">0</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem> -->
 
     <!-- Dashboard Widget -->
     <ConfigItem Name="DashboardBackend###0500-AppointmentCalendar" Required="0" Valid="1">

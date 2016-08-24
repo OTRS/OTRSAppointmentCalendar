@@ -53,7 +53,7 @@ sub Run {
     my $MainObject              = $Kernel::OM->Get('Kernel::System::Main');
 
     # get registered transport layers
-    my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('Notification::Transport') || {} };
+    my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('AppointmentNotification::Transport') || {} };
 
     # ------------------------------------------------------------ #
     # change
@@ -1154,7 +1154,7 @@ sub _Edit {
     }
 
     # get registered transport layers
-    my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('Notification::Transport') || {} };
+    my %RegisteredTransports = %{ $Kernel::OM->Get('Kernel::Config')->Get('AppointmentNotification::Transport') || {} };
 
     if ( IsHashRefWithData( \%RegisteredTransports ) ) {
 
