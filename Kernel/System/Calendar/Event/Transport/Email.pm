@@ -96,7 +96,11 @@ sub SendNotification {
     return if $IsLocalAddress;
 
     # create new array to prevent attachment growth (see bug#5114)
-    my @Attachments = @{ $Param{Attachments} };
+    my @Attachments;
+
+    if ( IsArrayRefWithData( $Param{Attachments} ) ) {
+        @Attachments = @{ $Param{Attachments} };
+    }
 
     my %Notification = %{ $Param{Notification} };
 
@@ -141,7 +145,7 @@ sub SendNotification {
         Charset    => 'utf-8',
         Body       => $Notification{Body},
         Loop       => 1,
-        Attachment => $Param{Attachments},
+        Attachment => $Param{Attachments} || [],
     );
 
     if ( !$Sent ) {
@@ -158,15 +162,6 @@ sub SendNotification {
         Priority => 'info',
         Message  => "Sent agent '$Notification{Name}' notification to '$Recipient{UserEmail}'.",
     );
-
-    # set event data
-    $Self->{EventData} = {
-        Event => 'ArticleAgentNotification',
-        Data  => {
-            TicketID => $Param{TicketID},
-        },
-        UserID => $Param{UserID},
-    };
 
     return 1;
 }

@@ -630,56 +630,6 @@ sub _SendRecipientNotification {
         }
     }
 
-    # get ticket object
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    # check if the notification needs to be sent just one time per day
-    if ( $Param{Notification}->{Data}->{OncePerDay} && $Param{Recipient}->{UserLogin} ) {
-
-        # get ticket history
-        my @HistoryLines = $TicketObject->HistoryGet(
-            TicketID => $Param{TicketID},
-            UserID   => $Param{UserID},
-        );
-
-        # get last notification sent ticket history entry for this transport and this user
-        my $LastNotificationHistory = first {
-            $_->{HistoryType} eq 'SendAgentNotification'
-                && $_->{Name} eq
-                "\%\%$Param{Notification}->{Name}\%\%$Param{Recipient}->{UserLogin}\%\%$Param{Transport}"
-        }
-        reverse @HistoryLines;
-
-        if ( $LastNotificationHistory && $LastNotificationHistory->{CreateTime} ) {
-
-            # get time object
-            my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
-
-            # get last notification date
-            my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->TimeStamp2SystemTime(
-                    String => $LastNotificationHistory->{CreateTime},
-                    )
-            );
-
-            # get current date
-            my ( $CurrSec, $CurrMin, $CurrHour, $CurrDay, $CurrMonth, $CurrYear, $CurrWeekDay )
-                = $TimeObject->SystemTime2Date(
-                SystemTime => $TimeObject->SystemTime(),
-                );
-
-            # do not send the notification if it has been sent already today
-            if (
-                $CurrYear == $Year
-                && $CurrMonth == $Month
-                && $CurrDay == $Day
-                )
-            {
-                return;
-            }
-        }
-    }
-
     my $TransportObject = $Param{TransportObject};
 
     # send notification to each recipient
@@ -695,21 +645,6 @@ sub _SendRecipientNotification {
 
     return if !$Success;
 
-    if (
-        $Param{Recipient}->{Type} eq 'Agent'
-        && $Param{Recipient}->{UserLogin}
-        )
-    {
-
-        # write history
-        $TicketObject->HistoryAdd(
-            TicketID     => $Param{TicketID},
-            HistoryType  => 'SendAgentNotification',
-            Name         => "\%\%$Param{Notification}->{Name}\%\%$Param{Recipient}->{UserLogin}\%\%$Param{Transport}",
-            CreateUserID => $Param{UserID},
-        );
-    }
-
     my %EventData = %{ $TransportObject->GetTransportEventData() };
 
     return 1 if !%EventData;
@@ -723,11 +658,6 @@ sub _SendRecipientNotification {
 
         return;
     }
-
-    # ticket event
-    $TicketObject->EventHandler(
-        %EventData,
-    );
 
     return 1;
 }
