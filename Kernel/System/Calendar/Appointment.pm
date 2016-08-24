@@ -1168,7 +1168,7 @@ sub AppointmentUpdate {
         qw(TeamID ResourceID RecurrenceFrequency)
         )
     {
-        if ( $Param{$Parameter} ) {
+        if ( $Param{$Parameter} && @{ $Param{$Parameter} // [] } ) {
             if ( !IsArrayRefWithData( $Param{$Parameter} ) ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',

@@ -262,15 +262,16 @@
             <String Regex="\d+">120</String>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0100-FirstResponse" Required="0" Valid="1">
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0100-FirstResponseTime" Required="0" Valid="1">
         <Description Translatable="1">Defines the ticket appointment type backend for ticket escalation time.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
-                <Item Key="Key">FirstResponse</Item>
+                <Item Key="Key">FirstResponseTime</Item>
                 <Item Key="Name" Translatable="1">First response time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -283,6 +284,7 @@
                 <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
                 <Item Key="Key">UpdateTime</Item>
                 <Item Key="Name" Translatable="1">Update time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -295,6 +297,7 @@
                 <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
                 <Item Key="Key">SolutionTime</Item>
                 <Item Key="Name" Translatable="1">Solution time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -307,6 +310,7 @@
                 <Item Key="Module">Kernel::System::Calendar::Ticket::PendingTime</Item>
                 <Item Key="Key">PendingTime</Item>
                 <Item Key="Name" Translatable="1">Pending time</Item>
+                <Item Key="Event">TicketPendingTimeUpdate</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -319,6 +323,7 @@
                 <Item Key="Module">Kernel::System::Calendar::Ticket::DynamicField</Item>
                 <Item Key="Key" Translatable="1">DynamicField_%s</Item>
                 <Item Key="Name" Translatable="1">DynamicField_%s</Item>
+                <Item Key="Event" Translatable="1">TicketDynamicFieldUpdate_.*</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -623,6 +628,18 @@
                 <Item Key="Text">Location</Item>
                 <Item Key="URL">http://maps.google.com/maps?z=7&amp;q=</Item>
                 <Item Key="IconName">fa-globe fa-lg</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::EventModulePost###950-TicketAppointments" Required="0" Valid="1">
+        <Description Translatable="1">Triggers add or update of automatic calendar appointments based on certain ticket times.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::TicketAppointments</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate|TicketPendingTimeUpdate|TicketDynamicFieldUpdate_.*</Item>
+                <Item Key="Transaction">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>

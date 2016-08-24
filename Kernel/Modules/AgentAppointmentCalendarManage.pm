@@ -41,6 +41,14 @@ sub Run {
     my %GetParam;
     PARAMNAME:
     for my $Key (@ParamNames) {
+
+        # queue is multiple selection field, get array instead
+        if ( $Key =~ /^QueueID_/ ) {
+            my @ParamArray = $ParamObject->GetArray( Param => $Key );
+            $GetParam{$Key} = \@ParamArray;
+            next PARAMNAME;
+        }
+
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
@@ -606,14 +614,14 @@ sub _TicketAppointments {
     }
 
     $TicketAppointments{QueueIDStrg} = $LayoutObject->AgentQueueListOption(
-        Class          => 'Validate_Required Modernize',
-        Data           => \%AvailableQueues,
-        Multiple       => 1,
-        Size           => 0,
-        Name           => 'QueueID' . $FieldID,
-        TreeView       => $TreeView,
-        OnChangeSubmit => 0,
-        SelectedID     => $Param{QueueID},
+        Class              => 'Validate_Required Modernize',
+        Data               => \%AvailableQueues,
+        Multiple           => 1,
+        Size               => 0,
+        Name               => 'QueueID' . $FieldID,
+        TreeView           => $TreeView,
+        OnChangeSubmit     => 0,
+        SelectedIDRefArray => $Param{QueueID},
     );
 
     # get ticket appointment types

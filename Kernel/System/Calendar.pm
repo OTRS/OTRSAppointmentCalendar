@@ -23,12 +23,14 @@ our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
     'Kernel::System::Calendar::Appointment',
+    'Kernel::System::Calendar::Helper',
     'Kernel::System::Encode',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::Storable',
+    'Kernel::System::Ticket',
 );
 
 =head1 NAME
@@ -108,7 +110,7 @@ creates a new calendar for given user.
             {
                 StartDate => 'FirstResponse',
                 EndDate   => 'Plus_5',
-                QueueID   => 2,
+                QueueID   => [ 2 ],
                 SearchParams => {
                     Title => 'This is a title',
                     Types => 'This is a type',
@@ -260,7 +262,7 @@ returns Calendar data:
             {
                 StartDate => 'FirstResponse',
                 EndDate   => 'Plus_5',
-                QueueID   => 2,
+                QueueID   => [ 2 ],
                 SearchParams => {
                     Title => 'This is a title',
                     Types => 'This is a type',
@@ -534,7 +536,7 @@ updates an existing calendar.
             {
                 StartDate => 'FirstResponse',
                 EndDate   => 'Plus_5',
-                QueueID   => 2,
+                QueueID   => [ 2 ],
                 SearchParams => {
                     Title => 'This is a title',
                     Types => 'This is a type',
@@ -887,6 +889,175 @@ sub CalendarPermissionGet {
     return $Result;
 }
 
+=item TicketAppointments()
+
+Handle the automatic ticket appointments for the calendar and create, update or delete them if
+necessary.
+
+    my $Success = $CalendarObject->TicketAppointments(
+        CalendarID => 1,
+        Config => {
+            DynamicField_TestDate => {
+                Module => 'Kernel::System::Calendar::Ticket::DynamicField',
+            },
+            ...
+        },
+        Rule => {
+            StartDate => 'DynamicField_TestDate',
+            EndDate   => 'Plus_5',
+            QueueID   => [ 2 ],
+            RuleID    => 1,
+            SearchParams => {
+                Title => 'Welcome*',
+            },
+        },
+        Data => {
+            FieldName => 'TestDate',
+            OldValue  => undef,
+            TicketID  => 1,
+            UserID    => 2,
+            Value     => '2016-08-24 00:00:00',
+        },
+    );
+
+returns:
+
+    True if ticket appointment create/update was successful, otherwise false.
+
+=cut
+
+sub TicketAppointments {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID Config Rule Data)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    return if !IsHashRefWithData( $Param{Config} );
+    return if !IsHashRefWithData( $Param{Rule} );
+    return if !IsHashRefWithData( $Param{Data} );
+
+    # get calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    my %AppointmentData;
+
+    # get start and end time values
+    for my $Field (qw(StartDate EndDate)) {
+        my $Type = $Param{Rule}->{$Field};
+
+        # appointment fields are named differently
+        my $AppointmentField = $Field;
+        $AppointmentField =~ s/Date$/Time/;
+
+        # check if we are dealing with a registered type
+        if ( $Param{Config}->{$Type} && $Param{Config}->{$Type}->{Module} ) {
+            my $GenericModule = $Param{Config}->{$Type}->{Module};
+
+            # get the time value via the module method
+            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule) ) {
+                $AppointmentData{$AppointmentField} = $GenericModule->new( %{$Self} )->GetTime(
+                    Type => $Type,
+                    %{ $Param{Data} },
+                );
+                return if !$AppointmentData{$AppointmentField};
+            }
+        }
+
+        # time presets are valid only for end time and existing start time
+        elsif ( $Field eq 'EndDate' && $AppointmentData{StartTime} ) {
+            if ( $Type =~ /^Plus_([0-9]+)$/ ) {
+                my $Preset = int $1;
+
+                # get start time
+                my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $AppointmentData{StartTime},
+                );
+
+                # calculate end time using preset value
+                my $EndTime = $StartTime + 60 * $Preset;
+                $AppointmentData{EndTime} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => $EndTime,
+                );
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => "Invalid time preset: $Type",
+                );
+
+                return;
+            }
+        }
+
+        # unknown type
+        else {
+            return;
+        }
+    }
+
+    # prevent end time before start time
+    if ( $AppointmentData{StartTime} && $AppointmentData{EndTime} ) {
+        my $StartTime = $CalendarHelperObject->SystemTimeGet(
+            String => $AppointmentData{StartTime},
+        );
+        my $EndTime = $CalendarHelperObject->SystemTimeGet(
+            String => $AppointmentData{EndTime},
+        );
+        if ( $EndTime < $StartTime ) {
+            $AppointmentData{EndTime} = $AppointmentData{StartTime};
+        }
+    }
+
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # get appointment title
+    my $TicketHook        = $ConfigObject->Get('Ticket::Hook');
+    my $TicketHookDivider = $ConfigObject->Get('Ticket::HookDivider');
+    my %Ticket            = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
+        TicketID      => $Param{Data}->{TicketID},
+        DynamicFields => 0,
+        UserID        => 1,
+    );
+    $AppointmentData{Title} = "[$TicketHook$TicketHookDivider$Ticket{TicketNumber}] $Ticket{Title}";
+
+    # check if ticket appointment already exists
+    my $AppointmentID = $Self->_TicketAppointmentGet(
+        TicketID => $Param{Data}->{TicketID},
+        RuleID   => $Param{Rule}->{RuleID},
+    );
+
+    my $Success;
+
+    # update appointment if found
+    if ($AppointmentID) {
+        $Success = $Self->_TicketAppointmentUpdate(
+            AppointmentID => $AppointmentID,
+            %AppointmentData,
+        );
+    }
+
+    # otherwise create it
+    else {
+        $Success = $Self->_TicketAppointmentCreate(
+            CalendarID => $Param{CalendarID},
+            TicketID   => $Param{Data}->{TicketID},
+            RuleID     => $Param{Rule}->{RuleID},
+            %AppointmentData,
+        );
+    }
+
+    return $Success;
+}
+
 =item GetAccessToken()
 
 get access token for the calendar.
@@ -1064,6 +1235,160 @@ sub GetTextColor {
     );
 
     return $TextColor;
+}
+
+=begin Internal:
+
+=item _TicketAppointmentGet()
+
+get ticket appointment id if exists.
+
+    my $AppointmentID = $CalendarObject->_TicketAppointmentGet(
+        TicketID => 1,
+        RuleID   => 1,
+    );
+
+returns appointment ID if successful.
+
+=cut
+
+sub _TicketAppointmentGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(TicketID RuleID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT appointment_id
+            FROM calendar_appointment_ticket
+            WHERE ticket_id = ? AND rule_id = ?
+        ',
+        Bind  => [ \$Param{TicketID}, \$Param{RuleID}, ],
+        Limit => 1,
+    );
+
+    my $AppointmentID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $AppointmentID = $Row[0],
+    }
+
+    return $AppointmentID;
+}
+
+=item _TicketAppointmentCreate()
+
+create ticket appointment.
+
+    my $Success = $CalendarObject->_TicketAppointmentCreate(
+        CalendarID => 1,
+        TicketID   => 1,
+        RuleID     => 1,
+        Title      => '[Ticket#20160823810000010] Some Ticket Title',
+        StartTime  => '2016-08-23 00:00:00',
+        EndTime    => '2016-08-24 00:00:00',
+    );
+
+returns 1 if successful.
+
+=cut
+
+sub _TicketAppointmentCreate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID TicketID RuleID Title StartTime EndTime)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # create appointment
+    my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
+        CalendarID => $Param{CalendarID},
+        Title      => $Param{Title},
+        StartTime  => $Param{StartTime},
+        EndTime    => $Param{EndTime},
+        UserID     => 1,
+    );
+    return if !$AppointmentID;
+
+    # save the relation in database
+    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+        SQL => '
+            INSERT INTO calendar_appointment_ticket
+                (ticket_id, appointment_id, rule_id)
+            VALUES (?, ?, ?)
+        ',
+        Bind => [ \$Param{TicketID}, \$AppointmentID, \$Param{RuleID}, ],
+    );
+
+    return 1;
+}
+
+=item _TicketAppointmentUpdate()
+
+update ticket appointment.
+
+    my $Success = $CalendarObject->_TicketAppointmentUpdate(
+        AppointmentID => 1,
+        Title         => '[Ticket#20160823810000010] Some Ticket Title',
+        StartTime     => '2016-08-23 00:00:00',
+        EndTime       => '2016-08-24 00:00:00',
+    );
+
+returns 1 if successful.
+
+=cut
+
+sub _TicketAppointmentUpdate {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID Title StartTime EndTime)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get appointment object
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+
+    # get current ticket appointment data
+    my %Appointment = $AppointmentObject->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
+    );
+
+    # update ticket appointment
+    my $Success = $AppointmentObject->AppointmentUpdate(
+        %Appointment,
+        Title     => $Param{Title},
+        StartTime => $Param{StartTime},
+        EndTime   => $Param{EndTime},
+        UserID    => 1,
+    );
+
+    return $Success;
 }
 
 1;

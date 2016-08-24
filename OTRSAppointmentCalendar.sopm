@@ -68,8 +68,12 @@
         <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/DynamicField.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/PendingTime.pm"/>
         <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/System/Ticket/Event/TicketAppointments.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Helper.t"/>
@@ -235,6 +239,26 @@
                 <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <TableCreate Name="calendar_appointment_ticket">
+            <Column Name="ticket_id" Required="true" Type="BIGINT"/>
+            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
+            <Column Name="rule_id" Required="true" Type="INTEGER"/>
+            <Index Name="calendar_appointment_ticket_ticket_id">
+                <IndexColumn Name="ticket_id"/>
+            </Index>
+            <Index Name="calendar_appointment_ticket_appointment_id">
+                <IndexColumn Name="appointment_id"/>
+            </Index>
+            <Index Name="calendar_appointment_ticket_rule_id">
+                <IndexColumn Name="rule_id"/>
+            </Index>
+            <ForeignKey ForeignTable="ticket">
+                <Reference Local="ticket_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="calendar_appointment">
+                <Reference Local="appointment_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
 
         <Insert Table="link_object">
             <Data Key="name" Type="Quote">Appointment</Data>
@@ -242,6 +266,7 @@
     </DatabaseInstall>
 
     <DatabaseUninstall Type="pre">
+        <TableDrop Name="calendar_appointment_ticket"/>
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>

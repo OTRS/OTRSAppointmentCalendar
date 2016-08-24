@@ -450,8 +450,11 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 Core.Agent.AppointmentCalendar.Manage.InitTicketAppointments([% Data.RuleCount | JSON %]);
-[% FOREACH Count IN [ 1 .. Data.RuleCount ] %]
+[% IF Data.RuleCount %]
+[% RuleCount = int(Data.RuleCount) || 0 %]
+[% FOREACH Count IN [ 1 .. RuleCount ] %]
 Core.Agent.AppointmentCalendar.Manage.InitTicketAppointmentRule([% Count | JSON %], $('#Rule_' + [% Count | JSON %]));
+[% END %]
 [% END %]
 $('input#Color').spectrum({
     color: [% Data.Color | JSON %],
