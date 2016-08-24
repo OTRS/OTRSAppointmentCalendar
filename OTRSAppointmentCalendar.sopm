@@ -69,6 +69,8 @@
         <File Permission="640" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Email.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Base.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
