@@ -71,6 +71,7 @@
         <File Permission="640" Location="Kernel/System/Calendar/Ticket/DynamicField.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Ticket/PendingTime.pm"/>
+        <File Permission="640" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm"/>
         <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
         <File Permission="640" Location="Kernel/System/Ticket/Event/TicketAppointments.pm"/>
@@ -78,6 +79,7 @@
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Helper.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Plugin.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/TicketAppointments.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t"/>
@@ -240,22 +242,30 @@
             </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment_ticket">
+            <Column Name="calendar_id" Required="true" Type="BIGINT"/>
             <Column Name="ticket_id" Required="true" Type="BIGINT"/>
-            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
             <Column Name="rule_id" Required="true" Size="32" Type="VARCHAR"/>
-            <Unique Name="calendar_appointment_ticket_ticket_id_rule_id">
+            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
+            <Unique Name="calendar_appointment_ticket_calendar_id_ticket_id_rule_id">
+                <UniqueColumn Name="calendar_id"/>
                 <UniqueColumn Name="ticket_id"/>
                 <UniqueColumn Name="rule_id"/>
             </Unique>
+            <Index Name="calendar_appointment_ticket_calendar_id">
+                <IndexColumn Name="calendar_id"/>
+            </Index>
             <Index Name="calendar_appointment_ticket_ticket_id">
                 <IndexColumn Name="ticket_id"/>
-            </Index>
-            <Index Name="calendar_appointment_ticket_appointment_id">
-                <IndexColumn Name="appointment_id"/>
             </Index>
             <Index Name="calendar_appointment_ticket_rule_id">
                 <IndexColumn Name="rule_id"/>
             </Index>
+            <Index Name="calendar_appointment_ticket_appointment_id">
+                <IndexColumn Name="appointment_id"/>
+            </Index>
+            <ForeignKey ForeignTable="calendar">
+                <Reference Local="calendar_id" Foreign="id"/>
+            </ForeignKey>
             <ForeignKey ForeignTable="ticket">
                 <Reference Local="ticket_id" Foreign="id"/>
             </ForeignKey>
