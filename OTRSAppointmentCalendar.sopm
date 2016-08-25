@@ -243,6 +243,10 @@
             <Column Name="ticket_id" Required="true" Type="BIGINT"/>
             <Column Name="appointment_id" Required="true" Type="BIGINT"/>
             <Column Name="rule_id" Required="true" Type="INTEGER"/>
+            <Unique Name="calendar_appointment_ticket_ticket_id_rule_id">
+                <UniqueColumn Name="ticket_id"/>
+                <UniqueColumn Name="rule_id"/>
+            </Unique>
             <Index Name="calendar_appointment_ticket_ticket_id">
                 <IndexColumn Name="ticket_id"/>
             </Index>
@@ -255,9 +259,9 @@
             <ForeignKey ForeignTable="ticket">
                 <Reference Local="ticket_id" Foreign="id"/>
             </ForeignKey>
-            <ForeignKey ForeignTable="calendar_appointment">
+            <!-- <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="appointment_id" Foreign="id"/>
-            </ForeignKey>
+            </ForeignKey> -->
         </TableCreate>
 
         <Insert Table="link_object">
