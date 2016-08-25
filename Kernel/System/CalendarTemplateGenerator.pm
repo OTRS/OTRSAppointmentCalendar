@@ -25,6 +25,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Time',
     'Kernel::System::User',
+    'Kernel::System::Main',
 );
 
 =head1 NAME
@@ -266,24 +267,6 @@ sub _Replace {
         UserID     => $Param{UserID},
     );
 
-    #    my %Ticket;
-    #    if ( $Param{TicketID} ) {
-    #        %Ticket = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
-    #            TicketID      => $Param{TicketID},
-    #            DynamicFields => 1,
-    #        );
-    #    }
-    #
-    #    # translate ticket values if needed
-    #    if ( $Param{Language} ) {
-    #        my $LanguageObject = Kernel::Language->new(
-    #            UserLanguage => $Param{Language},
-    #        );
-    #        for my $Field (qw(Type State StateType Lock Priority)) {
-    #            $Ticket{$Field} = $LanguageObject->Translate( $Ticket{$Field} );
-    #        }
-    #    }
-
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
@@ -343,13 +326,24 @@ sub _Replace {
     );
 
     # supported appointment fields
-    my %AppointmentTags = (
-        'STARTTIME'        => 'StartTime',
-        'ENDTIME'          => 'EndTime',
-        'NOTIFICATIONTIME' => 'NotificationDate',
-        'TITLE'            => 'Title',
-        'DESCRIPTION'      => 'Description',
-        'LOCATION'         => 'Location',
+    my %AppointmentTagsSkip = (
+        CalendarID                            => 1,
+        RecurrenceType                        => 1,
+        RecurrenceFrequency                   => 1,
+        RecurrenceCount                       => 1,
+        RecurrenceInterval                    => 1,
+        RecurrenceUntil                       => 1,
+        RecurrenceID                          => 1,
+        RecurrenceExclude                     => 1,
+        NotificationCustom                    => 1,
+        NotificationTemplate                  => 1,
+        NotificationCustomUnitCount           => 1,
+        NotificationCustomUnit                => 1,
+        NotificationCustomUnitPointOfTime     => 1,
+        NotificationCustomRelativePointOfTime => 1,
+        NotificationCustomRelativeUnit        => 1,
+        NotificationCustomRelativeUnitCount   => 1,
+        NotificationCustomDateTime            => 1,
     );
 
     # replace config options
@@ -359,34 +353,123 @@ sub _Replace {
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
     # replace appointment tags
-    for my $AppointmentTag ( sort keys %AppointmentTags ) {
+    ATTRIBUTE:
+    for my $Attribute ( sort keys %Appointment ) {
 
+        next ATTRIBUTE if !$Attribute;
+        next ATTRIBUTE if $AppointmentTagsSkip{$Attribute};
+
+        # setup a new tag for the current attribute
+        my $MatchTag = $Tag . uc $Attribute;
+
+        my $Replacement = '';
+
+        # process datetime strings (timestamps)
         if (
-            $AppointmentTag eq 'STARTTIME'
-            || $AppointmentTag eq 'ENDTIME'
-            || $AppointmentTag eq 'NOTIFICATIONTIME'
+            $Attribute eq 'StartTime'
+            || $Attribute eq 'EndTime'
+            || $Attribute eq 'NotificationDate'
+            || $Attribute eq 'CreateTime'
+            || $Attribute eq 'ChangeTime'
             )
         {
+            # get the system time of the given timestamp
             my $TagSystemTime = $TimeObject->TimeStamp2SystemTime(
-                String => $Appointment{ $AppointmentTags{$AppointmentTag} },
+                String => $Appointment{$Attribute},
             );
 
-            my ( $ASecond, $AMinute, $AHour, $ADay, $AMonth, $AYear, $ADayOfWeek ) = $CalendarHelperObject->DateGet(
-                SystemTime => $TagSystemTime + $TimezoneOffset,
-            );
-
+            # generate new timestamp with the related timezone offset
             my $NewTimeStamp = $TimeObject->SystemTime2TimeStamp(
                 SystemTime => $TagSystemTime + $TimezoneOffset,
             );
 
             # prepare dates and times
-            my $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+            $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+        }
 
-            $Param{Text} =~ s{$Tag(.+?)$End}{$Replacement}egx;
+        # process team ids
+        if ( $Attribute eq 'TeamID' ) {
+
+            next ATTRIBUTE if !IsArrayRefWithData( $Appointment{$Attribute} );
+
+            if (
+                !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 )
+                )
+            {
+                next ATTRIBUTE;
+            }
+
+            # instanciate a new team object
+            my $TeamObject = Kernel::System::Calendar::Team->new();
+
+            # get a list of available (readable) teams
+            my %TeamList = $TeamObject->TeamList(
+                Valid  => 0,
+                UserID => $Self->{UserID},
+            );
+
+            my @TeamNames;
+
+            if ( IsHashRefWithData( \%TeamList ) ) {
+
+                TEAMKEY:
+                for my $TeamKey ( $Appointment{$Attribute} ) {
+
+                    next TEAMKEY if !$TeamList{$TeamKey};
+
+                    push @TeamNames, $TeamList{$TeamKey};
+                }
+            }
+
+            # replace team ids with a comma seperated list of team names
+            $Replacement = join ",", @TeamNames;
         }
+
+        # process team ids
+        if ( $Attribute eq 'ResourceID' ) {
+
+            next ATTRIBUTE if !IsArrayRefWithData( $Appointment{$Attribute} );
+
+            my @UserNames;
+
+            USERID:
+            for my $UserID ( $Appointment{$Attribute} ) {
+
+                my $UserName = $UserObject->UserName(
+                    UserID => $UserID,
+                );
+
+                next USERID if !$UserName;
+
+                push @UserNames, $UserName;
+            }
+
+            # replace team ids with a comma seperated list of team names
+            $Replacement = join ",", @UserNames;
+        }
+
+        # process all day and recurring tags
+        if (
+            $Attribute eq 'AllDay'
+            || $Attribute eq 'Recurring'
+            )
+        {
+            my $TranslatedString = $LanguageObject->Translate('No');
+
+            if ( $Appointment{$Attribute} ) {
+                $TranslatedString = $LanguageObject->Translate('Yes');
+            }
+
+            $Replacement = $TranslatedString;
+        }
+
+        # process all other single values
         else {
-            $Param{Text} =~ s{$Tag(.+?)$End}{$Appointment{$AppointmentTags{$1}} // ''}egx;
+            $Replacement = $Appointment{$Attribute};
         }
+
+        # replace the tags
+        $Param{Text} =~ s{$MatchTag$End}{$Replacement}egx;
     }
 
     # cleanup
