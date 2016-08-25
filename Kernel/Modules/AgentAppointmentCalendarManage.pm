@@ -124,11 +124,13 @@ sub Run {
             );
 
             # show ticket appointment rules
+            my $RuleNumber = 1;
             for my $Rule ( @{ $GetParam{TicketAppointments} || [] } ) {
                 my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
                 $LayoutObject->Block(
                     Name => 'TicketAppointmentRule',
                     Data => {
+                        RuleNumber => $RuleNumber++,
                         %{$Rule},
                         %TicketAppointmentRule,
                     },
@@ -221,11 +223,13 @@ sub Run {
         );
 
         # show ticket appointment rules
+        my $RuleNumber = 1;
         for my $Rule ( @{ $Calendar{TicketAppointments} || [] } ) {
             my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
             $LayoutObject->Block(
                 Name => 'TicketAppointmentRule',
                 Data => {
+                    RuleNumber => $RuleNumber++,
                     %{$Rule},
                     %TicketAppointmentRule,
                 },
@@ -242,6 +246,14 @@ sub Run {
                     },
                 );
             }
+
+            # initialize button behavior
+            $LayoutObject->Block(
+                Name => 'TicketAppointmentRuleInit',
+                Data => {
+                    %{$Rule},
+                },
+            );
         }
     }
     elsif ( $Self->{Subaction} eq 'Update' ) {
@@ -726,13 +738,28 @@ sub _TicketAppointments {
 sub _GetTicketAppointmentParams {
     my ( $Self, %Param ) = @_;
 
+    # get main object
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
+
     # create data structure
     my %TicketAppointmentParams;
     for my $Key ( sort keys %Param ) {
         for my $Field (qw(StartDate EndDate QueueID SearchParam)) {
-            if ( $Key =~ /^${Field}_([0-9]+)/ ) {
+            if ( $Key =~ /^${Field}_([A-Za-z0-9]+)/ ) {
                 my $RuleID = $1;
-                $TicketAppointmentParams{$RuleID}->{RuleID} = $RuleID;
+
+                # if rule id is integer, generate random guid
+                if ( IsInteger($RuleID) ) {
+                    $TicketAppointmentParams{$RuleID}->{RuleID} = $MainObject->GenerateRandomString(
+                        Length     => 32,
+                        Dictionary => [ 0 .. 9, 'a' .. 'f' ],    # hexadecimal
+                    );
+                }
+
+                # otherwise, use it as-is
+                else {
+                    $TicketAppointmentParams{$RuleID}->{RuleID} = $RuleID;
+                }
                 if ( $Field eq 'SearchParam' ) {
                     if ( $Key =~ /^SearchParam_${RuleID}_([A-Za-z]+)$/ ) {
                         my $SearchParam = $1;

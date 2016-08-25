@@ -286,7 +286,7 @@
                     <fieldset id="Rule_[% Data.RuleID | html %]" class="TableLike SpacingTop">
                         <legend>
                             <span>
-                                [% Translate("Rule") | html %] [% Data.RuleID | html %]
+                                [% Translate("Rule") | html %] <span class="RuleNumber">[% Data.RuleNumber | html %]</span>
                                 <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
                                     <i class="fa fa-minus-square-o"></i>
                                     <span class="InvisibleText">[% Translate("Remove") | html %]</span>
@@ -450,12 +450,9 @@
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
 Core.Agent.AppointmentCalendar.Manage.InitTicketAppointments([% Data.RuleCount | JSON %]);
-[% IF Data.RuleCount %]
-[% RuleCount = int(Data.RuleCount) || 0 %]
-[% FOREACH Count IN [ 1 .. RuleCount ] %]
-Core.Agent.AppointmentCalendar.Manage.InitTicketAppointmentRule([% Count | JSON %], $('#Rule_' + [% Count | JSON %]));
-[% END %]
-[% END %]
+[% RenderBlockStart("TicketAppointmentRuleInit") %]
+Core.Agent.AppointmentCalendar.Manage.InitTicketAppointmentRule([% Data.RuleID | JSON %], $('#Rule_' + Core.App.EscapeSelector([% Data.RuleID | JSON %])));
+[% RenderBlockEnd("TicketAppointmentRuleInit") %]
 $('input#Color').spectrum({
     color: [% Data.Color | JSON %],
     containerClassName: 'ColorPaletteContainer',

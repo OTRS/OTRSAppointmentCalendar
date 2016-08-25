@@ -1016,6 +1016,13 @@ sub TicketAppointments {
             }
         }
     }
+
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Debug') ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'debug',
+            Message  => "Processed ticket appointments for ticket: $Param{TicketID}",
+        );
+    }
 }
 
 =item TicketAppointmentProcess()
@@ -1034,7 +1041,7 @@ Process the ticket appointment rule and create, update or delete appointment if 
             StartDate => 'DynamicField_TestDate',
             EndDate   => 'Plus_5',
             QueueID   => [ 2 ],
-            RuleID    => 1,
+            RuleID    => '9bb20ea035e7a9930652a9d82d00c725',
             SearchParams => {
                 Title => 'Welcome*',
             },
@@ -1379,7 +1386,7 @@ get ticket appointment id if exists.
 
     my $AppointmentID = $CalendarObject->_TicketAppointmentGet(
         TicketID => 1,
-        RuleID   => 1,
+        RuleID   => '9bb20ea035e7a9930652a9d82d00c725',
     );
 
 returns appointment ID if successful.
@@ -1429,7 +1436,7 @@ create ticket appointment.
     my $Success = $CalendarObject->_TicketAppointmentCreate(
         CalendarID => 1,
         TicketID   => 1,
-        RuleID     => 1,
+        RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
         Title      => '[Ticket#20160823810000010] Some Ticket Title',
         StartTime  => '2016-08-23 00:00:00',
         EndTime    => '2016-08-24 00:00:00',
@@ -1481,7 +1488,7 @@ update ticket appointment.
     my $Success = $CalendarObject->_TicketAppointmentUpdate(
         AppointmentID => 1,
         TicketID      => 1,
-        RuleID        => 1,
+        RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
         Title         => '[Ticket#20160823810000010] Some Ticket Title',
         StartTime     => '2016-08-23 00:00:00',
         EndTime       => '2016-08-24 00:00:00',
@@ -1543,7 +1550,7 @@ delete ticket appointment(s).
 
     my $Success = $CalendarObject->_TicketAppointmentDelete(
         TicketID      => 1,
-        RuleID        => 1,
+        RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
         AppointmentID => 1,     # (optional) Appointment ID is known
     );
 

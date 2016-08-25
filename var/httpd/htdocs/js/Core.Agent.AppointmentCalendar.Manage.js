@@ -114,6 +114,8 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
 
         $RemoveObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
             $RuleObj.remove();
+            UpdateRuleCount();
+
             return false;
         });
 
@@ -181,6 +183,16 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
 
             return false;
         });
+    }
+
+    function UpdateRuleCount() {
+        var $RuleNumberObj = $('.RuleNumber:visible');
+
+        $RuleNumberObj.each(function (Index, Element) {
+            $(Element).text(Index + 1);
+        });
+
+        RuleCount = $RuleNumberObj.length;
     }
 
     return TargetNS;
