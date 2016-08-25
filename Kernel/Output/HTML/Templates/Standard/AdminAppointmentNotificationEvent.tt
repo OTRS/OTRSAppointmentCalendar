@@ -269,6 +269,14 @@ $('.NotificationDelete').bind('click', function (Event) {
                         </div>
                         <div class="Clear"></div>
 
+[% RenderBlockStart("OverviewUpdateTeam") %]
+                        <label for="TeamID">[% Translate("Team") | html %]: </label>
+                        <div class="Field">
+                            [% Data.TeamStrg %]
+                        </div>
+                        <div class="Clear"></div>
+[% RenderBlockEnd("OverviewUpdateTeam") %]
+
                         <label for="ResourceID">[% Translate("Resource") | html %]: </label>
                         <div class="Field">
                             [% Data.ResourceStrg %]

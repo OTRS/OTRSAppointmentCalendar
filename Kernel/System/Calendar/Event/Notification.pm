@@ -301,6 +301,8 @@ sub _NotificationFilter {
     # set local values
     my %Notification = %{ $Param{Notification} };
 
+    return if !IsHashRefWithData( $Notification{Data} );
+
     KEY:
     for my $Key ( sort keys %{ $Notification{Data} } ) {
 
@@ -343,17 +345,20 @@ sub _NotificationFilter {
 
             next VALUE if !$Value;
 
-            if ( $Key eq 'ResourceID' ) {
+            if (
+                $Key eq 'TeamID'
+                || $Key eq 'ResourceID'
+                )
+            {
+                # check for existing object ids in appointment
+                next KEY if !IsArrayRefWithData( $Param{Appointment}->{$Key} );
 
-                # check for existing resource ids in appointment
-                next KEY if !IsHashRefWithData( $Param{Appointment}->{$Key} );
+                OBJECTID:
+                for my $ObjectID ( @{ $Param{Appointment}->{$Key} } ) {
 
-                RESOURCEID:
-                for my $ResourceID ( @{ $Param{Appointment}->{$Key} } ) {
+                    next OBJECTID if !$ObjectID;
 
-                    next RESOURCEID if !$ResourceID;
-
-                    if ( $Value eq $ResourceID ) {
+                    if ( $Value eq $ObjectID ) {
                         $Match = 1;
                         last VALUE;
                     }

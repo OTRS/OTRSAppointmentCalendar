@@ -365,51 +365,6 @@
         </Setting>
     </ConfigItem>
 
-    <ConfigItem Name="Notification::Transport###Email" Required="0" Valid="1">
-        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
-        <Setting>
-            <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::Email</Item>
-                <Item Key="Name" Translatable="1">Email</Item>
-                <Item Key="Icon">fa fa-envelope</Item>
-                <Item Key="Prio">100</Item>
-                <Item Key="IsOTRSBusinessTransport">0</Item>
-                <Item Key="AgentEnabledByDefault">1</Item>
-            </Hash>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Notification::Transport###NotificationView" Required="0" Valid="1">
-        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
-        <Setting>
-            <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::NotificationView</Item>
-                <Item Key="Name" Translatable="1">Web View</Item>
-                <Item Key="Icon">fa fa-th-list</Item>
-                <Item Key="Prio">110</Item>
-                <Item Key="IsOTRSBusinessTransport">1</Item>
-                <Item Key="AgentEnabledByDefault">0</Item>
-            </Hash>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="Notification::Transport###SMS" Required="0" Valid="1">
-        <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
-        <Group>Ticket</Group>
-        <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
-        <Setting>
-            <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::SMS</Item>
-                <Item Key="Name" Translatable="1">SMS (Short Message Service)</Item>
-                <Item Key="Icon">fa fa-mobile</Item>
-                <Item Key="Prio">120</Item>
-                <Item Key="IsOTRSBusinessTransport">1</Item>
-                <Item Key="AgentEnabledByDefault">0</Item>
-            </Hash>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="PreferencesGroups###NotificationEvent" Required="0" Valid="1">
         <Description Translatable="1">Transport selection for ticket notifications.</Description>
         <Group>Ticket</Group>
@@ -452,7 +407,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <!-- <ConfigItem Name="Notification::Transport###NotificationView" Required="0" Valid="1">
+    <ConfigItem Name="AppointmentNotification::Transport###NotificationView" Required="0" Valid="1">
         <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
@@ -467,7 +422,7 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="Notification::Transport###SMS" Required="0" Valid="1">
+    <ConfigItem Name="AppointmentNotification::Transport###SMS" Required="0" Valid="1">
         <Description Translatable="1">Defines all the parameters for this notification transport.</Description>
         <Group>Ticket</Group>
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
@@ -481,9 +436,9 @@
                 <Item Key="AgentEnabledByDefault">0</Item>
             </Hash>
         </Setting>
-    </ConfigItem> -->
+    </ConfigItem>
 
-    <!-- Dashboard Widget -->
+    <!-- dashboard widget -->
     <ConfigItem Name="DashboardBackend###0500-AppointmentCalendar" Required="0" Valid="1">
         <Description Translatable="1">Defines the parameters for the dashboard backend. "Limit" defines the number of entries displayed by default. "Group" is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). "Default" indicates if the plugin is enabled by default or if the user needs to enable it manually. "CacheTTLLocal" defines the cache expiration period in minutes for the plugin.</Description>
         <Group>Framework</Group>

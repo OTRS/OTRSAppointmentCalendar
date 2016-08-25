@@ -103,7 +103,7 @@ sub Run {
         PARAMETER:
         for my $Parameter (
             qw(Recipients RecipientAgents RecipientGroups RecipientRoles
-            Events CalendarID ResourceID Title Location
+            Events CalendarID TeamID ResourceID Title Location
             ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
             ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
@@ -879,6 +879,40 @@ sub _Edit {
         Name => 'OverviewUpdate',
         Data => \%Param,
     );
+
+    # try to load the team backend
+    if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+
+        # instanciate a new team object
+        my $TeamObject = Kernel::System::Calendar::Team->new();
+
+        # get a list of available (readable) teams
+        my %TeamList = $TeamObject->TeamList(
+            Valid  => 0,
+            UserID => $Self->{UserID},
+        );
+
+        if ( IsHashRefWithData( \%TeamList ) ) {
+
+            # build team selection
+            my $TeamStrg = $LayoutObject->BuildSelection(
+                Data       => \%TeamList,
+                Name       => 'TeamID',
+                Multiple   => 1,
+                Size       => 5,
+                SelectedID => $Param{Data}->{TeamID},
+                Class      => 'Modernize W75pc',
+            );
+
+            # activate the team section
+            $LayoutObject->Block(
+                Name => 'OverviewUpdateTeam',
+                Data => {
+                    TeamStrg => $TeamStrg,
+                },
+            );
+        }
+    }
 
     # shows header
     if ( $Param{Action} eq 'Change' ) {
