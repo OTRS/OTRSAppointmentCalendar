@@ -31,10 +31,6 @@ sub Run {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
     my $RichText     = $ConfigObject->Get('Frontend::RichText');
-    my $DynamicField = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
-        Valid      => 1,
-        ObjectType => ['Ticket'],
-    );
 
     if ( $RichText && !$ConfigObject->Get("Frontend::Admin::$Self->{Action}")->{RichText} ) {
         $RichText = 0;
@@ -49,7 +45,6 @@ sub Run {
     my $ParamObject             = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $LayoutObject            = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
-    my $BackendObject           = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
     my $MainObject              = $Kernel::OM->Get('Kernel::System::Main');
 
     # get registered transport layers
@@ -72,9 +67,8 @@ sub Run {
         $Output .= $LayoutObject->NavigationBar();
         $Self->_Edit(
             %Data,
-            Action             => 'Change',
-            RichText           => $RichText,
-            DynamicFieldValues => $Data{Data},
+            Action   => 'Change',
+            RichText => $RichText,
         );
         $Output .= $LayoutObject->Output(
             TemplateFile => 'AdminAppointmentNotificationEvent',
@@ -132,41 +126,6 @@ sub Run {
             }
             if ( !$Body ) {
                 $GetParam{ $LanguageID . '_BodyServerError' } = "ServerError";
-            }
-        }
-
-        # to store dynamic fields profile data
-        my %DynamicFieldValues;
-
-        # get Dynamic fields for search from web request
-        # cycle trough the activated Dynamic Fields for this screen
-        DYNAMICFIELD:
-        for my $DynamicFieldConfig ( @{$DynamicField} ) {
-            next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-
-            # extract the dynamic field value form the web request
-            my $DynamicFieldValue = $BackendObject->SearchFieldValueGet(
-                DynamicFieldConfig     => $DynamicFieldConfig,
-                ParamObject            => $ParamObject,
-                ReturnProfileStructure => 1,
-                LayoutObject           => $LayoutObject,
-            );
-
-            # set the complete value structure in GetParam to store it later in the Notification Item
-            if ( IsHashRefWithData($DynamicFieldValue) ) {
-
-                # set search structure for display
-                %DynamicFieldValues = ( %DynamicFieldValues, %{$DynamicFieldValue} );
-
-                #make all values array refs
-                for my $FieldName ( sort keys %{$DynamicFieldValue} ) {
-                    if ( ref $DynamicFieldValue->{$FieldName} ne 'ARRAY' ) {
-                        $DynamicFieldValue->{$FieldName} = [ $DynamicFieldValue->{$FieldName} ];
-                    }
-                }
-
-                # store special structure for match
-                $GetParam{Data} = { %{ $GetParam{Data} }, %{$DynamicFieldValue} };
             }
         }
 
@@ -260,9 +219,8 @@ sub Run {
             $Output .= $LayoutObject->Notify( Priority => 'Error' );
             $Self->_Edit(
                 %GetParam,
-                Action             => 'Change',
-                RichText           => $RichText,
-                DynamicFieldValues => \%DynamicFieldValues,
+                Action   => 'Change',
+                RichText => $RichText,
             );
             $Output .= $LayoutObject->Output(
                 TemplateFile => 'AdminAppointmentNotificationEvent',
@@ -341,41 +299,6 @@ sub Run {
             }
             if ( !$Body ) {
                 $GetParam{ $LanguageID . '_BodyServerError' } = "ServerError";
-            }
-        }
-
-        # to store dynamic fields profile data
-        my %DynamicFieldValues;
-
-        # get Dynamic fields for search from web request
-        # cycle trough the activated Dynamic Fields for this screen
-        DYNAMICFIELD:
-        for my $DynamicFieldConfig ( @{$DynamicField} ) {
-            next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-
-            # extract the dynamic field value form the web request
-            my $DynamicFieldValue = $BackendObject->SearchFieldValueGet(
-                DynamicFieldConfig     => $DynamicFieldConfig,
-                ParamObject            => $ParamObject,
-                ReturnProfileStructure => 1,
-                LayoutObject           => $LayoutObject,
-            );
-
-            # set the complete value structure in GetParam to store it later in the Generic Agent Job
-            if ( IsHashRefWithData($DynamicFieldValue) ) {
-
-                # set search structure for display
-                %DynamicFieldValues = ( %DynamicFieldValues, %{$DynamicFieldValue} );
-
-                #make all values array refs
-                for my $FieldName ( sort keys %{$DynamicFieldValue} ) {
-                    if ( ref $DynamicFieldValue->{$FieldName} ne 'ARRAY' ) {
-                        $DynamicFieldValue->{$FieldName} = [ $DynamicFieldValue->{$FieldName} ];
-                    }
-                }
-
-                # store special structure for match
-                $GetParam{Data} = { %{ $GetParam{Data} }, %{$DynamicFieldValue} };
             }
         }
 
@@ -472,9 +395,8 @@ sub Run {
             $Output .= $LayoutObject->Notify( Priority => 'Error' );
             $Self->_Edit(
                 %GetParam,
-                Action             => 'Add',
-                RichText           => $RichText,
-                DynamicFieldValues => \%DynamicFieldValues,
+                Action   => 'Add',
+                RichText => $RichText,
             );
             $Output .= $LayoutObject->Output(
                 TemplateFile => 'AdminAppointmentNotificationEvent',
@@ -920,55 +842,6 @@ sub _Edit {
     }
     else {
         $LayoutObject->Block( Name => 'HeaderAdd' );
-    }
-
-    # create dynamic field HTML for set with historical data options
-    my $PrintDynamicFieldsSearchHeader = 1;
-
-    # cycle trough the activated Dynamic Fields for this screen
-    my $DynamicField = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldListGet(
-        Valid      => 1,
-        ObjectType => ['Ticket'],
-    );
-
-    my $BackendObject = $Kernel::OM->Get('Kernel::System::DynamicField::Backend');
-
-    DYNAMICFIELD:
-    for my $DynamicFieldConfig ( @{$DynamicField} ) {
-        next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldConfig);
-
-        # skip all dynamic fields that are not designed to be notification triggers
-        my $IsNotificationEventCondition = $BackendObject->HasBehavior(
-            DynamicFieldConfig => $DynamicFieldConfig,
-            Behavior           => 'IsNotificationEventCondition',
-        );
-
-        next DYNAMICFIELD if !$IsNotificationEventCondition;
-
-        # get field HTML
-        my $DynamicFieldHTML = $BackendObject->SearchFieldRender(
-            DynamicFieldConfig     => $DynamicFieldConfig,
-            Profile                => $Param{DynamicFieldValues} || {},
-            LayoutObject           => $LayoutObject,
-            ConfirmationCheckboxes => 1,
-            UseLabelHints          => 0,
-        );
-
-        next DYNAMICFIELD if !IsHashRefWithData($DynamicFieldHTML);
-
-        if ($PrintDynamicFieldsSearchHeader) {
-            $LayoutObject->Block( Name => 'DynamicField' );
-            $PrintDynamicFieldsSearchHeader = 0;
-        }
-
-        # output dynamic field
-        $LayoutObject->Block(
-            Name => 'DynamicFieldElement',
-            Data => {
-                Label => $DynamicFieldHTML->{Label},
-                Field => $DynamicFieldHTML->{Field},
-            },
-        );
     }
 
     # add rich text editor
