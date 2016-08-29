@@ -58,11 +58,13 @@ sub Run {
     # get ticket appointment types
     my %TicketAppointmentTypes = $CalendarObject->_TicketAppointmentTypesGet();
 
+    my %RuleIDLookup;
+
     # check ticket appointment config
     if ( $Calendar{TicketAppointments} && IsArrayRefWithData( $Calendar{TicketAppointments} ) ) {
 
         # get active rule ids from the calendar
-        my %RuleIDLookup = map { $_->{RuleID} => 1 } @{ $Calendar{TicketAppointments} };
+        %RuleIDLookup = map { $_->{RuleID} => 1 } @{ $Calendar{TicketAppointments} };
 
         TICKET_APPOINTMENTS:
         for my $TicketAppointments ( @{ $Calendar{TicketAppointments} } ) {
@@ -109,41 +111,36 @@ sub Run {
                 else {
                     $Self->Print(" failed.\n");
                 }
-
-                # get used rule ids
-                my @RuleIDs = $CalendarObject->_TicketAppointmentRuleIDsGet(
-                    CalendarID => $CalendarID,
-                    TicketID   => $TicketID,
-                );
-
-                # remove ticket appointments for missing rules
-                for my $RuleID (@RuleIDs) {
-                    if ( !$RuleIDLookup{$RuleID} ) {
-                        $Self->Print(
-                            " Cleanup for ticket $TicketID and rule '$TicketAppointments->{RuleID}'..."
-                        );
-                        my $Success = $CalendarObject->_TicketAppointmentDelete(
-                            CalendarID => $CalendarID,
-                            TicketID   => $TicketID,
-                            RuleID     => $RuleID,
-                        );
-
-                        # error handling
-                        if ($Success) {
-                            $Self->Print(" done.\n");
-                        }
-                        else {
-                            $Self->Print(" failed.\n");
-                        }
-                    }
-                }
             }
         }
     }
 
-    # cleanup outdated rules
+    # get used rule ids
+    my @RuleIDs = $CalendarObject->_TicketAppointmentRuleIDsGet(
+        CalendarID => $CalendarID,
+    );
 
-    # my @ActiveRuleIDs = map
+    # remove ticket appointments for missing rules
+    for my $RuleID (@RuleIDs) {
+        if ( !$RuleIDLookup{$RuleID} ) {
+            $Self->Print(
+                " Cleanup for rule '$RuleID'..."
+            );
+            my $Success = $CalendarObject->_TicketAppointmentDelete(
+                CalendarID => $CalendarID,
+                RuleID     => $RuleID,
+            );
+
+            # error handling
+            if ($Success) {
+                $Self->Print(" done.\n");
+            }
+            else {
+                $Self->Print(" failed.\n");
+            }
+        }
+    }
+
     $Self->Print("<green>Done.</green>\n");
     return $Self->ExitCodeOk();
 }

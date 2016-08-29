@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::Language qw(Translatable);
+use Kernel::System::AsynchronousExecutor;
 use Kernel::System::VariableCheck qw(:all);
 
 our $ObjectManagerDisabled = 1;
@@ -164,6 +165,16 @@ sub Run {
                 Comment => Translatable('Please contact the admin.'),
             );
         }
+
+        # process ticket appointments in async call to console command
+        Kernel::System::AsynchronousExecutor->AsyncCall(
+            ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
+            FunctionName   => 'Execute',
+            FunctionParams => [
+                $Calendar{CalendarID},
+                '--quiet',
+            ],
+        );
 
         # redirect
         return $LayoutObject->Redirect(
@@ -319,6 +330,16 @@ sub Run {
                 Comment => Translatable('Please contact the admin.'),
             );
         }
+
+        # process ticket appointments in async call to console command
+        Kernel::System::AsynchronousExecutor->AsyncCall(
+            ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
+            FunctionName   => 'Execute',
+            FunctionParams => [
+                $Calendar{CalendarID},
+                '--quiet',
+            ],
+        );
 
         # redirect
         return $LayoutObject->Redirect(

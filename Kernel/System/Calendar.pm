@@ -1411,11 +1411,11 @@ sub _TicketAppointmentGet {
 
 =item _TicketAppointmentRuleIDsGet()
 
-get used ticket appointment rules for specific ticket.
+get used ticket appointment rules for specific calendar.
 
     my @RuleIDs = $CalendarObject->_TicketAppointmentRuleIDsGet(
         CalendarID => 1,
-        TicketID   => 1,
+        TicketID   => 1,    # (optional) Return rules used only for specific ticket
     );
 
 returns array of rule IDs if found.
@@ -1426,7 +1426,7 @@ sub _TicketAppointmentRuleIDsGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID TicketID)) {
+    for my $Needed (qw(CalendarID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1439,22 +1439,35 @@ sub _TicketAppointmentRuleIDsGet {
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # db query
-    return if !$DBObject->Prepare(
-        SQL => '
-            SELECT rule_id
-            FROM calendar_appointment_ticket
-            WHERE calendar_id = ? AND ticket_id = ?
-        ',
-        Bind => [ \$Param{CalendarID}, \$Param{TicketID}, ],
-    );
+    my $SQL = '
+        SELECT rule_id
+        FROM calendar_appointment_ticket
+        WHERE calendar_id = ?
+    ';
+    my @Bind;
+    push @Bind, \$Param{CalendarID};
 
-    my @RuleIDs;
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        push @RuleIDs, $Row[0],
+    # specific ticket query condition
+    if ( $Param{TicketID} ) {
+        $SQL .= '
+            AND ticket_id = ?
+        ';
+        push @Bind, \$Param{TicketID};
     }
 
-    return @RuleIDs;
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    my %RuleIDs;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $RuleIDs{ $Row[0] } = 1;
+    }
+
+    # return unique rule ids
+    return keys %RuleIDs;
 }
 
 =item _TicketAppointmentTypesGet()
@@ -1636,8 +1649,8 @@ delete ticket appointment(s).
 
     my $Success = $CalendarObject->_TicketAppointmentDelete(
         CalendarID    => 1,
-        TicketID      => 1,
         RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
+        TicketID      => 1,                                     # (optional) Ticket ID is known
         AppointmentID => 1,                                     # (optional) Appointment ID is known
     );
 
@@ -1649,7 +1662,7 @@ sub _TicketAppointmentDelete {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID TicketID RuleID)) {
+    for my $Needed (qw(CalendarID RuleID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1659,56 +1672,78 @@ sub _TicketAppointmentDelete {
         }
     }
 
+    my @AppointmentIDs;
+    push @AppointmentIDs, $Param{ApointmentID} if $Param{ApointmentID};
+
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
-    # appointment is not known
-    if ( !$Param{ApointmentID} ) {
+    # appointment id is unknown
+    if ( !@AppointmentIDs ) {
+        my $SQL = '
+            SELECT appointment_id
+            FROM calendar_appointment_ticket
+            WHERE calendar_id = ? AND rule_id = ?
+        ';
+        my @Bind;
+        push @Bind, \$Param{CalendarID}, \$Param{RuleID};
+
+        if ( $Param{TicketID} ) {
+            $SQL .= '
+                AND ticket_id = ?
+            ';
+            push @Bind, \$Param{TicketID};
+        }
 
         # db query
         return if !$DBObject->Prepare(
-            SQL => '
-                SELECT appointment_id
-                FROM calendar_appointment_ticket
-                WHERE calendar_id = ? AND ticket_id = ? AND rule_id = ?
-            ',
-            Bind  => [ \$Param{CalendarID}, \$Param{TicketID}, \$Param{RuleID}, ],
-            Limit => 1,
+            SQL  => $SQL,
+            Bind => \@Bind,
         );
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            $Param{AppointmentID} = $Row[0],
+            push @AppointmentIDs, $Row[0],
         }
     }
 
     # remove the relation(s) from database
+    my $SQL = '
+        DELETE FROM calendar_appointment_ticket
+        WHERE calendar_id = ? AND rule_id = ?
+    ';
+    my @Bind;
+    push @Bind, \$Param{CalendarID}, \$Param{RuleID};
+
+    if ( $Param{TicketID} ) {
+        $SQL .= '
+            AND ticket_id = ?
+        ';
+        push @Bind, \$Param{TicketID};
+    }
+
     return if !$DBObject->Do(
-        SQL => '
-            DELETE FROM calendar_appointment_ticket
-            WHERE calendar_id = ? AND ticket_id = ? AND rule_id = ?
-        ',
-        Bind  => [ \$Param{CalendarID}, \$Param{TicketID}, \$Param{RuleID}, ],
-        Limit => 1,
+        SQL  => $SQL,
+        Bind => \@Bind,
     );
 
     # get appointment object
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
-    # check if appointment exists
-    return if !$AppointmentObject->AppointmentGet(
-        AppointmentID => $Param{AppointmentID},
-    );
+    # cleanup ticket appointments
+    APPOINTMENT_ID:
+    for my $AppointmentID (@AppointmentIDs) {
 
-    # delete the appointment
-    return $AppointmentObject->AppointmentDelete(
-        AppointmentID => $Param{AppointmentID},
-        UserID        => 1,
-    );
+        # check if appointment exists
+        next APPOINTMENT_ID if !$AppointmentObject->AppointmentGet(
+            AppointmentID => $AppointmentID,
+        );
 
-    # # make sure appointment cache is ok
-    # $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-    #     Type => 'AppointmentList' . $Param{CalendarID},
-    # );
+        # delete the appointment
+        return if !$AppointmentObject->AppointmentDelete(
+            AppointmentID => $AppointmentID,
+            UserID        => 1,
+        );
+    }
 
     return 1;
 }
