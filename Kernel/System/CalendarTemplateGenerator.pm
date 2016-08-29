@@ -26,6 +26,8 @@ our @ObjectDependencies = (
     'Kernel::System::Time',
     'Kernel::System::User',
     'Kernel::System::Main',
+    'Kernel::System::Group',
+    'Kernel::System::Valid',
 );
 
 =head1 NAME
@@ -327,6 +329,7 @@ sub _Replace {
 
     # supported appointment fields
     my %AppointmentTagsSkip = (
+        ParentID                              => 1,
         RecurrenceType                        => 1,
         RecurrenceFrequency                   => 1,
         RecurrenceCount                       => 1,
@@ -345,11 +348,15 @@ sub _Replace {
         NotificationCustomDateTime            => 1,
     );
 
-    # replace config options
-    $Tag = $Start . 'OTRS_APPOINTMENT_';
-
     # get a local time object
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
+
+    # ---
+    # process appointment
+    # ---
+
+    # replace config options
+    $Tag = $Start . 'OTRS_APPOINTMENT_';
 
     # replace appointment tags
     ATTRIBUTE:
@@ -389,6 +396,14 @@ sub _Replace {
 
             # prepare dates and times
             $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+        }
+
+        # process createby and changeby
+        elsif ( $Attribute eq 'CreateBy' || $Attribute eq 'ChangeBy' ) {
+
+            $Replacement = $UserObject->UserName(
+                UserID => $Appointment{$Attribute},
+            );
         }
 
         # process team ids
@@ -485,17 +500,72 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
-    # supported calendar fields
-    my %CalendarTags = (
-        'NAME' => 'CalendarName',
-    );
+    # ---
+    # process calendar
+    # ---
 
     # replace config options
     $Tag = $Start . 'OTRS_CALENDAR_';
 
     # replace appointment tags
-    for my $CalendarTag ( sort keys %CalendarTags ) {
-        $Param{Text} =~ s{$Tag(.+?)$End}{$Calendar{$CalendarTags{$1}} // ''}egx;
+    ATTRIBUTE:
+    for my $Attribute ( sort keys %Calendar ) {
+
+        next ATTRIBUTE if !$Attribute;
+
+        # setup a new tag for the current attribute
+        my $MatchTag = $Tag . uc $Attribute;
+
+        my $Replacement = '';
+
+        # process datetime strings (timestamps)
+        if ( $Attribute eq 'CreateTime' || $Attribute eq 'ChangeTime' ) {
+
+            # get the system time of the given timestamp
+            my $TagSystemTime = $TimeObject->TimeStamp2SystemTime(
+                String => $Calendar{$Attribute},
+            );
+
+            # generate new timestamp with the related timezone offset
+            my $NewTimeStamp = $TimeObject->SystemTime2TimeStamp(
+                SystemTime => $TagSystemTime + $TimezoneOffset,
+            );
+
+            # prepare dates and times
+            $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+        }
+
+        # process createby and changeby
+        elsif ( $Attribute eq 'CreateBy' || $Attribute eq 'ChangeBy' ) {
+
+            $Replacement = $UserObject->UserName(
+                UserID => $Calendar{$Attribute},
+            );
+        }
+
+        # process group id
+        elsif ( $Attribute eq 'GroupID' ) {
+            $Replacement = $Kernel::OM->Get('Kernel::System::Group')->GroupLookup(
+                GroupID => $Calendar{$Attribute},
+            );
+        }
+
+        # process valid id
+        elsif ( $Attribute eq 'ValidID' ) {
+
+            $Replacement = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
+                ValidID => $Calendar{$Attribute},
+            );
+            $Replacement = $LanguageObject->Translate($Replacement);
+        }
+
+        # process all other single values
+        else {
+            $Replacement = $Calendar{$Attribute};
+        }
+
+        # replace the tags
+        $Param{Text} =~ s{$MatchTag$End}{$Replacement}egx;
     }
 
     # cleanup
