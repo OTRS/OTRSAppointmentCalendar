@@ -51,6 +51,7 @@
         <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
         <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/Output/HTML/Preferences/AppointmentNotificationEvent.pm"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEvent.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEventTransportEmailSettings.tt"/>
         <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt"/>
