@@ -189,13 +189,15 @@ $Selenium->RunTest(
         # verify rule has been stored properly
         $Self->IsDeeply(
             $Selenium->execute_script(
-                "return \$('#QueueID_1').val();"
+                "return \$('select[id*=\"QueueID_\"]').val();"
             ),
             [$QueueID],
             'Queue stored properly',
         );
         $Self->Is(
-            $Selenium->find_element( '#SearchParam_1_Title', 'css' )->get_value(),
+            $Selenium->execute_script(
+                "return \$('input[id*=\"_Title\"]').val();"
+            ),
             'Test*',
             'Search param stored properly',
         );
