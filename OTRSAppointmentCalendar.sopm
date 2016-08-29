@@ -211,6 +211,7 @@
             <Column Name="recur_until" Type="DATE"/>
             <Column Name="recur_id" Type="DATE"/>
             <Column Name="recur_exclude" Size="3800" Type="VARCHAR"/>
+            <Column Name="ticket_appointment" Size="255" Type="VARCHAR"/>
             <Column Name="create_time" Type="DATE"/>
             <Column Name="create_by" Type="INTEGER"/>
             <Column Name="change_time" Type="DATE"/>
