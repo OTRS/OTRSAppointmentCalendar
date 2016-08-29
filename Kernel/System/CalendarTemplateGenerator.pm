@@ -327,7 +327,6 @@ sub _Replace {
 
     # supported appointment fields
     my %AppointmentTagsSkip = (
-        CalendarID                            => 1,
         RecurrenceType                        => 1,
         RecurrenceFrequency                   => 1,
         RecurrenceCount                       => 1,
@@ -362,6 +361,11 @@ sub _Replace {
         # setup a new tag for the current attribute
         my $MatchTag = $Tag . uc $Attribute;
 
+        # map NotificationTime attribute
+        if ( $Attribute eq 'NotificationDate' ) {
+            $MatchTag = $Tag . 'NOTIFICATIONTIME';
+        }
+
         my $Replacement = '';
 
         # process datetime strings (timestamps)
@@ -388,7 +392,7 @@ sub _Replace {
         }
 
         # process team ids
-        if ( $Attribute eq 'TeamID' ) {
+        elsif ( $Attribute eq 'TeamID' ) {
 
             next ATTRIBUTE if !IsArrayRefWithData( $Appointment{$Attribute} );
 
@@ -408,12 +412,14 @@ sub _Replace {
                 UserID => $Self->{UserID},
             );
 
+            next ATTRIBUTE if !IsHashRefWithData( \%TeamList );
+
             my @TeamNames;
 
             if ( IsHashRefWithData( \%TeamList ) ) {
 
                 TEAMKEY:
-                for my $TeamKey ( $Appointment{$Attribute} ) {
+                for my $TeamKey ( @{ $Appointment{$Attribute} } ) {
 
                     next TEAMKEY if !$TeamList{$TeamKey};
 
@@ -421,19 +427,21 @@ sub _Replace {
                 }
             }
 
+            next ATTRIBUTE if !IsArrayRefWithData( \@TeamNames );
+
             # replace team ids with a comma seperated list of team names
             $Replacement = join ",", @TeamNames;
         }
 
         # process team ids
-        if ( $Attribute eq 'ResourceID' ) {
+        elsif ( $Attribute eq 'ResourceID' ) {
 
             next ATTRIBUTE if !IsArrayRefWithData( $Appointment{$Attribute} );
 
             my @UserNames;
 
             USERID:
-            for my $UserID ( $Appointment{$Attribute} ) {
+            for my $UserID ( @{ $Appointment{$Attribute} } ) {
 
                 my $UserName = $UserObject->UserName(
                     UserID => $UserID,
@@ -444,12 +452,14 @@ sub _Replace {
                 push @UserNames, $UserName;
             }
 
+            next ATTRIBUTE if !IsArrayRefWithData( \@UserNames );
+
             # replace team ids with a comma seperated list of team names
             $Replacement = join ",", @UserNames;
         }
 
         # process all day and recurring tags
-        if (
+        elsif (
             $Attribute eq 'AllDay'
             || $Attribute eq 'Recurring'
             )
