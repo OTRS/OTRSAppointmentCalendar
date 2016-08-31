@@ -171,7 +171,7 @@ sub Param {
 
         # get the user preferences (this needs to be done only once)
         my $UserNotificationTransport = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-            Data => $Param{UserData}->{NotificationTransport},
+            Data => $Param{UserData}->{AppointmentNotificationTransport},
         );
 
         NOTIFICATION:
@@ -327,7 +327,7 @@ sub Run {
     if ( !$ConfigObject->Get('DemoSystem') ) {
         $UserObject->SetPreferences(
             UserID => $Param{UserData}->{UserID},
-            Key    => 'NotificationTransport',
+            Key    => 'AppointmentNotificationTransport',
             Value  => $Value // '',
         );
     }

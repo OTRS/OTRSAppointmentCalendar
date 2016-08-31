@@ -122,7 +122,7 @@ sub Run {
             );
 
             my $UserNotificationTransport = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-                Data => $Recipient->{NotificationTransport},
+                Data => $Recipient->{AppointmentNotificationTransport},
             );
 
             push @NotificationBundle, {
