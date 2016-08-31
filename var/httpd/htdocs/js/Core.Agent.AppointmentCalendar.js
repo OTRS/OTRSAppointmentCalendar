@@ -1026,6 +1026,39 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     }
 
     /**
+     * @name LocationLinkInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @param {jQueryObject} $LocationObj - location field.
+     * @param {jQueryObject} $LocationLinks - location links.
+     * @description
+     *      This method initializes location link behavior.
+     */
+    TargetNS.LocationLinkInit = function ($LocationObj, $LocationLinks) {
+        var LocationValue = $LocationObj.val() || $LocationObj.text();
+
+        $LocationLinks.each(function (Index, Element) {
+            var $LinkObj = $(Element),
+                BaseURL  = $LinkObj.data('baseUrl');
+
+            // Update link URL and show it if location is set
+            if (LocationValue.length > 0 && LocationValue !== '-') {
+                $LinkObj.attr('href', BaseURL + encodeURIComponent(LocationValue))
+                    .fadeIn('fast');
+            }
+
+            // Otherwise, hide the link
+            else {
+                $LinkObj.fadeOut('fast');
+            }
+        });
+
+        // Register key up event handler
+        $LocationObj.off('keyup.AppointmentCalendar').on('keyup.AppointmentCalendar', function() {
+            TargetNS.LocationLinkInit($LocationObj, $LocationLinks);
+        });
+    }
+
+    /**
      * @name AllDayInit
      * @memberof Core.Agent.AppointmentCalendar
      * @param {jQueryObject} $AllDay - all day checkbox element.
@@ -1039,10 +1072,12 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
         // Show/hide the start hour/minute and complete end time
         if ($AllDay.prop('checked')) {
-            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', true)
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute').val('0')
+                .prop('disabled', true)
                 .prop('readonly', true);
         } else {
-            $('#StartHour,#StartMinute,#EndHour,#EndMinute').prop('disabled', false)
+            $('#StartHour,#StartMinute,#EndHour,#EndMinute')
+                .prop('disabled', false)
                 .prop('readonly', false);
         }
 

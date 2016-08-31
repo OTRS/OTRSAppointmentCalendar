@@ -23,10 +23,11 @@ our @ObjectDependencies = (
     'Kernel::System::Cache',
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Helper',
+    'Kernel::System::Daemon::SchedulerDB',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
-    'Kernel::System::Daemon::SchedulerDB',
+    'Kernel::System::Main',
 );
 
 =head1 NAME
@@ -1582,7 +1583,7 @@ sub GetUniqueID {
     }
 
     # calculate a hash
-    my $RandomString = $Kernel::OM->Get('Kernel::System::Calendar')->GetRandomString( Length => 32 );
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString( Length => 32 );
     my $String       = "$Param{CalendarID}-$RandomString-$Param{UserID}";
     my $Digest       = unpack( 'N', Digest::MD5->new()->add($String)->digest() );
     my $DigestHex    = sprintf( '%x', $Digest );

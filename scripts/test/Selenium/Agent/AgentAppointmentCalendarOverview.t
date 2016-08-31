@@ -74,18 +74,12 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
-        my $Helper          = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-        my $SysConfigObject = $Kernel::OM->Get('Kernel::System::SysConfig');
-        my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
-        my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
-        my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
-        my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
-        my $TicketObject    = $Kernel::OM->Get('Kernel::System::Ticket');
+        my $Helper         = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+        my $GroupObject    = $Kernel::OM->Get('Kernel::System::Group');
+        my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+        my $TimeObject     = $Kernel::OM->Get('Kernel::System::Time');
+        my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
+        my $TicketObject   = $Kernel::OM->Get('Kernel::System::Ticket');
 
         my $RandomID = $Helper->GetRandomID();
 
@@ -242,7 +236,8 @@ $Selenium->RunTest(
         }
 
         # enter some data
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
+        $Selenium->find_element( 'Title',    'name' )->send_keys('Appointment 1');
+        $Selenium->find_element( 'Location', 'name' )->send_keys('Straubing');
         $Selenium->execute_script(
             "return \$('#CalendarID').val("
                 . $Calendar1{CalendarID}
@@ -268,6 +263,13 @@ $Selenium->RunTest(
             ),
             "$TicketNumber Link Ticket $RandomID",
             'Link ticket visible',
+        );
+
+        # check location link contains correct value
+        my $LocationLinkURL = $Selenium->find_element( '.LocationLink', 'css' )->get_attribute('href');
+        $Self->True(
+            $LocationLinkURL =~ /Straubing$/,
+            'Location link contains correct value',
         );
 
         # click on Save
@@ -318,6 +320,13 @@ $Selenium->RunTest(
             ),
             "$TicketNumber Link Ticket $RandomID",
             'Link ticket matches',
+        );
+
+        # check location link contains correct value
+        $LocationLinkURL = $Selenium->find_element( '.LocationLink', 'css' )->get_attribute('href');
+        $Self->True(
+            $LocationLinkURL =~ /Straubing$/,
+            'Location link contains correct value',
         );
 
         # cancel the dialog

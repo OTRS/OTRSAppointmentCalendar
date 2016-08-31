@@ -19,11 +19,6 @@ $Selenium->RunTest(
     sub {
 
         # get needed objects
-        $Kernel::OM->ObjectParamAdd(
-            'Kernel::System::UnitTest::Helper' => {
-                RestoreSystemConfiguration => 1,
-            },
-        );
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
@@ -36,7 +31,7 @@ $Selenium->RunTest(
         # turn on dashboard widget by default
         my $DashboardConfig = $Kernel::OM->Get('Kernel::Config')->Get('DashboardBackend')->{$DashboardConfigKey};
         $DashboardConfig->{Default} = 1;
-        $Kernel::OM->Get('Kernel::System::SysConfig')->ConfigItemUpdate(
+        $Helper->ConfigSettingChange(
             Valid => 1,
             Key   => "DashboardBackend###$DashboardConfigKey",
             Value => $DashboardConfig,

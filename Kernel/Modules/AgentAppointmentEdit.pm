@@ -971,6 +971,20 @@ sub Run {
             },
         );
 
+        # get registered location links
+        my $LocationLinkConfig = $ConfigObject->Get('AgentAppointmentEdit::Location::Link') // {};
+        for my $ConfigKey ( sort keys %{$LocationLinkConfig} ) {
+
+            # show link icon
+            $LayoutObject->Block(
+                Name => 'LocationLink',
+                Data => {
+                    Location => $Appointment{Location} // '',
+                    %{ $LocationLinkConfig->{$ConfigKey} },
+                },
+            );
+        }
+
         # datepicker initialization
         # only if user has permissions move_into and above
         if ( $Permissions && ( $PermissionLevel{$Permissions} < 2 ) ? 0 : 1 ) {
@@ -1078,10 +1092,19 @@ sub Run {
                 $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay}
             );
 
-            # make end time inclusive, add whole day
+            my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                String => $GetParam{StartTime},
+            );
             my $EndTime = $CalendarHelperObject->SystemTimeGet(
                 String => $GetParam{EndTime},
             );
+
+            # prevent storing end time before start time
+            if ( $EndTime < $StartTime ) {
+                $EndTime = $StartTime;
+            }
+
+            # make end time inclusive, add whole day
             $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime + 86400,
             );
@@ -1137,6 +1160,11 @@ sub Run {
             # convert to local time
             $StartTime -= $Self->{TimeSecDiff};
             $EndTime   -= $Self->{TimeSecDiff};
+
+            # prevent storing end time before start time
+            if ( $EndTime < $StartTime ) {
+                $EndTime = $StartTime;
+            }
 
             $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTime,
@@ -1230,10 +1258,10 @@ sub Run {
 
             # until ...
             if (
-                $GetParam{RecurrenceLimit} eq '1' &&
-                $GetParam{RecurrenceUntilYear}    &&
-                $GetParam{RecurrenceUntilMonth}   &&
-                $GetParam{RecurrenceUntilDay}
+                $GetParam{RecurrenceLimit} eq '1'
+                && $GetParam{RecurrenceUntilYear}
+                && $GetParam{RecurrenceUntilMonth}
+                && $GetParam{RecurrenceUntilDay}
                 )
             {
                 $GetParam{RecurrenceUntil} = sprintf(
@@ -1241,6 +1269,18 @@ sub Run {
                     $GetParam{RecurrenceUntilYear}, $GetParam{RecurrenceUntilMonth},
                     $GetParam{RecurrenceUntilDay}
                 );
+
+                # prevent recurrence until dates before start time
+                my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{StartTime},
+                );
+                my $RecurrenceUntil = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{RecurrenceUntil},
+                );
+                if ( $RecurrenceUntil < $StartTime ) {
+                    $GetParam{RecurrenceUntil} = $GetParam{StartTime};
+                }
+
                 $GetParam{RecurrenceCount} = undef;
             }
 
