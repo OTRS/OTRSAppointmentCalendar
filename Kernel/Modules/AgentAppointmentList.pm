@@ -247,9 +247,10 @@ sub Run {
                         RuleID     => $Appointment->{TicketAppointmentRuleID},
                     );
 
-                    # get ticket appointment type from start date
+                    # get types from the ticket appointment rule
                     if ( IsHashRefWithData($Rule) ) {
-                        $Appointment->{TicketAppointmentType} = $Rule->{StartDate};
+                        $Appointment->{TicketAppointmentStartDate} = $Rule->{StartDate};
+                        $Appointment->{TicketAppointmentEndDate}   = $Rule->{EndDate};
                     }
                 }
             }

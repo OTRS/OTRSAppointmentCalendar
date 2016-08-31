@@ -299,7 +299,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     }
                     if (CalEvent.ticketAppointmentType) {
                         $Icon.clone()
-                            .addClass('fa-char-' + Params.TicketAppointmentTypes[CalEvent.ticketAppointmentType])
+                            .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                             .appendTo($IconContainer);
                     }
 
@@ -408,7 +408,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         }
                         if (CalEvent.ticketAppointmentType) {
                             $Icon.clone()
-                                .addClass('fa-char-' + Params.TicketAppointmentTypes[CalEvent.ticketAppointmentType])
+                                .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                                 .appendTo($IconContainer);
                         }
                     }

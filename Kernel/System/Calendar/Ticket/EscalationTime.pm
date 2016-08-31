@@ -90,11 +90,12 @@ sub GetTime {
 =item SetTime()
 
 does nothing, as you cannot explicitly set ticket escalation times.
+returns 1 to prevent errors in log.
 
 =cut
 
 sub SetTime {
-    return;
+    return 1;
 }
 
 1;

@@ -202,18 +202,43 @@ sub Run {
 
         my $CurrentType = 1;
         for my $Type ( sort keys %TicketAppointmentTypes ) {
+            my $NoDrag = 0;
 
-            # output configured ticket appointment type
+            # prevent dragging of ticket escalation appointments
+            if (
+                $Type    eq 'FirstResponseTime'
+                || $Type eq 'UpdateTime'
+                || $Type eq 'SolutionTime'
+                )
+            {
+                $NoDrag = 1;
+            }
+
+            # output configured ticket appointment type mark
             $LayoutObject->Block(
-                Name => 'TicketAppointmentType',
+                Name => 'TicketAppointmentMark',
                 Data => {
-                    Type => $Type,
-                    Mark => lc substr( $TicketAppointmentTypes{$Type}->{Mark}, 0, 1 ),
+                    AppointmentType => $Type,
+                    AppointmentMark => lc substr( $TicketAppointmentTypes{$Type}->{Mark}, 0, 1 ),
                 },
             );
             if ( $CurrentType < scalar keys %TicketAppointmentTypes ) {
                 $LayoutObject->Block(
-                    Name => 'TicketAppointmentTypeComma',
+                    Name => 'TicketAppointmentMarkComma',
+                );
+            }
+
+            # output configured ticket appointment type draggability
+            $LayoutObject->Block(
+                Name => 'TicketAppointmentNoDrag',
+                Data => {
+                    AppointmentType => $Type,
+                    NoDrag          => $NoDrag,
+                },
+            );
+            if ( $CurrentType < scalar keys %TicketAppointmentTypes ) {
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentNoDragComma',
                 );
             }
 
