@@ -197,6 +197,29 @@ sub Run {
         # get plugin list
         $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
 
+        # get registered ticket appointment types
+        my %TicketAppointmentTypes = $CalendarObject->_TicketAppointmentTypesGet();
+
+        my $CurrentType = 1;
+        for my $Type ( sort keys %TicketAppointmentTypes ) {
+
+            # output configured ticket appointment type
+            $LayoutObject->Block(
+                Name => 'TicketAppointmentType',
+                Data => {
+                    Type => $Type,
+                    Mark => lc substr( $TicketAppointmentTypes{$Type}->{Mark}, 0, 1 ),
+                },
+            );
+            if ( $CurrentType < scalar keys %TicketAppointmentTypes ) {
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentTypeComma',
+                );
+            }
+
+            $CurrentType++;
+        }
+
         # get working hour appointments
         my @WorkingHours = $Self->_GetWorkingHours();
 
@@ -329,7 +352,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

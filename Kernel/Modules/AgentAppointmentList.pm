@@ -239,6 +239,19 @@ sub Run {
 
                     $Appointment->{PluginData}->{$PluginKey} = join( '\n', @LinkArray );
                 }
+
+                # check if dealing with ticket appointment
+                if ( $Appointment->{TicketAppointmentRuleID} ) {
+                    my $Rule = $CalendarObject->_TicketAppointmentRuleGet(
+                        CalendarID => 1,
+                        RuleID     => $Appointment->{TicketAppointmentRuleID},
+                    );
+
+                    # get ticket appointment type from start date
+                    if ( IsHashRefWithData($Rule) ) {
+                        $Appointment->{TicketAppointmentType} = $Rule->{StartDate};
+                    }
+                }
             }
 
             # build JSON output

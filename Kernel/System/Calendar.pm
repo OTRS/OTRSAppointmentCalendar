@@ -1602,7 +1602,7 @@ sub _TicketAppointmentRuleIDsGet {
 
 get ticket appointment rule.
 
-    my %Rule = $CalendarObject->_TicketAppointmentRuleGet(
+    my $Rule = $CalendarObject->_TicketAppointmentRuleGet(
         CalendarID => 1,
         RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
     );

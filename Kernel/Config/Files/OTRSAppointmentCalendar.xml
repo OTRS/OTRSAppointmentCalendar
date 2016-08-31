@@ -272,6 +272,7 @@
                 <Item Key="Key">FirstResponseTime</Item>
                 <Item Key="Name" Translatable="1">First response time</Item>
                 <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -285,6 +286,7 @@
                 <Item Key="Key">UpdateTime</Item>
                 <Item Key="Name" Translatable="1">Update time</Item>
                 <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -298,6 +300,7 @@
                 <Item Key="Key">SolutionTime</Item>
                 <Item Key="Name" Translatable="1">Solution time</Item>
                 <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -311,6 +314,7 @@
                 <Item Key="Key">PendingTime</Item>
                 <Item Key="Name" Translatable="1">Pending time</Item>
                 <Item Key="Event">TicketPendingTimeUpdate</Item>
+                <Item Key="Mark">P</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -324,6 +328,7 @@
                 <Item Key="Key" Translatable="1">DynamicField_%s</Item>
                 <Item Key="Name" Translatable="1">DynamicField_%s</Item>
                 <Item Key="Event" Translatable="1">TicketDynamicFieldUpdate_.*</Item>
+                <Item Key="Mark">D</Item>
             </Hash>
         </Setting>
     </ConfigItem>

@@ -234,6 +234,14 @@ Core.Agent.AppointmentCalendar.Init({
     CalendarSettingsButton: 'CalendarSettingsButton',
     CalendarSettingsDialogContainer: 'CalendarSettingsDialogContainer',
     CalendarSettingsShow: [% Data.CalendarSettingsShow | JSON %],
+    TicketAppointmentTypes: {
+[% RenderBlockStart("TicketAppointmentType") %]
+        [% Data.Type | JSON %]: [% Data.Mark | JSON %]
+[% RenderBlockStart("TicketAppointmentTypeComma") %]
+        ,
+[% RenderBlockEnd("TicketAppointmentTypeComma") %]
+[% RenderBlockEnd("TicketAppointmentType") %]
+    },
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
         EditMaskSubaction: [% Data.EditMaskSubaction | JSON %],
@@ -297,7 +305,8 @@ Core.Agent.AppointmentCalendar.Init({
                         notificationCustomRelativeUnitCount: AppointmentData.NotificationCustomRelativeUnitCount,
                         notificationCustomRelativeUnit: AppointmentData.NotificationCustomRelativeUnit,
                         notificationCustomRelativePointOfTime: AppointmentData.NotificationCustomRelativePointOfTime,
-                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime
+                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime,
+                        ticketAppointmentType: AppointmentData.TicketAppointmentType
                     };
                 }
             }
