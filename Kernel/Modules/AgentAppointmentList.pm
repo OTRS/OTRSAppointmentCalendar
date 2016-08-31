@@ -242,7 +242,7 @@ sub Run {
 
                 # check if dealing with ticket appointment
                 if ( $Appointment->{TicketAppointmentRuleID} ) {
-                    my $Rule = $CalendarObject->_TicketAppointmentRuleGet(
+                    my $Rule = $CalendarObject->TicketAppointmentRuleGet(
                         CalendarID => 1,
                         RuleID     => $Appointment->{TicketAppointmentRuleID},
                     );

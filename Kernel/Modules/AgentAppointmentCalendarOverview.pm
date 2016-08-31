@@ -198,7 +198,7 @@ sub Run {
         $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
 
         # get registered ticket appointment types
-        my %TicketAppointmentTypes = $CalendarObject->_TicketAppointmentTypesGet();
+        my %TicketAppointmentTypes = $CalendarObject->TicketAppointmentTypesGet();
 
         my $CurrentType = 1;
         for my $Type ( sort keys %TicketAppointmentTypes ) {

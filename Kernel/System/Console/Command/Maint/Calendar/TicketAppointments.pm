@@ -56,7 +56,7 @@ sub Run {
     }
 
     # get ticket appointment types
-    my %TicketAppointmentTypes = $CalendarObject->_TicketAppointmentTypesGet();
+    my %TicketAppointmentTypes = $CalendarObject->TicketAppointmentTypesGet();
 
     my %RuleIDLookup;
 
@@ -116,7 +116,7 @@ sub Run {
     }
 
     # get used rule ids
-    my @RuleIDs = $CalendarObject->_TicketAppointmentRuleIDsGet(
+    my @RuleIDs = $CalendarObject->TicketAppointmentRuleIDsGet(
         CalendarID => $CalendarID,
     );
 
@@ -126,7 +126,7 @@ sub Run {
             $Self->Print(
                 " Cleanup for rule '$RuleID'..."
             );
-            my $Success = $CalendarObject->_TicketAppointmentDelete(
+            my $Success = $CalendarObject->TicketAppointmentDelete(
                 CalendarID => $CalendarID,
                 RuleID     => $RuleID,
             );

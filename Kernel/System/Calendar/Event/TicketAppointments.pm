@@ -56,7 +56,7 @@ sub Run {
         ->{ $Param{Data}->{AppointmentID} }++;
 
     # run only on ticket appointments (get ticket id)
-    my $TicketID = $Kernel::OM->Get('Kernel::System::Calendar')->_TicketAppointmentTicketID(
+    my $TicketID = $Kernel::OM->Get('Kernel::System::Calendar')->TicketAppointmentTicketID(
         AppointmentID => $Param{Data}->{AppointmentID},
     );
     return if !$TicketID;

@@ -924,7 +924,7 @@ sub TicketAppointments {
     return if !@Calendars;
 
     # get ticket appointment types
-    my %TicketAppointmentTypes = $Self->_TicketAppointmentTypesGet();
+    my %TicketAppointmentTypes = $Self->TicketAppointmentTypesGet();
 
     # get ticket object
     my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
@@ -979,7 +979,7 @@ sub TicketAppointments {
             else {
 
                 # remove any existing ticket appointment
-                $Self->_TicketAppointmentDelete(
+                $Self->TicketAppointmentDelete(
                     CalendarID => $Calendar->{CalendarID},
                     TicketID   => $Param{TicketID},
                     RuleID     => $Param{RuleID},
@@ -1140,7 +1140,7 @@ sub TicketAppointmentProcess {
 
         # delete the ticket appointment, if error was raised
         if ($Error) {
-            $Success = $Self->_TicketAppointmentDelete(
+            $Success = $Self->TicketAppointmentDelete(
                 CalendarID    => $Param{CalendarID},
                 TicketID      => $Param{TicketID},
                 RuleID        => $Param{Rule}->{RuleID},
@@ -1209,14 +1209,14 @@ sub TicketAppointmentUpdateTicket {
     return if !$AppointmentData{TicketAppointmentRuleID};
 
     # get ticket appointment rule
-    my $Rule = $Self->_TicketAppointmentRuleGet(
+    my $Rule = $Self->TicketAppointmentRuleGet(
         CalendarID => $AppointmentData{CalendarID},
         RuleID     => $AppointmentData{TicketAppointmentRuleID},
     );
     return if !IsHashRefWithData($Rule);
 
     # get ticket appointment types
-    my %TicketAppointmentTypes = $Self->_TicketAppointmentTypesGet();
+    my %TicketAppointmentTypes = $Self->TicketAppointmentTypesGet();
 
     # process start and end time values
     for my $Field (qw(StartDate EndDate)) {
@@ -1258,6 +1258,318 @@ sub TicketAppointmentUpdateTicket {
             Message  => "Updated ticket $Param{TicketID} from appointment $Param{AppointmentID}.",
         );
     }
+}
+
+=item TicketAppointmentTicketID()
+
+get ticket id of a ticket appointment.
+
+    my $TicketID = $CalendarObject->TicketAppointmentTicketID(
+        AppointmentID => 1,
+    );
+
+returns appointment ID if successful.
+
+=cut
+
+sub TicketAppointmentTicketID {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{AppointmentID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need AppointmentID!',
+        );
+        return;
+    }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT ticket_id
+            FROM calendar_appointment_ticket
+            WHERE appointment_id = ?
+        ',
+        Bind  => [ \$Param{AppointmentID}, ],
+        Limit => 1,
+    );
+
+    my $TicketID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $TicketID = $Row[0],
+    }
+
+    return $TicketID;
+}
+
+=item TicketAppointmentRuleIDsGet()
+
+get used ticket appointment rules for specific calendar.
+
+    my @RuleIDs = $CalendarObject->TicketAppointmentRuleIDsGet(
+        CalendarID => 1,
+        TicketID   => 1,    # (optional) Return rules used only for specific ticket
+    );
+
+returns array of rule IDs if found.
+
+=cut
+
+sub TicketAppointmentRuleIDsGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    my $SQL = '
+        SELECT rule_id
+        FROM calendar_appointment_ticket
+        WHERE calendar_id = ?
+    ';
+    my @Bind;
+    push @Bind, \$Param{CalendarID};
+
+    # specific ticket query condition
+    if ( $Param{TicketID} ) {
+        $SQL .= '
+            AND ticket_id = ?
+        ';
+        push @Bind, \$Param{TicketID};
+    }
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    my %RuleIDs;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $RuleIDs{ $Row[0] } = 1;
+    }
+
+    # return unique rule ids
+    return keys %RuleIDs;
+}
+
+=item TicketAppointmentRuleGet()
+
+get ticket appointment rule.
+
+    my $Rule = $CalendarObject->TicketAppointmentRuleGet(
+        CalendarID => 1,
+        RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
+    );
+
+returns rule hash:
+
+=cut
+
+sub TicketAppointmentRuleGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID RuleID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my %Calendar = $Self->CalendarGet(
+        CalendarID => $Param{CalendarID},
+    );
+    return if !$Calendar{TicketAppointments};
+
+    my $Result;
+
+    RULE:
+    for my $Rule ( @{ $Calendar{TicketAppointments} || [] } ) {
+        if ( $Rule->{RuleID} eq $Param{RuleID} ) {
+            $Result = $Rule;
+            last RULE;
+        }
+    }
+    return if !$Result;
+
+    return $Result;
+}
+
+=item TicketAppointmentTypesGet()
+
+get defined ticket appointment types from config.
+
+    my %TicketAppointmentTypes = $CalendarObject->TicketAppointmentTypesGet();
+
+returns hash of appointment types:
+
+    %TicketAppointmentTypes = ();
+
+=cut
+
+sub TicketAppointmentTypesGet {
+    my ( $Self, %Param ) = @_;
+
+    # get config object
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+    # get ticket appointment types
+    my $TicketAppointmentConfig = $ConfigObject->Get('AppointmentCalendar::TicketAppointmentType') // {};
+    return if !$TicketAppointmentConfig;
+
+    my %TicketAppointmentTypes;
+
+    TYPE:
+    for my $TypeKey ( sort keys %{$TicketAppointmentConfig} ) {
+        next TYPE if !$TicketAppointmentConfig->{$TypeKey}->{Key};
+
+        if ( $TypeKey =~ /DynamicField$/ ) {
+            my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
+
+            # get list of all valid date and date/time dynamic fields
+            my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
+                ObjectType => 'Ticket',
+            );
+
+            DYNAMICFIELD:
+            for my $DynamicField ( @{$DynamicFieldList} ) {
+                next DYNAMICFIELD if $DynamicField->{FieldType} ne 'Date' && $DynamicField->{FieldType} ne 'DateTime';
+
+                my $Key = sprintf( $TicketAppointmentConfig->{$TypeKey}->{Key}, $DynamicField->{Name} );
+                $TicketAppointmentTypes{$Key} = $TicketAppointmentConfig->{$TypeKey};
+            }
+
+            next TYPE;
+        }
+
+        $TicketAppointmentTypes{ $TicketAppointmentConfig->{$TypeKey}->{Key} } =
+            $TicketAppointmentConfig->{$TypeKey};
+    }
+
+    return %TicketAppointmentTypes;
+}
+
+=item TicketAppointmentDelete()
+
+delete ticket appointment(s).
+
+    my $Success = $CalendarObject->TicketAppointmentDelete(
+        CalendarID    => 1,
+        RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
+        TicketID      => 1,                                     # (optional) Ticket ID is known
+        AppointmentID => 1,                                     # (optional) Appointment ID is known
+    );
+
+returns 1 if successful.
+
+=cut
+
+sub TicketAppointmentDelete {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID RuleID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my @AppointmentIDs;
+    push @AppointmentIDs, $Param{ApointmentID} if $Param{ApointmentID};
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # appointment id is unknown
+    if ( !@AppointmentIDs ) {
+        my $SQL = '
+            SELECT appointment_id
+            FROM calendar_appointment_ticket
+            WHERE calendar_id = ? AND rule_id = ?
+        ';
+        my @Bind;
+        push @Bind, \$Param{CalendarID}, \$Param{RuleID};
+
+        if ( $Param{TicketID} ) {
+            $SQL .= '
+                AND ticket_id = ?
+            ';
+            push @Bind, \$Param{TicketID};
+        }
+
+        # db query
+        return if !$DBObject->Prepare(
+            SQL  => $SQL,
+            Bind => \@Bind,
+        );
+
+        while ( my @Row = $DBObject->FetchrowArray() ) {
+            push @AppointmentIDs, $Row[0],
+        }
+    }
+
+    # remove the relation(s) from database
+    my $SQL = '
+        DELETE FROM calendar_appointment_ticket
+        WHERE calendar_id = ? AND rule_id = ?
+    ';
+    my @Bind;
+    push @Bind, \$Param{CalendarID}, \$Param{RuleID};
+
+    if ( $Param{TicketID} ) {
+        $SQL .= '
+            AND ticket_id = ?
+        ';
+        push @Bind, \$Param{TicketID};
+    }
+
+    return if !$DBObject->Do(
+        SQL  => $SQL,
+        Bind => \@Bind,
+    );
+
+    # get appointment object
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+
+    # cleanup ticket appointments
+    APPOINTMENT_ID:
+    for my $AppointmentID (@AppointmentIDs) {
+
+        # check if appointment exists
+        next APPOINTMENT_ID if !$AppointmentObject->AppointmentGet(
+            AppointmentID => $AppointmentID,
+        );
+
+        # delete the appointment
+        return if !$AppointmentObject->AppointmentDelete(
+            AppointmentID => $AppointmentID,
+            UserID        => 1,
+        );
+    }
+
+    return 1;
 }
 
 =item GetAccessToken()
@@ -1491,213 +1803,6 @@ sub _TicketAppointmentGet {
     return $AppointmentID;
 }
 
-=item _TicketAppointmentTicketID()
-
-get ticket id of a ticket appointment.
-
-    my $TicketID = $CalendarObject->_TicketAppointmentTicketID(
-        AppointmentID => 1,
-    );
-
-returns appointment ID if successful.
-
-=cut
-
-sub _TicketAppointmentTicketID {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    if ( !$Param{AppointmentID} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'error',
-            Message  => 'Need AppointmentID!',
-        );
-        return;
-    }
-
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # db query
-    return if !$DBObject->Prepare(
-        SQL => '
-            SELECT ticket_id
-            FROM calendar_appointment_ticket
-            WHERE appointment_id = ?
-        ',
-        Bind  => [ \$Param{AppointmentID}, ],
-        Limit => 1,
-    );
-
-    my $TicketID;
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $TicketID = $Row[0],
-    }
-
-    return $TicketID;
-}
-
-=item _TicketAppointmentRuleIDsGet()
-
-get used ticket appointment rules for specific calendar.
-
-    my @RuleIDs = $CalendarObject->_TicketAppointmentRuleIDsGet(
-        CalendarID => 1,
-        TicketID   => 1,    # (optional) Return rules used only for specific ticket
-    );
-
-returns array of rule IDs if found.
-
-=cut
-
-sub _TicketAppointmentRuleIDsGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(CalendarID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    my $SQL = '
-        SELECT rule_id
-        FROM calendar_appointment_ticket
-        WHERE calendar_id = ?
-    ';
-    my @Bind;
-    push @Bind, \$Param{CalendarID};
-
-    # specific ticket query condition
-    if ( $Param{TicketID} ) {
-        $SQL .= '
-            AND ticket_id = ?
-        ';
-        push @Bind, \$Param{TicketID};
-    }
-
-    # db query
-    return if !$DBObject->Prepare(
-        SQL  => $SQL,
-        Bind => \@Bind,
-    );
-
-    my %RuleIDs;
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $RuleIDs{ $Row[0] } = 1;
-    }
-
-    # return unique rule ids
-    return keys %RuleIDs;
-}
-
-=item _TicketAppointmentRuleGet()
-
-get ticket appointment rule.
-
-    my $Rule = $CalendarObject->_TicketAppointmentRuleGet(
-        CalendarID => 1,
-        RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
-    );
-
-returns rule hash:
-
-=cut
-
-sub _TicketAppointmentRuleGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(CalendarID RuleID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my %Calendar = $Self->CalendarGet(
-        CalendarID => $Param{CalendarID},
-    );
-    return if !$Calendar{TicketAppointments};
-
-    my $Result;
-
-    RULE:
-    for my $Rule ( @{ $Calendar{TicketAppointments} || [] } ) {
-        if ( $Rule->{RuleID} eq $Param{RuleID} ) {
-            $Result = $Rule;
-            last RULE;
-        }
-    }
-    return if !$Result;
-
-    return $Result;
-}
-
-=item _TicketAppointmentTypesGet()
-
-get defined ticket appointment types from config.
-
-    my %TicketAppointmentTypes = $CalendarObject->_TicketAppointmentTypesGet();
-
-returns hash of appointment types:
-
-    %TicketAppointmentTypes = ();
-
-=cut
-
-sub _TicketAppointmentTypesGet {
-    my ( $Self, %Param ) = @_;
-
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    # get ticket appointment types
-    my $TicketAppointmentConfig = $ConfigObject->Get('AppointmentCalendar::TicketAppointmentType') // {};
-    return if !$TicketAppointmentConfig;
-
-    my %TicketAppointmentTypes;
-
-    TYPE:
-    for my $TypeKey ( sort keys %{$TicketAppointmentConfig} ) {
-        next TYPE if !$TicketAppointmentConfig->{$TypeKey}->{Key};
-
-        if ( $TypeKey =~ /DynamicField$/ ) {
-            my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-
-            # get list of all valid date and date/time dynamic fields
-            my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
-                ObjectType => 'Ticket',
-            );
-
-            DYNAMICFIELD:
-            for my $DynamicField ( @{$DynamicFieldList} ) {
-                next DYNAMICFIELD if $DynamicField->{FieldType} ne 'Date' && $DynamicField->{FieldType} ne 'DateTime';
-
-                my $Key = sprintf( $TicketAppointmentConfig->{$TypeKey}->{Key}, $DynamicField->{Name} );
-                $TicketAppointmentTypes{$Key} = $TicketAppointmentConfig->{$TypeKey};
-            }
-
-            next TYPE;
-        }
-
-        $TicketAppointmentTypes{ $TicketAppointmentConfig->{$TypeKey}->{Key} } =
-            $TicketAppointmentConfig->{$TypeKey};
-    }
-
-    return %TicketAppointmentTypes;
-}
-
 =item _TicketAppointmentCreate()
 
 create ticket appointment.
@@ -1794,7 +1899,7 @@ sub _TicketAppointmentUpdate {
     if ( !$Appointment{AppointmentID} ) {
 
         # remove the relation as well
-        $Self->_TicketAppointmentDelete(
+        $Self->TicketAppointmentDelete(
             %Param,
         );
 
@@ -1816,111 +1921,6 @@ sub _TicketAppointmentUpdate {
         TicketAppointmentRuleID => $Param{RuleID},
         UserID                  => 1,
     );
-}
-
-=item _TicketAppointmentDelete()
-
-delete ticket appointment(s).
-
-    my $Success = $CalendarObject->_TicketAppointmentDelete(
-        CalendarID    => 1,
-        RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
-        TicketID      => 1,                                     # (optional) Ticket ID is known
-        AppointmentID => 1,                                     # (optional) Appointment ID is known
-    );
-
-returns 1 if successful.
-
-=cut
-
-sub _TicketAppointmentDelete {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(CalendarID RuleID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!"
-            );
-            return;
-        }
-    }
-
-    my @AppointmentIDs;
-    push @AppointmentIDs, $Param{ApointmentID} if $Param{ApointmentID};
-
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # appointment id is unknown
-    if ( !@AppointmentIDs ) {
-        my $SQL = '
-            SELECT appointment_id
-            FROM calendar_appointment_ticket
-            WHERE calendar_id = ? AND rule_id = ?
-        ';
-        my @Bind;
-        push @Bind, \$Param{CalendarID}, \$Param{RuleID};
-
-        if ( $Param{TicketID} ) {
-            $SQL .= '
-                AND ticket_id = ?
-            ';
-            push @Bind, \$Param{TicketID};
-        }
-
-        # db query
-        return if !$DBObject->Prepare(
-            SQL  => $SQL,
-            Bind => \@Bind,
-        );
-
-        while ( my @Row = $DBObject->FetchrowArray() ) {
-            push @AppointmentIDs, $Row[0],
-        }
-    }
-
-    # remove the relation(s) from database
-    my $SQL = '
-        DELETE FROM calendar_appointment_ticket
-        WHERE calendar_id = ? AND rule_id = ?
-    ';
-    my @Bind;
-    push @Bind, \$Param{CalendarID}, \$Param{RuleID};
-
-    if ( $Param{TicketID} ) {
-        $SQL .= '
-            AND ticket_id = ?
-        ';
-        push @Bind, \$Param{TicketID};
-    }
-
-    return if !$DBObject->Do(
-        SQL  => $SQL,
-        Bind => \@Bind,
-    );
-
-    # get appointment object
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-
-    # cleanup ticket appointments
-    APPOINTMENT_ID:
-    for my $AppointmentID (@AppointmentIDs) {
-
-        # check if appointment exists
-        next APPOINTMENT_ID if !$AppointmentObject->AppointmentGet(
-            AppointmentID => $AppointmentID,
-        );
-
-        # delete the appointment
-        return if !$AppointmentObject->AppointmentDelete(
-            AppointmentID => $AppointmentID,
-            UserID        => 1,
-        );
-    }
-
-    return 1;
 }
 
 1;
