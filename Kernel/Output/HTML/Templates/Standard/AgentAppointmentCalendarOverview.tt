@@ -285,7 +285,7 @@ Core.Agent.AppointmentCalendar.Init({
                         ,
 [% RenderBlockEnd("TicketAppointmentNoDragComma") %]
 [% RenderBlockEnd("TicketAppointmentNoDrag") %]
-                    }
+                    };
 
                     return {
                         id: AppointmentData.AppointmentID,
