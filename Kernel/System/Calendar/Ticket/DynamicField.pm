@@ -15,6 +15,8 @@ use Kernel::System::VariableCheck qw(:all);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
+    'Kernel::System::DynamicField',
+    'Kernel::System::DynamicFieldValue',
     'Kernel::System::Ticket',
 );
 
@@ -90,6 +92,57 @@ sub GetTime {
     }
 
     return;
+}
+
+=item SetTime()
+
+set ticket dynamic field value to supplied time value.
+
+    my $Success = $TicketDynamicFieldObject->SetTime(
+        Type     => 'DynamicField_TestDate',
+        Value    => '2016-01-01 00:00:00'
+        TicketID => 1,
+    );
+
+returns 1 if successful.
+
+=cut
+
+sub SetTime {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Type Value TicketID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # get dynamic field data
+    my $DynamicFieldName = $Param{Type};
+    $DynamicFieldName =~ s/^DynamicField_//;
+    my $DynamicField = $Kernel::OM->Get('Kernel::System::DynamicField')->DynamicFieldGet(
+        Name => $DynamicFieldName,
+    );
+    return if !$DynamicField;
+
+    # set dynamic field value
+    my $Success = $Kernel::OM->Get('Kernel::System::DynamicFieldValue')->ValueSet(
+        FieldID  => $DynamicField->{ID},
+        ObjectID => $Param{TicketID},
+        Value    => [
+            {
+                ValueDateTime => $Param{Value},
+            },
+        ],
+        UserID => 1,
+    );
+
+    return $Success;
 }
 
 1;

@@ -897,11 +897,11 @@ sub CalendarPermissionGet {
 
 Handle the automatic ticket appointments for the ticket.
 
-    my $Success = $CalendarObject->TicketAppointments(
+    $CalendarObject->TicketAppointments(
         TicketID => 1,
     );
 
-returns 1 if successful.
+This method does not have return value.
 
 =cut
 
@@ -991,7 +991,7 @@ sub TicketAppointments {
     if ( $Kernel::OM->Get('Kernel::Config')->Get('Debug') ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'debug',
-            Message  => "Processed ticket appointments for ticket: $Param{TicketID}",
+            Message  => "Processed ticket appointments for ticket $Param{TicketID}.",
         );
     }
 }
@@ -1051,9 +1051,6 @@ sub TicketAppointmentProcess {
     # get start and end time values
     for my $Field (qw(StartDate EndDate)) {
         my $Type = $Param{Rule}->{$Field};
-
-        # save the appointment type if processing start date
-        $AppointmentType = $Type if $Field eq 'StartDate';
 
         # appointment fields are named differently
         my $AppointmentField = $Field;
@@ -1158,7 +1155,6 @@ sub TicketAppointmentProcess {
                 AppointmentID => $AppointmentID,
                 TicketID      => $Param{TicketID},
                 RuleID        => $Param{Rule}->{RuleID},
-                Type          => $AppointmentType,
                 %AppointmentData,
             );
         }
@@ -1170,12 +1166,98 @@ sub TicketAppointmentProcess {
             CalendarID => $Param{CalendarID},
             TicketID   => $Param{TicketID},
             RuleID     => $Param{Rule}->{RuleID},
-            Type       => $AppointmentType,
             %AppointmentData,
         );
     }
 
     return $Success;
+}
+
+=item TicketAppointmentUpdateTicket()
+
+Updates the ticket with data from ticket appointment.
+
+    $CalendarObject->TicketAppointmentUpdateTicket(
+        AppointmentID => 1,
+        TicketID      => 1,
+    );
+
+This method does not have return value.
+
+=cut
+
+sub TicketAppointmentUpdateTicket {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(AppointmentID TicketID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    # get appoinment data
+    my %AppointmentData = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentGet(
+        AppointmentID => $Param{AppointmentID},
+    );
+
+    # stop if not ticket appointment
+    return if !$AppointmentData{TicketAppointmentRuleID};
+
+    # get ticket appointment rule
+    my $Rule = $Self->_TicketAppointmentRuleGet(
+        CalendarID => $AppointmentData{CalendarID},
+        RuleID     => $AppointmentData{TicketAppointmentRuleID},
+    );
+    return if !IsHashRefWithData($Rule);
+
+    # get ticket appointment types
+    my %TicketAppointmentTypes = $Self->_TicketAppointmentTypesGet();
+
+    # process start and end time values
+    for my $Field (qw(StartDate EndDate)) {
+        my $Type = $Rule->{$Field};
+
+        # appointment fields are named differently
+        my $AppointmentField = $Field;
+        $AppointmentField =~ s/Date$/Time/;
+
+        # check if we are dealing with a registered type
+        if ( $TicketAppointmentTypes{$Type} && $TicketAppointmentTypes{$Type}->{Module} ) {
+            my $GenericModule = $TicketAppointmentTypes{$Type}->{Module};
+
+            # set the time value via the module method
+            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule) ) {
+
+                # loop protection: prevent ticket event module from running
+                $Kernel::OM->Get('Kernel::System::Ticket')->{'_TicketAppointments::AlreadyProcessed'}
+                    ->{ $Param{TicketID} }++;
+
+                my $Success = $GenericModule->new( %{$Self} )->SetTime(
+                    Type     => $Type,
+                    Value    => $AppointmentData{$AppointmentField},
+                    TicketID => $Param{TicketID},
+                );
+                if ( !$Success ) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => "Error setting $Type for ticket $Param{TicketID}!",
+                    );
+                }
+            }
+        }
+    }
+
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Debug') ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'debug',
+            Message  => "Updated ticket $Param{TicketID} from appointment $Param{AppointmentID}.",
+        );
+    }
 }
 
 =item GetAccessToken()
@@ -1409,6 +1491,52 @@ sub _TicketAppointmentGet {
     return $AppointmentID;
 }
 
+=item _TicketAppointmentTicketID()
+
+get ticket id of a ticket appointment.
+
+    my $TicketID = $CalendarObject->_TicketAppointmentTicketID(
+        AppointmentID => 1,
+    );
+
+returns appointment ID if successful.
+
+=cut
+
+sub _TicketAppointmentTicketID {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{AppointmentID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need AppointmentID!',
+        );
+        return;
+    }
+
+    # get database object
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # db query
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT ticket_id
+            FROM calendar_appointment_ticket
+            WHERE appointment_id = ?
+        ',
+        Bind  => [ \$Param{AppointmentID}, ],
+        Limit => 1,
+    );
+
+    my $TicketID;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $TicketID = $Row[0],
+    }
+
+    return $TicketID;
+}
+
 =item _TicketAppointmentRuleIDsGet()
 
 get used ticket appointment rules for specific calendar.
@@ -1468,6 +1596,52 @@ sub _TicketAppointmentRuleIDsGet {
 
     # return unique rule ids
     return keys %RuleIDs;
+}
+
+=item _TicketAppointmentRuleGet()
+
+get ticket appointment rule.
+
+    my %Rule = $CalendarObject->_TicketAppointmentRuleGet(
+        CalendarID => 1,
+        RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
+    );
+
+returns rule hash:
+
+=cut
+
+sub _TicketAppointmentRuleGet {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for my $Needed (qw(CalendarID RuleID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!"
+            );
+            return;
+        }
+    }
+
+    my %Calendar = $Self->CalendarGet(
+        CalendarID => $Param{CalendarID},
+    );
+    return if !$Calendar{TicketAppointments};
+
+    my $Result;
+
+    RULE:
+    for my $Rule ( @{ $Calendar{TicketAppointments} || [] } ) {
+        if ( $Rule->{RuleID} eq $Param{RuleID} ) {
+            $Result = $Rule;
+            last RULE;
+        }
+    }
+    return if !$Result;
+
+    return $Result;
 }
 
 =item _TicketAppointmentTypesGet()
@@ -1532,7 +1706,6 @@ create ticket appointment.
         CalendarID => 1,
         TicketID   => 1,
         RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
-        Type       => 'PendingTime',
         Title      => '[Ticket#20160823810000010] Some Ticket Title',
         StartTime  => '2016-08-23 00:00:00',
         EndTime    => '2016-08-24 00:00:00',
@@ -1546,7 +1719,7 @@ sub _TicketAppointmentCreate {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(CalendarID TicketID RuleID Type Title StartTime EndTime)) {
+    for my $Needed (qw(CalendarID TicketID RuleID Title StartTime EndTime)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -1558,12 +1731,12 @@ sub _TicketAppointmentCreate {
 
     # create appointment
     my $AppointmentID = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentCreate(
-        CalendarID        => $Param{CalendarID},
-        Title             => $Param{Title},
-        StartTime         => $Param{StartTime},
-        EndTime           => $Param{EndTime},
-        TicketAppointment => $Param{Type},
-        UserID            => 1,
+        CalendarID              => $Param{CalendarID},
+        Title                   => $Param{Title},
+        StartTime               => $Param{StartTime},
+        EndTime                 => $Param{EndTime},
+        TicketAppointmentRuleID => $Param{RuleID},
+        UserID                  => 1,
     );
     return if !$AppointmentID;
 
@@ -1586,7 +1759,6 @@ update ticket appointment.
         AppointmentID => 1,
         TicketID      => 1,
         RuleID        => '9bb20ea035e7a9930652a9d82d00c725',
-        Type          => 'PendingTime',
         Title         => '[Ticket#20160823810000010] Some Ticket Title',
         StartTime     => '2016-08-23 00:00:00',
         EndTime       => '2016-08-24 00:00:00',
@@ -1632,14 +1804,17 @@ sub _TicketAppointmentUpdate {
         );
     }
 
+    # loop protection: prevent appointment event module from running
+    $Self->{'_TicketAppointments::TicketUpdate'}->{ $Appointment{AppointmentID} }++;
+
     # update ticket appointment
     return $AppointmentObject->AppointmentUpdate(
         %Appointment,
-        Title             => $Param{Title},
-        StartTime         => $Param{StartTime},
-        EndTime           => $Param{EndTime},
-        TicketAppointment => $Param{Type},
-        UserID            => 1,
+        Title                   => $Param{Title},
+        StartTime               => $Param{StartTime},
+        EndTime                 => $Param{EndTime},
+        TicketAppointmentRuleID => $Param{RuleID},
+        UserID                  => 1,
     );
 }
 

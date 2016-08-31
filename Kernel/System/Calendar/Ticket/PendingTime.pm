@@ -93,6 +93,56 @@ sub GetTime {
     );
 }
 
+=item SetTime()
+
+set ticket pending time to supplied time value.
+
+    my $Success = $TicketPendingTimeObject->SetTime(
+        Type     => 'PendingTime',
+        Value    => '2016-01-01 00:00:00'
+        TicketID => 1,
+    );
+
+returns 1 if successful.
+
+=cut
+
+sub SetTime {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    for (qw(Type Value TicketID)) {
+        if ( !$Param{$_} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $_!"
+            );
+            return;
+        }
+    }
+
+    # get calendar helper object
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
+    # get date components
+    my ( $Second, $Minute, $Hour, $Day, $Month, $Year, $DayOfWeek ) = $CalendarHelperObject->DateGet(
+        SystemTime => $CalendarHelperObject->SystemTimeGet( String => $Param{Value} ),
+    );
+
+    # set pending time
+    my $Success = $Kernel::OM->Get('Kernel::System::Ticket')->TicketPendingTimeSet(
+        Year     => $Year,
+        Month    => $Month,
+        Day      => $Day,
+        Hour     => $Hour,
+        Minute   => $Minute,
+        TicketID => $Param{TicketID},
+        UserID   => 1,
+    );
+
+    return $Success;
+}
+
 1;
 
 =back

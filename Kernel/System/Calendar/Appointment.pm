@@ -119,8 +119,8 @@ creates a new appointment.
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
         NotificationCustomDateTime        => '2016-01-01 17:00:00',       # (optional) Notification date time for custom template
 
-        TicketAppointment => 'PendingTime',                               # (optional) Ticket appointment type
-        UserID            => 1,                                           # (required) UserID
+        TicketAppointmentRuleID => '9bb20ea035e7a9930652a9d82d00c725',    # (optional) Ticket appointment rule ID (for ticket appointments only!)
+        UserID                  => 1,                                     # (required) UserID
     );
 
 returns parent AppointmentID if successful
@@ -340,7 +340,7 @@ sub AppointmentCreate {
         \$Param{NotificationDate},     \$Param{NotificationTemplate}, \$Param{NotificationCustom},
         \$Param{NotificationCustomRelativeUnitCount},   \$Param{NotificationCustomRelativeUnit},
         \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
-        \$Param{TicketAppointment},                     \$Param{UserID}, \$Param{UserID};
+        \$Param{TicketAppointmentRuleID},               \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
@@ -348,7 +348,8 @@ sub AppointmentCreate {
             end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
             recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date, ticket_appointment, create_time, create_by, change_time, change_by)
+            notify_custom_date, ticket_appointment_rule_id, create_time, create_by, change_time,
+            change_by)
         VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
             ?, ?, current_timestamp, ?, current_timestamp, ?)
     ";
@@ -482,7 +483,7 @@ Result => 'HASH':
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'afterstart',
             NotificationCustomDateTime            => '2016-01-02 16:00:00',
-            TicketAppointment                     => 'PendingTime',                         # for ticket appointments only
+            TicketAppointmentRuleID               => '9bb20ea035e7a9930652a9d82d00c725',    # for ticket appointments only!
         },
         ...
     ];
@@ -566,7 +567,7 @@ sub AppointmentList {
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, team_id, resource_id, all_day, recurring, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date, ticket_appointment
+            notify_custom_date, ticket_appointment_rule_id
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -643,7 +644,7 @@ sub AppointmentList {
             NotificationCustomRelativeUnit        => $Row[17],
             NotificationCustomRelativePointOfTime => $Row[18],
             NotificationCustomDateTime            => $Row[19] || '',
-            TicketAppointment                     => $Row[20],
+            TicketAppointmentRuleID               => $Row[20],
         );
         push @Result, \%Appointment;
     }
@@ -898,11 +899,11 @@ returns a hash:
         NotificationCustomUnit            => 'minutes',
         NotificationCustomUnitPointOfTime => 'beforestart',
 
-        TicketAppointment   => 'PendingTime',
-        CreateTime          => '2016-01-01 00:00:00',
-        CreateBy            => 2,
-        ChangeTime          => '2016-01-01 00:00:00',
-        ChangeBy            => 2,
+        TicketAppointmentRuleID => '9bb20ea035e7a9930652a9d82d00c725',  # for ticket appointments only!
+        CreateTime              => '2016-01-01 00:00:00',
+        CreateBy                => 2,
+        ChangeTime              => '2016-01-01 00:00:00',
+        ChangeBy                => 2,
     );
 =cut
 
@@ -946,7 +947,8 @@ sub AppointmentGet {
             end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
             recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date, ticket_appointment, create_time, create_by, change_time, change_by
+            notify_custom_date, ticket_appointment_rule_id, create_time, create_by, change_time,
+            change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -1010,7 +1012,7 @@ sub AppointmentGet {
         $Result{NotificationCustomRelativeUnit}        = $Row[24] || '';
         $Result{NotificationCustomRelativePointOfTime} = $Row[25] || '';
         $Result{NotificationCustomDateTime}            = $Row[26] || '';
-        $Result{TicketAppointment}                     = $Row[27];
+        $Result{TicketAppointmentRuleID}               = $Row[27];
         $Result{CreateTime}                            = $Row[28];
         $Result{CreateBy}                              = $Row[29];
         $Result{ChangeTime}                            = $Row[30];
@@ -1068,8 +1070,8 @@ updates an existing appointment.
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
         NotificationCustomDateTime            => '2016-01-01 17:00:00',   # (optional) Notification date time for custom template
 
-        TicketAppointment => 1,                                           # (optional) Ticket appointment type
-        UserID            => 1,                                           # (required) UserID
+        TicketAppointmentRuleID => '9bb20ea035e7a9930652a9d82d00c725',    # (optional) Ticket appointment rule ID (for ticket appointments only!)
+        UserID                  => 1,                                     # (required) UserID
     );
 
 returns 1 if successful:
@@ -1281,7 +1283,7 @@ sub AppointmentUpdate {
             team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?, recur_count=?,
             recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?, notify_template=?,
             notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
-            notify_custom_unit_point=?, notify_custom_date=?, ticket_appointment=?,
+            notify_custom_unit_point=?, notify_custom_date=?, ticket_appointment_rule_id=?,
             change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
@@ -1298,7 +1300,7 @@ sub AppointmentUpdate {
             \$Param{NotificationTemplate},                  \$Param{NotificationCustom},
             \$Param{NotificationCustomRelativeUnitCount},   \$Param{NotificationCustomRelativeUnit},
             \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
-            \$Param{TicketAppointment},                     \$Param{UserID}, \$Param{AppointmentID},
+            \$Param{TicketAppointmentRuleID},               \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
 

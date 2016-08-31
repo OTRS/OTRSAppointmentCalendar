@@ -225,6 +225,15 @@ $Self->True(
     "CalendarCreate - $CalendarName ($Calendar{CalendarID})",
 );
 
+$Helper->FixedTimeSet(
+    $CalendarHelperObject->SystemTimeGet(
+        String => '2016-07-04 19:45:00',
+    ),
+);
+
+#
+# Tests for ticket appointments
+#
 my @Tests = (
     {
         Name               => 'FirstResponseTime',
@@ -317,6 +326,18 @@ my @Tests = (
             StartTime         => 'PendingTime',
             EndTime           => 'Plus_60',
         },
+        Update => {
+            StartTime => '2016-01-01 00:00:00',
+            EndTime   => '2016-01-01 01:00:00',
+        },
+        UpdateResult => {
+            UntilTime => -(
+                $CalendarHelperObject->CurrentSystemTime() -
+                    $CalendarHelperObject->SystemTimeGet(
+                    String => '2016-01-01 00:00:00',
+                    )
+            ),
+        },
     },
     {
         Name               => 'DynamicField',
@@ -339,6 +360,14 @@ my @Tests = (
             TicketAppointment => 'DynamicField',
             StartTime         => 'DynamicField_' . $DynamicFields[0]->{Name},
             EndTime           => 'DynamicField_' . $DynamicFields[1]->{Name},
+        },
+        Update => {
+            StartTime => '2016-03-01 00:00:00',
+            EndTime   => '2016-03-01 01:00:00',
+        },
+        UpdateResult => {
+            'DynamicField_' . $DynamicFields[0]->{Name} => '2016-03-01 00:00:00',
+            'DynamicField_' . $DynamicFields[1]->{Name} => '2016-03-01 01:00:00',
         },
     },
 );
@@ -394,11 +423,10 @@ for my $Test (@Tests) {
             UserID        => 1,
         );
 
-        # check appointment type
-        $Self->Is(
-            $Appointment->{TicketAppointment},
-            $Test->{Result}->{StartTime},
-            "$Test->{Name} - Appointment type",
+        # check if appointment is of ticket appointment type
+        $Self->True(
+            $Appointment->{TicketAppointmentRuleID},
+            "$Test->{Name} - Ticket appointment type",
         );
 
         for my $Field (qw(StartTime EndTime)) {
@@ -451,11 +479,46 @@ for my $Test (@Tests) {
                 );
             }
 
+            # compare values
             $Self->Is(
                 $Appointment->{$Field},
                 $TicketValue,
                 "$Test->{Name} - Appointment $Field",
             );
+        }
+
+        if ( $Test->{Update} ) {
+            my $Success = $AppointmentObject->AppointmentUpdate(
+                %{$Appointment},
+                %{ $Test->{Update} },
+                UserID => 1,
+            );
+            $Self->True(
+                $Success,
+                "$Test->{Name} - Appointment update",
+            );
+
+            # manually trigger appointment event module
+            $CalendarObject->TicketAppointmentUpdateTicket(
+                AppointmentID => $Appointment->{AppointmentID},
+                TicketID      => $TicketID,
+            );
+
+            # get ticket data again
+            my %Ticket = $TicketObject->TicketGet(
+                TicketID      => $TicketID,
+                DynamicFields => 1,
+                UserID        => 1,
+            );
+
+            # compare values
+            for my $Field ( sort keys %{ $Test->{UpdateResult} } ) {
+                $Self->Is(
+                    $Ticket{$Field},
+                    $Test->{UpdateResult}->{$Field},
+                    "$Test->{Name} - Ticket $Field",
+                );
+            }
         }
     }
 }

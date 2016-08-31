@@ -391,6 +391,17 @@
             </Hash>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::EventModulePost###200-TicketAppointments" Required="0" Valid="1">
+        <Description Translatable="1">Appointment calendar event module that updates the ticket with data from ticket appointment.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::Event</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Event::TicketAppointments</Item>
+                <Item Key="Event">AppointmentUpdate</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
 
     <!-- Dashboard Widget -->
     <ConfigItem Name="DashboardBackend###0500-AppointmentCalendar" Required="0" Valid="1">

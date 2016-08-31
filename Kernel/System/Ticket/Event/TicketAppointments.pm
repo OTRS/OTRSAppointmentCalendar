@@ -15,8 +15,6 @@ use Kernel::System::AsynchronousExecutor;
 
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::System::Calendar',
-    'Kernel::System::DynamicField',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
 );

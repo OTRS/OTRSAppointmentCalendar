@@ -87,6 +87,16 @@ sub GetTime {
     return $Ticket{ $Param{Type} . 'DestinationDate' };
 }
 
+=item SetTime()
+
+does nothing, as you cannot explicitly set ticket escalation times.
+
+=cut
+
+sub SetTime {
+    return;
+}
+
 1;
 
 =back
