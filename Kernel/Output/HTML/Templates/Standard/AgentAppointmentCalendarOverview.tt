@@ -317,8 +317,7 @@ Core.Agent.AppointmentCalendar.Init({
                         notificationCustomDateTime: AppointmentData.NotificationCustomDateTime,
                         ticketAppointmentType: AppointmentData.TicketAppointmentStartDate,
                         editable: TicketAppointmentNoDrag[AppointmentData.TicketAppointmentStartDate] ? false : true,
-                        durationEditable: TicketAppointmentNoDrag[AppointmentData.TicketAppointmentStartDate] ? false :
-                            typeof TicketAppointmentNoDrag[AppointmentData.TicketAppointmentEndDate] !== 'undefined' ? true : false
+                        durationEditable: typeof TicketAppointmentNoDrag[AppointmentData.TicketAppointmentEndDate] !== 'undefined' ? true : false
                     };
                 }
             }
