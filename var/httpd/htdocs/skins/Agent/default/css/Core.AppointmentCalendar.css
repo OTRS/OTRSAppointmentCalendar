@@ -351,6 +351,129 @@
         color: #89C6D1;
     }
 
+    /**
+     * Font-Awesome character classes
+     */
+    .fa-char-a:before, .fa-char-b:before, .fa-char-c:before, .fa-char-d:before, .fa-char-e:before,
+    .fa-char-f:before, .fa-char-g:before, .fa-char-h:before, .fa-char-i:before, .fa-char-j:before,
+    .fa-char-k:before, .fa-char-l:before, .fa-char-m:before, .fa-char-n:before, .fa-char-o:before,
+    .fa-char-p:before, .fa-char-q:before, .fa-char-r:before, .fa-char-s:before, .fa-char-t:before,
+    .fa-char-u:before, .fa-char-v:before, .fa-char-w:before, .fa-char-x:before, .fa-char-y:before,
+    .fa-char-z:before, .fa-char-0:before, .fa-char-1:before, .fa-char-2:before, .fa-char-3:before,
+    .fa-char-4:before, .fa-char-5:before, .fa-char-6:before, .fa-char-7:before, .fa-char-8:before,
+    .fa-char-9:before {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-weight: bold;
+    }
+    .fa-char-a:before {
+        content: "A";
+    }
+    .fa-char-b:before {
+        content: "B";
+    }
+    .fa-char-c:before {
+        content: "C";
+    }
+    .fa-char-d:before {
+        content: "D";
+    }
+    .fa-char-e:before {
+        content: "E";
+    }
+    .fa-char-f:before {
+        content: "F";
+    }
+    .fa-char-g:before {
+        content: "G";
+    }
+    .fa-char-h:before {
+        content: "H";
+    }
+    .fa-char-i:before {
+        content: "I";
+    }
+    .fa-char-j:before {
+        content: "J";
+    }
+    .fa-char-k:before {
+        content: "K";
+    }
+    .fa-char-l:before {
+        content: "L";
+    }
+    .fa-char-m:before {
+        content: "M";
+    }
+    .fa-char-n:before {
+        content: "N";
+    }
+    .fa-char-o:before {
+        content: "O";
+    }
+    .fa-char-p:before {
+        content: "P";
+    }
+    .fa-char-q:before {
+        content: "Q";
+    }
+    .fa-char-r:before {
+        content: "R";
+    }
+    .fa-char-s:before {
+        content: "S";
+    }
+    .fa-char-t:before {
+        content: "T";
+    }
+    .fa-char-u:before {
+        content: "U";
+    }
+    .fa-char-v:before {
+        content: "V";
+    }
+    .fa-char-w:before {
+        content: "W";
+    }
+    .fa-char-x:before {
+        content: "X";
+    }
+    .fa-char-y:before {
+        content: "Y";
+    }
+    .fa-char-z:before {
+        content: "Z";
+    }
+    .fa-char-0:before {
+        content: "0";
+    }
+    .fa-char-1:before {
+        content: "1";
+    }
+    .fa-char-2:before {
+        content: "2";
+    }
+    .fa-char-3:before {
+        content: "3";
+    }
+    .fa-char-4:before {
+        content: "4";
+    }
+    .fa-char-5:before {
+        content: "5";
+    }
+    .fa-char-6:before {
+        content: "6";
+    }
+    .fa-char-7:before {
+        content: "7";
+    }
+    .fa-char-8:before {
+        content: "8";
+    }
+    .fa-char-9:before {
+        content: "9";
+    }
+
 } /* end @media */
 
 @media only screen and (min-width: 0px) and (max-width: 1024px) {

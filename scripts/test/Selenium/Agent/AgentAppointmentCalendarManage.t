@@ -31,6 +31,26 @@ $Selenium->RunTest(
             ValidID => 1,
             UserID  => 1,
         );
+        $Self->True(
+            $GroupID,
+            'Test group created',
+        );
+
+        # create test queue
+        my $QueueID = $Kernel::OM->Get('Kernel::System::Queue')->QueueAdd(
+            Name            => "Queue$RandomID",
+            ValidID         => 1,
+            GroupID         => $GroupID,
+            SystemAddressID => 1,
+            SalutationID    => 1,
+            SignatureID     => 1,
+            Comment         => 'Some comment',
+            UserID          => 1,
+        );
+        $Self->True(
+            $QueueID,
+            'Test queue created',
+        );
 
         # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
@@ -108,6 +128,19 @@ $Selenium->RunTest(
             "return \$('#ValidID').val(2).trigger('redraw.InputField').trigger('change');"
         );
 
+        # add ticket appointment rule
+        $Selenium->find_element( '.WidgetSimple.Collapsed .WidgetAction.Toggle a', 'css' )->VerifiedClick();
+        $Selenium->find_element( '#AddRuleButton',                                 'css' )->VerifiedClick();
+
+        # set a queue
+        $Selenium->execute_script(
+            "return \$('#QueueID_1').val('$QueueID').trigger('redraw.InputField').trigger('change');"
+        );
+
+        # add search parameter
+        $Selenium->find_element( '.AddButton',           'css' )->VerifiedClick();
+        $Selenium->find_element( '#SearchParam_1_Title', 'css' )->send_keys('Test*');
+
         # submit
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
@@ -153,6 +186,25 @@ $Selenium->RunTest(
             "return \$('#ValidID').val(3).trigger('redraw.InputField').trigger('change');"
         );
 
+        # verify rule has been stored properly
+        $Self->IsDeeply(
+            $Selenium->execute_script(
+                "return \$('select[id*=\"QueueID_\"]').val();"
+            ),
+            [$QueueID],
+            'Queue stored properly',
+        );
+        $Self->Is(
+            $Selenium->execute_script(
+                "return \$('input[id*=\"_Title\"]').val();"
+            ),
+            'Test*',
+            'Search param stored properly',
+        );
+
+        # remove the rule
+        $Selenium->find_element( '.RemoveButton', 'css' )->VerifiedClick();
+
         # submit
         $Selenium->find_element( 'form#CalendarFrom button#Submit', 'css' )->VerifiedClick();
 
@@ -163,6 +215,36 @@ $Selenium->RunTest(
             $LanguageObject->Translate('invalid-temporarily'),
             'Calendar is marked invalid temporarily',
         );
+
+        # cleanup
+
+        # get database object
+        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+        # delete test calendars
+        my $Success = $DBObject->Do(
+            SQL  => 'DELETE FROM calendar WHERE name = ? OR name = ?',
+            Bind => [ \"Calendar $RandomID", \"Calendar $RandomID 2", ],
+        );
+        $Self->True(
+            $Success,
+            "Deleted test calendars - Calendar $RandomID (2)",
+        );
+
+        # delete test queue
+        $Success = $DBObject->Do(
+            SQL  => 'DELETE FROM queue WHERE id = ?',
+            Bind => [ \$QueueID, ],
+        );
+        $Self->True(
+            $Success,
+            "Deleted test queue - $QueueID",
+        );
+
+        # make sure cache is correct
+        for my $Cache (qw(Calendar Queue)) {
+            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+        }
     },
 );
 

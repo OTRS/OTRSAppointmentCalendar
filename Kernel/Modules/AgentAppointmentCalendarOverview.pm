@@ -197,6 +197,54 @@ sub Run {
         # get plugin list
         $Param{PluginList} = $Kernel::OM->Get('Kernel::System::Calendar::Plugin')->PluginList();
 
+        # get registered ticket appointment types
+        my %TicketAppointmentTypes = $CalendarObject->TicketAppointmentTypesGet();
+
+        my $CurrentType = 1;
+        for my $Type ( sort keys %TicketAppointmentTypes ) {
+            my $NoDrag = 0;
+
+            # prevent dragging of ticket escalation appointments
+            if (
+                $Type    eq 'FirstResponseTime'
+                || $Type eq 'UpdateTime'
+                || $Type eq 'SolutionTime'
+                )
+            {
+                $NoDrag = 1;
+            }
+
+            # output configured ticket appointment type mark
+            $LayoutObject->Block(
+                Name => 'TicketAppointmentMark',
+                Data => {
+                    AppointmentType => $Type,
+                    AppointmentMark => lc substr( $TicketAppointmentTypes{$Type}->{Mark}, 0, 1 ),
+                },
+            );
+            if ( $CurrentType < scalar keys %TicketAppointmentTypes ) {
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentMarkComma',
+                );
+            }
+
+            # output configured ticket appointment type draggability
+            $LayoutObject->Block(
+                Name => 'TicketAppointmentNoDrag',
+                Data => {
+                    AppointmentType => $Type,
+                    NoDrag          => $NoDrag,
+                },
+            );
+            if ( $CurrentType < scalar keys %TicketAppointmentTypes ) {
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentNoDragComma',
+                );
+            }
+
+            $CurrentType++;
+        }
+
         # get working hour appointments
         my @WorkingHours = $Self->_GetWorkingHours();
 
@@ -329,7 +377,7 @@ sub _GetWorkingHours {
             if (
                 $AppointmentA->{StartTime} && $AppointmentB->{StartTime}
                 && $AppointmentA->{StartTime} eq $AppointmentB->{StartTime}
-                && $AppointmentA->{EndTime} eq $AppointmentB->{EndTime}
+                && $AppointmentA->{EndTime}   eq $AppointmentB->{EndTime}
                 && $AppointmentA->{DoW} ne $AppointmentB->{DoW}
                 )
             {

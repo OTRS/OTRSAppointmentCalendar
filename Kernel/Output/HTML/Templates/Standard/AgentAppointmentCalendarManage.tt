@@ -123,13 +123,13 @@
     </div>
 
     <div class="ContentColumn">
+
+[% RenderBlockStart("Overview") %]
         <div class="WidgetSimple">
             <div class="Header">
-                <h2>[% Data.Title | html %]</h2>
+                <h2>[% Translate(Data.Title) | html %]</h2>
             </div>
-
             <div class="Content">
-[% RenderBlockStart("Overview") %]
                 <table class="DataTable" id="User">
                     <thead>
                         <tr>
@@ -193,6 +193,8 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
     Core.UI.Table.InitTableFilter($('#FilterCalendars'), $('#User'));
@@ -212,10 +214,18 @@
 [% END %]
 [% RenderBlockEnd("Overview") %]
 [% RenderBlockStart("CalendarEdit") %]
-                <form action="[% Env("CGIHandle") %]" method="post" name="CalendarFrom" id="CalendarFrom" class="Validate PreventMultipleSubmits">
-                    <input type="hidden" name="Action" value="[% Env("Action") %]" />
-                    <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]"/>
-                    <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
+        <form action="[% Env("CGIHandle") %]" method="post" name="CalendarFrom" id="CalendarFrom" class="Validate PreventMultipleSubmits">
+            <input type="hidden" name="Action" value="[% Env("Action") %]" />
+            <input type="hidden" name="Subaction" value="[% Data.Subaction | html %]"/>
+            <input type="hidden" name="CalendarID" value="[% Data.CalendarID | html %]"/>
+            <div class="WidgetSimple">
+                <div class="Header">
+                    <div class="WidgetAction Toggle">
+                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                    </div>
+                    <h2>[% Translate(Data.Title) | html %]</h2>
+                </div>
+                <div class="Content">
                     <fieldset class="TableLike">
                         <legend><span>[% Translate("Calendar") | html %]</span></legend>
                         <label for="CalendarName" class="Mandatory">
@@ -261,8 +271,105 @@
                             [% Data.ValidID %]
                         </div>
                         <div class="Clear"></div>
-
+                    </fieldset>
+                </div>
+            </div>
+            <div class="WidgetSimple [% Data.WidgetStatus | html %]">
+                <div class="Header">
+                    <div class="WidgetAction Toggle">
+                        <a href="#" title="[% Translate("Show or hide the content") | html %]"><i class="fa fa-caret-right"></i><i class="fa fa-caret-down"></i></a>
+                    </div>
+                    <h2>[% Translate("Ticket Appointments") | html %]</h2>
+                </div>
+                <div class="Content">
+[% RenderBlockStart("TicketAppointmentRule") %]
+                    <fieldset id="Rule_[% Data.RuleID | html %]" class="TableLike SpacingTop">
+                        <legend>
+                            <span>
+                                [% Translate("Rule") | html %] <span class="RuleNumber">[% Data.RuleNumber | html %]</span>
+                                <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
+                                    <i class="fa fa-minus-square-o"></i>
+                                    <span class="InvisibleText">[% Translate("Remove") | html %]</span>
+                                </a>
+                            </span>
+                        </legend>
+                        <label for="StartDate_[% Data.RuleID | html %]">
+                            [% Translate("Start date") | html %]:
+                        </label>
+                        <div class="Field">
+                            [% Data.StartDateStrg %]
+                        </div>
+                        <label for="EndDate_[% Data.RuleID | html %]">
+                            [% Translate("End date") | html %]:
+                        </label>
+                        <div class="Field">
+                            [% Data.EndDateStrg %]
+                        </div>
                         <div class="Field SpacingTop">
+                            <p class="FieldExplanation">
+                                [% Translate("Use options below to narrow down for which tickets appointments will be automatically created.") | html %]
+                            </p>
+                        </div>
+                        <label for="QueueID_[% Data.RuleID | html %]" class="Mandatory">
+                            <span class="Marker">*</span>
+                            [% Translate("Queues") | html %]:
+                        </label>
+                        <div class="Field">
+                            [% Data.QueueIDStrg %]
+                            <div id="QueueIDError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        </div>
+                        <div class="Clear"></div>
+                        <label for="SearchParams_[% Data.RuleID | html %]">
+                            [% Translate("Search attributes") | html %]:
+                        </label>
+                        <div class="Field SearchParamsContainer">
+                            [% Data.SearchParamsStrg %]
+                            <a class="AddButton" title="[% Translate("Add entry") | html %]" href="#">
+                                <i class="fa fa-plus-square-o"></i>
+                                <span class="InvisibleText">[% Translate("Add") | html %]</span>
+                            </a>
+[% RenderBlockStart("TicketAppointmentRuleSearchParam") %]
+                            <div class="Field SpacingTopSmall">
+                                <label for="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" class="Mandatory">
+                                    <span class="Marker">*</span>
+                                    [% Data.ParamName | html %]:
+                                </label>
+                                <input id="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" name="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" data-param="[% Data.ParamName | html %]" type="text" class="SearchParam Validate_Required W25pc" value="[% Data.ParamValue | html %]"/>
+                                <div id="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]Error" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                                <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
+                                    <i class="fa fa-minus-square-o"></i>
+                                    <span class="InvisibleText">[% Translate("Remove") | html %]</span>
+                                </a>
+                            </div>
+                            <div class="Clear"></div>
+[% RenderBlockEnd("TicketAppointmentRuleSearchParam") %]
+                        </div>
+                        <div class="Clear"></div>
+                    </fieldset>
+[% RenderBlockEnd("TicketAppointmentRule") %]
+                    <fieldset class="TableLike SpacingTop">
+                        <div class="Field">
+                            <p class="FieldExplanation">
+                                [% Translate("Define rules for creating automatic appointments in this calendar based on ticket data.") | html %]
+                            </p>
+                            <a id="AddRuleButton" class="CallForAction" title="[% Translate("Add entry") | html %]" href="#">
+                                <span>
+                                    <i class="fa fa-plus-square"></i>
+                                    [% Translate("Add Rule") | html %]
+                                </span>
+                            </a>
+                        </div>
+                        <div class="Clear"></div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="WidgetSimple">
+                <div class="Header">
+                    <h2>[% Translate("Submit") | html %]</h2>
+                </div>
+                <div class="Content">
+                    <fieldset class="TableLike ">
+                        <div class="Field">
                             <button value="Save" type="submit" id="Submit" class="Primary CallForAction">
                                 <span>[% Translate("Save") | html %]</span>
                             </button>
@@ -273,9 +380,79 @@
                         </div>
                         <div class="Clear"></div>
                     </fieldset>
-                </form>
+                </div>
+            </div>
+        </form>
+        <div id="TicketAppointmentRulesTemplate" class="Hidden">
+            <fieldset class="TableLike SpacingTop">
+                <legend>
+                    <span>
+                        [% Translate("Rule") | html %] <span class="RuleNumber"></span>
+                        <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
+                            <i class="fa fa-minus-square-o"></i>
+                            <span class="InvisibleText">[% Translate("Remove") | html %]</span>
+                        </a>
+                    </span>
+                </legend>
+                <label for="StartDate">
+                    [% Translate("Start date") | html %]:
+                </label>
+                <div class="Field">
+                    [% Data.StartDateStrg %]
+                </div>
+                <label for="EndDate">
+                    [% Translate("End date") | html %]:
+                </label>
+                <div class="Field">
+                    [% Data.EndDateStrg %]
+                </div>
+                <div class="Field SpacingTop">
+                    <p class="FieldExplanation">
+                        [% Translate("Use options below to narrow down for which tickets appointments will be automatically created.") | html %]
+                    </p>
+                </div>
+                <label for="QueueID" class="Mandatory">
+                    <span class="Marker">*</span>
+                    [% Translate("Queues") | html %]:
+                </label>
+                <div class="Field">
+                    [% Data.QueueIDStrg %]
+                    <div id="QueueIDError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                </div>
+                <div class="Clear"></div>
+                <label for="SearchParams">
+                    [% Translate("Search attributes") | html %]:
+                </label>
+                <div class="Field SearchParamsContainer">
+                    [% Data.SearchParamsStrg %]
+                    <a class="AddButton" title="[% Translate("Add entry") | html %]" href="#">
+                        <i class="fa fa-plus-square-o"></i>
+                        <span class="InvisibleText">[% Translate("Add") | html %]</span>
+                    </a>
+                </div>
+                <div class="Clear"></div>
+            </fieldset>
+        </div>
+        <div id="TicketAppointmentSearchParamTemplate" class="Hidden">
+            <div class="Field SpacingTopSmall">
+                <label for="SearchParam" class="Mandatory">
+                    <span class="Marker">*</span>
+                </label>
+                <input id="SearchParam" name="SearchParam" type="text" class="Validate_Required" />
+                <div id="SearchParamError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
+                    <i class="fa fa-minus-square-o"></i>
+                    <span class="InvisibleText">[% Translate("Remove") | html %]</span>
+                </a>
+            </div>
+            <div class="Clear"></div>
+        </div>
 [% WRAPPER JSOnDocumentComplete %]
 <script type="text/javascript">//<![CDATA[
+Core.Agent.AppointmentCalendar.Manage.InitTicketAppointments([% Data.RuleCount | JSON %]);
+[% RenderBlockStart("TicketAppointmentRuleInit") %]
+Core.Agent.AppointmentCalendar.Manage.InitTicketAppointmentRule([% Data.RuleID | JSON %], $('#Rule_' + Core.App.EscapeSelector([% Data.RuleID | JSON %])));
+[% RenderBlockEnd("TicketAppointmentRuleInit") %]
 $('input#Color').spectrum({
     color: [% Data.Color | JSON %],
     containerClassName: 'ColorPaletteContainer',
@@ -298,7 +475,5 @@ $('input#Color').spectrum({
 //]]></script>
 [% END %]
 [% RenderBlockEnd("CalendarEdit") %]
-            </div>
-        </div>
     </div>
 </div>

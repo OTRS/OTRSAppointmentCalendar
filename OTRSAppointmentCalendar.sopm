@@ -73,14 +73,21 @@
         <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Email.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Base.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Event/TicketAppointments.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
         <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/DynamicField.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm"/>
+        <File Permission="640" Location="Kernel/System/Calendar/Ticket/PendingTime.pm"/>
+        <File Permission="640" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm"/>
         <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
         <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
+        <File Permission="640" Location="Kernel/System/Ticket/Event/TicketAppointments.pm"/>
         <File Permission="640" Location="scripts/test/Calendar.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Helper.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Plugin.t"/>
+        <File Permission="640" Location="scripts/test/Calendar/TicketAppointments.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
         <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
         <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t"/>
@@ -108,6 +115,7 @@
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.min.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
         <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
+        <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.Manage.js"/>
         <File Permission="640" Location="var/packagesetup/OTRSAppointmentCalendar.pm"/>
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
@@ -160,6 +168,7 @@
             <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
             <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
             <Column Name="color" Required="true" Size="7" Type="VARCHAR"/>
+            <Column Name="ticket_appointments" Required="false" Type="LONGBLOB"/>
             <Column Name="valid_id" Required="true" Type="SMALLINT"/>
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
@@ -210,6 +219,7 @@
             <Column Name="recur_until" Type="DATE"/>
             <Column Name="recur_id" Type="DATE"/>
             <Column Name="recur_exclude" Size="3800" Type="VARCHAR"/>
+            <Column Name="ticket_appointment_rule_id" Size="32" Type="VARCHAR"/>
             <Column Name="create_time" Type="DATE"/>
             <Column Name="create_by" Type="INTEGER"/>
             <Column Name="change_time" Type="DATE"/>
@@ -240,6 +250,38 @@
                 <Reference Local="user_id" Foreign="id"/>
             </ForeignKey>
         </TableCreate>
+        <TableCreate Name="calendar_appointment_ticket">
+            <Column Name="calendar_id" Required="true" Type="BIGINT"/>
+            <Column Name="ticket_id" Required="true" Type="BIGINT"/>
+            <Column Name="rule_id" Required="true" Size="32" Type="VARCHAR"/>
+            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
+            <Unique Name="calendar_appointment_ticket_calendar_id_ticket_id_rule_id">
+                <UniqueColumn Name="calendar_id"/>
+                <UniqueColumn Name="ticket_id"/>
+                <UniqueColumn Name="rule_id"/>
+            </Unique>
+            <Index Name="calendar_appointment_ticket_calendar_id">
+                <IndexColumn Name="calendar_id"/>
+            </Index>
+            <Index Name="calendar_appointment_ticket_ticket_id">
+                <IndexColumn Name="ticket_id"/>
+            </Index>
+            <Index Name="calendar_appointment_ticket_rule_id">
+                <IndexColumn Name="rule_id"/>
+            </Index>
+            <Index Name="calendar_appointment_ticket_appointment_id">
+                <IndexColumn Name="appointment_id"/>
+            </Index>
+            <ForeignKey ForeignTable="calendar">
+                <Reference Local="calendar_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="ticket">
+                <Reference Local="ticket_id" Foreign="id"/>
+            </ForeignKey>
+            <ForeignKey ForeignTable="calendar_appointment">
+                <Reference Local="appointment_id" Foreign="id"/>
+            </ForeignKey>
+        </TableCreate>
 
         <Insert Table="link_object">
             <Data Key="name" Type="Quote">Appointment</Data>
@@ -247,6 +289,7 @@
     </DatabaseInstall>
 
     <DatabaseUninstall Type="pre">
+        <TableDrop Name="calendar_appointment_ticket"/>
         <TableDrop Name="calendar_appointment_seen"/>
         <TableDrop Name="calendar_appointment"/>
         <TableDrop Name="calendar"/>

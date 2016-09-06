@@ -128,7 +128,7 @@ my @Tests = (
         Success => 0,
     },
     {
-        Name   => 'CalendarCreate - All parameters',
+        Name   => 'CalendarCreate - All required parameters',
         Config => {
             CalendarName => "Calendar-$RandomID",
             Color        => '#3A87AD',
@@ -158,6 +158,27 @@ my @Tests = (
         },
         Success => 1,
     },
+    {
+        Name   => 'CalendarCreate - Optional parameters',
+        Config => {
+            CalendarName       => "Calendar-$RandomID-3",
+            Color              => '#3A87AD',
+            GroupID            => $GroupID,
+            UserID             => $UserID,
+            TicketAppointments => [
+                {
+                    StartDate    => 'FirstResponse',
+                    EndDate      => 'Plus_5',
+                    QueueID      => 2,
+                    SearchParams => {
+                        Title => 'This is a title',
+                        Types => 'This is a type',
+                    },
+                },
+            ],
+        },
+        Success => 1,
+    },
 );
 
 for my $Test (@Tests) {
@@ -180,7 +201,7 @@ for my $Test (@Tests) {
         for my $Key ( sort keys %{ $Test->{Config} } ) {
             next KEY if $Key eq 'UserID';
 
-            $Self->Is(
+            $Self->IsDeeply(
                 $Test->{Config}->{$Key},
                 $Calendar{$Key},
                 "$Test->{Name} - Data for $Key",
@@ -225,6 +246,14 @@ for my $Test (@Tests) {
         Name   => 'CalendarGet - Second calendar',
         Config => {
             CalendarName => "Calendar-$RandomID-2",
+            UserID       => $UserID,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarGet - Third calendar',
+        Config => {
+            CalendarName => "Calendar-$RandomID-3",
             UserID       => $UserID,
         },
         Success => 1,
@@ -282,7 +311,7 @@ for my $Test (@Tests) {
             UserID => $UserID,
         },
         Success => 1,
-        Count   => 2,
+        Count   => 3,
     },
     {
         Name   => 'CalendarList - With UserID and only valid',
@@ -291,7 +320,7 @@ for my $Test (@Tests) {
             UserID  => $UserID,
         },
         Success => 1,
-        Count   => 1,
+        Count   => 2,
     },
     {
         Name   => 'CalendarList - With UserID and only invalid',
@@ -336,6 +365,8 @@ for my $Test (@Tests) {
                 my %CalendarByID = $CalendarObject->CalendarGet(
                     CalendarID => $Calendar->{CalendarID},
                 );
+
+                delete $CalendarByID{TicketAppointments};
 
                 $Self->IsDeeply(
                     $Calendar,
@@ -435,7 +466,7 @@ for my $Test (@Tests) {
         Success => 0,
     },
     {
-        Name   => 'CalendarUpdate - All params first',
+        Name   => 'CalendarUpdate - All required params first',
         Config => {
             CalendarID   => $CalendarIDs[0],
             GroupID      => $GroupID,
@@ -447,14 +478,38 @@ for my $Test (@Tests) {
         Success => 1,
     },
     {
-        Name   => 'CalendarUpdate - All params second',
+        Name   => 'CalendarUpdate - All required and an optional param second',
         Config => {
-            CalendarID   => $CalendarIDs[1],
-            GroupID      => $GroupID,
-            CalendarName => "Change-$RandomID-2",
-            Color        => '#FF9900',
-            UserID       => $UserID,
-            ValidID      => 1,
+            CalendarID         => $CalendarIDs[1],
+            GroupID            => $GroupID,
+            CalendarName       => "Change-$RandomID-2",
+            Color              => '#FF9900',
+            TicketAppointments => [
+                {
+                    StartDate    => 'FirstResponse',
+                    EndDate      => 'Plus_5',
+                    QueueID      => 2,
+                    SearchParams => {
+                        Title => 'This is a title',
+                        Types => 'This is a type',
+                    },
+                },
+            ],
+            UserID  => $UserID,
+            ValidID => 1,
+        },
+        Success => 1,
+    },
+    {
+        Name   => 'CalendarUpdate - All required and an optional param third',
+        Config => {
+            CalendarID         => $CalendarIDs[1],
+            GroupID            => $GroupID,
+            CalendarName       => "Change-$RandomID-2",
+            Color              => '#FF9900',
+            TicketAppointments => undef,
+            UserID             => $UserID,
+            ValidID            => 1,
         },
         Success => 1,
     },
@@ -483,7 +538,7 @@ for my $Test (@Tests) {
         for my $Key ( sort keys %{ $Test->{Config} } ) {
             next KEY if $Key eq 'UserID';
 
-            $Self->Is(
+            $Self->IsDeeply(
                 $Test->{Config}->{$Key},
                 $Calendar{$Key},
                 "$Test->{Name} - Data for $Key",
@@ -656,7 +711,7 @@ for my $Test (@Tests) {
     {
         Name   => 'CalendarExport/Import - All params with overwrite',
         Export => {
-            CalendarID => $CalendarIDs[0],
+            CalendarID => $CalendarIDs[2],
             UserID     => $UserID,
         },
         Config => {
@@ -665,14 +720,14 @@ for my $Test (@Tests) {
         },
         Appointments => [
             {
-                CalendarID => $CalendarIDs[0],
+                CalendarID => $CalendarIDs[2],
                 Title      => "Appointment1-$RandomID",
                 StartTime  => '2016-01-01 16:00:00',
                 EndTime    => '2016-01-01 17:00:00',
                 UserID     => $UserID,
             },
             {
-                CalendarID => $CalendarIDs[0],
+                CalendarID => $CalendarIDs[2],
                 Title      => "Appointment2-$RandomID",
                 StartTime  => '2016-01-01 16:00:00',
                 EndTime    => '2016-01-01 17:00:00',

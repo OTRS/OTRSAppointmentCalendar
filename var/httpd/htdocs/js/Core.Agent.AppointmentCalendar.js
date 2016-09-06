@@ -69,6 +69,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
+     * @param {Object} Params.TicketAppointmentTypes - Object with ticket appointment types.
      * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Object} Params.Appointment - Object with appointment screen related data (optional).
@@ -268,7 +269,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay
                     || CalEvent.recurring
                     || CalEvent.parentId
-                    || CalEvent.notification) {
+                    || CalEvent.notification
+                    || CalEvent.ticketAppointmentType) {
 
                     // Create container and icon element
                     $IconContainer = $('<div />').addClass('Icons');
@@ -293,6 +295,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (CalEvent.notification) {
                         $Icon.clone()
                             .addClass('fa-bell')
+                            .appendTo($IconContainer);
+                    }
+                    if (CalEvent.ticketAppointmentType) {
+                        $Icon.clone()
+                            .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                             .appendTo($IconContainer);
                     }
 
@@ -369,7 +376,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (CalEvent.allDay
                         || CalEvent.recurring
                         || CalEvent.parentId
-                        || CalEvent.notification) {
+                        || CalEvent.notification
+                        || CalEvent.ticketAppointmentType) {
 
                         // Get container
                         $IconContainer = $TooltipObj.find('.Icons');
@@ -396,6 +404,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         if (CalEvent.notification) {
                             $Icon.clone()
                                 .addClass('fa-bell')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.ticketAppointmentType) {
+                            $Icon.clone()
+                                .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                                 .appendTo($IconContainer);
                         }
                     }

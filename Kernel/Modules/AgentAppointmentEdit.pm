@@ -289,6 +289,36 @@ sub Run {
                     }
                 }
             }
+
+            # Check if dealing with ticket appointment.
+            if ( $Appointment{TicketAppointmentRuleID} ) {
+                $GetParam{TicketID} = $CalendarObject->TicketAppointmentTicketID(
+                    AppointmentID => $Appointment{AppointmentID},
+                );
+
+                my $Rule = $CalendarObject->TicketAppointmentRuleGet(
+                    CalendarID => $Appointment{CalendarID},
+                    RuleID     => $Appointment{TicketAppointmentRuleID},
+                );
+
+                # Get date types from the ticket appointment rule.
+                if ( IsHashRefWithData($Rule) ) {
+                    for my $Type (qw(StartDate EndDate)) {
+                        if (
+                            $Rule->{$Type}    eq 'FirstResponseTime'
+                            || $Rule->{$Type} eq 'UpdateTime'
+                            || $Rule->{$Type} eq 'SolutionTime'
+                            )
+                        {
+                            $GetParam{ReadOnlyStart}    = 1 if $Type eq 'StartDate';
+                            $GetParam{ReadOnlyDuration} = 1 if $Type eq 'EndDate';
+                        }
+                        elsif ( $Rule->{$Type} =~ /^Plus_[0-9]+$/ ) {
+                            $GetParam{ReadOnlyDuration} = 1;
+                        }
+                    }
+                }
+            }
         }
 
         # get selected timestamp
@@ -1139,39 +1169,68 @@ sub Run {
             }
         }
         else {
-            $GetParam{StartTime} = sprintf(
-                "%04d-%02d-%02d %02d:%02d:00",
-                $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
-                $GetParam{StartHour}, $GetParam{StartMinute}
-            );
-            $GetParam{EndTime} = sprintf(
-                "%04d-%02d-%02d %02d:%02d:00",
-                $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
-                $GetParam{EndHour}, $GetParam{EndMinute}
-            );
+            if (
+                defined $GetParam{StartYear}
+                && defined $GetParam{StartMonth}
+                && defined $GetParam{StartDay}
+                && defined $GetParam{StartHour}
+                && defined $GetParam{StartMinute}
+                )
+            {
+                $GetParam{StartTime} = sprintf(
+                    "%04d-%02d-%02d %02d:%02d:00",
+                    $GetParam{StartYear}, $GetParam{StartMonth}, $GetParam{StartDay},
+                    $GetParam{StartHour}, $GetParam{StartMinute}
+                );
 
-            my $StartTime = $CalendarHelperObject->SystemTimeGet(
-                String => $GetParam{StartTime},
-            );
-            my $EndTime = $CalendarHelperObject->SystemTimeGet(
-                String => $GetParam{EndTime},
-            );
-
-            # convert to local time
-            $StartTime -= $Self->{TimeSecDiff};
-            $EndTime   -= $Self->{TimeSecDiff};
-
-            # prevent storing end time before start time
-            if ( $EndTime < $StartTime ) {
-                $EndTime = $StartTime;
+                # Convert start time to local time.
+                my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{StartTime},
+                );
+                $StartTime -= $Self->{TimeSecDiff};
+                $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => $StartTime,
+                );
+            }
+            else {
+                $GetParam{StartTime} = $Appointment{StartTime};
             }
 
-            $GetParam{StartTime} = $CalendarHelperObject->TimestampGet(
-                SystemTime => $StartTime,
-            );
-            $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
-                SystemTime => $EndTime,
-            );
+            if (
+                defined $GetParam{EndYear}
+                && defined $GetParam{EndMonth}
+                && defined $GetParam{EndDay}
+                && defined $GetParam{EndHour}
+                && defined $GetParam{EndMinute}
+                )
+            {
+                $GetParam{EndTime} = sprintf(
+                    "%04d-%02d-%02d %02d:%02d:00",
+                    $GetParam{EndYear}, $GetParam{EndMonth}, $GetParam{EndDay},
+                    $GetParam{EndHour}, $GetParam{EndMinute}
+                );
+
+                # Convert end time to local time.
+                my $EndTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{EndTime},
+                );
+                $EndTime -= $Self->{TimeSecDiff};
+
+                # Prevent storing end time before start time.
+                my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{StartTime},
+                );
+                if ( $EndTime < $StartTime ) {
+                    $EndTime = $StartTime;
+                }
+
+                $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => $EndTime,
+                );
+            }
+            else {
+                $GetParam{EndTime} = $Appointment{EndTime};
+            }
         }
 
         # prevent recurrence until dates before start time
@@ -1191,7 +1250,7 @@ sub Run {
         if ( $GetParam{Recurring} && $GetParam{RecurrenceType} ) {
 
             if (
-                $GetParam{RecurrenceType} eq 'Daily'
+                $GetParam{RecurrenceType}    eq 'Daily'
                 || $GetParam{RecurrenceType} eq 'Weekly'
                 || $GetParam{RecurrenceType} eq 'Monthly'
                 || $GetParam{RecurrenceType} eq 'Yearly'
@@ -1341,6 +1400,38 @@ sub Run {
             $GetParam{ResourceID} = undef;
         }
 
+        # Check if dealing with ticket appointment.
+        if ( $Appointment{TicketAppointmentRuleID} ) {
+
+            # Make sure readonly values stay unchanged.
+            $GetParam{Title}      = $Appointment{Title};
+            $GetParam{CalendarID} = $Appointment{CalendarID};
+            $GetParam{AllDay}     = undef;
+            $GetParam{Recurring}  = undef;
+
+            my $Rule = $CalendarObject->TicketAppointmentRuleGet(
+                CalendarID => $Appointment{CalendarID},
+                RuleID     => $Appointment{TicketAppointmentRuleID},
+            );
+
+            # Recalculate end time based on time preset.
+            if ( IsHashRefWithData($Rule) ) {
+                if ( $Rule->{EndDate} =~ /^Plus_([0-9]+)$/ && $GetParam{StartTime} ) {
+                    my $Preset = int $1;
+
+                    my $StartTime = $CalendarHelperObject->SystemTimeGet(
+                        String => $GetParam{StartTime},
+                    );
+
+                    # Calculate end time using preset value.
+                    my $EndTime = $StartTime + 60 * $Preset;
+                    $GetParam{EndTime} = $CalendarHelperObject->TimestampGet(
+                        SystemTime => $EndTime,
+                    );
+                }
+            }
+        }
+
         my $Success;
 
         # reset empty parameters
@@ -1427,22 +1518,33 @@ sub Run {
     elsif ( $Self->{Subaction} eq 'DeleteAppointment' ) {
 
         if ( $GetParam{AppointmentID} ) {
-
-            my $Success = $PluginObject->PluginLinkDelete(
+            my %Appointment = $AppointmentObject->AppointmentGet(
                 AppointmentID => $GetParam{AppointmentID},
-                UserID        => $Self->{UserID},
-            ) || 0;
+            );
 
-            my $Error = "";
-            if ($Success) {
-                $Success = $AppointmentObject->AppointmentDelete(
-                    %GetParam,
-                    UserID => $Self->{UserID},
-                );
+            my $Success = 0;
+            my $Error   = '';
+
+            # Prevent deleting ticket appointment.
+            if ( $Appointment{TicketAppointmentRuleID} ) {
+                $Error = Translatable('Cannot delete ticket appointment!');
             }
+            else {
+                $Success = $PluginObject->PluginLinkDelete(
+                    AppointmentID => $GetParam{AppointmentID},
+                    UserID        => $Self->{UserID},
+                );
 
-            if ( !$Success ) {
-                $Error = Translatable("No permissions!");
+                if ($Success) {
+                    $Success = $AppointmentObject->AppointmentDelete(
+                        %GetParam,
+                        UserID => $Self->{UserID},
+                    );
+                }
+
+                if ( !$Success ) {
+                    $Error = Translatable('No permissions!');
+                }
             }
 
             # build JSON output
@@ -1525,33 +1627,34 @@ sub Run {
     # team list selection update
     # ------------------------------------------------------------ #
     elsif ( $Self->{Subaction} eq 'TeamUserList' ) {
-
         my @TeamIDs = $ParamObject->GetArray( Param => 'TeamID[]' );
-
-        # get needed objects
-        my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
-        my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-
         my %TeamUserListAll;
-        TEAMID:
-        for my $TeamID (@TeamIDs) {
-            next TEAMID if !$TeamID;
 
-            # get list of team members
-            my %TeamUserList = $TeamObject->TeamUserList(
-                TeamID => $TeamID,
-                UserID => $Self->{UserID},
-            );
+        # Check if team object is registered.
+        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+            my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+            my $UserObject = $Kernel::OM->Get('Kernel::System::User');
 
-            # get user data
-            for my $UserID ( sort keys %TeamUserList ) {
-                my %User = $UserObject->GetUserData(
-                    UserID => $UserID,
+            TEAMID:
+            for my $TeamID (@TeamIDs) {
+                next TEAMID if !$TeamID;
+
+                # get list of team members
+                my %TeamUserList = $TeamObject->TeamUserList(
+                    TeamID => $TeamID,
+                    UserID => $Self->{UserID},
                 );
-                $TeamUserList{$UserID} = $User{UserFullname},
-            }
 
-            %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
+                # get user data
+                for my $UserID ( sort keys %TeamUserList ) {
+                    my %User = $UserObject->GetUserData(
+                        UserID => $UserID,
+                    );
+                    $TeamUserList{$UserID} = $User{UserFullname},
+                }
+
+                %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
+            }
         }
 
         # build JSON output

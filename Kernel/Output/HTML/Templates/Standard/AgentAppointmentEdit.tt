@@ -23,6 +23,11 @@
             <legend><span>[% Translate("Basic information") | html %]</span></legend>
             <label for="Title"[% IF Data.PermissionLevel >= 2 %] class="Mandatory"[% END %]>[% IF Data.PermissionLevel >= 2 %]<span class="Marker">*</span> [% END %][% Translate("Title") | html %]:</label>
             <div class="Field">
+[% IF Data.TicketAppointmentRuleID %]
+                <p id="Title" class="ReadOnlyValue">
+                    <a target="_blank" href="[% Env("Baselink") %]Action=AgentTicketZoom;TicketID=[% Data.TicketID %]">[% Data.Title | html %]</a>
+                </p>
+[% ELSE %]
 [% IF Data.PermissionLevel < 2 %]
                 <p id="Title" class="ReadOnlyValue">[% Data.Title | html %]</p>
 [% ELSE %]
@@ -33,6 +38,7 @@
                 <div id="TitleServerError" class="TooltipErrorMessage">
                     <p>[% Translate("This field is required.") | html %]</p>
                 </div>
+[% END %]
 [% END %]
             </div>
             <div class="Clear"></div>
@@ -59,9 +65,14 @@
 [% RenderBlockEnd("LocationLink") %]
             </div>
             <div class="Clear"></div>
-            <label for="CalendarID"[% IF Data.PermissionLevel >= 3 %] class="Mandatory"[% END %]>[% IF Data.PermissionLevel >= 3 %]<span class="Marker">*</span> [% END %][% Translate("Calendar") | html %]:</label>
+            <label for="CalendarID"[% IF !Data.TicketAppointmentRuleID && Data.PermissionLevel >= 3 %] class="Mandatory"[% END %]>
+[% IF !Data.TicketAppointmentRuleID && Data.PermissionLevel >= 3 %]
+                <span class="Marker">*</span>
+[% END %]
+                [% Translate("Calendar") | html %]:
+            </label>
             <div class="Field">
-[% IF Data.PermissionLevel < 3 %]
+[% IF Data.TicketAppointmentRuleID || Data.PermissionLevel < 3 %]
                 <p id="CalendarID" class="ReadOnlyValue">[% Data.CalendarName | html %]</p>
 [% ELSE %]
                 [% Data.CalendarIDStrg %]
@@ -109,7 +120,7 @@
             <legend><span>[% Translate("Date/Time") | html %]</span></legend>
             <label for="StartDay">[% Translate("Start date") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel < 2 %]
+[% IF ( Data.TicketAppointmentRuleID && Data.ReadOnlyStart ) || Data.PermissionLevel < 2 %]
                 <p id="StartDay" class="ReadOnlyValue">[% Data.StartDate | Localize("TimeLong") %]</p>
 [% ELSE %]
                 <div id="StartDayError" class="TooltipErrorMessage">
@@ -122,7 +133,7 @@
             <div class="Clear"></div>
             <label for="EndDay">[% Translate("End date") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel < 2 %]
+[% IF ( Data.TicketAppointmentRuleID && Data.ReadOnlyDuration ) || Data.PermissionLevel < 2 %]
                 <p id="EndDay" class="ReadOnlyValue">[% Data.EndDate | Localize("TimeLong") %]</p>
 [% ELSE %]
                 <div id="EndDayError" class="TooltipErrorMessage">
@@ -135,7 +146,7 @@
             <div class="Clear"></div>
             <label for="AllDay">[% Translate("All-day") | html %]:</label>
             <div class="Field">
-[% IF Data.PermissionLevel < 2 %]
+[% IF Data.TicketAppointmentRuleID || Data.PermissionLevel < 2 %]
                 <p id="AllDay" class="ReadOnlyValue">[% Translate(Data.AllDayString) | html %]</p>
 [% ELSE %]
                 <input type="checkbox" id="AllDay" name="AllDay" [% Data.AllDayChecked %] />
@@ -143,7 +154,7 @@
             </div>
             <div class="Clear"></div>
             <label for="RecurrenceType">[% Translate("Repeat") | html %]:</label>
-[% IF Data.PermissionLevel < 2 %]
+[% IF Data.TicketAppointmentRuleID || Data.PermissionLevel < 2 %]
             <div class="Field">
 [% IF Data.ParentID %]
                 [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
@@ -441,13 +452,13 @@
 </div>
 
 <div class="ContentFooter Center">
-[% IF !Data.PermissionLevel OR Data.PermissionLevel > 1 %]
+[% IF !Data.PermissionLevel || Data.PermissionLevel > 1 %]
     <button id="EditFormSubmit" class="Primary CallForAction" value="[% Translate("Save") | html %]"><span><i class="fa fa-check-square-o"></i> [% Translate("Save") | html %]</span></button>
 [% END %]
-[% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
+[% IF Data.AppointmentID && !Data.TicketAppointmentRuleID && Data.PermissionLevel > 2 %]
     <button id="EditFormCopy" class="CallForAction" value="[% Translate("Copy") | html %]"><span><i class="fa fa-files-o"></i> [% Translate("Copy") | html %]</span></button>
 [% END %]
-[% IF Data.AppointmentID AND Data.PermissionLevel > 2 %]
+[% IF Data.AppointmentID && !Data.TicketAppointmentRuleID && Data.PermissionLevel > 2 %]
     <button id="EditFormDelete" class="CallForAction"><span>[% Translate("Delete") | html %]</span></button>
 [% END %]
     <button id="EditFormCancel" class="CallForAction"><span>[% Translate("Cancel") | html %]</span></button>
