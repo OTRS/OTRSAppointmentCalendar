@@ -437,7 +437,7 @@ for my $Test (@Tests) {
 
             # escalation times
             if (
-                $Test->{Result}->{$Field}    eq 'FirstResponseTime'
+                $Test->{Result}->{$Field} eq 'FirstResponseTime'
                 || $Test->{Result}->{$Field} eq 'UpdateTime'
                 || $Test->{Result}->{$Field} eq 'SolutionTime'
                 )
