@@ -119,20 +119,6 @@
 </chapter>
 
 <chapter>
-    <title>Contact</title>
-    <para>The following persons were involved on this package implementation:</para>
-    <sect1>
-        <title>OTRS AG</title>
-        <para>
-            Accounting: Rene Bakker, Phone +49 (0)6172 681988 0
-        </para>
-        <para>
-            Technical: Manuel Hecht, Phone +49 (0)6172 681988 0
-        </para>
-    </sect1>
-</chapter>
-
-<chapter>
     <title>Manifest</title>
     <para>This manifest names all files in this package which have rights.</para>
     <sect1>

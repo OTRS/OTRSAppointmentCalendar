@@ -66,6 +66,7 @@ check if Time and OriginalTime have same hour, minute and second value, and retu
 
 returns:
     $Result = '2016-02-01 00:01:00';
+
 =cut
 
 sub TimeCheck {
@@ -106,6 +107,7 @@ returns the number of non-leap seconds since what ever time the system considers
 
 returns:
     $Result = '1451606460';
+
 =cut
 
 sub SystemTimeGet {
@@ -157,6 +159,7 @@ returns a time stamp for a given system time in "yyyy-mm-dd 23:59:59" format.
 
 returns:
     $Result = '2016-01-01 00:01:00';
+
 =cut
 
 sub TimestampGet {
@@ -193,6 +196,7 @@ returns a current time stamp for a given system time in "yyyy-mm-dd 23:59:59" fo
 
 returns:
     $Result = '2016-01-01 00:01:00';
+
 =cut
 
 sub CurrentTimestampGet {
@@ -219,6 +223,7 @@ returns the number of non-leap seconds since what ever time the system considers
 
 returns:
     $Result = '1462871162';
+
 =cut
 
 sub CurrentSystemTime {
@@ -301,6 +306,7 @@ returns the number of non-leap seconds since what ever time the system considers
 
 returns:
     $Result = '1451610000';
+
 =cut
 
 sub Date2SystemTime {
@@ -343,6 +349,7 @@ adds time period (years and months) to the time given in Unix format.
 
 returns:
     $Result = '1497085562';
+
 =cut
 
 sub AddPeriod {
@@ -403,6 +410,7 @@ adds time period (years and months) to the time given in Unix format.
 
 returns:
     $Result = 2;
+
 =cut
 
 sub TimezoneOffsetGet {
@@ -461,6 +469,7 @@ get week details for a given unix time.
 returns:
     $WeekDay = 4; # 7-sun, 1-mon
     $CW = 19;
+
 =cut
 
 sub WeekDetailsGet {
@@ -490,8 +499,6 @@ sub WeekDetailsGet {
     return ( $WeekDay, $CW );
 }
 
-1;
-
 =back
 
 =head1 TERMS AND CONDITIONS
@@ -500,4 +507,8 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
-did not
+did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+
+=cut
+
+1;
