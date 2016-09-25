@@ -34,23 +34,17 @@ our @ObjectDependencies = (
 
 Kernel::System::Calendar.Appointment - appointment lib
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 All appointment functions.
 
 =head1 PUBLIC INTERFACE
 
-=over 4
+=head2 new()
 
-=cut
+Don't use the constructor directly, use the ObjectManager instead:
 
-=item new()
-
-create an object. Do not use it directly, instead use:
-
-    use Kernel::System::ObjectManager;
-    local $Kernel::OM = Kernel::System::ObjectManager->new();
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
 =cut
 
@@ -76,7 +70,7 @@ sub new {
     return $Self;
 }
 
-=item AppointmentCreate()
+=head2 AppointmentCreate()
 
 creates a new appointment.
 
@@ -418,7 +412,7 @@ sub AppointmentCreate {
     return $AppointmentID;
 }
 
-=item AppointmentList()
+=head2 AppointmentList()
 
 get a hash of Appointments.
 
@@ -666,14 +660,14 @@ sub AppointmentList {
     return @Result;
 }
 
-=item AppointmentDays()
+=head2 AppointmentDays()
 
 get a hash of days with Appointments in all user calendars.
 
     my %AppointmentDays = $AppointmentObject->AppointmentDays(
-        StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
-        EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
-        UserID              => 1,                                       # (required) Valid UserID
+        StartTime => '2016-01-01 00:00:00',                   # (optional) Filter by start date
+        EndTime   => '2016-02-01 00:00:00',                   # (optional) Filter by end date
+        UserID    => 1,                                       # (required) Valid UserID
     );
 
 returns a hash with days as keys and number of Appointments as values:
@@ -854,7 +848,7 @@ sub AppointmentDays {
     return %Result;
 }
 
-=item AppointmentGet()
+=head2 AppointmentGet()
 
 get Appointment.
 
@@ -1027,7 +1021,7 @@ sub AppointmentGet {
     return %Result;
 }
 
-=item AppointmentUpdate()
+=head2 AppointmentUpdate()
 
 updates an existing appointment.
 
@@ -1347,7 +1341,7 @@ sub AppointmentUpdate {
     return 1;
 }
 
-=item AppointmentDelete()
+=head2 AppointmentDelete()
 
 deletes an existing appointment.
 
@@ -1479,7 +1473,7 @@ sub AppointmentDelete {
     return 1;
 }
 
-=item AppointmentDeleteOccurrence()
+=head2 AppointmentDeleteOccurrence()
 
 deletes a single recurring appointment occurrence.
 
@@ -1555,7 +1549,7 @@ sub AppointmentDeleteOccurrence {
     return 1;
 }
 
-=item GetUniqueID()
+=head2 GetUniqueID()
 
 returns UniqueID containing appointment start time, random hash and system FQDN.
 
@@ -1604,7 +1598,7 @@ sub GetUniqueID {
     return "$StartTimeStrg-$Hash\@$FQDN";
 }
 
-=item AppointmentSeenGet()
+=head2 AppointmentSeenGet()
 
 check if particular appointment reminder was shown to given user.
 
@@ -1677,7 +1671,7 @@ sub AppointmentSeenGet {
     return $Result;
 }
 
-=item AppointmentSeenSet()
+=head2 AppointmentSeenSet()
 
 set the flag if appointment reminder is shown the given user.
 
@@ -1752,7 +1746,7 @@ sub AppointmentSeenSet {
     return 1;
 }
 
-=item AppointmentUpcomingGet()
+=head2 AppointmentUpcomingGet()
 
 Get appointment data for upcoming appointment start or end.
 
@@ -1831,7 +1825,7 @@ sub AppointmentUpcomingGet {
     return @Results;
 }
 
-=item _AppointmentFutureTasksDelete()
+=head2 _AppointmentFutureTasksDelete()
 
 Delete all calendar appointment future tasks.
 
@@ -1880,7 +1874,7 @@ sub _AppointmentFutureTasksDelete {
     return 1;
 }
 
-=item AppointmentFutureTasksUpdate()
+=head2 AppointmentFutureTasksUpdate()
 
 Update OTRS daemon future task list for upcoming appointments.
 
@@ -2023,7 +2017,7 @@ sub AppointmentFutureTasksUpdate {
     return 1;
 }
 
-=item _AppointmentNotificationPrepare()
+=head2 _AppointmentNotificationPrepare()
 
 Prepare appointment notification data.
 
@@ -2215,7 +2209,7 @@ sub _AppointmentNotificationPrepare {
     return 1;
 }
 
-=item AppointmentNotification()
+=head2 AppointmentNotification()
 
 Will be triggered by the OTRS daemon to fire events for appointments,
 that reaches it's reminder (notification) time.
@@ -2281,10 +2275,6 @@ sub AppointmentNotification {
 
     return 1;
 }
-
-=begin Internal:
-
-=cut
 
 sub _AppointmentRecurringCreate {
     my ( $Self, %Param ) = @_;
@@ -2828,8 +2818,6 @@ sub _CalculateRecurrenceTime {
 }
 
 1;
-
-=back
 
 =head1 TERMS AND CONDITIONS
 
