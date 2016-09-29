@@ -95,8 +95,40 @@ sub Run {
             }
         }
 
-        # get ticket appointment parameters
         $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
+
+        # Get queue create permissions for the user.
+        my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Self->{UserID},
+            Type   => 'create',
+        );
+
+        my @ValidIDs = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        # Queue field in ticket appointments is mandatory, check if it's present and valid.
+        for my $Rule ( @{ $GetParam{TicketAppointments} } ) {
+            if ( defined $Rule->{QueueID} && IsArrayRefWithData( $Rule->{QueueID} ) ) {
+
+                QUEUE_ID:
+                for my $QueueID ( sort @{ $Rule->{QueueID} || [] } ) {
+                    my %QueueData = $QueueObject->QueueGet( ID => $QueueID );
+
+                    if (
+                        !grep { $_ eq $QueueData{ValidID} } @ValidIDs
+                        || !$UserGroups{ $QueueData{GroupID} }
+                        )
+                    {
+                        $Error{ $Rule->{RuleID} }->{QueueIDInvalid} = 'ServerError';
+                        last QUEUE_ID;
+                    }
+                }
+            }
+            else {
+                $Error{ $Rule->{RuleID} }->{QueueIDInvalid} = 'ServerError';
+            }
+        }
 
         if (%Error) {
 
@@ -124,9 +156,10 @@ sub Run {
                 },
             );
 
-            # show ticket appointment rules
+            # Show all ticket appointment rule blocks.
             my $RuleNumber = 1;
             for my $Rule ( @{ $GetParam{TicketAppointments} || [] } ) {
+                $Rule->{Error} = $Error{ $Rule->{RuleID} };
                 my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
                 $LayoutObject->Block(
                     Name => 'TicketAppointmentRule',
@@ -137,7 +170,7 @@ sub Run {
                     },
                 );
 
-                # show search parameters
+                # Show any search parameter blocks too.
                 for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
                     $LayoutObject->Block(
                         Name => 'TicketAppointmentRuleSearchParam',
@@ -215,7 +248,6 @@ sub Run {
         my $ValidSelection     = $Self->_ValidSelectionGet(%Calendar);
         my %TicketAppointments = $Self->_TicketAppointments();
 
-        # get rule count
         my $RuleCount = scalar @{ $Calendar{TicketAppointments} || [] };
 
         $LayoutObject->Block(
@@ -233,7 +265,7 @@ sub Run {
             },
         );
 
-        # show ticket appointment rules
+        # Show all ticket appointment rule blocks.
         my $RuleNumber = 1;
         for my $Rule ( @{ $Calendar{TicketAppointments} || [] } ) {
             my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
@@ -246,7 +278,7 @@ sub Run {
                 },
             );
 
-            # show search parameters
+            # Show any search parameter blocks too.
             for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
                 $LayoutObject->Block(
                     Name => 'TicketAppointmentRuleSearchParam',
@@ -291,6 +323,41 @@ sub Run {
             $Error{CalendarNameExists}  = 1;
         }
 
+        $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
+
+        # Get queue create permissions for the user.
+        my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Self->{UserID},
+            Type   => 'create',
+        );
+
+        my @ValidIDs = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        # Queue field in ticket appointments is mandatory, check if it's present and valid.
+        for my $Rule ( @{ $GetParam{TicketAppointments} } ) {
+            if ( defined $Rule->{QueueID} && IsArrayRefWithData( $Rule->{QueueID} ) ) {
+
+                QUEUE_ID:
+                for my $QueueID ( sort @{ $Rule->{QueueID} || [] } ) {
+                    my %QueueData = $QueueObject->QueueGet( ID => $QueueID );
+
+                    if (
+                        !grep { $_ eq $QueueData{ValidID} } @ValidIDs
+                        || !$UserGroups{ $QueueData{GroupID} }
+                        )
+                    {
+                        $Error{ $Rule->{RuleID} }->{QueueIDInvalid} = 'ServerError';
+                        last QUEUE_ID;
+                    }
+                }
+            }
+            else {
+                $Error{ $Rule->{RuleID} }->{QueueIDInvalid} = 'ServerError';
+            }
+        }
+
         if (%Error) {
 
             # get selections
@@ -298,6 +365,8 @@ sub Run {
             my $ColorPalette       = $Self->_ColorPaletteGet();
             my $ValidSelection     = $Self->_ValidSelectionGet(%GetParam);
             my %TicketAppointments = $Self->_TicketAppointments();
+
+            my $RuleCount = scalar @{ $GetParam{TicketAppointments} || [] };
 
             $LayoutObject->Block(
                 Name => 'CalendarEdit',
@@ -309,14 +378,40 @@ sub Run {
                     ValidID      => $ValidSelection,
                     Subaction    => 'Update',
                     Title        => Translatable('Edit Calendar'),
+                    RuleCount    => $RuleCount,
                     %TicketAppointments,
                 },
             );
+
+            # Show all ticket appointment rule blocks.
+            my $RuleNumber = 1;
+            for my $Rule ( @{ $GetParam{TicketAppointments} || [] } ) {
+                $Rule->{Error} = $Error{ $Rule->{RuleID} };
+                my %TicketAppointmentRule = $Self->_TicketAppointments( %{$Rule} );
+                $LayoutObject->Block(
+                    Name => 'TicketAppointmentRule',
+                    Data => {
+                        RuleNumber => $RuleNumber++,
+                        %{$Rule},
+                        %TicketAppointmentRule,
+                    },
+                );
+
+                # Show any search parameter blocks too.
+                for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
+                    $LayoutObject->Block(
+                        Name => 'TicketAppointmentRuleSearchParam',
+                        Data => {
+                            ParamName  => $ParamName,
+                            ParamValue => $Rule->{SearchParam}->{$ParamName},
+                            %{$Rule},
+                        },
+                    );
+                }
+            }
+
             return $Self->_Mask(%Param);
         }
-
-        # get ticket appointment parameters
-        $GetParam{TicketAppointments} = $Self->_GetTicketAppointmentParams(%GetParam);
 
         # update calendar
         my $Success = $CalendarObject->CalendarUpdate(
@@ -647,7 +742,7 @@ sub _TicketAppointments {
     }
 
     $TicketAppointments{QueueIDStrg} = $LayoutObject->AgentQueueListOption(
-        Class              => 'Validate_Required Modernize',
+        Class              => 'Validate_Required Modernize ' . $Param{Error}->{QueueIDInvalid},
         Data               => \%AvailableQueues,
         Multiple           => 1,
         Size               => 0,

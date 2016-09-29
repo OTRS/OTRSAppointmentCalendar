@@ -169,7 +169,7 @@ my @Tests = (
                 {
                     StartDate    => 'FirstResponse',
                     EndDate      => 'Plus_5',
-                    QueueID      => 2,
+                    QueueID      => [2],
                     SearchParams => {
                         Title => 'This is a title',
                         Types => 'This is a type',
