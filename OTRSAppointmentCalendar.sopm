@@ -91,18 +91,18 @@
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t"/>
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentTimeZone.t"/>
         <File Permission="644" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
-        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.css"/>
-        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.min.css"/>
-        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.css"/>
-        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css"/>
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.css"/>
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.min.css"/>
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.css"/>
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.css"/>
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/spectrum-1.8.0/spectrum.css"/>
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Agenda.css"/>
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
-        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.8.0/fullcalendar.js"/>
-        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.8.0/fullcalendar.min.js"/>
-        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.js"/>
-        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js"/>
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-3.0.1/fullcalendar.js"/>
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-3.0.1/fullcalendar.min.js"/>
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.js"/>
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.js"/>
         <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/momentjs-2.13.0/moment.min.js"/>
         <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.js"/>
         <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.min.js"/>
