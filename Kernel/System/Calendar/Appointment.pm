@@ -427,6 +427,8 @@ get a hash of Appointments.
 
     my @Appointments = $AppointmentObject->AppointmentList(
         CalendarID          => 1,                                       # (required) Valid CalendarID
+        Title               => '*',                                     # (optional) Filter by title, wildcard supported
+        Description         => '*',                                     # (optional) Filter by description, wildcard supported
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
         TeamID              => 1,                                       # (optional) Filter by team
@@ -514,15 +516,25 @@ sub AppointmentList {
 
     # cache keys
     my $CacheType        = $Self->{CacheType} . 'List' . $Param{CalendarID};
+    my $CacheKeyTitle    = $Param{Title} || 'any';
+    my $CacheKeyDesc     = $Param{Description} || 'any';
     my $CacheKeyStart    = $Param{StartTime} || 'any';
     my $CacheKeyEnd      = $Param{EndTime} || 'any';
     my $CacheKeyTeam     = $Param{TeamID} || 'any';
     my $CacheKeyResource = $Param{ResourceID} || 'any';
 
+    if ( $Param{Title} && $Param{Title} =~ /[\*]*/ ) {
+        $CacheKeyTitle = 'any';
+    }
+    if ( $Param{Description} && $Param{Description} =~ /[\*]*/ ) {
+        $CacheKeyDesc = 'any';
+    }
+
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Key =>
+            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -531,6 +543,18 @@ sub AppointmentList {
 
     # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Filter by appointment title, with support for wildcards.
+    if ( $Param{Title} ) {
+        $Param{Title} =~ s/\*/%/g;
+        $Param{Title} = '%' . $Param{Title} . '%';
+    }
+
+    # Filter by appointment description, with support for wildcards.
+    if ( $Param{Description} ) {
+        $Param{Description} =~ s/\*/%/g;
+        $Param{Description} = '%' . $Param{Description} . '%';
+    }
 
     # check time
     if ( $Param{StartTime} ) {
@@ -576,6 +600,18 @@ sub AppointmentList {
     my @Bind;
 
     push @Bind, \$Param{CalendarID};
+
+    if ( $Param{Title} ) {
+
+        $SQL .= 'AND title LIKE ? ';
+        push @Bind, \$Param{Title};
+    }
+
+    if ( $Param{Description} ) {
+
+        $SQL .= 'AND description LIKE ? ';
+        push @Bind, \$Param{Description};
+    }
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
@@ -661,8 +697,9 @@ sub AppointmentList {
 
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type  => $CacheType,
-        Key   => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Type => $CacheType,
+        Key =>
+            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );

@@ -16,6 +16,7 @@ use Kernel::Output::HTML::Layout;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::System::Calendar',
     'Kernel::System::Log',
     'Kernel::System::Web::Request',
 );
@@ -404,21 +405,19 @@ sub SearchOptionList {
     # search option list
     my @SearchOptionList = (
         {
-            Key  => 'CalendarName',
-            Name => 'Calendar Name',
+            Key  => 'AppointmentTitle',
+            Name => 'Title',
             Type => 'Text',
         },
         {
-            Prefix => 'Start',
-            Key    => 'StartTime',
-            Name   => 'Start Time',
-            Type   => 'TimeLong',
+            Key  => 'AppointmentDescription',
+            Name => 'Description',
+            Type => 'Text',
         },
         {
-            Prefix => 'End',
-            Key    => 'EndTime',
-            Name   => 'End Time',
-            Type   => 'TimeLong',
+            Key  => 'AppointmentCalendarID',
+            Name => 'Calendar',
+            Type => 'List',
         },
     );
 
@@ -433,7 +432,7 @@ sub SearchOptionList {
 
         next ROW if $Row->{Type} eq 'Hidden';
 
-        # prepare text input fields
+        # Prepare text input fields.
         if ( $Row->{Type} eq 'Text' ) {
 
             # get form data
@@ -452,50 +451,39 @@ sub SearchOptionList {
             $Row->{InputStrg} = $Self->{LayoutObject}->Output(
                 TemplateFile => 'LinkObject',
             );
-
-            next ROW;
         }
 
-        # prepare date input fields
-        if ( $Row->{Type} eq 'TimeLong' ) {
+        # Prepare drop down lists.
+        elsif ( $Row->{Type} eq 'List' ) {
 
             # get form data
-            my %FormData;
-            for my $Param (qw(Year Month Day Hour Minute Optional)) {
-                $FormData{ $Row->{Prefix} . $Param } = $Kernel::OM->Get('Kernel::System::Web::Request')->GetParam(
-                    Param => $Row->{Prefix} . $Param
+            my @FormData = $Kernel::OM->Get('Kernel::System::Web::Request')->GetArray( Param => $Row->{FormKey} );
+            $Row->{FormData} = \@FormData;
+
+            if ( $Row->{Key} eq 'AppointmentCalendarID' ) {
+                my @CalendarList = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarList(
+                    UserID     => $Self->{UserID},
+                    Permission => 'rw',
+                    ValidID    => 1,
+                );
+
+                my @CalendarData = map {
+                    {
+                        Key   => $_->{CalendarID},
+                        Value => $_->{CalendarName},
+                    }
+                } sort { $a->{CalendarName} cmp $b->{CalendarName} } @CalendarList;
+
+                $Row->{InputStrg} = $Self->{LayoutObject}->BuildSelection(
+                    Data       => \@CalendarData,
+                    Name       => $Row->{FormKey},
+                    SelectedID => $Row->{FormData},
+                    Class      => 'Modernize',
+                    Multiple   => 1,
                 );
             }
-
-            my $DateStrg = $Self->{LayoutObject}->BuildDateSelection(
-                %FormData,
-                Prefix           => $Row->{Prefix},
-                Format           => 'DateInputFormatLong',
-                YearPeriodPast   => 5,
-                YearPeriodFuture => 5,
-
-                # add checkbox
-                "$Row->{Prefix}Optional" => 1,
-
-                # we are calculating this locally
-                OverrideTimeZone => 1,
-            );
-
-            # parse the date block
-            $Self->{LayoutObject}->Block(
-                Name => 'TimeLong',
-                Data => {
-                    Content => $DateStrg,
-                },
-            );
-
-            # add the input string
-            $Row->{InputStrg} = $Self->{LayoutObject}->Output(
-                TemplateFile => 'LinkObject',
-            );
-
-            next ROW;
         }
+
     }
 
     return @SearchOptionList;
