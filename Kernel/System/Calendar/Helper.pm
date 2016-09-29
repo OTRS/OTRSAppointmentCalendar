@@ -408,6 +408,36 @@ sub TimezoneOffsetGet {
     return $Offset;
 }
 
+=item LocalTimezoneOffsetGet()
+
+returns offset of local time zone for a specified UTC system time.
+
+    my $Result = $CalendarHelperObject->LocalTimezoneOffsetGet(
+        Time => '1462871162',     # (required) time in Unix format
+    );
+
+returns:
+    $Result = 2;
+
+=cut
+
+sub LocalTimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Time} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Time!',
+        );
+        return;
+    }
+
+    my $Time   = localtime( $Param{Time} );
+    my $Offset = $Time->tzoffset() / 3600.00;    # in hours
+
+    return $Offset;
+}
+
 =item WeekDetailsGet()
 
 get week details for a given unix time.

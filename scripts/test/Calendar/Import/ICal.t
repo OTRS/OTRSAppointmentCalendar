@@ -13,6 +13,10 @@ use utf8;
 use vars (qw($Self));
 use Kernel::System::VariableCheck qw(:all);
 
+# Override local time zone for duration of the test. This is required since expected imported date
+#   values are all in UTC.
+local $ENV{TZ} = 'UTC';
+
 # get needed objects
 my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');

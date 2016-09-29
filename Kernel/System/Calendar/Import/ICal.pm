@@ -214,6 +214,13 @@ sub Import {
                 $StartTime -= $Offset * 3600;
             }
 
+            if ( !$Parameters{AllDay} ) {
+                my $LocalOffset = $CalendarHelperObject->LocalTimezoneOffsetGet(
+                    Time => $StartTime,
+                );
+                $StartTime += $LocalOffset * 3600;
+            }
+
             $Parameters{StartTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $StartTime,
             );
@@ -248,6 +255,13 @@ sub Import {
                     TimezoneID => $TimezoneID,
                 );
                 $EndTime -= $Offset * 3600;
+            }
+
+            if ( !$Parameters{AllDay} ) {
+                my $LocalOffset = $CalendarHelperObject->LocalTimezoneOffsetGet(
+                    Time => $EndTime,
+                );
+                $EndTime += $LocalOffset * 3600;
             }
 
             $Parameters{EndTime} = $CalendarHelperObject->TimestampGet(
@@ -461,6 +475,13 @@ sub Import {
                             $ExcludeTime -= $Offset * 3600;
                         }
 
+                        if ( !$Parameters{AllDay} ) {
+                            my $LocalOffset = $CalendarHelperObject->LocalTimezoneOffsetGet(
+                                Time => $ExcludeTime,
+                            );
+                            $ExcludeTime += $LocalOffset * 3600;
+                        }
+
                         push @RecurrenceExclude, $CalendarHelperObject->TimestampGet(
                             SystemTime => $ExcludeTime,
                         );
@@ -589,6 +610,13 @@ sub Import {
                     TimezoneID => $TimezoneID,
                 );
                 $RecurrenceID -= $Offset * 3600;
+            }
+
+            if ( !$Parameters{AllDay} ) {
+                my $LocalOffset = $CalendarHelperObject->LocalTimezoneOffsetGet(
+                    Time => $RecurrenceID,
+                );
+                $RecurrenceID += $LocalOffset * 3600;
             }
 
             $Param{RecurrenceID} = $CalendarHelperObject->TimestampGet(
