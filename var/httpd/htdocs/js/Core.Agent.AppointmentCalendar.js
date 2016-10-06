@@ -235,13 +235,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 TargetNS.OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
-            eventClick: function(CalEvent) {
+            eventClick: function(CalEvent, JSEvent) {
                 var Data = {
                     Start: CalEvent.start,
                     End: CalEvent.end,
                     CalEvent: CalEvent
                 };
                 TargetNS.OpenEditDialog(Params, Data);
+                JSEvent.stopPropagation();
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc) {
