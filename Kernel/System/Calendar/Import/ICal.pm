@@ -13,6 +13,7 @@ use warnings;
 
 use Data::ICal;
 use Data::ICal::Entry::Event;
+use Date::ICal;
 
 use Kernel::System::VariableCheck qw(:all);
 
@@ -129,6 +130,7 @@ sub Import {
 
     my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
+    my %ICalTimeZones;
 
     ENTRY:
     for my $Entry (@Entries) {
@@ -136,6 +138,65 @@ sub Import {
 
         my %Parameters;
         my %LinkedObjects;
+
+        # Process timezone definitions from the ICal file.
+        if ( ref $Entry eq 'Data::ICal::Entry::TimeZone' ) {
+            if (
+                IsArrayRefWithData( $Properties->{'tzid'} )
+                && ref $Properties->{'tzid'}->[0] eq 'Data::ICal::Property'
+                && $Properties->{'tzid'}->[0]->{'value'}
+                )
+            {
+                my $TimezoneID = $Properties->{'tzid'}->[0]->{'value'};
+                my $TimezoneOffset;
+
+                my @TimezoneEntries = @{ $Entry->entries() };
+                for my $TimezoneEntry (@TimezoneEntries) {
+                    my $TimezoneProperties = $TimezoneEntry->properties();
+
+                    # Save only simple time zones, without daylight savings rules.
+                    # TODO: Extend to include all other definitions, especially with complicated
+                    #       rules for daylight savings (see Egypt).
+                    if ( ref $TimezoneEntry eq 'Data::ICal::Entry::TimeZone::Standard' ) {
+
+                        # Standard time zones should have TZOFFSETTO and TZOFFSETFROM set to the
+                        #   same value.
+                        if (
+                            IsArrayRefWithData( $TimezoneProperties->{'tzoffsetto'} )
+                            && ref $TimezoneProperties->{'tzoffsetto'}->[0] eq 'Data::ICal::Property'
+                            && $TimezoneProperties->{'tzoffsetto'}->[0]->{'value'}
+                            && IsArrayRefWithData( $TimezoneProperties->{'tzoffsetfrom'} )
+                            && ref $TimezoneProperties->{'tzoffsetfrom'}->[0] eq 'Data::ICal::Property'
+                            && $TimezoneProperties->{'tzoffsetfrom'}->[0]->{'value'}
+                            && $TimezoneProperties->{'tzoffsetto'}->[0]->{'value'} eq
+                            $TimezoneProperties->{'tzoffsetfrom'}->[0]->{'value'}
+                            )
+                        {
+                            $TimezoneOffset = $TimezoneProperties->{'tzoffsetto'}->[0]->{'value'};
+                        }
+                    }
+
+                    # Skip daylight savings time zones, this will be offloaded to DateTime::TimeZone
+                    #   object for complexity.
+                    elsif ( ref $TimezoneEntry eq 'Data::ICal::Entry::TimeZone::Daylight' ) {
+                        $TimezoneOffset = undef;
+                    }
+                }
+
+                if ( defined $TimezoneOffset ) {
+
+                    # Offsets are defined as hours and minutes, i.e. "+0200", we need decimal hours.
+                    if ( $TimezoneOffset =~ / (-|\+)? ([0-9]{2,}) ([0-9]{2,}) /x ) {
+                        my $Sign   = $1;
+                        my $Offset = $2 + $3 / 60;
+                        if ( $Sign eq '-' ) {
+                            $Offset *= -1;
+                        }
+                        $ICalTimeZones{$TimezoneID} = $Offset;
+                    }
+                }
+            }
+        }
 
         # get uid
         if (
@@ -208,8 +269,9 @@ sub Import {
             );
 
             if ($TimezoneID) {
-                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
+                my $Offset = $ICalTimeZones{$TimezoneID} // $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
+                    Time       => $StartTime,
                 );
                 $StartTime -= $Offset * 3600;
             }
@@ -251,8 +313,9 @@ sub Import {
             );
 
             if ($TimezoneID) {
-                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
+                my $Offset = $ICalTimeZones{$TimezoneID} // $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
+                    Time       => $EndTime,
                 );
                 $EndTime -= $Offset * 3600;
             }
@@ -469,8 +532,9 @@ sub Import {
                         );
 
                         if ($TimezoneID) {
-                            my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
+                            my $Offset = $ICalTimeZones{$TimezoneID} // $CalendarHelperObject->TimezoneOffsetGet(
                                 TimezoneID => $TimezoneID,
+                                Time       => $ExcludeTime,
                             );
                             $ExcludeTime -= $Offset * 3600;
                         }
@@ -606,8 +670,9 @@ sub Import {
             );
 
             if ($TimezoneID) {
-                my $Offset = $CalendarHelperObject->TimezoneOffsetGet(
+                my $Offset = $ICalTimeZones{$TimezoneID} // $CalendarHelperObject->TimezoneOffsetGet(
                     TimezoneID => $TimezoneID,
+                    Time       => $RecurrenceID,
                 );
                 $RecurrenceID -= $Offset * 3600;
             }
@@ -623,7 +688,7 @@ sub Import {
                 SystemTime => $RecurrenceID,
             );
 
-            # delete existing overriden occurrence
+            # delete existing overridden occurrence
             $AppointmentObject->AppointmentDeleteOccurrence(
                 UniqueID     => $Parameters{UniqueID},
                 CalendarID   => $Param{CalendarID},

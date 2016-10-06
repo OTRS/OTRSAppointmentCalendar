@@ -362,6 +362,8 @@ returns offset of specified time zone or user's time zone.
         UserID      => 2,                   # (optional)
                                             # or
         TimezoneID  => 'Europe/Berlin'      # (optional) Timezone name
+        Time        => '1462871162',        # (optional) Time in Unix format you want offset for
+                                            #            otherwise, current time will be used
     );
 
 returns:
@@ -391,21 +393,36 @@ sub TimezoneOffsetGet {
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     # check if DateTime object exists
-    return if !$MainObject->Require(
+    return 0 if !$MainObject->Require(
         'DateTime',
     );
 
     # check if DateTime::TimeZone object exists
-    return if !$MainObject->Require(
+    return 0 if !$MainObject->Require(
         'DateTime::TimeZone',
     );
 
+    # Offset calculation depends on specific time, because of daylight savings.
+    #   If not supplied, use current time.
     my $DateTime = DateTime->now();
+    if ( $Param{Time} ) {
+        $DateTime = DateTime->from_epoch( epoch => $Param{Time} );
+    }
 
-    my $Timezone = DateTime::TimeZone->new( name => $Param{TimezoneID} );
-    my $Offset = $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+    # DateTime::TimeZone might not recognize timezone by its name and die,
+    #   make the call in an eval block.
+    my $Timezone = eval { DateTime::TimeZone->new( name => $Param{TimezoneID} ) };
 
-    return $Offset;
+    if ($Timezone) {
+        return $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+    }
+
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
+        Priority => 'error',
+        Message  => "Could not find offset for '$Param{TimezoneID}', assuming UTC!",
+    );
+
+    return 0;
 }
 
 =item LocalTimezoneOffsetGet()
