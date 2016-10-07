@@ -4,6 +4,8 @@
 
 <book lang='en'>
 
+<!-- ************************************** Head *********************************************** -->
+
 <bookinfo>
 <title>$Name</title>
 <edition>$Description Version $Version</edition>
@@ -17,122 +19,259 @@
 
 <legalnotice>
     <para>$License</para>
-    <para>This work is copyrighted by $Vendor, Zimmersmühlenweg 11, 61440 Oberursel, Germany.</para>
+    <para>This work is copyrighted by $Vendor, Norsk-Data-Str. 1, 61352 Bad Homburg, Germany.</para>
     <para>Build Date: $DateStamp</para>
 </legalnotice>
 
 </bookinfo>
 
+<!-- ************************************ Customer part ****************************************** -->
+
+<!-- ********** -->
+<!-- 1. Preface -->
+<!-- ********** -->
 <preface id="preface" >
     <title>Preface</title>
     <para>
-        This package provides an appointment calendar control.
+        This package provides a full calendar implementation
     </para>
     <para>
-        Please contact your commercial support if you have any queries regarding this document or
-        need further information.
+        If you have questions regarding this document or if you need further information, please log in to our customer portal at portal.otrs.com with your OTRS ID and create a ticket.
+        You do not have an OTRS ID yet? Register
+        <ulink url="https://portal.otrs.com/otrs/customer.pl#Signup">here for free</ulink>.
     </para>
 </preface>
 
+<!-- *************** -->
+<!-- 2. Feature List -->
+<!-- *************** -->
 <chapter>
-    <title>Features</title>
-    <sect1>
-        <title>Appointment Calendar</title>
+    <title>Function list</title>
+    <section>
+        <title>Assign agent as responsible to services</title>
         <para>
-            <!--TODO-->
+            As in "My Services" or "My Queues" agents will be assigned to services within the related user preferences.
         </para>
-    </sect1>
+        <para>
+            The settings for the service responsibilities can be set on the preferences widget "Service Responsible". They can
+            be saved with the button "Update".
+        </para>
+    </section>
+    <section>
+        <title>Configuration of notifications for service responsible</title>
+        <para>
+            Within the administration menu "Notification (Event)" the notification option for the service responsible can be set.
+            For this to work a new entry is available below "Recipients".
+        </para>
+    </section>
 </chapter>
 
+<!-- ********************** -->
+<!-- 3. System Requirements -->
+<!-- ********************** -->
 <chapter>
-    <title>System requirements</title>
-    <sect1>
+    <title>System Requirements</title>
+    <section>
         <title>Framework</title>
         <para>The following OTRS framework is required:</para>
         <para>
-            $Framework
+        $Framework
         </para>
-    </sect1>
-    <sect1>
+    </section>
+    <section>
         <title>Packages</title>
-        <para>Following packages are required:</para>
+        <para>The following packages are required:</para>
         <para>
-            $PackageRequired
+        $PackageRequired
         </para>
-    </sect1>
-    <sect1>
-        <title>Operating system</title>
-        <para>Following operating systems are to be considered as dependency:</para>
+    </section>
+    <section>
+        <title>Operating System</title>
+        <para>This package requires one of the following operating systems:</para>
         <para>
-            $OS
+        $OS
         </para>
-    </sect1>
-    <sect1>
-        <title>Third party software</title>
-        <para>Following software is required for package operation:</para>
+    </section>
+    <section>
+        <title>Third Party Software</title>
+        <para>This third party software is required to use this package:</para>
         <para>
             <itemizedlist>
-                <listitem><para><!--TODO--></para></listitem>
+                <listitem><para>None.</para></listitem>
             </itemizedlist>
         </para>
-    </sect1>
+    </section>
 </chapter>
 
+<!-- *************** -->
+<!-- 4. Installation -->
+<!-- *************** -->
 <chapter>
     <title>Installation</title>
-    <para>
-        The following instructions show how to install the package. Generally, there are two
-        possibilities: You can either use the Admin Interface or the command line.
-    </para>
-    <sect1>
-        <title>Admin-Interface</title>
+    <para>The following instructions explain how to install the package.</para>
+    <section>
+        <title>Admin Interface</title>
         <para>
-            Using the following URL you can install, as well as update or uninstall (if necessary),
-            the package via the Admin Interface (please check whether the user is a member of the
-            Admin Group before starting.)
+            Please use the following URL to install the package utilizing the admin
+            interface (please note that you need to be in the admin group).
         </para>
         <para>
             <ulink url="http://localhost/otrs/index.pl?Action=AdminPackageManager">
                 http://localhost/otrs/index.pl?Action=AdminPackageManager
             </ulink>
         </para>
-    </sect1>
-    <sect1>
-        <title>Command line</title>
+    </section>
+    <section>
+        <title>Command Line</title>
         <para>
-            Whenever you cannot use the Admin Interface for whatever reason, you may use the
-            following command line tool instead.
+            Whenever you cannot use the Admin Interface for whatever reason,
+            you may use the following command line tool (&quot;bin/otrs.Console.pl&quot;)
+            instead.
         </para>
         <para>
             <screen>
-                shell&gt; bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
+shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
             </screen>
         </para>
-    </sect1>
+    </section>
 </chapter>
 
+<!-- **************** -->
+<!-- 5. Configuration -->
+<!-- **************** -->
 <chapter>
     <title>Configuration</title>
+    <para>The package can be configured via the SysConfig in the Admin Interface. The following configuration options are available:</para>
+    <section>
+        <title>Frontend::Output::FilterElementPost###OutputFilterPostAdminNotificationEvent.</title>
+        <para>Group: OTRSServiceResponsible, Subgroup: Frontend::Agent.</para>
+        <para>Outputfilter for standard tt files.</para>
+    </section>
+    <section>
+        <title>PreferencesGroups###ServiceResponsible.</title>
+        <para>Group: OTRSServiceResponsible, Subgroup: Frontend::Agent::Preferences.</para>
+        <para>Parameters for the ServiceResponsible object in the preference view of the agent interface.</para>
+    </section>
+    <section>
+        <title>Ticket::EventModulePost###500-NotificationEventServiceResponsible.</title>
+        <para>Group: OTRSServiceResponsible, Subgroup: Core::Ticket.</para>
+        <para>Sends the notifications which are configured in the admin interface under &quot;Notification (Event)&quot;.</para>
+    </section>
+</chapter>
+
+<!-- ******** -->
+<!-- 6. Usage -->
+<!-- ******** -->
+<chapter>
+    <title>Usage</title>
+    <section>
+        <title>Assign agent as responsible to services</title>
+        <para>
+            As in "My Services" or "My Queues" agents will be assigned to services within the related user preferences.
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="../images/ServiceResponsibleWidget.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            The settings for the service responsibilities (as in the screen-shot) can be set on the preferences widget "Service Responsible". They can be saved with the button "Update".
+        </para>
+    </section>
+    <section>
+        <title>Notification options for service responsible</title>
+        <para>
+            Within the administration menu "Notification (Event)" the notification option for the service responsible can be set.
+            For this to work a new entry is available below "Recipients".
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="../images/NotificationEventRecipients.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            As viewable in the screen-shot, the service responsibilities of all assigned agents can be chosen with the option
+            "All agents responsible for the service" the Sent to: field, to notify the responsible agents.
+        </para>
+    </section>
+</chapter>
+
+<!-- ***************************************** Technical part ************************************ -->
+
+<!-- ********************************* -->
+<!-- 7. Technical Implementation Detail -->
+<!-- ********************************* -->
+<chapter>
+    <title>Technical Implementation Details</title>
+    <section>
+        <title>Kernel/Config/Files/OTRSServiceResponsible.xml.</title>
+        <para>New: Configuration file that holds the required settings for the correct functionality of this package.</para>
+    </section>
+    <section>
+        <title>Kernel/Language/de_OTRSServiceResponsible.pm.</title>
+        <para>New: German translation file for this package.</para>
+    </section>
+    <section>
+        <title>Kernel/Output/HTML/FilterElementPost/OutputFilterPostAdminNotificationEvent.pm.</title>
+        <para>New: Output filter that extends the menu "AdminNotificationEvent".</para>
+    </section>
+    <section>
+        <title>Kernel/Output/HTML/Preferences/ServiceResponsible.pm.</title>
+        <para>New: Preferences module to set the service responsibility.</para>
+    </section>
+    <section>
+        <title>Kernel/System/ServiceResponsible.pm.</title>
+        <para>New: Core module for the responsibility assignment of services to agents.</para>
+    </section>
+    <section>
+        <title>Kernel/System/Ticket/Event/NotificationEventServiceResponsible.pm.</title>
+        <para>New: Ticket event module to send notifications to agents responsible for services.</para>
+    </section>
+</chapter>
+
+<!-- ************ -->
+<!-- 8. File List -->
+<!-- ************ -->
+<chapter>
+    <title>File List</title>
+    <!-- Standard text. Don't change this -->
+    <para>This list shows all included files and the referring permissions.</para>
     <para>
-        <!--TODO-->
+       $Filelist
     </para>
 </chapter>
 
+<!-- ******* -->
+<!-- 9. Test -->
+<!-- ******* -->
 <chapter>
-    <title>Manifest</title>
-    <para>This manifest names all files in this package which have rights.</para>
-    <sect1>
-        <title>File list</title>
+    <title>Tests</title>
+    <para>This module has been tested on the current state of the art in quality.</para>
+    <section>
+        <title>Test Cases</title>
         <para>
-            $Filelist
+            <!-- Reference to point 6.x and document the results -->
+            To test this package please follow the examples described in the Usage section.
         </para>
-    </sect1>
+    </section>
+    <section>
+        <title>Unit tests</title>
+        <!-- If core files included in this package, there must be covered by unit tests and will be tested.
+             If the packet contains no "core files", this point 9.2 can be removed.
+        -->
+        <para>
+            There are currently no Unit Tests available for this package.
+        </para>
+    </section>
 </chapter>
 
+<!-- ************** -->
+<!-- 10. Change Log -->
+<!-- ************** -->
 <chapter>
-    <title>Change log</title>
+    <title>Change Log</title>
     <para>
-        $ChangeLog
+    $ChangeLog
     </para>
 </chapter>
 
