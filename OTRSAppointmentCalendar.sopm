@@ -66,7 +66,6 @@
         <File Permission="644" Location="Kernel/System/Calendar/Helper.pm"/>
         <File Permission="644" Location="Kernel/System/Calendar/Plugin.pm"/>
         <File Permission="644" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
-        <File Permission="644" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
         <File Permission="644" Location="Kernel/System/Calendar/Event/Notification.pm"/>
         <File Permission="644" Location="Kernel/System/Calendar/Event/TicketAppointments.pm"/>
         <File Permission="644" Location="Kernel/System/Calendar/Export/ICal.pm"/>

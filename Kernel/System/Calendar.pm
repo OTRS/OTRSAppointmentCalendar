@@ -67,23 +67,6 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
-    # load backend module
-    my $Backend = $Kernel::OM->Get('Kernel::Config')->{'AppointmentCalendar::Backend'};
-
-    if ($Backend) {
-        my $GenericModule = 'Kernel::System::Calendar::Backend::' . $Backend;
-        return if !$Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule);
-        $Self->{Backend} = $GenericModule->new( %{$Self} );
-    }
-    else {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'Error',
-            Message  => 'Unknown AppointmentCalendar::Backend! Set option AppointmentCalendar::Backend in '
-                . 'Kernel/Config.pm to (CalDav).',
-        );
-        return;
-    }
-
     @ISA = qw(
         Kernel::System::EventHandler
     );

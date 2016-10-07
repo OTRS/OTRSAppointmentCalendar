@@ -157,11 +157,8 @@ sub Data {
     $Self->{Translation}->{'Appointment edit screen.'} = 'Terminbearbeitungsansicht';
     $Self->{Translation}->{'Appointment list'} = 'Terminliste';
     $Self->{Translation}->{'Appointment list.'} = 'Terminliste.';
-    $Self->{Translation}->{'CalDav'} = 'CalDav';
     $Self->{Translation}->{'Calendar manage screen.'} = 'Kalenderverwaltungsansicht';
     $Self->{Translation}->{'Defines the ticket number plugin for calendar appointments.'} = 'Legt das Plugin für die Ticketnummern innerhalb von Terminkalendern fest.';
-    $Self->{Translation}->{'Defines which backend should be used for managing calendars.'} =
-        'Legt fest, welches Backend für die Kalenderverwaltung genutzt wird.';
     $Self->{Translation}->{'Edit appointment'} = 'Termin bearbeiten';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Verknüpft Termine und Tickets mit dem Typ "Normal".';
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =

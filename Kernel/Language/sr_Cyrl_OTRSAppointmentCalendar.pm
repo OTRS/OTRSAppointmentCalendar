@@ -176,8 +176,6 @@ sub Data {
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Креира нови термин у календару повезан са овим тикетом';
     $Self->{Translation}->{'Create new appointment.'} = 'Креира нови термин.';
     $Self->{Translation}->{'Defines the ticket plugin for calendar appointments.'} = 'Дефинише тикет модул за календарске термине.';
-    $Self->{Translation}->{'Defines which backend should be used for managing calendars.'} =
-        'Дефинише који позадински модул ће бити коришћен за управљање календарима.';
     $Self->{Translation}->{'Edit appointment'} = 'Измена термина';
     $Self->{Translation}->{'Import Calendar screen.'} = 'Екран за увоз календара.';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Повезује термине и тикете "Нормалним" врстама веза.';
