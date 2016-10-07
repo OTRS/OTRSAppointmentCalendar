@@ -113,7 +113,7 @@ sub Run {
         if ( !%Calendar ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('System was unable to create Calendar!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -131,7 +131,7 @@ sub Run {
         if ( !$GetParam{CalendarID} ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('No CalendarID!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -146,7 +146,7 @@ sub Run {
             # fake message
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('You have no access to this calendar!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -232,7 +232,7 @@ sub Run {
         if ( !$Success ) {
             return $LayoutObject->ErrorScreen(
                 Message => Translatable('Error updating the calendar!'),
-                Comment => Translatable('Please contact the admin.'),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
 
@@ -260,8 +260,8 @@ sub Run {
         my $CalendarData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Content );
         if ( ref $CalendarData ne 'HASH' ) {
             return $LayoutObject->ErrorScreen(
-                Message =>
-                    "Couldn't read calendar configuration file. Please make sure your file is valid.",
+                Message => Translatable('Couldn\'t read calendar configuration file.'),
+                Comment => Translatable('Please make sure your file is valid.'),
             );
         }
 

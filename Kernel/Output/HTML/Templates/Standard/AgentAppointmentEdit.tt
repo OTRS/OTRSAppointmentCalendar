@@ -135,7 +135,7 @@
 [% IF Data.PermissionLevel < 2 %]
             <div class="Field">
 [% IF Data.ParentID %]
-                [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
+                [% Translate("This an occurrence of a repeating appointment.") | html %]<br>
                 <a href="#" id="EditParent">[% Translate("Click here to see the parent appointment.") | html %]</a>
 [% ELSE %]
                 <p id="RecurrenceType" class="ReadOnlyValue">[% Data.RecurrenceValue | html %]</p>
@@ -144,7 +144,7 @@
 [% ELSE %]
 [% IF Data.ParentID %]
             <div class="Field">
-                [% Translate("This an ocurrence of a repeating appointment.") | html %]<br>
+                [% Translate("This an occurrence of a repeating appointment.") | html %]<br>
                 <a href="#" id="EditParent">[% Translate("Click here to edit the parent appointment.") | html %]</a>
             </div>
 [% ELSE %]
