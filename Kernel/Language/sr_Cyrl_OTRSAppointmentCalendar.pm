@@ -31,23 +31,16 @@ sub Data {
     $Self->{Translation}->{'All occurrences'} = 'Сва понављања';
     $Self->{Translation}->{'Just this occurrence'} = 'Само ово понављање';
 
-    # Template: AgentAppointmentCalendarImport
-    $Self->{Translation}->{'Calendar Import'} = 'Увоз календара';
-    $Self->{Translation}->{'Uploaded file must be in valid iCal format (.ics).'} = 'Послати фајл мора бити у исправном iCal формату (.ics).';
-    $Self->{Translation}->{'If desired Calendar is not listed here, please make sure that you have at least \'create\' permissions.'} =
-        'Уколико жељени календар није излистан, проверите да ли имате ниво приступа \'креирање\' за групу календара.';
-    $Self->{Translation}->{'Update existing appointments?'} = 'Освежи постојеће термине?';
-    $Self->{Translation}->{'All existing appointments in the calendar with same UniqueID will be overwritten.'} =
-        'Сви постојећи термини у календару са истим UniqueID пољем ће бити пребрисани.';
-    $Self->{Translation}->{'Upload calendar'} = 'Пошаљи календар';
-    $Self->{Translation}->{'Import calendar'} = 'Увези календар';
-
     # Template: AgentAppointmentCalendarManage
-    $Self->{Translation}->{'Successfully imported %s appointment(s) to calendar %s.'} = 'Успешно увезено %s термин(а) у календар %s.';
     $Self->{Translation}->{'Calendar Management'} = 'Управљање календарима';
     $Self->{Translation}->{'Calendar Overview'} = 'Преглед календара';
     $Self->{Translation}->{'Add new Calendar'} = 'Додај нови календар';
     $Self->{Translation}->{'Add Calendar'} = 'Додај календар';
+    $Self->{Translation}->{'Import Appointments'} = '';
+    $Self->{Translation}->{'Calendar Import'} = 'Увоз календара';
+    $Self->{Translation}->{'Here you can upload a configuration file to import a calendar to your system. The file needs to be in .yml format as exported by calendar management module.'} =
+        '';
+    $Self->{Translation}->{'Upload calendar configuration'} = '';
     $Self->{Translation}->{'Import Calendar'} = 'Увези календар';
     $Self->{Translation}->{'Filter for calendars'} = 'Филтер за календаре';
     $Self->{Translation}->{'Depending on the group field, the system will allow users the access to the calendar according to their permission level.'} =
@@ -61,10 +54,20 @@ sub Data {
     $Self->{Translation}->{'Read/write: users can manage the calendar itself.'} = 'RW: оператери могу администрирати и сам календар.';
     $Self->{Translation}->{'URL'} = 'Адреса';
     $Self->{Translation}->{'Export calendar'} = 'Извези календар';
+    $Self->{Translation}->{'Download calendar'} = '';
     $Self->{Translation}->{'Copy public calendar URL'} = 'Ископирај јавну адресу календара (URL)';
     $Self->{Translation}->{'Calendar name'} = 'Назив календара';
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Календар са истим називом већ постоји.';
     $Self->{Translation}->{'Permission group'} = 'Група приступа';
+    $Self->{Translation}->{'Ticket Appointments'} = '';
+    $Self->{Translation}->{'Rule'} = '';
+    $Self->{Translation}->{'Use options below to narrow down for which tickets appointments will be automatically created.'} =
+        '';
+    $Self->{Translation}->{'Please select a valid queue.'} = '';
+    $Self->{Translation}->{'Search attributes'} = '';
+    $Self->{Translation}->{'Define rules for creating automatic appointments in this calendar based on ticket data.'} =
+        '';
+    $Self->{Translation}->{'Add Rule'} = '';
     $Self->{Translation}->{'More'} = 'Више';
     $Self->{Translation}->{'Less'} = 'Мање';
 
@@ -104,9 +107,21 @@ sub Data {
     $Self->{Translation}->{'Are you sure you want to delete this appointment? This operation cannot be undone.'} =
         'Да ли сте сигурни да желите да избришете овај термин? Ову операцију није могуће опозвати.';
 
-    # Perl Module: Kernel/Modules/AgentAppointmentCalendarImport.pm
-    $Self->{Translation}->{'No permissions'} = 'Без дозволе';
-    $Self->{Translation}->{'System was unable to import file!'} = 'Систем није успео да увезе фајл!';
+    # Template: AgentAppointmentImport
+    $Self->{Translation}->{'Appointment Import'} = '';
+    $Self->{Translation}->{'Uploaded file must be in valid iCal format (.ics).'} = 'Послати фајл мора бити у исправном iCal формату (.ics).';
+    $Self->{Translation}->{'If desired Calendar is not listed here, please make sure that you have at least \'create\' permissions.'} =
+        'Уколико жељени календар није излистан, проверите да ли имате ниво приступа \'креирање\' за групу календара.';
+    $Self->{Translation}->{'Update existing appointments?'} = 'Освежи постојеће термине?';
+    $Self->{Translation}->{'All existing appointments in the calendar with same UniqueID will be overwritten.'} =
+        'Сви постојећи термини у календару са истим UniqueID пољем ће бити пребрисани.';
+    $Self->{Translation}->{'Upload calendar'} = 'Пошаљи календар';
+    $Self->{Translation}->{'Import appointments'} = '';
+
+    # Template: AgentDashboardAppointmentCalendar
+    $Self->{Translation}->{'New Appointment'} = 'Нови термин';
+    $Self->{Translation}->{'Soon'} = '';
+    $Self->{Translation}->{'5 days'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Систем није успео да креира календар!';
@@ -114,6 +129,15 @@ sub Data {
     $Self->{Translation}->{'You have no access to this calendar!'} = 'Немате приступ овом календару!';
     $Self->{Translation}->{'Edit Calendar'} = 'Измени календар';
     $Self->{Translation}->{'Error updating the calendar!'} = 'Грешка приликом измене календара';
+    $Self->{Translation}->{'Could not import the calendar!'} = '';
+    $Self->{Translation}->{'Calendar imported!'} = '';
+    $Self->{Translation}->{'Need CalendarID!'} = '';
+    $Self->{Translation}->{'Could not retrieve data for given CalendarID'} = '';
+    $Self->{Translation}->{'Successfully imported %s appointment(s) to calendar %s.'} = 'Успешно увезено %s термин(а) у календар %s.';
+    $Self->{Translation}->{'+5 minutes'} = '';
+    $Self->{Translation}->{'+15 minutes'} = '';
+    $Self->{Translation}->{'+30 minutes'} = '';
+    $Self->{Translation}->{'+1 hour'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
     $Self->{Translation}->{'All appointments'} = 'Сви термини';
@@ -149,15 +173,16 @@ sub Data {
     $Self->{Translation}->{'No permission!'} = 'Без дозволе!';
     $Self->{Translation}->{'Links could not be deleted!'} = 'Везе не могу бити обрисане!';
     $Self->{Translation}->{'Link could not be created!'} = 'Веза није могла бити креирана!';
+    $Self->{Translation}->{'Cannot delete ticket appointment!'} = '';
     $Self->{Translation}->{'No permissions!'} = 'Без дозволе!';
+
+    # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+    $Self->{Translation}->{'No permissions'} = 'Без дозволе';
+    $Self->{Translation}->{'System was unable to import file!'} = 'Систем није успео да увезе фајл!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d више';
     $Self->{Translation}->{'Ongoing appointments'} = 'Започети термини';
-
-    # Perl Module: Kernel/Modules/AgentAppointmentTeam.pm
-    $Self->{Translation}->{'Need TeamID!'} = 'Нема TeamID!';
-    $Self->{Translation}->{'Could not retrieve data for given TeamID'} = 'За дати TeamID нема података';
 
     # Perl Module: Kernel/Modules/PublicCalendar.pm
     $Self->{Translation}->{'No such user!'} = 'Непознат корисник!';
@@ -165,19 +190,39 @@ sub Data {
     $Self->{Translation}->{'Invalid URL!'} = 'Неисправна адреса!';
     $Self->{Translation}->{'There was an error exporting the calendar!'} = 'Грешка приликом експортовања календара!';
 
+    # Perl Module: Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm
+    $Self->{Translation}->{'Refresh (minutes)'} = '';
+
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Страница за преглед календара.';
     $Self->{Translation}->{'Appointment calendar event module that prepares notification entries for appointments.'} =
         'Модул догађаја календара за припрему обавештења о терминима.';
+    $Self->{Translation}->{'Appointment calendar event module that updates the ticket with data from ticket appointment.'} =
+        '';
     $Self->{Translation}->{'Appointment edit screen.'} = 'Страница за измену календара.';
     $Self->{Translation}->{'Appointment list'} = 'Листа термина';
     $Self->{Translation}->{'Appointment list.'} = 'Листа термина.';
+    $Self->{Translation}->{'Appointments'} = '';
     $Self->{Translation}->{'Calendar manage screen.'} = 'Страница за управљање календарима.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Креира нови термин у календару повезан са овим тикетом';
     $Self->{Translation}->{'Create new appointment.'} = 'Креира нови термин.';
+    $Self->{Translation}->{'Defines an icon with link to the google map page of the current location in appointment edit screen.'} =
+        '';
+    $Self->{Translation}->{'Defines the event object types that will be handled via AdminNotificationEvent.'} =
+        '';
+    $Self->{Translation}->{'Defines the list of params that can be passed to ticket search function.'} =
+        '';
+    $Self->{Translation}->{'Defines the ticket appointment type backend for ticket dynamic field date time.'} =
+        '';
+    $Self->{Translation}->{'Defines the ticket appointment type backend for ticket escalation time.'} =
+        '';
+    $Self->{Translation}->{'Defines the ticket appointment type backend for ticket pending time.'} =
+        '';
     $Self->{Translation}->{'Defines the ticket plugin for calendar appointments.'} = 'Дефинише тикет модул за календарске термине.';
+    $Self->{Translation}->{'DynamicField_%s'} = '';
     $Self->{Translation}->{'Edit appointment'} = 'Измена термина';
-    $Self->{Translation}->{'Import Calendar screen.'} = 'Екран за увоз календара.';
+    $Self->{Translation}->{'First response time'} = '';
+    $Self->{Translation}->{'Import appointments screen.'} = '';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Повезује термине и тикете "Нормалним" врстама веза.';
     $Self->{Translation}->{'List of all appointment events to be displayed in the GUI.'} = 'Листа свих обавештења о терминима за приказ у интерфејсу.';
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =
@@ -185,16 +230,21 @@ sub Data {
     $Self->{Translation}->{'Manage different calendars.'} = 'Управљање различитим календарима.';
     $Self->{Translation}->{'Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.'} =
         'Максимални број активних календара у екранима за преглед. Обратите пажњу да велики број активних календара може имати утицај на перформансе вашег сервера прављењем превише симултаних захтева.';
-    $Self->{Translation}->{'New Appointment'} = 'Нови термин';
     $Self->{Translation}->{'OTRS doesn\'t support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default).'} =
         'OTRS не подржава термине који се понављају без крајњег датума или броја итерација. Приликом увоза календара, може се догодити да ICS фајл садржи такве \'бесконачне\' термине. Уместо таквог понашања, систем ће креирати све термине из прошлости, као и термине за следећи n број месеци (подразумевано 120 месеци/10 година).';
     $Self->{Translation}->{'Overview of all appointments.'} = 'Преглед свих термина.';
+    $Self->{Translation}->{'Pending time'} = '';
     $Self->{Translation}->{'Plugin search'} = 'Модул претраге';
     $Self->{Translation}->{'Plugin search module for autocomplete.'} = 'Модул претраге за аутоматско допуњавање.';
-    $Self->{Translation}->{'Resource Overview (OTRS Business Solution™)'} = 'Преглед ресурса (OTRS Business Solution™)';
     $Self->{Translation}->{'Resource Overview'} = 'Преглед ресурса';
+    $Self->{Translation}->{'Resource Overview (OTRS Business Solution™)'} = 'Преглед ресурса (OTRS Business Solution™)';
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} =
         'Приказује везу у менију тикета за креирање термина у календару повезаног са тим тикетом. Додатна контрола приказа ове везе може се постићи коришћењем кључа "Group" са садржајем "rw:group1;move_into:group2". За здруживање веза у менију подесите кључ "ClusterName" са садржајем који ће бити назив који желите да видите у интерфејсу. Користите кључ "ClusterPriority" за измену редоследа група у менију.';
+    $Self->{Translation}->{'Solution time'} = '';
+    $Self->{Translation}->{'TicketDynamicFieldUpdate_.*'} = '';
+    $Self->{Translation}->{'Triggers add or update of automatic calendar appointments based on certain ticket times.'} =
+        '';
+    $Self->{Translation}->{'Update time'} = '';
 
 }
 
