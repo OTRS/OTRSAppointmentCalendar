@@ -30,7 +30,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::Calendar.Helper - helper methods (for compatibility between OTRS 5/OTRS 6)
+Kernel::System::Calendar::Helper - calendar helper methods
 
 =head1 SYNOPSIS
 
@@ -503,4 +503,6 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
-did not
+did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+
+=cut
