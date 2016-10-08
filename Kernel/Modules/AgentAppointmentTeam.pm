@@ -252,7 +252,7 @@ sub Run {
         if ( ref $TeamData ne 'HASH' ) {
             return (
                 Message => Translatable('Couldn\'t read team configuration file.'),
-                Comment => Translatable('Please make sure you file is valid.'),
+                Comment => Translatable('Please make sure your file is valid.'),
             );
         }
 
