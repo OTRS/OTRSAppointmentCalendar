@@ -19,7 +19,7 @@
 
 <legalnotice>
     <para>$License</para>
-    <para>This work is copyrighted by $Vendor, Norsk-Data-Str. 1, 61352 Bad Homburg, Germany.</para>
+    <para>This work is copyrighted by $Vendor, Zimmersmühlenweg 11, 61440 Oberursel, Germany.</para>
     <para>Build Date: $DateStamp</para>
 </legalnotice>
 
@@ -33,7 +33,7 @@
 <preface id="preface" >
     <title>Preface</title>
     <para>
-        This package provides a full calendar implementation
+        This package provides a calendar implementation, that allows agents to manage and display multiple calendars including appointments.
     </para>
     <para>
         If you have questions regarding this document or if you need further information, please log in to our customer portal at portal.otrs.com with your OTRS ID and create a ticket.
@@ -48,20 +48,100 @@
 <chapter>
     <title>Function list</title>
     <section>
-        <title>Assign agent as responsible to services</title>
+        <title>Management of multiple calendars</title>
         <para>
-            As in "My Services" or "My Queues" agents will be assigned to services within the related user preferences.
+            Via a management interface it is possible to add and edit calendars.
         </para>
         <para>
-            The settings for the service responsibilities can be set on the preferences widget "Service Responsible". They can
-            be saved with the button "Update".
+            Beside calendar names, it is possible to assign colors and access groups, as well as the current validity of the calendars.
         </para>
     </section>
     <section>
-        <title>Configuration of notifications for service responsible</title>
+        <title>Exports and imports</title>
         <para>
-            Within the administration menu "Notification (Event)" the notification option for the service responsible can be set.
-            For this to work a new entry is available below "Recipients".
+            Once different calendars are create, it is possible to export either the complete calendar definition (including the calendar appointments)
+            in the well-known YAML-Format or just export the related appointments of a calendar to ICS-Format.
+        </para>
+        <para>
+            It is also possible to import complete calendar structures using previously exported YAML files to restore calendar definitions or import
+            just calendar appointments to an existing calendar using ICS file uploads.
+        </para>
+        <para>
+            That offers the possibility to backup and restore single calendars or transfer them to a different OTRS installation or an external calendar tool.
+        </para>
+    </section>
+    <section>
+        <title>Management of calendar appointments</title>
+        <para>
+            If at least one calendar is created and accessible by a certain agent, new or already existing appointments can be managed via a calendar overview and
+            an agenda overview.
+        </para>
+        <para>
+            Within the calendar overview, an agent is able to display, create, edit and/or delete appointments of different calendars, depending on his permission
+            to the related calendars. Such appointments can be created or edited via drag and drop within this screen.
+        </para>
+        <para>
+            The visibility of single calendars can be enabled or disabled through a calendar list within the screen.
+        </para>
+        <para>
+            To have a good overview of available appointments within different calendars and the related dates they start or end, it is possible to select different
+            view modes, like weekly view, monthly view, different timeline related views etc.
+        </para>
+        <para>
+            Within the agenda overview, an agent is able to display the appointments of all available (accessible) calendars in a table like overview. This overview
+            is designed to have a detailed overview of upcoming appointments in a structured table. Like in the calendar overview appointments can be created, edited
+            or deleted. This view supports a monthly, weekly and daily point of view on available appointments.
+        </para>
+    </section>
+    <section>
+        <title>Repeating appointments</title>
+        <para>
+            If recurring appointments needs to be archived, it is possible to setup detailed information about the recurrences of a single appointment.
+        </para>
+        <para>
+            Beside pre-defined frequencies like daily, weekly, monthly etc. it is possible to setup custom repeats and exclude weekdays or dates of months,
+            define the amount of recurrences and/or the end date after the appointment stops to repeat.
+        </para>
+    </section>
+    <section>
+        <title>Notifications</title>
+        <para>
+            Within the edit screen of an appointment, it is possible to setup a date to notify about the appointment.
+        </para>
+        <para>
+            As in the settings for appointment repeat, it is possible to use pre-defined templates for notifications (i.e. 5 minutes before, 15 minutes before etc.)
+            or setup a custom point of time.
+        </para>
+        <para>
+            The custom settings for notifications allows to setup a relative point of time (like 5 minutes after the appointment has been started.) or an explicit
+            datetime expression.
+        </para>
+    </section>
+    <section>
+        <title>Link tickets to appointments</title>
+        <para>
+            Within the edit screen of an appointment, it is possible link existing tickets.
+        </para>
+        <para>
+            Ticket can be search by their ticketnumbers and/or titles.
+        </para>
+        <para>
+            Links between tickets and appointments appear in the TicketZoom like every other linked objects in a related table.
+        </para>
+        <para>
+            Those links can either be created through an existing appointment, using the overviews or via the link feature in the ticket zoom.
+        </para>
+        <para>
+            It's also possible to create a new appointment out of the ticket zoom, which links the related ticket automatically to the new appointment.
+        </para>
+    </section>
+    <section>
+        <title>Dashboard-Widget for upcoming appointments</title>
+        <para>
+            Every agent can activate a dashboard widget 'Appointments' in the dashboard.
+        </para>
+        <para>
+            This widget show the upcomin appointments of the different calendars for today, tomorrow and the next 5 days.
         </para>
     </section>
 </chapter>
@@ -143,19 +223,199 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
     <title>Configuration</title>
     <para>The package can be configured via the SysConfig in the Admin Interface. The following configuration options are available:</para>
     <section>
-        <title>Frontend::Output::FilterElementPost###OutputFilterPostAdminNotificationEvent.</title>
-        <para>Group: OTRSServiceResponsible, Subgroup: Frontend::Agent.</para>
-        <para>Outputfilter for standard tt files.</para>
+        <title>PublicFrontend::Module###PublicCalendar.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Public::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
     </section>
     <section>
-        <title>PreferencesGroups###ServiceResponsible.</title>
-        <para>Group: OTRSServiceResponsible, Subgroup: Frontend::Agent::Preferences.</para>
-        <para>Parameters for the ServiceResponsible object in the preference view of the agent interface.</para>
+        <title>Frontend::Module###AgentAppointmentCalendarOverview.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
     </section>
     <section>
-        <title>Ticket::EventModulePost###500-NotificationEventServiceResponsible.</title>
-        <para>Group: OTRSServiceResponsible, Subgroup: Core::Ticket.</para>
-        <para>Sends the notifications which are configured in the admin interface under &quot;Notification (Event)&quot;.</para>
+        <title>Frontend::Module###AgentAppointmentEdit.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>Frontend::Module###AgentAppointmentList.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>Frontend::Module###AgentAppointmentPluginSearch.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>Frontend::Module###AgentAppointmentCalendarManage.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>Frontend::Module###AgentAppointmentImport.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::CalendarLimitOverview.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar.</para>
+        <para>Maximum number of active calendars in overview screens. Please note that large number of active calendars can have a performance impact on your server by making too much simultaneous calls.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::CalendarColors.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar.</para>
+        <para>List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::Plugin###0100-Ticket.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::Plugin.</para>
+        <para>Defines the ticket plugin for calendar appointments.</para>
+    </section>
+    <section>
+        <title>LinkObject::PossibleLink###1200.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::LinkObject.</para>
+        <para>Links appointments and tickets with a &quot;Normal&quot; type link.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::Import::RecurringMonthsLimit.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar.</para>
+        <para>OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default).</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentType###0100-FirstResponseTime.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the ticket appointment type backend for ticket escalation time.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentType###0200-UpdateTime.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the ticket appointment type backend for ticket escalation time.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentType###0300-SolutionTime.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the ticket appointment type backend for ticket escalation time.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentType###0400-PendingTime.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the ticket appointment type backend for ticket pending time.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentType###0500-DynamicField.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the ticket appointment type backend for ticket dynamic field date time.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::TicketAppointmentSearchParams.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::TicketAppointments.</para>
+        <para>Defines the list of params that can be passed to ticket search function.</para>
+    </section>
+    <section>
+        <title>Frontend::Admin::AdminNotificationEvent###EventObjectTypes.</title>
+        <para>Group: Ticket, Subgroup: Frontend::Admin::AdminNotificationEvent.</para>
+        <para>Defines the event object types that will be handled via AdminNotificationEvent.</para>
+    </section>
+    <section>
+        <title>Events###Appointment.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Admin.</para>
+        <para>List of all appointment events to be displayed in the GUI.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::EventModulePost###100-Notification.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::Event.</para>
+        <para>Appointment calendar event module that prepares notification entries for appointments.</para>
+    </section>
+    <section>
+        <title>AppointmentCalendar::EventModulePost###200-TicketAppointments.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::Event.</para>
+        <para>Appointment calendar event module that updates the ticket with data from ticket appointment.</para>
+    </section>
+    <section>
+        <title>DashboardBackend###0500-AppointmentCalendar.</title>
+        <para>Group: Framework, Subgroup: Frontend::Agent::Dashboard.</para>
+        <para>Defines the parameters for the dashboard backend. &quot;Limit&quot; defines the number of entries displayed by default. &quot;Group&quot; is used to restrict access to the plugin (e. g. Group: admin;group1;group2;). &quot;Default&quot; indicates if the plugin is enabled by default or if the user needs to enable it manually. &quot;CacheTTLLocal&quot; defines the cache expiration period in minutes for the plugin.</para>
+    </section>
+    <section>
+        <title>Ticket::Frontend::MenuModule###550-Appointment.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::Ticket::MenuModule.</para>
+        <para>Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key &quot;Group&quot; and Content like &quot;rw:group1;move_into:group2&quot;. To cluster menu items use for Key &quot;ClusterName&quot; and for the Content any name you want to see in the UI. Use &quot;ClusterPriority&quot; to configure the order of a certain cluster within the toolbar.</para>
+    </section>
+    <section>
+        <title>Frontend::Module###AgentAppointmentAgendaOverview.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Frontend::Agent::ModuleRegistration.</para>
+        <para>Frontend module registration for the agent interface.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###StripEmptyLines.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Strips empty lines on the ticket preview in the queue view.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###ViewAllPossibleTickets.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Shows all both ro and rw queues in the queue view.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###HideEmptyQueues.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Show queues even when only locked tickets are in.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###HighlightAge1.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Sets the age in minutes (first level) for highlighting queues that contain untouched tickets.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###HighlightAge2.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Sets the age in minutes (second level) for highlighting queues that contain untouched tickets.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###Blink.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Activates a blinking mechanism of the queue that contains the oldest ticket.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###UseSubQueues.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Include tickets of subqueues per default when selecting a queue.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###QueueSort.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Sorts the tickets (ascendingly or descendingly) when a single queue is selected in the queue view and after the tickets are sorted by priority. Values: 0 = ascending (oldest on top, default), 1 = descending (youngest on top). Use the QueueID for the key and 0 or 1 for value.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###SortBy::Default.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Defines the default sort criteria for all queues displayed in the queue view.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###PreSort::ByPriority.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Defines if a pre-sorting by priority should be done in the queue view.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###Order::Default.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Defines the default sort order for all queues in the queue view, after priority sort.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentAgendaOverview###DefaultColumns.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar::AgendaOverview.</para>
+        <para>Columns that can be filtered in the queue view of the agent interface. Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default. Note: Only Ticket attributes, Dynamic Fields (DynamicField_NameX) and Customer attributes (e.g. CustomerUserPhone, CustomerCompanyName, ...) are allowed.</para>
+    </section>
+    <section>
+        <title>AgentAppointmentEdit::Location::Link###1-GoogleMaps.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::AppointmentCalendar.</para>
+        <para>Defines an icon with link to the google map page of the current location in appointment edit screen.</para>
+    </section>
+    <section>
+        <title>Ticket::EventModulePost###950-TicketAppointments.</title>
+        <para>Group: OTRSAppointmentCalendar, Subgroup: Core::Ticket.</para>
+        <para>Triggers add or update of automatic calendar appointments based on certain ticket times.</para>
     </section>
 </chapter>
 
@@ -164,6 +424,175 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
 <!-- ******** -->
 <chapter>
     <title>Usage</title>
+    <section>
+        <title>Management of multiple calendars</title>
+        <para>
+            Via a management interface it is possible to add and edit calendars.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarManage-Overview.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            If a new calendar needs to be created or edited, it's necessary to define a calendar name a color and the permission group, the calendar
+            belongs to. This is needed for agents to access the calendar properly with the related permissions.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarManage-CalendarEdit.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            The color can be selected with the built-in colorpicker, like in the following screenshot. There are three ways to select a color with the
+            colorpicker. After clicking on the preselected color, a windows opens with a set of pre-defined colors ready to be used. If your preferred
+            color is not available, you can click on the button "More", to open the advanced mode.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarManage-CalendarEdit-Colorpicker.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            Within that mode, you can either select a certain color by using the color bar and the color field with your mouse or you're able to directly
+            use a hexcode of a desired color. By clicking on the button "Less", you can shrink the colorpicker back again to the standard mode.
+            Right after a click on the button "Confirm", the new color is selected and visible in the preview field. Even if you selected a certain color
+            within the advanced, the previous color will be selected again (and visible in the preview field), if you click on the "Cancel" button, but this
+            just works, if you didn't confirmed your selection yet. If that's the case (but you did not save the calender yet), you may just reload your
+            screen and see you current color setting again.
+        </para>
+        <para>
+            For the selected permission group of your calendar, an agent who should have access to, needs at least a read-permission within the related group.
+            Enclosed a list of permissions to access certain feature-levels within the different calendars:
+
+            <itemizedlist mark="round">
+                <listitem>
+                    <para>
+                        RO: The related agent can see the calendar and it's appointments, but can't do any changes.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        MOVE_INTO: The related agent can update existing appointments, but can't create new ones or delete existing ones.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        CREATE: The related agent can create new appointments.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        RW: The related agent is able to delete appointments.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            The validity field indicates, if a calendar is valid. Invalid calendars won't show up in the different views, even if agents have access to it.
+        </para>
+    </section>
+    <section>
+        <title>Exports and imports</title>
+        <para>
+            Once different calendars are create, it is possible to export either the complete calendar definition (including the calendar appointments)
+            in the well-known YAML-Format or just export the related appointments of a calendar to ICS-Format.
+        </para>
+        <para>
+            It is also possible to import complete calendar structures using previously exported YAML files to restore calendar definitions or import
+            just calendar appointments to an existing calendar using ICS file uploads.
+        </para>
+        <para>
+            That offers the possibility to backup and restore single calendars or transfer them to a different OTRS installation or an external calendar tool.
+        </para>
+    </section>
+    <section>
+        <title>Management of calendar appointments</title>
+        <para>
+            If at least one calendar is created and accessible by a certain agent, new or already existing appointments can be managed via a calendar overview and
+            an agenda overview.
+        </para>
+        <para>
+            Within the calendar overview, an agent is able to display, create, edit and/or delete appointments of different calendars, depending on his permission
+            to the related calendars. Such appointments can be created or edited via drag and drop within this screen.
+        </para>
+        <para>
+            The visibility of single calendars can be enabled or disabled through a calendar list within the screen.
+        </para>
+        <para>
+            To have a good overview of available appointments within different calendars and the related dates they start or end, it is possible to select different
+            view modes, like weekly view, monthly view, different timeline related views etc.
+        </para>
+        <para>
+            Within the agenda overview, an agent is able to display the appointments of all available (accessible) calendars in a table like overview. This overview
+            is designed to have a detailed overview of upcoming appointments in a structured table. Like in the calendar overview appointments can be created, edited
+            or deleted. This view supports a monthly, weekly and daily point of view on available appointments.
+        </para>
+    </section>
+    <section>
+        <title>Repeating appointments</title>
+        <para>
+            If recurring appointments needs to be archived, it is possible to setup detailed information about the recurrences of a single appointment.
+        </para>
+        <para>
+            Beside pre-defined frequencies like daily, weekly, monthly etc. it is possible to setup custom repeats and exclude weekdays or dates of months,
+            define the amount of recurrences and/or the end date after the appointment stops to repeat.
+        </para>
+    </section>
+    <section>
+        <title>Notifications</title>
+        <para>
+            Within the edit screen of an appointment, it is possible to setup a date to notify about the appointment.
+        </para>
+        <para>
+            As in the settings for appointment repeat, it is possible to use pre-defined templates for notifications (i.e. 5 minutes before, 15 minutes before etc.)
+            or setup a custom point of time.
+        </para>
+        <para>
+            The custom settings for notifications allows to setup a relative point of time (like 5 minutes after the appointment has been started.) or an explicit
+            datetime expression.
+        </para>
+    </section>
+    <section>
+        <title>Link tickets to appointments</title>
+        <para>
+            Within the edit screen of an appointment, it is possible link existing tickets.
+        </para>
+        <para>
+            Ticket can be search by their ticketnumbers and/or titles.
+        </para>
+        <para>
+            Links between tickets and appointments appear in the TicketZoom like every other linked objects in a related table.
+        </para>
+        <para>
+            Those links can either be created through an existing appointment, using the overviews or via the link feature in the ticket zoom.
+        </para>
+        <para>
+            It's also possible to create a new appointment out of the ticket zoom, which links the related ticket automatically to the new appointment.
+        </para>
+    </section>
+    <section>
+        <title>Dashboard-Widget for upcoming appointments</title>
+        <para>
+            Every agent can activate a dashboard widget 'Appointments' in the dashboard.
+        </para>
+        <para>
+            This widget show the upcomin appointments of the different calendars for today, tomorrow and the next 5 days.
+        </para>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
     <section>
         <title>Assign agent as responsible to services</title>
         <para>
