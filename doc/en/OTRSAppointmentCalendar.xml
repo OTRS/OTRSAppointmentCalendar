@@ -1043,30 +1043,15 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
 <!-- ********************************* -->
 <chapter>
     <title>Technical Implementation Details</title>
-    <section>
-        <title>Kernel/Config/Files/OTRSServiceResponsible.xml.</title>
-        <para>New: Configuration file that holds the required settings for the correct functionality of this package.</para>
-    </section>
-    <section>
-        <title>Kernel/Language/de_OTRSServiceResponsible.pm.</title>
-        <para>New: German translation file for this package.</para>
-    </section>
-    <section>
-        <title>Kernel/Output/HTML/FilterElementPost/OutputFilterPostAdminNotificationEvent.pm.</title>
-        <para>New: Output filter that extends the menu "AdminNotificationEvent".</para>
-    </section>
-    <section>
-        <title>Kernel/Output/HTML/Preferences/ServiceResponsible.pm.</title>
-        <para>New: Preferences module to set the service responsibility.</para>
-    </section>
-    <section>
-        <title>Kernel/System/ServiceResponsible.pm.</title>
-        <para>New: Core module for the responsibility assignment of services to agents.</para>
-    </section>
-    <section>
-        <title>Kernel/System/Ticket/Event/NotificationEventServiceResponsible.pm.</title>
-        <para>New: Ticket event module to send notifications to agents responsible for services.</para>
-    </section>
+    <para>
+        This module adds the following database tables: calendar, calendar_appointment, calendar_appointment_ticket
+    </para>
+    <para>
+        The appointment calendar module comes up with special cpan modules to fit the different features properly.
+    </para>
+    <para>
+        For several features to work properly, a running OTRS Daemon is necessary.
+    </para>
 </chapter>
 
 <!-- ************ -->
@@ -1090,18 +1075,31 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
     <section>
         <title>Test Cases</title>
         <para>
-            <!-- Reference to point 6.x and document the results -->
-            To test this package please follow the examples described in the Usage section.
+            To tests this package please follow the examples described in the Usage section, all the
+            tests cases should return the expected results defined at the beginning of each example.
         </para>
     </section>
     <section>
-        <title>Unit tests</title>
-        <!-- If core files included in this package, there must be covered by unit tests and will be tested.
-             If the packet contains no "core files", this point 9.2 can be removed.
-        -->
+        <title>Unit Tests</title>
         <para>
-            There are currently no Unit Tests available for this package.
+            To ensure the quality of the module, several so-called unit tests were created, to test
+            the functionalities of this module. These unit tests can be run via command line.
         </para>
+        <para>
+            ATTENTION: Please never run unit tests on a productive system, since the added test data
+            to the system will no longer be removed. Always use a test system.
+        </para>
+        <para>Run the package specific unit tests</para>
+        <para>
+            To run only the unit test which will be delivered with this package, use the following
+            command on the command line:
+        </para>
+        <screen>shell> perl bin/otrs.Console.pl Dev::UnitTest::Run --test Calendar (many more unittests available!)</screen>
+        <para>Run all available unit tests</para>
+        <para>
+            To run all available unit tests, use the following command on the command line:
+        </para>
+        <screen>shell> perl bin/otrs.Console.pl Dev::UnitTest::Run</screen>
     </section>
 </chapter>
 
