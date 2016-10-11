@@ -123,7 +123,7 @@
             Within the edit screen of an appointment, it is possible link existing tickets.
         </para>
         <para>
-            Ticket can be search by their ticketnumbers and/or titles.
+            Ticket can be searched by their ticketnumbers and/or titles.
         </para>
         <para>
             Links between tickets and appointments appear in the TicketZoom like every other linked objects in a related table.
@@ -719,52 +719,183 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
     <section>
         <title>Repeating appointments</title>
         <para>
-            If recurring appointments needs to be archived, it is possible to setup detailed information about the recurrences of a single appointment.
+            If appointments needs to be archived in a recurring manner, it is possible to setup detailed information about the recurrences of a an appointment.
+
+            For this to work it is either possible to use pre-defined frequencies of the recurrences, or to define custom settings:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-AppointmentEditRecurrence.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            After the selection is finished, it's necessary to define the runtime of the recurrences. It's possible to choose either a date to repeat until,
+            or an amount of times to repeat.
         </para>
         <para>
-            Beside pre-defined frequencies like daily, weekly, monthly etc. it is possible to setup custom repeats and exclude weekdays or dates of months,
-            define the amount of recurrences and/or the end date after the appointment stops to repeat.
+            After all decisions are made and the settings are saved successfully, the appointment will be marked a recurring appointment.
+            The parent appointment will be marked with circle-arrow-symbol and the child appointments with a chain-symbol.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-AppointmentEditRecurrenceAdded.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            Future changes to the parent appointment will affect the children automatically, without any further message.
+            If an agent is about to change on of the child appointments, a message will ask for the amount of appointments, included in the update:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-AppointmentEditRecurrenceReedit.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            If the update affects all appointments, the behavior will be the same, as on the update of the parent appointment. All options (including the recurring
+            settings) are changable.
+            If just the current (child-)occurrence is affected, it's not possible to change the repeat-settings, with a related message and a link to the parent
+            appointment:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-AppointmentEditRecurrenceReeditSingle.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            The enabled repeating option will additionally be displayed in the tooltip of the related appointment(s).
         </para>
     </section>
     <section>
         <title>Notifications</title>
         <para>
             Within the edit screen of an appointment, it is possible to setup a date to notify about the appointment.
-        </para>
-        <para>
             As in the settings for appointment repeat, it is possible to use pre-defined templates for notifications (i.e. 5 minutes before, 15 minutes before etc.)
-            or setup a custom point of time.
+            or to setup a custom point of time:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-AppointmentEditNotification.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
         </para>
         <para>
-            The custom settings for notifications allows to setup a relative point of time (like 5 minutes after the appointment has been started.) or an explicit
-            datetime expression.
+            The custom settings for notifications are splitted into a relative point of time (like 5 minutes after the appointment has been started, 2 hours before
+            the appointment ends etc.) and an explicit date time value, which can additionally be selected with a datepicker. The related section needs to be
+            enabled with a radio button, the disabled section will be ignored.
+        </para>
+        <para>
+            If an appointment has an active notification setting, the datetime string of the notification will be displayed in the tooltip.
+            In addition to that, the appointment will be marked with a bell-symbol to indicate that there is an active notification set, without any mouse over
+            actions.
         </para>
     </section>
     <section>
         <title>Link tickets to appointments</title>
         <para>
-            Within the edit screen of an appointment, it is possible link existing tickets.
+            The appointment calendar comes with an abstraction layer to link external objects with appointments, using the OTRS internal link object.
+            Those additional objects can come up with external packages without any further need to update the code of the calendar directly.
         </para>
         <para>
-            Ticket can be search by their ticketnumbers and/or titles.
+            Basically within the edit screen of an appointment, it is possible link existing tickets. Tickets can be searched by their ticketnumbers
+            and/or ticket titles in an autocompletion field. Once the agent clicks on a result, the related ticket will be saved in a result box and
+            after the appointment has been saved, the ticket will be technically linked to the appointment.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-LinkTickets.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
         </para>
         <para>
-            Links between tickets and appointments appear in the TicketZoom like every other linked objects in a related table.
+            Additionally it's possible to link multiple tickets to one appointment. Since the normal OTRS link object is used to create the connection
+            between both objects, the link will be displayed in the ticket zoom screen as well.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/TicketZoom-LinkedAppointment.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
         </para>
         <para>
-            Those links can either be created through an existing appointment, using the overviews or via the link feature in the ticket zoom.
+            Those links can either be created through an existing appointment in the related edit dialog, using the overviews or via the link feature
+            in the ticket zoom.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/TicketZoom-AppointmentLinking.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
         </para>
         <para>
-            It's also possible to create a new appointment out of the ticket zoom, which links the related ticket automatically to the new appointment.
+            Via the ticket zoom screen, it's aditionally possible to create a new appointment, which links the related ticket automatically to
+            the newly created appointment. There a new option "New Appointment" is located in the ticket action menu "Miscellaneous".
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/TicketZoom-NewAppointment.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            After a click on the entry, the agent will be forwarded to the calender overview, which automatically opens a new appointment dialog,
+            that has the related ticket linked and can be filled out as usual.
         </para>
     </section>
     <section>
         <title>Dashboard-Widget for upcoming appointments</title>
         <para>
-            Every agent can activate a dashboard widget 'Appointments' in the dashboard.
+            To have a quick overview about upcoming appointments, it's possible to enalbe a dashboard widget called "Appointments".
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/DashboardWidgetToday.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            This widget displayes upcoming appointments of every accessible calender by the agent in a simplified manner.
         </para>
         <para>
-            This widget show the upcomin appointments of the different calendars for today, tomorrow and the next 5 days.
+            It offers the possible to create new appointments with a click on the button "New Appointment", which forwards the agent to the calendar
+            overview screen and opens a new appointment dialog.
+        </para>
+        <para>
+            The widget content consists of three filter entries:
+
+            <itemizedlist mark="round">
+                <listitem>
+                    <para>
+                        Today: Displays upcoming appointments for the current date.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Tomorrow: Displays upcoming appointments for the next day.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Soon: Soon means the next five days, excluding today and tomorrow.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            Like in the other dashboard widgets, the agent can switch between the filters by clicking on the filter name:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/DashboardWidgetSoon.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            Since the appointment informations are simplified and small be displayed properly in the small widget, it's possible to show more
+            detailed information about every column in the related tooltip while hovering over the column, as visible in the previous screenshot.
+        </para>
+        <para>
+            Basically just the color of the related calender, the start time of the appointment and the appointment title will be displayed to the agent.
+            On hovering over the related column, further information will be displayed if needed. If the agent clicks on such an appointment, the browser
+            redirects to the calendar overview screen and opens the related appointment to show the full set of information.
         </para>
     </section>
 </chapter>
