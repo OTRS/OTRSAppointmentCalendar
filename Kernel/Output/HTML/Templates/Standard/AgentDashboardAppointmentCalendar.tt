@@ -6,6 +6,8 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+# nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+
 <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview;Subaction=AppointmentCreate" class="CallForAction Fullsize Center">
     <span>
         <i class="fa fa-plus-square"></i>

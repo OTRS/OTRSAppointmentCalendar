@@ -6,6 +6,8 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+# nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
     <h1>[% Translate("Calendar Overview") | html %]</h1>
     <input type="hidden" value="[% Env("UserChallengeToken") %]" name="ChallengeToken" id="ChallengeToken" />

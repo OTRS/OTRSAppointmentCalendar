@@ -6,6 +6,8 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
+# nofilter(TidyAll::Plugin::OTRS::TT::ScriptUsage)
+
 <div class="MainBox ARIARoleMain LayoutFixedSidebar SidebarFirst">
 
     <h1 class="Header">[% Translate("Calendar Management") | html %]</h1>
