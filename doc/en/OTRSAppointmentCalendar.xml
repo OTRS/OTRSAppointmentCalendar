@@ -843,6 +843,142 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
         </para>
     </section>
     <section>
+        <title>Managed ticket appointments</title>
+        <para>
+            To make a step back to the calendar management, the package offers the possibility to automatically create and update appointments in
+            calendars, using a special ticket search method within the calendar edit screen.
+            Tickets can have special datetime entries like pending times, escalation times (first response time, update time etc.) or assigned
+            dynamic field from type datetime.
+        </para>
+        <para>
+            Logically the calendars are able to show those datetime entries, but since the calendar appointments needs to have time ranges consisting
+            of a start time and an end time, it's needed to define a related end time for managed appointments, as times like the pending time points
+            to just one datetime string.
+        </para>
+        <para>
+            Below the normal calendar data in the calendar edit screen, a special widget called "Ticket Appointments" takes care about the tickets to
+            be used for automatic appointment creation.
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarManage-CalendarEdit-TicketAppointments.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            It's necessary to define rules to describe a ticket search for tickets, which should result in automatically created (managed) appointments,
+            added to the related calendar. It's possible to define multiple rules with different parameters to combine several types of tickets within
+            the same calendar.
+        </para>
+        <para>
+            A rule consists of the following parameters to generate proper ticket searches:
+
+            <itemizedlist mark="round">
+                <listitem>
+                    <para>
+                        Start date: A dropdown list, that indicates the special datetime string of the related tickets. This can be either the pending time,
+                        the different escalation times or a dynamic field from type datetime assigned to the ticket.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        End date: This can be a relative time value, counted from the selected start time (like +5 minutes, +1 hour etc.) or a dynamic field
+                        from type datetime, pointing to an absolute date and time value.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Queues: A multi-selectable dropdown list, that indicates the queues, the related tickets needs to be located in. This field is
+                        mandatory and can't be removed.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Search attributes: This is a list of additional (optional) search attributes to provide more detailed filter possibilities to the
+                        agent. It acts like the search attributes in AgentTicketSearch. Single attributes can be selected, added to the form and filled out
+                        with filter values.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            An overview of the configuration for such a rule looks as follows:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarManage-CalendarEdit-TicketAppointmentsOverview.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            The rule in the screenshot would find all tickets, that have a pending time and would add one hour to the related pending time to generate
+            the end time and create appointments for the set of found tickets during the search. The tickets additionally needs to be located in queue "Raw".
+        </para>
+        <para>
+            An example of an automatically added appointment looks as follows:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-TicketAppointment.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            The P-Symbol indicates that this appointment includes a pending time as the start time value. The end time value is a dynamic field from
+            type datetime in this example to display a bigger appointment for that test purpose.
+        </para>
+        <para>
+            Special appointments of different types will be marked with related symbols:
+
+            <itemizedlist mark="round">
+                <listitem>
+                    <para>
+                        P: Appointments of tickets with pending time as the start time.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        E: Appointments of tickets with escalation times as the start time (First response time, Update time, Solution time).
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        D: Appointments of tickets with a dynamic field from type datetime as the start time.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            The edit screen of such a special appointment looks as follows:
+
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/CalendarOverview-TicketAppointmentEdit.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+
+            The appointment title is sticked to be the ticketnumber + the ticket title and cannot be changed, as those appointment are automatically created,
+            updated and removed, depending on the related ticket.
+            It's of course possible to define basic information like a description and a location, which will be stored for that single appointment.
+            For such appointments it's also possible to define notification times and link additional tickets.
+        </para>
+        <para>
+            Some of those start time values are variable and therefore updateable by the related agent and some are not.
+            For instance the pending time is a value, that can be changed using the pending ticket action in the ticket zoom of the related ticket, as well
+            as a dynamic field value can be changed easily.
+            An escalation value like first response time, or the update time are special values which will be computed using a Service / SLA entry assigned
+            to the related ticket.
+            If an automatically created appointment of type pending time will be changed for instance using the calendar overview, the related value will be
+            updated in the ticket as well, this is the same behavior for special appointments of type dynamic field. Therefore it's either possible to update
+            the related ticket using the ticket zoom, or by just updating the appointment, that writes back all needed changes to the ticket.
+        </para>
+        <para>
+            Appointments from type escalation time cannot be updated using the related appointments, as those values are not changable directly by the agent.
+            Such appointments are simply read-only on the related values, as well as on the drag and drop features/handles.
+        </para>
+        <para>
+            On every update on the calendar definition or the related tickets, the automatically created appointments will be updated as well. This work
+            will be done by the OTRS-Daemon. Therefore it's necessary to have the daemon running for this feature to work properly!
+        </para>
+    </section>
+    <section>
         <title>Dashboard-Widget for upcoming appointments</title>
         <para>
             To have a quick overview about upcoming appointments, it's possible to enalbe a dashboard widget called "Appointments".
