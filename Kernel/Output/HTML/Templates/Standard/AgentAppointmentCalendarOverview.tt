@@ -309,15 +309,10 @@ Core.Agent.AppointmentCalendar.Init({
                         calendarColor: [% Data.Color | JSON %],
                         notification: AppointmentData.NotificationDate.length ? true : false,
                         notificationDate: AppointmentData.NotificationDate,
-                        notificationTemplate: AppointmentData.NotificationTemplate,
-                        notificationCustom: AppointmentData.NotificationCustom,
-                        notificationCustomRelativeUnitCount: AppointmentData.NotificationCustomRelativeUnitCount,
-                        notificationCustomRelativeUnit: AppointmentData.NotificationCustomRelativeUnit,
-                        notificationCustomRelativePointOfTime: AppointmentData.NotificationCustomRelativePointOfTime,
-                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime,
                         ticketAppointmentType: AppointmentData.TicketAppointmentStartDate,
-                        editable: TicketAppointmentNoDrag[AppointmentData.TicketAppointmentStartDate] ? false : true,
-                        durationEditable: typeof TicketAppointmentNoDrag[AppointmentData.TicketAppointmentEndDate] !== 'undefined' ? true : false
+                        startEditable: TicketAppointmentNoDrag[AppointmentData.TicketAppointmentStartDate] ? false : true,
+                        durationEditable: typeof AppointmentData.TicketAppointmentEndDate === 'undefined' ? true :
+                            typeof TicketAppointmentNoDrag[AppointmentData.TicketAppointmentEndDate] !== 'undefined' ? true : false
                     };
                 }
             }

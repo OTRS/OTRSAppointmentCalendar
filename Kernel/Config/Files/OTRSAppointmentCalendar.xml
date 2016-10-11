@@ -65,12 +65,12 @@
                     <Prio>8000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.0.1/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.0.1/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                     <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                 </Loader>
@@ -218,16 +218,6 @@
                 <Item>#FF7AFF</Item>
                 <Item>#FF7FD3</Item>
             </Array>
-        </Setting>
-    </ConfigItem>
-    <ConfigItem Name="AppointmentCalendar::Backend" Required="1" Valid="1">
-        <Description Translatable="1">Defines which backend should be used for managing calendars.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Core::AppointmentCalendar</SubGroup>
-        <Setting>
-            <Option SelectedID="CalDav">
-                <Item Key="CalDav" Translatable="1">CalDav</Item>
-            </Option>
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::Plugin###0100-Ticket" Required="0" Valid="1">
@@ -612,11 +602,11 @@
                     <Prio>6500</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.0.1/fullcalendar.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <CSS>Core.AppointmentCalendar.Agenda.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.0.1/fullcalendar.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>

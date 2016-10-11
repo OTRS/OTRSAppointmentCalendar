@@ -235,13 +235,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 TargetNS.OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
-            eventClick: function(CalEvent) {
+            eventClick: function(CalEvent, JSEvent) {
                 var Data = {
                     Start: CalEvent.start,
                     End: CalEvent.end,
                     CalEvent: CalEvent
                 };
                 TargetNS.OpenEditDialog(Params, Data);
+                JSEvent.stopPropagation();
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc) {
@@ -861,32 +862,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Data.EndDay = AppointmentData.CalEvent.end.date();
             Data.EndHour = AppointmentData.CalEvent.end.hour();
             Data.EndMinute = AppointmentData.CalEvent.end.minute();
-        }
-
-        // Setup notification data if available
-        if (AppointmentData.CalEvent.notificationDate.length) {
-
-            // Setup data for related custom notification type
-            if (AppointmentData.CalEvent.notificationCustom === 'relative') {
-                Data.NotificationCustomRelativeInput = 1;
-                Data.NotificationCustomDateTimeInput = 0;
-            }
-            else if (AppointmentData.CalEvent.notificationCustom === 'datetime') {
-                Data.NotificationCustomDateTimeInput = 1;
-                Data.NotificationCustomRelativeInput = 0;
-            }
-            else {
-                Data.NotificationCustomDateTimeInput = 0;
-                Data.NotificationCustomRelativeInput = 0;
-            }
-
-            Data.NotificationDate = AppointmentData.CalEvent.notificationDate;
-            Data.NotificationTemplate = AppointmentData.CalEvent.notificationTemplate;
-            Data.NotificationCustom = AppointmentData.CalEvent.notificationCustom;
-            Data.NotificationCustomRelativeUnitCount = AppointmentData.CalEvent.notificationCustomRelativeUnitCount;
-            Data.NotificationCustomRelativeUnit = AppointmentData.CalEvent.notificationCustomRelativeUnit;
-            Data.NotificationCustomRelativePointOfTime = AppointmentData.CalEvent.notificationCustomRelativePointOfTime;
-            Data.NotificationCustomDateTime = AppointmentData.CalEvent.notificationCustomDateTime;
         }
 
         // Repeating event

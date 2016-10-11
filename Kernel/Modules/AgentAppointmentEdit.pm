@@ -1349,37 +1349,37 @@ sub Run {
             }
         }
 
-        # determine notification custom type
-        $GetParam{NotificationTemplate} ||= '';
+        # Determine notification custom type, if supplied.
+        if ( defined $GetParam{NotificationTemplate} ) {
+            if ( $GetParam{NotificationTemplate} ne 'Custom' ) {
+                $GetParam{NotificationCustom} = '';
+            }
+            elsif ( $GetParam{NotificationCustomRelativeInput} ) {
+                $GetParam{NotificationCustom} = 'relative';
+            }
+            elsif ( $GetParam{NotificationCustomDateTimeInput} ) {
+                $GetParam{NotificationCustom} = 'datetime';
 
-        if ( $GetParam{NotificationTemplate} ne 'Custom' ) {
-            $GetParam{NotificationCustom} = '';
-        }
-        elsif ( $GetParam{NotificationCustomRelativeInput} ) {
-            $GetParam{NotificationCustom} = 'relative';
-        }
-        elsif ( $GetParam{NotificationCustomDateTimeInput} ) {
-            $GetParam{NotificationCustom} = 'datetime';
+                $GetParam{NotificationCustomDateTime} = sprintf(
+                    "%04d-%02d-%02d %02d:%02d:00",
+                    $GetParam{NotificationCustomDateTimeYear},
+                    $GetParam{NotificationCustomDateTimeMonth},
+                    $GetParam{NotificationCustomDateTimeDay},
+                    $GetParam{NotificationCustomDateTimeHour},
+                    $GetParam{NotificationCustomDateTimeMinute}
+                );
 
-            $GetParam{NotificationCustomDateTime} = sprintf(
-                "%04d-%02d-%02d %02d:%02d:00",
-                $GetParam{NotificationCustomDateTimeYear},
-                $GetParam{NotificationCustomDateTimeMonth},
-                $GetParam{NotificationCustomDateTimeDay},
-                $GetParam{NotificationCustomDateTimeHour},
-                $GetParam{NotificationCustomDateTimeMinute}
-            );
+                my $NotificationCustomDateTime = $CalendarHelperObject->SystemTimeGet(
+                    String => $GetParam{NotificationCustomDateTime},
+                );
 
-            my $NotificationCustomDateTime = $CalendarHelperObject->SystemTimeGet(
-                String => $GetParam{NotificationCustomDateTime},
-            );
+                # Convert to local time.
+                $NotificationCustomDateTime -= $Self->{TimeSecDiff};
 
-            # convert to local time
-            $NotificationCustomDateTime -= $Self->{TimeSecDiff};
-
-            $GetParam{NotificationCustomDateTime} = $CalendarHelperObject->TimestampGet(
-                SystemTime => $NotificationCustomDateTime,
-            );
+                $GetParam{NotificationCustomDateTime} = $CalendarHelperObject->TimestampGet(
+                    SystemTime => $NotificationCustomDateTime,
+                );
+            }
         }
 
         # team

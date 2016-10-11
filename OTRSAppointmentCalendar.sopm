@@ -4,119 +4,120 @@
 <!-- nofilter(TidyAll::Plugin::OTRS::SOPM::DocumentationPresent) -->
     <Version>0.0.0</Version>
     <Framework>5.0.x</Framework>
+    <ModuleRequired>DateTime</ModuleRequired>
+    <ModuleRequired>DateTime::TimeZone</ModuleRequired>
     <Vendor>OTRS AG</Vendor>
     <URL>http://otrs.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Filelist>
-        <File Permission="640" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Class/ReturnValue.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Fast.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Class/Accessor/Chained/Fast.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Property.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/FreeBusy.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Event.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Journal.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Todo.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Standard.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Daylight.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Procedure.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/None.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Display.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/URI.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Email.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Audio.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Date/ICal.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Date/Leapyear.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Date/ICal/Duration.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Devel/StackTrace.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Devel/StackTrace/Frame.pm"/>
-        <File Permission="640" Location="Kernel/cpan-lib/Text/vFile/asData.pm"/>
-        <File Permission="640" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AdminAppointmentNotificationEvent.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentAgendaOverview.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentEdit.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentImport.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentList.pm"/>
-        <File Permission="640" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm"/>
-        <File Permission="640" Location="Kernel/Modules/PublicCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/LinkObject/Appointment.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Preferences/AppointmentNotificationEvent.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEvent.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEventTransportEmailSettings.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentImport.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm"/>
-        <File Permission="640" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardAppointmentCalendar.tt"/>
-        <File Permission="640" Location="Kernel/System/Calendar.pm"/>
-        <File Permission="640" Location="Kernel/System/CalendarTemplateGenerator.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Appointment.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Helper.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Plugin.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Plugin/Ticket.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Backend/CalDav.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Event/Notification.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Email.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Event/Transport/Base.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Event/TicketAppointments.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Export/ICal.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Import/ICal.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Ticket/DynamicField.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm"/>
-        <File Permission="640" Location="Kernel/System/Calendar/Ticket/PendingTime.pm"/>
-        <File Permission="640" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm"/>
-        <File Permission="640" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm"/>
-        <File Permission="640" Location="Kernel/System/LinkObject/Appointment.pm"/>
-        <File Permission="640" Location="Kernel/System/Ticket/Event/TicketAppointments.pm"/>
-        <File Permission="640" Location="scripts/test/Calendar.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Appointment.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Helper.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Plugin.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/TicketAppointments.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Export/ICal.t"/>
-        <File Permission="640" Location="scripts/test/Calendar/Import/ICal.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentCreate.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentDashboardWidget.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t"/>
-        <File Permission="640" Location="scripts/test/Selenium/Agent/AgentAppointmentTimeZone.t"/>
-        <File Permission="640" Location="scripts/test/sample/Calendar/SampleCalendar.ics"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-2.8.0/fullcalendar.min.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/spectrum-1.8.0/spectrum.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Agenda.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.8.0/fullcalendar.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-2.8.0/fullcalendar.min.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/momentjs-2.13.0/moment.min.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.min.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js"/>
-        <File Permission="640" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.Manage.js"/>
-        <File Permission="640" Location="var/packagesetup/OTRSAppointmentCalendar.pm"/>
+        <File Permission="644" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml" />
+        <File Permission="644" Location="Kernel/cpan-lib/Class/ReturnValue.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Class/Accessor.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Class/Accessor/Chained.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Class/Accessor/Fast.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Class/Accessor/Chained/Fast.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Property.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/FreeBusy.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Event.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Journal.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Todo.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Standard.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/TimeZone/Daylight.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Procedure.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/None.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Display.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/URI.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Email.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Data/ICal/Entry/Alarm/Audio.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Date/ICal.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Date/Leapyear.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Date/ICal/Duration.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Devel/StackTrace.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Devel/StackTrace/Frame.pm" />
+        <File Permission="644" Location="Kernel/cpan-lib/Text/vFile/asData.pm" />
+        <File Permission="644" Location="Kernel/Language/de_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentAgendaOverview.pm" />
+        <File Permission="644" Location="Kernel/Modules/AdminAppointmentNotificationEvent.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentEdit.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentImport.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentList.pm" />
+        <File Permission="644" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm" />
+        <File Permission="644" Location="Kernel/Modules/PublicCalendar.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/LinkObject/Appointment.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Preferences/AppointmentNotificationEvent.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEventTransportEmailSettings.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEvent.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentImport.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardAppointmentCalendar.tt" />
+        <File Permission="644" Location="Kernel/System/Calendar.pm" />
+        <File Permission="644" Location="Kernel/System/CalendarTemplateGenerator.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/Transport/Email.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/Transport/Base.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Appointment.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Helper.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Plugin.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Plugin/Ticket.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/Notification.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/TicketAppointments.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Export/ICal.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Import/ICal.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Ticket/DynamicField.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Ticket/PendingTime.pm" />
+        <File Permission="644" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm" />
+        <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
+        <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
+        <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
+        <File Permission="644" Location="scripts/test/Calendar.t" />
+        <File Permission="644" Location="scripts/test/Calendar/Appointment.t" />
+        <File Permission="644" Location="scripts/test/Calendar/Helper.t" />
+        <File Permission="644" Location="scripts/test/Calendar/Plugin.t" />
+        <File Permission="644" Location="scripts/test/Calendar/TicketAppointments.t" />
+        <File Permission="644" Location="scripts/test/Calendar/Export/ICal.t" />
+        <File Permission="644" Location="scripts/test/Calendar/Import/ICal.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCreate.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentDashboardWidget.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentTimeZone.t" />
+        <File Permission="644" Location="scripts/test/sample/Calendar/SampleCalendar.ics" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.min.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/spectrum-1.8.0/spectrum.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Agenda.css" />
+        <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/Core.AppointmentCalendar.Manage.css" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-3.0.1/fullcalendar.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-3.0.1/fullcalendar.min.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/momentjs-2.13.0/moment.min.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/clipboard.js-1.5.12/clipboard.min.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/thirdparty/spectrum-1.8.0/spectrum.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.js" />
+        <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.Manage.js" />
+        <File Permission="644" Location="var/packagesetup/OTRSAppointmentCalendar.pm" />
     </Filelist>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
 
@@ -163,123 +164,123 @@
 
     <DatabaseInstall Type="post">
         <TableCreate Name="calendar">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="group_id" Required="true" Type="INTEGER"/>
-            <Column Name="name" Required="true" Size="200" Type="VARCHAR"/>
-            <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR"/>
-            <Column Name="color" Required="true" Size="7" Type="VARCHAR"/>
-            <Column Name="ticket_appointments" Required="false" Type="LONGBLOB"/>
-            <Column Name="valid_id" Required="true" Type="SMALLINT"/>
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+            <Column Name="group_id" Required="true" Type="INTEGER" />
+            <Column Name="name" Required="true" Size="200" Type="VARCHAR" />
+            <Column Name="salt_string" Required="true" Size="64" Type="VARCHAR" />
+            <Column Name="color" Required="true" Size="7" Type="VARCHAR" />
+            <Column Name="ticket_appointments" Required="false" Type="LONGBLOB" />
+            <Column Name="valid_id" Required="true" Type="SMALLINT" />
             <Column Name="create_time" Required="true" Type="DATE" />
             <Column Name="create_by" Required="true" Type="INTEGER" />
             <Column Name="change_time" Required="true" Type="DATE" />
             <Column Name="change_by" Required="true" Type="INTEGER" />
             <Unique Name="calendar_id">
-                <UniqueColumn Name="id"/>
+                <UniqueColumn Name="id" />
             </Unique>
             <Unique Name="calendar_name">
-                <UniqueColumn Name="name"/>
+                <UniqueColumn Name="name" />
             </Unique>
             <ForeignKey ForeignTable="groups">
-                <Reference Local="group_id" Foreign="id"/>
+                <Reference Local="group_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="valid">
-                <Reference Local="valid_id" Foreign="id"/>
+                <Reference Local="valid_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="users">
-                <Reference Local="create_by" Foreign="id"/>
-                <Reference Local="change_by" Foreign="id"/>
+                <Reference Local="create_by" Foreign="id" />
+                <Reference Local="change_by" Foreign="id" />
             </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="parent_id" Type="BIGINT"/>
-            <Column Name="calendar_id" Required="true" Type="BIGINT"/>
-            <Column Name="unique_id" Required="true" Size="255" Type="VARCHAR"/>
-            <Column Name="title" Required="true" Size="255" Type="VARCHAR"/>
-            <Column Name="description" Size="3800" Type="VARCHAR"/>
-            <Column Name="location" Size="255" Type="VARCHAR"/>
-            <Column Name="start_time" Required="true" Type="DATE"/>
-            <Column Name="end_time" Required="true" Type="DATE"/>
-            <Column Name="all_day" Type="SMALLINT"/>
-            <Column Name="notify_time" Type="DATE"/>
-            <Column Name="notify_template" Size="255" Type="VARCHAR"/>
-            <Column Name="notify_custom" Size="255" Type="VARCHAR"/>
-            <Column Name="notify_custom_unit_count" Type="BIGINT"/>
-            <Column Name="notify_custom_unit" Size="255" Type="VARCHAR"/>
-            <Column Name="notify_custom_unit_point" Size="255" Type="VARCHAR"/>
-            <Column Name="notify_custom_date" Type="DATE"/>
-            <Column Name="team_id" Size="3800" Type="VARCHAR"/>
-            <Column Name="resource_id" Size="3800" Type="VARCHAR"/>
-            <Column Name="recurring" Type="SMALLINT"/>
-            <Column Name="recur_type" Size="20" Type="VARCHAR"/>
-            <Column Name="recur_freq" Size="255" Type="VARCHAR"/>
-            <Column Name="recur_count" Type="INTEGER"/>
-            <Column Name="recur_interval" Type="INTEGER"/>
-            <Column Name="recur_until" Type="DATE"/>
-            <Column Name="recur_id" Type="DATE"/>
-            <Column Name="recur_exclude" Size="3800" Type="VARCHAR"/>
-            <Column Name="ticket_appointment_rule_id" Size="32" Type="VARCHAR"/>
-            <Column Name="create_time" Type="DATE"/>
-            <Column Name="create_by" Type="INTEGER"/>
-            <Column Name="change_time" Type="DATE"/>
-            <Column Name="change_by" Type="INTEGER"/>
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+            <Column Name="parent_id" Type="BIGINT" />
+            <Column Name="calendar_id" Required="true" Type="BIGINT" />
+            <Column Name="unique_id" Required="true" Size="255" Type="VARCHAR" />
+            <Column Name="title" Required="true" Size="255" Type="VARCHAR" />
+            <Column Name="description" Size="3800" Type="VARCHAR" />
+            <Column Name="location" Size="255" Type="VARCHAR" />
+            <Column Name="start_time" Required="true" Type="DATE" />
+            <Column Name="end_time" Required="true" Type="DATE" />
+            <Column Name="all_day" Type="SMALLINT" />
+            <Column Name="notify_time" Type="DATE" />
+            <Column Name="notify_template" Size="255" Type="VARCHAR" />
+            <Column Name="notify_custom" Size="255" Type="VARCHAR" />
+            <Column Name="notify_custom_unit_count" Type="BIGINT" />
+            <Column Name="notify_custom_unit" Size="255" Type="VARCHAR" />
+            <Column Name="notify_custom_unit_point" Size="255" Type="VARCHAR" />
+            <Column Name="notify_custom_date" Type="DATE" />
+            <Column Name="team_id" Size="3800" Type="VARCHAR" />
+            <Column Name="resource_id" Size="3800" Type="VARCHAR" />
+            <Column Name="recurring" Type="SMALLINT" />
+            <Column Name="recur_type" Size="20" Type="VARCHAR" />
+            <Column Name="recur_freq" Size="255" Type="VARCHAR" />
+            <Column Name="recur_count" Type="INTEGER" />
+            <Column Name="recur_interval" Type="INTEGER" />
+            <Column Name="recur_until" Type="DATE" />
+            <Column Name="recur_id" Type="DATE" />
+            <Column Name="recur_exclude" Size="3800" Type="VARCHAR" />
+            <Column Name="ticket_appointment_rule_id" Size="32" Type="VARCHAR" />
+            <Column Name="create_time" Type="DATE" />
+            <Column Name="create_by" Type="INTEGER" />
+            <Column Name="change_time" Type="DATE" />
+            <Column Name="change_by" Type="INTEGER" />
             <Unique Name="calendar_appointment_id">
-                <UniqueColumn Name="id"/>
+                <UniqueColumn Name="id" />
             </Unique>
             <ForeignKey ForeignTable="calendar">
-                <Reference Local="calendar_id" Foreign="id"/>
+                <Reference Local="calendar_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
-                <Reference Local="parent_id" Foreign="id"/>
+                <Reference Local="parent_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="users">
-                <Reference Local="create_by" Foreign="id"/>
-                <Reference Local="change_by" Foreign="id"/>
+                <Reference Local="create_by" Foreign="id" />
+                <Reference Local="change_by" Foreign="id" />
             </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment_seen">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
-            <Column Name="calendar_appointment_id" Type="BIGINT"/>
-            <Column Name="user_id" Type="INTEGER"/>
-            <Column Name="seen" Type="SMALLINT"/>
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
+            <Column Name="calendar_appointment_id" Type="BIGINT" />
+            <Column Name="user_id" Type="INTEGER" />
+            <Column Name="seen" Type="SMALLINT" />
             <Unique Name="calendar_appointment_seen_id">
-                <UniqueColumn Name="id"/>
+                <UniqueColumn Name="id" />
             </Unique>
             <ForeignKey ForeignTable="users">
-                <Reference Local="user_id" Foreign="id"/>
+                <Reference Local="user_id" Foreign="id" />
             </ForeignKey>
         </TableCreate>
         <TableCreate Name="calendar_appointment_ticket">
-            <Column Name="calendar_id" Required="true" Type="BIGINT"/>
-            <Column Name="ticket_id" Required="true" Type="BIGINT"/>
-            <Column Name="rule_id" Required="true" Size="32" Type="VARCHAR"/>
-            <Column Name="appointment_id" Required="true" Type="BIGINT"/>
+            <Column Name="calendar_id" Required="true" Type="BIGINT" />
+            <Column Name="ticket_id" Required="true" Type="BIGINT" />
+            <Column Name="rule_id" Required="true" Size="32" Type="VARCHAR" />
+            <Column Name="appointment_id" Required="true" Type="BIGINT" />
             <Unique Name="calendar_appointment_ticket_calendar_id_ticket_id_rule_id">
-                <UniqueColumn Name="calendar_id"/>
-                <UniqueColumn Name="ticket_id"/>
-                <UniqueColumn Name="rule_id"/>
+                <UniqueColumn Name="calendar_id" />
+                <UniqueColumn Name="ticket_id" />
+                <UniqueColumn Name="rule_id" />
             </Unique>
             <Index Name="calendar_appointment_ticket_calendar_id">
-                <IndexColumn Name="calendar_id"/>
+                <IndexColumn Name="calendar_id" />
             </Index>
             <Index Name="calendar_appointment_ticket_ticket_id">
-                <IndexColumn Name="ticket_id"/>
+                <IndexColumn Name="ticket_id" />
             </Index>
             <Index Name="calendar_appointment_ticket_rule_id">
-                <IndexColumn Name="rule_id"/>
+                <IndexColumn Name="rule_id" />
             </Index>
             <Index Name="calendar_appointment_ticket_appointment_id">
-                <IndexColumn Name="appointment_id"/>
+                <IndexColumn Name="appointment_id" />
             </Index>
             <ForeignKey ForeignTable="calendar">
-                <Reference Local="calendar_id" Foreign="id"/>
+                <Reference Local="calendar_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="ticket">
-                <Reference Local="ticket_id" Foreign="id"/>
+                <Reference Local="ticket_id" Foreign="id" />
             </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
-                <Reference Local="appointment_id" Foreign="id"/>
+                <Reference Local="appointment_id" Foreign="id" />
             </ForeignKey>
         </TableCreate>
 
@@ -289,10 +290,10 @@
     </DatabaseInstall>
 
     <DatabaseUninstall Type="pre">
-        <TableDrop Name="calendar_appointment_ticket"/>
-        <TableDrop Name="calendar_appointment_seen"/>
-        <TableDrop Name="calendar_appointment"/>
-        <TableDrop Name="calendar"/>
+        <TableDrop Name="calendar_appointment_ticket" />
+        <TableDrop Name="calendar_appointment_seen" />
+        <TableDrop Name="calendar_appointment" />
+        <TableDrop Name="calendar" />
     </DatabaseUninstall>
 
     <CodeInstall Type="post"><![CDATA[

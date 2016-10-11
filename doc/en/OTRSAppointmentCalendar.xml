@@ -17,7 +17,7 @@
 
 <legalnotice>
     <para>$License</para>
-    <para>This work is copyrighted by $Vendor, Norsk-Data-Str. 1, 61352 Bad Homburg, Germany.</para>
+    <para>This work is copyrighted by $Vendor, Zimmersmühlenweg 11, 61440 Oberursel, Germany.</para>
     <para>Build Date: $DateStamp</para>
 </legalnotice>
 
@@ -116,20 +116,6 @@
     <para>
         <!--TODO-->
     </para>
-</chapter>
-
-<chapter>
-    <title>Contact</title>
-    <para>The following persons were involved on this package implementation:</para>
-    <sect1>
-        <title>OTRS AG</title>
-        <para>
-            Accounting: Rene Bakker, Phone +49 (0)6172 681988 0
-        </para>
-        <para>
-            Technical: Manuel Hecht, Phone +49 (0)6172 681988 0
-        </para>
-    </sect1>
 </chapter>
 
 <chapter>

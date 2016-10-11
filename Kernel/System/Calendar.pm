@@ -30,8 +30,10 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Queue',
     'Kernel::System::Storable',
     'Kernel::System::Ticket',
+    'Kernel::System::Valid',
 );
 
 =head1 NAME
@@ -64,23 +66,6 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
-
-    # load backend module
-    my $Backend = $Kernel::OM->Get('Kernel::Config')->{'AppointmentCalendar::Backend'};
-
-    if ($Backend) {
-        my $GenericModule = 'Kernel::System::Calendar::Backend::' . $Backend;
-        return if !$Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule);
-        $Self->{Backend} = $GenericModule->new( %{$Self} );
-    }
-    else {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
-            Priority => 'Error',
-            Message  => 'Unknown AppointmentCalendar::Backend! Set option AppointmentCalendar::Backend in '
-                . 'Kernel/Config.pm to (CalDav).',
-        );
-        return;
-    }
 
     @ISA = qw(
         Kernel::System::EventHandler
@@ -691,6 +676,52 @@ sub CalendarImport {
     return if !IsHashRefWithData( $Param{Data} );
     return if !IsHashRefWithData( $Param{Data}->{CalendarData} );
 
+    if (
+        defined $Param{Data}->{CalendarData}->{TicketAppointments}
+        && IsArrayRefWithData( $Param{Data}->{CalendarData}->{TicketAppointments} )
+        )
+    {
+        # Get queue create permissions for the user.
+        my %UserGroups = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+            UserID => $Param{UserID},
+            Type   => 'create',
+        );
+
+        my @ValidIDs = $Kernel::OM->Get('Kernel::System::Valid')->ValidIDsGet();
+
+        my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
+        # Queue field in ticket appointments is mandatory, check if it's present and valid.
+        for my $Rule ( @{ $Param{Data}->{CalendarData}->{TicketAppointments} } ) {
+            if ( defined $Rule->{QueueID} && IsArrayRefWithData( $Rule->{QueueID} ) ) {
+
+                QUEUE_ID:
+                for my $QueueID ( sort @{ $Rule->{QueueID} || [] } ) {
+                    my %QueueData = $QueueObject->QueueGet( ID => $QueueID );
+
+                    if (
+                        !grep { $_ eq $QueueData{ValidID} } @ValidIDs
+                        || !$UserGroups{ $QueueData{GroupID} }
+                        )
+                    {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => "Invalid queue ID $QueueID in ticket appointment rule or no permissions!",
+                        );
+                        return;
+                    }
+                }
+            }
+            else {
+                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                    Priority => 'error',
+                    Message  => 'Need queue ID in ticket appointment rules!',
+                );
+                return;
+            }
+        }
+    }
+
     # check for an existing calendar
     my %ExistingCalendar = $Self->CalendarGet(
         CalendarName => $Param{Data}->{CalendarData}->{CalendarName},
@@ -825,6 +856,7 @@ sub CalendarExport {
             AppointmentID => $AppointmentID,
         );
         next APPOINTMENT if !%Appointment;
+        next APPOINTMENT if $Appointment{TicketAppointmentRuleID};
 
         push @AppointmentData, \%Appointment;
     }
@@ -1924,6 +1956,8 @@ sub _TicketAppointmentUpdate {
 }
 
 1;
+
+=end Internal:
 
 =back
 

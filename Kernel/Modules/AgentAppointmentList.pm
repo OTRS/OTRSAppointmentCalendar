@@ -160,6 +160,12 @@ sub Run {
                     $Appointment->{EndDate},
                     'DateFormat' . ( $Appointment->{AllDay} ? 'Short' : '' )
                 );
+                if ( $Appointment->{NotificationDate} ) {
+                    $Appointment->{NotificationDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                        $Appointment->{NotificationDate},
+                        'DateFormat'
+                    );
+                }
 
                 # include resource data
                 $Appointment->{TeamName}      = '';

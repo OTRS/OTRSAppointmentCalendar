@@ -30,7 +30,7 @@ our @ObjectDependencies = (
 
 =head1 NAME
 
-Kernel::System::Calendar.Helper - helper methods (for compatibility between OTRS 5/OTRS 6)
+Kernel::System::Calendar::Helper - calendar helper methods
 
 =head1 SYNOPSIS
 
@@ -362,6 +362,8 @@ returns offset of specified time zone or user's time zone.
         UserID      => 2,                   # (optional)
                                             # or
         TimezoneID  => 'Europe/Berlin'      # (optional) Timezone name
+        Time        => '1462871162',        # (optional) Time in Unix format you want offset for
+                                            #            otherwise, current time will be used
     );
 
 returns:
@@ -391,19 +393,64 @@ sub TimezoneOffsetGet {
     my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     # check if DateTime object exists
-    return if !$MainObject->Require(
+    return 0 if !$MainObject->Require(
         'DateTime',
     );
 
     # check if DateTime::TimeZone object exists
-    return if !$MainObject->Require(
+    return 0 if !$MainObject->Require(
         'DateTime::TimeZone',
     );
 
+    # Offset calculation depends on specific time, because of daylight savings.
+    #   If not supplied, use current time.
     my $DateTime = DateTime->now();
+    if ( $Param{Time} ) {
+        $DateTime = DateTime->from_epoch( epoch => $Param{Time} );
+    }
 
-    my $Timezone = DateTime::TimeZone->new( name => $Param{TimezoneID} );
-    my $Offset = $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+    # DateTime::TimeZone might not recognize timezone by its name and die,
+    #   make the call in an eval block.
+    my $Timezone = eval { DateTime::TimeZone->new( name => $Param{TimezoneID} ) };
+
+    if ($Timezone) {
+        return $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
+    }
+
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
+        Priority => 'error',
+        Message  => "Could not find offset for '$Param{TimezoneID}', assuming UTC!",
+    );
+
+    return 0;
+}
+
+=item LocalTimezoneOffsetGet()
+
+returns offset of local time zone for a specified UTC system time.
+
+    my $Result = $CalendarHelperObject->LocalTimezoneOffsetGet(
+        Time => '1462871162',     # (required) time in Unix format
+    );
+
+returns:
+    $Result = 2;
+
+=cut
+
+sub LocalTimezoneOffsetGet {
+    my ( $Self, %Param ) = @_;
+
+    if ( !$Param{Time} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need Time!',
+        );
+        return;
+    }
+
+    my $Time   = localtime( $Param{Time} );
+    my $Offset = $Time->tzoffset() / 3600.00;    # in hours
 
     return $Offset;
 }
@@ -456,4 +503,6 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
-did not
+did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+
+=cut

@@ -1,6 +1,6 @@
 
 /*!
-FullCalendar Scheduler v1.3.2
+FullCalendar Scheduler v1.4.0
 Docs & License: http://fullcalendar.io/scheduler/
 (c) 2016 Adam Shaw
  */
@@ -19,16 +19,17 @@ Docs & License: http://fullcalendar.io/scheduler/
 		factory(jQuery, moment);
 	}
 })(function($, moment) {;
-var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCache, DEFAULT_GRID_DURATION, DragListener, EmitterMixin, EnhancedScroller, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, ListenerMixin, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGridMixin, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceViewMixin, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, ScrollerCanvas, Spreadsheet, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, View, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeIntervalUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, cssToStr, debounce, detectWarningInContainer, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getContentRect, getOuterRect, getOwnCells, getRectHeight, getRectWidth, getScrollbarWidths, hContainRect, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, origDisplayEvents, origDisplayView, origGetSegClasses, origRenderSkeleton, origUnrenderSkeleton, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
+var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCache, DEFAULT_GRID_DURATION, DragListener, EmitterMixin, EnhancedScroller, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, ListenerMixin, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGridMixin, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceViewMixin, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, ScrollerCanvas, Spreadsheet, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, View, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeIntervalUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, cssToStr, debounce, detectWarningInContainer, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getContentRect, getOuterRect, getOwnCells, getRectHeight, getRectWidth, getScrollbarWidths, hContainRect, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, origDisplayEvents, origDisplayView, origGetSegCustomClasses, origGetSegDefaultBackgroundColor, origGetSegDefaultBorderColor, origGetSegDefaultTextColor, origRenderSkeleton, origUnrenderSkeleton, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, syncThen, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   slice = [].slice;
 
 FC = $.fullCalendar;
 
-FC.schedulerVersion = "1.3.2";
+FC.schedulerVersion = "1.4.0";
 
-if (FC.internalApiVersion !== 4) {
+if (FC.internalApiVersion !== 6) {
   FC.warn('v' + FC.schedulerVersion + ' of FullCalendar Scheduler ' + 'is incompatible with v' + FC.version + ' of the core.\n' + 'Please see http://fullcalendar.io/support/ for more information.');
   return;
 }
@@ -97,6 +98,30 @@ getOwnCells = function(trs) {
   return trs.find('> td').filter(function(i, tdNode) {
     return tdNode.rowSpan <= 1;
   });
+};
+
+
+/*
+HACK to combat jQuery 3 promises now always executed done handlers asynchronously.
+if the promise is resolved, or not a promise at all, doneFunc executes immediately.
+if the promise has already been rejected, failFunc executes immediately.
+ */
+
+syncThen = function(promise, doneFunc, failFunc) {
+  if (!promise || !promise.then || promise.state() === 'resolved') {
+    if (doneFunc) {
+      return $.when(doneFunc());
+    } else {
+      return $.when();
+    }
+  } else if (promise.state() === 'rejected') {
+    if (failFunc) {
+      failFunc();
+    }
+    return $.Deferred().reject().promise();
+  } else {
+    return promise.then(doneFunc, failFunc);
+  }
 };
 
 
@@ -1116,6 +1141,17 @@ CalendarExtension = (function(superClass) {
     this.resourceManager.resetResources();
   };
 
+  CalendarExtension.prototype.isSpanAllowed = function(span, constraint) {
+    var constrainToResourceIds, ref;
+    if (typeof constraint === 'object') {
+      constrainToResourceIds = this.getEventResourceIds(constraint);
+      if (constrainToResourceIds.length && (!span.resourceId || !(ref = span.resourceId, indexOf.call(constrainToResourceIds, ref) >= 0))) {
+        return false;
+      }
+    }
+    return CalendarExtension.__super__.isSpanAllowed.apply(this, arguments);
+  };
+
   CalendarExtension.prototype.getPeerEvents = function(span, event) {
     var filteredPeerEvents, isPeer, j, k, l, len, len1, len2, newResourceId, newResourceIds, peerEvent, peerEvents, peerResourceId, peerResourceIds;
     peerEvents = CalendarExtension.__super__.getPeerEvents.apply(this, arguments);
@@ -1144,6 +1180,41 @@ CalendarExtension = (function(superClass) {
       }
     }
     return filteredPeerEvents;
+  };
+
+  CalendarExtension.prototype.spanContainsSpan = function(outerSpan, innerSpan) {
+    if (outerSpan.resourceId && outerSpan.resourceId !== innerSpan.resourceId) {
+      return false;
+    } else {
+      return CalendarExtension.__super__.spanContainsSpan.apply(this, arguments);
+    }
+  };
+
+  CalendarExtension.prototype.getCurrentBusinessHourEvents = function(wholeDay) {
+    var allEvents, anyCustomBusinessHours, event, events, flatResources, j, k, l, len, len1, len2, resource;
+    flatResources = this.resourceManager.getFlatResources();
+    anyCustomBusinessHours = false;
+    for (j = 0, len = flatResources.length; j < len; j++) {
+      resource = flatResources[j];
+      if (resource.businessHours) {
+        anyCustomBusinessHours = true;
+      }
+    }
+    if (anyCustomBusinessHours) {
+      allEvents = [];
+      for (k = 0, len1 = flatResources.length; k < len1; k++) {
+        resource = flatResources[k];
+        events = this.computeBusinessHourEvents(wholeDay, resource.businessHours || this.options.businessHours);
+        for (l = 0, len2 = events.length; l < len2; l++) {
+          event = events[l];
+          event.resourceId = resource.id;
+          allEvents.push(event);
+        }
+      }
+      return allEvents;
+    } else {
+      return CalendarExtension.__super__.getCurrentBusinessHourEvents.apply(this, arguments);
+    }
   };
 
   CalendarExtension.prototype.buildSelectSpan = function(startInput, endInput, resourceId) {
@@ -1311,13 +1382,7 @@ View.prototype.unbindResources = function(isDestroying) {
 };
 
 View.prototype.whenResources = function(thenFunc) {
-  if (this.settingResources.state() === 'resolved') {
-    return $.when(thenFunc ? thenFunc() : void 0);
-  } else if (thenFunc) {
-    return this.settingResources.then(thenFunc);
-  } else {
-    return this.settingResources.promise();
-  }
+  return syncThen(this.settingResources, thenFunc);
 };
 
 View.prototype.setResources = function(resources) {};
@@ -1336,11 +1401,17 @@ View.prototype.removeResource = function(resource) {
   return this.resetResources(this.calendar.resourceManager.topLevelResources);
 };
 
-origGetSegClasses = Grid.prototype.getSegClasses;
+origGetSegCustomClasses = Grid.prototype.getSegCustomClasses;
 
-Grid.prototype.getSegClasses = function(seg) {
+origGetSegDefaultBackgroundColor = Grid.prototype.getSegDefaultBackgroundColor;
+
+origGetSegDefaultBorderColor = Grid.prototype.getSegDefaultBorderColor;
+
+origGetSegDefaultTextColor = Grid.prototype.getSegDefaultTextColor;
+
+Grid.prototype.getSegCustomClasses = function(seg) {
   var classes, j, len, ref, resource;
-  classes = origGetSegClasses.apply(this, arguments);
+  classes = origGetSegCustomClasses.apply(this, arguments);
   ref = this.getSegResources(seg);
   for (j = 0, len = ref.length; j < len; j++) {
     resource = ref[j];
@@ -1349,56 +1420,52 @@ Grid.prototype.getSegClasses = function(seg) {
   return classes;
 };
 
-Grid.prototype.getSegSkinCss = function(seg) {
-  var event, eventColor, getResourceBackgroundColor, getResourceBorderColor, getResourceTextColor, optionColor, resources, source, sourceColor, view;
-  view = this.view;
-  event = seg.event;
-  source = event.source || {};
-  eventColor = event.color;
-  sourceColor = source.color;
-  optionColor = view.opt('eventColor');
+Grid.prototype.getSegDefaultBackgroundColor = function(seg) {
+  var currentResource, j, len, resources, val;
   resources = this.getSegResources(seg);
-  getResourceBackgroundColor = function() {
-    var currentResource, j, len, val;
-    val = null;
-    for (j = 0, len = resources.length; j < len; j++) {
-      currentResource = resources[j];
-      while (currentResource && !val) {
-        val = currentResource.eventBackgroundColor || currentResource.eventColor;
-        currentResource = currentResource._parent;
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
+      val = currentResource.eventBackgroundColor || currentResource.eventColor;
+      if (val) {
+        return val;
       }
+      currentResource = currentResource._parent;
     }
-    return val;
-  };
-  getResourceBorderColor = function() {
-    var currentResource, j, len, val;
-    val = null;
-    for (j = 0, len = resources.length; j < len; j++) {
-      currentResource = resources[j];
-      while (currentResource && !val) {
-        val = currentResource.eventBorderColor || currentResource.eventColor;
-        currentResource = currentResource._parent;
+  }
+  return origGetSegDefaultBackgroundColor.apply(this, arguments);
+};
+
+Grid.prototype.getSegDefaultBorderColor = function(seg) {
+  var currentResource, j, len, resources, val;
+  resources = this.getSegResources(seg);
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
+      val = currentResource.eventBorderColor || currentResource.eventColor;
+      if (val) {
+        return val;
       }
+      currentResource = currentResource._parent;
     }
-    return val;
-  };
-  getResourceTextColor = function() {
-    var currentResource, j, len, val;
-    val = null;
-    for (j = 0, len = resources.length; j < len; j++) {
-      currentResource = resources[j];
-      while (currentResource && !val) {
-        val = currentResource.eventTextColor;
-        currentResource = currentResource._parent;
+  }
+  return origGetSegDefaultBorderColor.apply(this, arguments);
+};
+
+Grid.prototype.getSegDefaultTextColor = function(seg) {
+  var currentResource, j, len, resources, val;
+  resources = this.getSegResources(seg);
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
+      val = currentResource.eventTextColor;
+      if (val) {
+        return val;
       }
+      currentResource = currentResource._parent;
     }
-    return val;
-  };
-  return {
-    'background-color': event.backgroundColor || eventColor || getResourceBackgroundColor() || source.backgroundColor || sourceColor || view.opt('eventBackgroundColor') || optionColor,
-    'border-color': event.borderColor || eventColor || getResourceBorderColor() || source.borderColor || sourceColor || view.opt('eventBorderColor') || optionColor,
-    'color': event.textColor || getResourceTextColor() || source.textColor || view.opt('eventTextColor')
-  };
+  }
+  return origGetSegDefaultTextColor.apply(this, arguments);
 };
 
 Grid.prototype.getSegResources = function(seg) {
@@ -1442,12 +1509,12 @@ ResourceManager = (function(superClass) {
     var getting;
     if (!this.fetching) {
       getting = $.Deferred();
-      this.fetchResources().done(function(resources) {
-        return getting.resolve(resources);
-      }).fail(function() {
+      syncThen(this.fetchResources(), function() {
+        return getting.resolve(this.topLevelResources);
+      }, function() {
         return getting.resolve([]);
       });
-      return getting;
+      return getting.promise();
     } else {
       return $.Deferred().resolve(this.topLevelResources).promise();
     }
@@ -1456,19 +1523,20 @@ ResourceManager = (function(superClass) {
   ResourceManager.prototype.fetchResources = function() {
     var prevFetching;
     prevFetching = this.fetching;
-    return $.when(prevFetching).then((function(_this) {
+    return syncThen(prevFetching, (function(_this) {
       return function() {
-        return _this.fetching = _this.fetchResourceInputs().then(function(resourceInputs) {
+        _this.fetching = $.Deferred();
+        _this.fetchResourceInputs(function(resourceInputs) {
           _this.setResources(resourceInputs, Boolean(prevFetching));
-          return _this.topLevelResources;
+          return _this.fetching.resolve(_this.topLevelResources);
         });
+        return _this.fetching.promise();
       };
     })(this));
   };
 
-  ResourceManager.prototype.fetchResourceInputs = function() {
-    var deferred, promise, source;
-    deferred = $.Deferred();
+  ResourceManager.prototype.fetchResourceInputs = function(callback) {
+    var source;
     source = this.calendar.options['resources'];
     if ($.type(source) === 'string') {
       source = {
@@ -1477,33 +1545,30 @@ ResourceManager = (function(superClass) {
     }
     switch ($.type(source)) {
       case 'function':
-        source((function(_this) {
+        this.calendar.pushLoading();
+        return source((function(_this) {
           return function(resourceInputs) {
-            return deferred.resolve(resourceInputs);
+            _this.calendar.popLoading();
+            return callback(resourceInputs);
           };
         })(this));
-        break;
       case 'object':
-        promise = $.ajax($.extend({}, ResourceManager.ajaxDefaults, source));
-        break;
+        this.calendar.pushLoading();
+        return $.ajax($.extend({}, ResourceManager.ajaxDefaults, source)).done((function(_this) {
+          return function(resourceInputs) {
+            _this.calendar.popLoading();
+            return callback(resourceInputs);
+          };
+        })(this));
       case 'array':
-        deferred.resolve(source);
-        break;
+        return callback(source);
       default:
-        deferred.resolve([]);
+        return callback([]);
     }
-    promise || (promise = deferred.promise());
-    if (!promise.state() === 'pending') {
-      this.calendar.pushLoading();
-      promise.always(function() {
-        return this.calendar.popLoading();
-      });
-    }
-    return promise;
   };
 
   ResourceManager.prototype.resetResources = function() {
-    return this.getResources().then((function(_this) {
+    return syncThen(this.getResources(), (function(_this) {
       return function() {
         return _this.trigger('reset', _this.topLevelResources);
       };
@@ -1512,6 +1577,15 @@ ResourceManager = (function(superClass) {
 
   ResourceManager.prototype.getResourceById = function(id) {
     return this.resourcesById[id];
+  };
+
+  ResourceManager.prototype.getFlatResources = function() {
+    var id, results;
+    results = [];
+    for (id in this.resourcesById) {
+      results.push(this.resourcesById[id]);
+    }
+    return results;
   };
 
   ResourceManager.prototype.initializeCache = function() {
@@ -1555,7 +1629,7 @@ ResourceManager = (function(superClass) {
   };
 
   ResourceManager.prototype.addResource = function(resourceInput) {
-    return $.when(this.fetching).then((function(_this) {
+    return syncThen(this.fetching, (function(_this) {
       return function() {
         var resource;
         resource = _this.buildResource(resourceInput);
@@ -1608,7 +1682,7 @@ ResourceManager = (function(superClass) {
   ResourceManager.prototype.removeResource = function(idOrResource) {
     var id;
     id = typeof idOrResource === 'object' ? idOrResource.id : idOrResource;
-    return $.when(this.fetching).then((function(_this) {
+    return syncThen(this.fetching, (function(_this) {
       return function() {
         var resource;
         resource = _this.removeResourceFromIndex(id);
@@ -1690,6 +1764,11 @@ ResourceManager = (function(superClass) {
 
 })(Class);
 
+
+/*
+A view that structurally distinguishes events by resource
+ */
+
 ResourceViewMixin = {
   resourceTextFunc: null,
   unsetResources: function() {
@@ -1702,6 +1781,13 @@ ResourceViewMixin = {
     this.setResources(resources);
     this.setScroll(scrollState);
     return this.calendar.rerenderEvents();
+  },
+  isEventDraggable: function(event) {
+    return this.isEventResourceEditable(event) || View.prototype.isEventDraggable.call(this, event);
+  },
+  isEventResourceEditable: function(event) {
+    var ref, ref1, ref2;
+    return (ref = (ref1 = (ref2 = event.resourceEditable) != null ? ref2 : (event.source || {}).resourceEditable) != null ? ref1 : this.opt('eventResourceEditable')) != null ? ref : this.isEventGenerallyEditable(event);
   },
   getResourceText: function(resource) {
     return this.getResourceTextFunc()(resource);
@@ -1794,14 +1880,18 @@ ResourceGridMixin = {
     return event;
   },
   computeEventDrop: function(startSpan, endSpan, event) {
-    var allowResourceChange, dropLocation;
-    allowResourceChange = true;
-    if (!allowResourceChange && startSpan.resourceId !== endSpan.resourceId) {
-      return null;
+    var dropLocation;
+    if (this.view.isEventStartEditable(event)) {
+      dropLocation = Grid.prototype.computeEventDrop.apply(this, arguments);
+    } else {
+      dropLocation = FC.pluckEventDateProps(event);
     }
-    dropLocation = Grid.prototype.computeEventDrop.apply(this, arguments);
     if (dropLocation) {
-      dropLocation.resourceId = endSpan.resourceId;
+      if (this.view.isEventResourceEditable(event)) {
+        dropLocation.resourceId = endSpan.resourceId;
+      } else {
+        dropLocation.resourceId = startSpan.resourceId;
+      }
     }
     return dropLocation;
   },
@@ -2027,6 +2117,41 @@ ResourceDayTableMixin = {
     } else {
       return '<tr>' + this[introMethodName]() + cellHtmls.join('') + '</tr>';
     }
+  },
+
+  /*
+  	If there are no per-resource business hour definitions, returns null.
+  	Otherwise, returns a list of business hours segs for *every* resource.
+   */
+  computePerResourceBusinessHourSegs: function(wholeDay) {
+    var allSegs, anyCustomBusinessHours, businessHours, event, events, j, k, l, len, len1, len2, ref, ref1, resource, segs;
+    if (this.flattenedResources) {
+      anyCustomBusinessHours = false;
+      ref = this.flattenedResources;
+      for (j = 0, len = ref.length; j < len; j++) {
+        resource = ref[j];
+        if (resource.businessHours) {
+          anyCustomBusinessHours = true;
+        }
+      }
+      if (anyCustomBusinessHours) {
+        allSegs = [];
+        ref1 = this.flattenedResources;
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          resource = ref1[k];
+          businessHours = resource.businessHours || this.view.opt('businessHours');
+          events = this.view.calendar.computeBusinessHourEvents(wholeDay, businessHours);
+          for (l = 0, len2 = events.length; l < len2; l++) {
+            event = events[l];
+            event.resourceId = resource.id;
+          }
+          segs = this.eventsToSegs(events);
+          allSegs.push.apply(allSegs, segs);
+        }
+        return allSegs;
+      }
+    }
+    return null;
   }
 };
 
@@ -2090,6 +2215,16 @@ ResourceDayGrid = (function(superClass) {
     }
   };
 
+  ResourceDayGrid.prototype.renderBusinessHours = function() {
+    var segs;
+    segs = this.computePerResourceBusinessHourSegs(true);
+    if (segs) {
+      return this.renderFill('businessHours', segs, 'bgevent');
+    } else {
+      return ResourceDayGrid.__super__.renderBusinessHours.apply(this, arguments);
+    }
+  };
+
   return ResourceDayGrid;
 
 })(FC.DayGrid);
@@ -2139,6 +2274,16 @@ ResourceTimeGrid = (function(superClass) {
         }
       }
       return resourceSegs;
+    }
+  };
+
+  ResourceTimeGrid.prototype.renderBusinessHours = function() {
+    var segs;
+    segs = this.computePerResourceBusinessHourSegs(false);
+    if (segs) {
+      return this.renderBusinessSegs(segs);
+    } else {
+      return ResourceTimeGrid.__super__.renderBusinessHours.apply(this, arguments);
     }
   };
 
@@ -2555,7 +2700,7 @@ TimelineGrid = (function(superClass) {
     snapsPerSlot = this.snapsPerSlot;
     slatCoordCache = this.slatCoordCache;
     containerCoordCache = this.containerCoordCache;
-    if (containerCoordCache.getVerticalIndex(topOffset) != null) {
+    if (containerCoordCache.isTopInBounds(topOffset)) {
       slatIndex = slatCoordCache.getHorizontalIndex(leftOffset);
       if (slatIndex != null) {
         slatWidth = slatCoordCache.getWidth(slatIndex);
@@ -2809,10 +2954,9 @@ TimelineGrid = (function(superClass) {
   TimelineGrid.prototype.businessHourSegs = null;
 
   TimelineGrid.prototype.renderBusinessHours = function() {
-    var events, segs;
+    var segs;
     if (!this.largeUnit) {
-      events = this.view.calendar.getBusinessHoursEvents(!this.isTimeScale);
-      segs = this.businessHourSegs = this.eventsToSegs(events);
+      segs = this.businessHourSegs = this.buildBusinessHourSegs(!this.isTimeScale);
       return this.renderFill('businessHours', segs, 'bgevent');
     }
   };
@@ -4078,6 +4222,7 @@ ResourceTimelineView = (function(superClass) {
     var isNesting, wasNesting;
     if (row instanceof ResourceRow) {
       this.resourceRowHash[row.resource.id] = row;
+      this.timeGrid.assignRowBusinessHourSegs(row);
     }
     wasNesting = this.isNesting;
     isNesting = Boolean(this.nestingCnt += row.depth ? 1 : 0);
@@ -4092,6 +4237,7 @@ ResourceTimelineView = (function(superClass) {
     var isNesting, wasNesting;
     if (row instanceof ResourceRow) {
       delete this.resourceRowHash[row.resource.id];
+      this.timeGrid.destroyRowBusinessHourSegs(row);
     }
     wasNesting = this.isNesting;
     isNesting = Boolean(this.nestingCnt -= row.depth ? 1 : 0);
@@ -4370,6 +4516,113 @@ ResourceTimelineGrid = (function(superClass) {
       eventRow.isSegsRendered = false;
     }
     return this.unrenderFgContainers(eventRows);
+  };
+
+  ResourceTimelineGrid.prototype.rowCntWithCustomBusinessHours = 0;
+
+  ResourceTimelineGrid.prototype.renderBusinessHours = function() {
+    if (this.rowCntWithCustomBusinessHours) {
+      return this.ensureIndividualBusinessHours();
+    } else {
+      return ResourceTimelineGrid.__super__.renderBusinessHours.apply(this, arguments);
+    }
+  };
+
+  ResourceTimelineGrid.prototype.unrenderBusinessHours = function() {
+    if (this.rowCntWithCustomBusinessHours) {
+      return this.clearIndividualBusinessHours();
+    } else {
+      return ResourceTimelineGrid.__super__.unrenderBusinessHours.apply(this, arguments);
+    }
+  };
+
+
+  /*
+  	Ensures that all rows have their individual business hours DISPLAYED.
+   */
+
+  ResourceTimelineGrid.prototype.ensureIndividualBusinessHours = function() {
+    var j, len, ref, results, row;
+    ref = this.view.getEventRows();
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      row = ref[j];
+      if (!row.businessHourSegs) {
+        this.populateRowBusinessHoursSegs(row);
+      }
+      if (row.isShown) {
+        results.push(row.ensureBusinessHourSegsRendered());
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
+
+  /*
+  	Ensures that all rows have their individual business hours CLEARED.
+   */
+
+  ResourceTimelineGrid.prototype.clearIndividualBusinessHours = function() {
+    var j, len, ref, results, row;
+    ref = this.view.getEventRows();
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      row = ref[j];
+      results.push(row.clearBusinessHourSegs());
+    }
+    return results;
+  };
+
+
+  /*
+  	Called when a row has been added to the tree data structure, but before it's rendered.
+  	Computes and assigns business hour data *if necessary*. To be rendered soon after.
+   */
+
+  ResourceTimelineGrid.prototype.assignRowBusinessHourSegs = function(row) {
+    if (row.resource.businessHours) {
+      if (!this.rowCntWithCustomBusinessHours) {
+        TimelineGrid.prototype.unrenderBusinessHours.call(this);
+        this.ensureIndividualBusinessHours();
+      }
+      this.rowCntWithCustomBusinessHours += 1;
+    }
+    if (this.rowCntWithCustomBusinessHours) {
+      return this.populateRowBusinessHoursSegs(row);
+    }
+  };
+
+
+  /*
+  	Called when a row has been removed from the tree data structure.
+  	Unrenders the row's segs and, if necessary, forces businessHours back to generic rendering.
+   */
+
+  ResourceTimelineGrid.prototype.destroyRowBusinessHourSegs = function(row) {
+    row.clearBusinessHourSegs();
+    if (row.resource.businessHours) {
+      this.rowCntWithCustomBusinessHours -= 1;
+      if (!this.rowCntWithCustomBusinessHours) {
+        this.clearIndividualBusinessHours();
+        return TimelineGrid.prototype.renderBusinessHours.call(this);
+      }
+    }
+  };
+
+
+  /*
+  	Compute and assign to row.businessHourSegs unconditionally
+   */
+
+  ResourceTimelineGrid.prototype.populateRowBusinessHoursSegs = function(row) {
+    var businessHourSegs, businessHours, businessHoursEvents;
+    businessHours = row.resource.businessHours || this.view.opt('businessHours');
+    businessHoursEvents = this.view.calendar.computeBusinessHourEvents(!this.isTimeScale, businessHours);
+    businessHourSegs = this.eventsToSegs(businessHoursEvents);
+    businessHourSegs = this.renderFillSegEls('businessHours', businessHourSegs);
+    row.businessHourSegs = businessHourSegs;
   };
 
   ResourceTimelineGrid.prototype.renderFill = function(type, segs, className) {
@@ -5548,6 +5801,10 @@ EventRow = (function(superClass) {
 
   EventRow.prototype.isSegsRendered = false;
 
+  EventRow.prototype.isBusinessHourSegsRendered = false;
+
+  EventRow.prototype.businessHourSegs = null;
+
   EventRow.prototype.bgSegs = null;
 
   EventRow.prototype.fgSegs = null;
@@ -5561,6 +5818,7 @@ EventRow = (function(superClass) {
 
   EventRow.prototype.ensureSegsRendered = function() {
     if (!this.isSegsRendered) {
+      this.ensureBusinessHourSegsRendered();
       if (this.bgSegs) {
         this.view.timeGrid.renderFillInContainer('bgEvent', this, this.bgSegs);
       }
@@ -5571,10 +5829,33 @@ EventRow = (function(superClass) {
     }
   };
 
+  EventRow.prototype.ensureBusinessHourSegsRendered = function() {
+    if (this.businessHourSegs && !this.isBusinessHourSegsRendered) {
+      this.view.timeGrid.renderFillInContainer('businessHours', this, this.businessHourSegs, 'bgevent');
+      return this.isBusinessHourSegsRendered = true;
+    }
+  };
+
   EventRow.prototype.unrenderEventContent = function() {
+    this.clearBusinessHourSegs();
     this.bgSegs = null;
     this.fgSegs = null;
     return this.isSegsRendered = false;
+  };
+
+  EventRow.prototype.clearBusinessHourSegs = function() {
+    var j, len, ref, seg;
+    if (this.businessHourSegs) {
+      ref = this.businessHourSegs;
+      for (j = 0, len = ref.length; j < len; j++) {
+        seg = ref[j];
+        if (seg.el) {
+          seg.el.remove();
+        }
+      }
+      this.businessHourSegs = null;
+    }
+    return this.isBusinessHourSegsRendered = false;
   };
 
   return EventRow;
@@ -5826,7 +6107,7 @@ FC.views.month.queryResourceClass = function(viewSpec) {
   }
 };
 
-RELEASE_DATE = '2016-06-02';
+RELEASE_DATE = '2016-09-04';
 
 UPGRADE_WINDOW = {
   years: 1,
