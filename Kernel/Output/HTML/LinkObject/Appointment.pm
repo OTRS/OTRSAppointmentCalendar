@@ -17,9 +17,12 @@ use Kernel::Output::HTML::Layout;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::Calendar',
     'Kernel::System::Log',
     'Kernel::System::Web::Request',
+    'Kernel::System::JSON',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -64,13 +67,7 @@ sub new {
     $Self->{ObjectData} = {
         Object     => 'Appointment',
         Realname   => 'Appointment',
-        ObjectName => 'AppointmentID',
-    };
-
-    # define needed variables
-    $Self->{ObjectData} = {
-        Object   => 'Appointment',
-        Realname => 'Appointment',
+        ObjectName => 'SourceObjectID',
     };
 
     return $Self;
@@ -137,105 +134,6 @@ Return
 
 sub TableCreateComplex {
     my ( $Self, %Param ) = @_;
-
-#    # check needed stuff
-#    if ( !$Param{ObjectLinkListWithData} || ref $Param{ObjectLinkListWithData} ne 'HASH' ) {
-#        $Self->{LogObject}->Log(
-#            Priority => 'error',
-#            Message  => 'Need ObjectLinkListWithData!',
-#        );
-#        return;
-#    }
-#
-#    # convert the list
-#    my %LinkList;
-#    for my $LinkType ( sort keys %{ $Param{ObjectLinkListWithData} } ) {
-#
-#        # extract link type List
-#        my $LinkTypeList = $Param{ObjectLinkListWithData}->{$LinkType};
-#
-#        for my $Direction ( sort keys %{$LinkTypeList} ) {
-#
-#            # extract direction list
-#            my $DirectionList = $Param{ObjectLinkListWithData}->{$LinkType}->{$Direction};
-#
-#            for my $AppointmentID ( sort keys %{$DirectionList} ) {
-#
-#                $LinkList{$AppointmentID}->{Data} = $DirectionList->{$AppointmentID};
-#            }
-#        }
-#    }
-#
-#    # create the item list
-#    my @ItemList;
-#    for my $AppointmentID (
-#        sort { lc $LinkList{$a}{Data}->{Title} cmp lc $LinkList{$b}{Data}->{Title} }
-#        keys %LinkList
-#        )
-#    {
-#
-#        # extract appointment data
-#        my $Appointment = $LinkList{$AppointmentID}{Data};
-#
-#        my @ItemColumns = (
-#            {
-#                Type    => 'Link',
-#                Key     => $AppointmentID,
-#                Content => $Appointment->{Title},
-#                Link    => $Self->{LayoutObject}->{Baselink}
-#                    . 'Action=AgentAppointmentCalendarOverview;AppointmentID='
-#                    . $AppointmentID,
-#                MaxLength => 70,
-#            },
-#            {
-#                Type      => 'Text',
-#                Content   => $Appointment->{Description},
-#                MaxLength => 100,
-#            },
-#            {
-#                Type    => 'TimeLong',
-#                Content => $Appointment->{StartTime},
-#            },
-#            {
-#                Type    => 'TimeLong',
-#                Content => $Appointment->{EndTime},
-#            },
-#        );
-#
-#        push @ItemList, \@ItemColumns;
-#    }
-#
-#    return if !@ItemList;
-#
-#    # define the block data
-#    my %Block = (
-#        Object    => $Self->{ObjectData}->{Object},
-#        Blockname => $Self->{ObjectData}->{Realname},
-#        Headline  => [
-#            {
-#                Content => Translatable('Title'),
-#                Width   => 200,
-#            },
-#            {
-#                Content => Translatable('Description'),
-#            },
-#            {
-#                Content => Translatable('Start time'),
-#                Width   => 150,
-#            },
-#            {
-#                Content => Translatable('End time'),
-#                Width   => 150,
-#            },
-#        ],
-#        ItemList => \@ItemList,
-#    );
-#
-#    return ( \%Block );
-
-
-
-
 
     # check needed stuff
     if ( !$Param{ObjectLinkListWithData} || ref $Param{ObjectLinkListWithData} ne 'HASH' ) {
@@ -422,7 +320,7 @@ sub TableCreateComplex {
         COLUMN:
         for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
 
-            next COLUMN if $Column eq 'Title'; # Always present, already added.
+            next COLUMN if $Column eq 'Title';    # Always present, already added.
 
             # if enabled by default
             if ( $UserColumns{$Column} == 2 ) {
@@ -464,7 +362,7 @@ sub TableCreateComplex {
     my %Block = (
         Object     => $Self->{ObjectData}->{Object},
         Blockname  => $Self->{ObjectData}->{Realname},
-        ObjectName => $Self->{ObjectData}->{ObjectName},
+        ObjectName => $Self->{ObjectData}->{ObjectName} || 'Appointment',
         ObjectID   => $Param{ObjectID},
         Headline   => \@Headline,
         ItemList   => \@ItemList,
