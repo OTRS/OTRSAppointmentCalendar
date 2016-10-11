@@ -11,6 +11,8 @@ package Kernel::System::LinkObject::Appointment;
 use strict;
 use warnings;
 
+use Kernel::System::VariableCheck qw(:all);
+
 our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::LinkObject',
@@ -246,48 +248,45 @@ sub ObjectSearch {
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
     my %Search;
+    my @CalendarIDs;
     my @Appointments;
 
-    # TODO: Handle time constraints
-    if ( $Param{SearchParams}->{StartTime} ) {
-        $Search{StartTime} = $Param{SearchParams}->{StartTime};
+    # Search by appointment title and description, if supplied. The conversion of parameter names is
+    #   necessary, since link object search parameters should have unique names.
+    if ( $Param{SearchParams}->{AppointmentTitle} ) {
+        $Search{Title} = $Param{SearchParams}->{AppointmentTitle};
     }
-    if ( $Param{SearchParams}->{EndTime} ) {
-        $Search{StartTime} = $Param{SearchParams}->{EndTime};
-    }
-
-    # search by calendar name
-    if ( $Param{SearchParams}->{CalendarName} && $Param{SearchParams}->{CalendarName} ne '*' ) {
-        my %Calendar = $CalendarObject->CalendarGet(
-            CalendarName => $Param{SearchParams}->{CalendarName},
-            UserID       => $Param{UserID},
-        );
-        %Search = (
-            CalendarID => $Calendar{CalendarID},
-        );
-
-        @Appointments = $AppointmentObject->AppointmentList(
-            %Search,
-            Result => 'HASH',
-        );
+    if ( $Param{SearchParams}->{AppointmentDescription} ) {
+        $Search{Description} = $Param{SearchParams}->{AppointmentDescription};
     }
 
-    # wildcard calendar search
+    # Search by specific calendar IDs.
+    if (
+        $Param{SearchParams}->{AppointmentCalendarID}
+        && IsArrayRefWithData( $Param{SearchParams}->{AppointmentCalendarID} )
+        )
+    {
+        @CalendarIDs = @{ $Param{SearchParams}->{AppointmentCalendarID} };
+    }
+
+    # Search in all available calendars for the user.
     else {
         my @CalendarList = $CalendarObject->CalendarList(
-            UserID  => $Param{UserID},
-            ValidID => 1,
+            UserID     => $Param{UserID},
+            Permission => 'rw',
+            ValidID    => 1,
         );
 
-        my @CalendarIDs = map { $_->{CalendarID} } @CalendarList;
-        for my $CalendarID (@CalendarIDs) {
-            my @CalendarAppointments = $AppointmentObject->AppointmentList(
-                %Search,
-                CalendarID => $CalendarID,
-                Result     => 'HASH',
-            );
-            push @Appointments, @CalendarAppointments;
-        }
+        @CalendarIDs = map { $_->{CalendarID} } @CalendarList;
+    }
+
+    for my $CalendarID (@CalendarIDs) {
+        my @CalendarAppointments = $AppointmentObject->AppointmentList(
+            %Search,
+            CalendarID => $CalendarID,
+            Result     => 'HASH',
+        );
+        push @Appointments, @CalendarAppointments;
     }
 
     # add appointment data

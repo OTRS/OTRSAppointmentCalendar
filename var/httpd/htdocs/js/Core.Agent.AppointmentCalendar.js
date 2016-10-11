@@ -69,6 +69,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      * @param {Array} Params.Callbacks.PrefSubaction - Name of the preferences subaction.
      * @param {Array} Params.Callbacks.ListAction - Name of the list action.
      * @param {Array} Params.Callbacks.DaysSubaction - Name of the appointment days subaction.
+     * @param {Object} Params.TicketAppointmentTypes - Object with ticket appointment types.
      * @param {Object} Params.WorkingHours - Object with working hour appointments.
      * @param {Object} Params.Resources - Object with resource parameters (optional).
      * @param {Object} Params.Appointment - Object with appointment screen related data (optional).
@@ -234,13 +235,14 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 TargetNS.OpenEditDialog(Params, Data);
                 $CalendarObj.fullCalendar('unselect');
             },
-            eventClick: function(CalEvent) {
+            eventClick: function(CalEvent, JSEvent) {
                 var Data = {
                     Start: CalEvent.start,
                     End: CalEvent.end,
                     CalEvent: CalEvent
                 };
                 TargetNS.OpenEditDialog(Params, Data);
+                JSEvent.stopPropagation();
                 return false;
             },
             eventDrop: function(CalEvent, Delta, RevertFunc) {
@@ -268,7 +270,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 if (CalEvent.allDay
                     || CalEvent.recurring
                     || CalEvent.parentId
-                    || CalEvent.notification) {
+                    || CalEvent.notification
+                    || CalEvent.ticketAppointmentType) {
 
                     // Create container and icon element
                     $IconContainer = $('<div />').addClass('Icons');
@@ -293,6 +296,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (CalEvent.notification) {
                         $Icon.clone()
                             .addClass('fa-bell')
+                            .appendTo($IconContainer);
+                    }
+                    if (CalEvent.ticketAppointmentType) {
+                        $Icon.clone()
+                            .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                             .appendTo($IconContainer);
                     }
 
@@ -369,7 +377,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                     if (CalEvent.allDay
                         || CalEvent.recurring
                         || CalEvent.parentId
-                        || CalEvent.notification) {
+                        || CalEvent.notification
+                        || CalEvent.ticketAppointmentType) {
 
                         // Get container
                         $IconContainer = $TooltipObj.find('.Icons');
@@ -396,6 +405,11 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                         if (CalEvent.notification) {
                             $Icon.clone()
                                 .addClass('fa-bell')
+                                .appendTo($IconContainer);
+                        }
+                        if (CalEvent.ticketAppointmentType) {
+                            $Icon.clone()
+                                .addClass('fa-char-' + Params.TicketAppointmentMarks[CalEvent.ticketAppointmentType])
                                 .appendTo($IconContainer);
                         }
                     }
@@ -848,32 +862,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             Data.EndDay = AppointmentData.CalEvent.end.date();
             Data.EndHour = AppointmentData.CalEvent.end.hour();
             Data.EndMinute = AppointmentData.CalEvent.end.minute();
-        }
-
-        // Setup notification data if available
-        if (AppointmentData.CalEvent.notificationDate.length) {
-
-            // Setup data for related custom notification type
-            if (AppointmentData.CalEvent.notificationCustom === 'relative') {
-                Data.NotificationCustomRelativeInput = 1;
-                Data.NotificationCustomDateTimeInput = 0;
-            }
-            else if (AppointmentData.CalEvent.notificationCustom === 'datetime') {
-                Data.NotificationCustomDateTimeInput = 1;
-                Data.NotificationCustomRelativeInput = 0;
-            }
-            else {
-                Data.NotificationCustomDateTimeInput = 0;
-                Data.NotificationCustomRelativeInput = 0;
-            }
-
-            Data.NotificationDate = AppointmentData.CalEvent.notificationDate;
-            Data.NotificationTemplate = AppointmentData.CalEvent.notificationTemplate;
-            Data.NotificationCustom = AppointmentData.CalEvent.notificationCustom;
-            Data.NotificationCustomRelativeUnitCount = AppointmentData.CalEvent.notificationCustomRelativeUnitCount;
-            Data.NotificationCustomRelativeUnit = AppointmentData.CalEvent.notificationCustomRelativeUnit;
-            Data.NotificationCustomRelativePointOfTime = AppointmentData.CalEvent.notificationCustomRelativePointOfTime;
-            Data.NotificationCustomDateTime = AppointmentData.CalEvent.notificationCustomDateTime;
         }
 
         // Repeating event

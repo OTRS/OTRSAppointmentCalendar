@@ -160,6 +160,12 @@ sub Run {
                     $Appointment->{EndDate},
                     'DateFormat' . ( $Appointment->{AllDay} ? 'Short' : '' )
                 );
+                if ( $Appointment->{NotificationDate} ) {
+                    $Appointment->{NotificationDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                        $Appointment->{NotificationDate},
+                        'DateFormat'
+                    );
+                }
 
                 # include resource data
                 $Appointment->{TeamName}      = '';
@@ -238,6 +244,20 @@ sub Run {
                     }
 
                     $Appointment->{PluginData}->{$PluginKey} = join( '\n', @LinkArray );
+                }
+
+                # check if dealing with ticket appointment
+                if ( $Appointment->{TicketAppointmentRuleID} ) {
+                    my $Rule = $CalendarObject->TicketAppointmentRuleGet(
+                        CalendarID => $Appointment->{CalendarID},
+                        RuleID     => $Appointment->{TicketAppointmentRuleID},
+                    );
+
+                    # get types from the ticket appointment rule
+                    if ( IsHashRefWithData($Rule) ) {
+                        $Appointment->{TicketAppointmentStartDate} = $Rule->{StartDate};
+                        $Appointment->{TicketAppointmentEndDate}   = $Rule->{EndDate};
+                    }
                 }
             }
 

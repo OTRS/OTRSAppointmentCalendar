@@ -23,15 +23,16 @@ our @ObjectDependencies = (
     'Kernel::System::Cache',
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Helper',
+    'Kernel::System::Daemon::SchedulerDB',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
-    'Kernel::System::Daemon::SchedulerDB',
+    'Kernel::System::Main',
 );
 
 =head1 NAME
 
-Kernel::System::Calendar.Appointment - appointment lib
+Kernel::System::Calendar::Appointment - calendar appointment lib
 
 =head1 SYNOPSIS
 
@@ -110,15 +111,17 @@ creates a new appointment.
             '2016-01-10 00:00:00',
             '2016-01-11 00:00:00',
         ],
-        NotificationTime                  => '2016-01-01 17:00:00',       # (optional) Point of time to execute the notification event
-        NotificationTemplate              => 'Custom',                    # (optional) Template to be used for notification point of time
-        NotificationCustomUnitCount       => '12',                        # (optional) minutes, hours or days count for custom template
-        NotificationCustomUnit            => 'minutes',                   # (optional) minutes, hours or days unit for custom template
-        NotificationCustomUnitPointOfTime => 'beforestart',               # (optional) Point of execute for custom templates
+        NotificationTime      => '2016-01-01 17:00:00',                   # (optional) Point of time to execute the notification event
+        NotificationTemplate  => 'Custom',                                # (optional) Template to be used for notification point of time
+        NotificationCustom    => 'relative',                              # (optional) Type of the custom template notification point of time
+                                                                          #            Possible "relative", "datetime"
+        NotificationCustomRelativeUnitCount   => '12',                    # (optional) minutes, hours or days count for custom template
+        NotificationCustomRelativeUnit        => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationCustomRelativePointOfTime => 'beforestart',           # (optional) Point of execute for custom templates
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
-        NotificationCustomDateTime        => '2016-01-01 17:00:00',       # (optional) Notification date time for custom template
-
-        UserID                => 1,                                       # (required) UserID
+        NotificationCustomDateTime => '2016-01-01 17:00:00',              # (optional) Notification date time for custom template
+        TicketAppointmentRuleID    => '9bb20ea035e7a9930652a9d82d00c725', # (optional) Ticket appointment rule ID (for ticket appointments only!)
+        UserID                     => 1,                                  # (required) UserID
     );
 
 returns parent AppointmentID if successful
@@ -338,7 +341,7 @@ sub AppointmentCreate {
         \$Param{NotificationDate},     \$Param{NotificationTemplate}, \$Param{NotificationCustom},
         \$Param{NotificationCustomRelativeUnitCount},   \$Param{NotificationCustomRelativeUnit},
         \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
-        \$Param{UserID},                                \$Param{UserID};
+        \$Param{TicketAppointmentRuleID},               \$Param{UserID}, \$Param{UserID};
 
     my $SQL = "
         INSERT INTO calendar_appointment
@@ -346,9 +349,10 @@ sub AppointmentCreate {
             end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
             recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date, create_time, create_by, change_time, change_by)
-        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            current_timestamp, ?, current_timestamp, ?)
+            notify_custom_date, ticket_appointment_rule_id, create_time, create_by, change_time,
+            change_by)
+        VALUES ($ParentIDVal ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, current_timestamp, ?, current_timestamp, ?)
     ";
 
     # create db record
@@ -423,6 +427,8 @@ get a hash of Appointments.
 
     my @Appointments = $AppointmentObject->AppointmentList(
         CalendarID          => 1,                                       # (required) Valid CalendarID
+        Title               => '*',                                     # (optional) Filter by title, wildcard supported
+        Description         => '*',                                     # (optional) Filter by description, wildcard supported
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
         TeamID              => 1,                                       # (optional) Filter by team
@@ -462,8 +468,7 @@ Result => 'HASH':
             AllDay        => 0,
         },
         {
-            AppointmentID                         => 2,
-            ParentID                              => 1,                                           # for recurred (child) appointments only
+            AppointmentID                         => 3,
             CalendarID                            => 1,
             UniqueID                              => '20160101T180000-A78B57@localhost',
             Title                                 => 'Webinar',
@@ -481,6 +486,7 @@ Result => 'HASH':
             NotificationCustomRelativeUnit        => 'minutes',
             NotificationCustomRelativePointOfTime => 'afterstart',
             NotificationCustomDateTime            => '2016-01-02 16:00:00',
+            TicketAppointmentRuleID               => '9bb20ea035e7a9930652a9d82d00c725',    # for ticket appointments only!
         },
         ...
     ];
@@ -510,15 +516,25 @@ sub AppointmentList {
 
     # cache keys
     my $CacheType        = $Self->{CacheType} . 'List' . $Param{CalendarID};
+    my $CacheKeyTitle    = $Param{Title} || 'any';
+    my $CacheKeyDesc     = $Param{Description} || 'any';
     my $CacheKeyStart    = $Param{StartTime} || 'any';
     my $CacheKeyEnd      = $Param{EndTime} || 'any';
     my $CacheKeyTeam     = $Param{TeamID} || 'any';
     my $CacheKeyResource = $Param{ResourceID} || 'any';
 
+    if ( $Param{Title} && $Param{Title} =~ /[\*]*/ ) {
+        $CacheKeyTitle = 'any';
+    }
+    if ( $Param{Description} && $Param{Description} =~ /[\*]*/ ) {
+        $CacheKeyDesc = 'any';
+    }
+
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key  => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Key =>
+            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -527,6 +543,18 @@ sub AppointmentList {
 
     # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    # Filter by appointment title, with support for wildcards.
+    if ( $Param{Title} ) {
+        $Param{Title} =~ s/\*/%/g;
+        $Param{Title} = '%' . $Param{Title} . '%';
+    }
+
+    # Filter by appointment description, with support for wildcards.
+    if ( $Param{Description} ) {
+        $Param{Description} =~ s/\*/%/g;
+        $Param{Description} = '%' . $Param{Description} . '%';
+    }
 
     # check time
     if ( $Param{StartTime} ) {
@@ -564,7 +592,7 @@ sub AppointmentList {
         SELECT id, parent_id, calendar_id, unique_id, title, description, location, start_time,
             end_time, team_id, resource_id, all_day, recurring, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date
+            notify_custom_date, ticket_appointment_rule_id
         FROM calendar_appointment
         WHERE calendar_id=?
     ';
@@ -572,6 +600,18 @@ sub AppointmentList {
     my @Bind;
 
     push @Bind, \$Param{CalendarID};
+
+    if ( $Param{Title} ) {
+
+        $SQL .= 'AND title LIKE ? ';
+        push @Bind, \$Param{Title};
+    }
+
+    if ( $Param{Description} ) {
+
+        $SQL .= 'AND description LIKE ? ';
+        push @Bind, \$Param{Description};
+    }
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
@@ -641,6 +681,7 @@ sub AppointmentList {
             NotificationCustomRelativeUnit        => $Row[17],
             NotificationCustomRelativePointOfTime => $Row[18],
             NotificationCustomDateTime            => $Row[19] || '',
+            TicketAppointmentRuleID               => $Row[20],
         );
         push @Result, \%Appointment;
     }
@@ -656,8 +697,9 @@ sub AppointmentList {
 
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type  => $CacheType,
-        Key   => "$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Type => $CacheType,
+        Key =>
+            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );
@@ -894,10 +936,12 @@ returns a hash:
         NotificationCustomUnitCount       => '12',
         NotificationCustomUnit            => 'minutes',
         NotificationCustomUnitPointOfTime => 'beforestart',
-        CreateTime          => '2016-01-01 00:00:00',
-        CreateBy            => 2,
-        ChangeTime          => '2016-01-01 00:00:00',
-        ChangeBy            => 2,
+
+        TicketAppointmentRuleID => '9bb20ea035e7a9930652a9d82d00c725',  # for ticket appointments only!
+        CreateTime              => '2016-01-01 00:00:00',
+        CreateBy                => 2,
+        ChangeTime              => '2016-01-01 00:00:00',
+        ChangeBy                => 2,
     );
 =cut
 
@@ -941,7 +985,8 @@ sub AppointmentGet {
             end_time, all_day, team_id, resource_id, recurring, recur_type, recur_freq, recur_count,
             recur_interval, recur_until, recur_id, recur_exclude, notify_time, notify_template,
             notify_custom, notify_custom_unit_count, notify_custom_unit, notify_custom_unit_point,
-            notify_custom_date, create_time, create_by, change_time, change_by
+            notify_custom_date, ticket_appointment_rule_id, create_time, create_by, change_time,
+            change_by
         FROM calendar_appointment
         WHERE
     ';
@@ -1005,10 +1050,11 @@ sub AppointmentGet {
         $Result{NotificationCustomRelativeUnit}        = $Row[24] || '';
         $Result{NotificationCustomRelativePointOfTime} = $Row[25] || '';
         $Result{NotificationCustomDateTime}            = $Row[26] || '';
-        $Result{CreateTime}                            = $Row[27];
-        $Result{CreateBy}                              = $Row[28];
-        $Result{ChangeTime}                            = $Row[29];
-        $Result{ChangeBy}                              = $Row[30];
+        $Result{TicketAppointmentRuleID}               = $Row[27];
+        $Result{CreateTime}                            = $Row[28];
+        $Result{CreateBy}                              = $Row[29];
+        $Result{ChangeTime}                            = $Row[30];
+        $Result{ChangeBy}                              = $Row[31];
     }
 
     if ( $Param{AppointmentID} ) {
@@ -1052,17 +1098,17 @@ updates an existing appointment.
         RecurrenceCount       => 1,                                       # (optional) How many Appointments to create
         RecurrenceInterval    => 2,                                       # (optional) Repeating interval (default 1)
         RecurrenceUntil       => '2016-01-10 00:00:00',                   # (optional) Until date
-
-        NotificationDate                      => '2016-01-01 17:00:00',   # (optional) Point of time to execute the notification event
-        NotificationTemplate                  => 'Custom',                # (optional) Template to be used for notification point of time
-        NotificationCustom                    => '12',                    # (optional) minutes, hours or days count for custom template
-        NotificationCustomRelativeUnitCount   => 'minutes',               # (optional) minutes, hours or days unit for custom template
+        NotificationTime      => '2016-01-01 17:00:00',                   # (optional) Point of time to execute the notification event
+        NotificationTemplate  => 'Custom',                                # (optional) Template to be used for notification point of time
+        NotificationCustom    => 'relative',                              # (optional) Type of the custom template notification point of time
+                                                                          #            Possible "relative", "datetime"
+        NotificationCustomRelativeUnitCount   => '12',                    # (optional) minutes, hours or days count for custom template
         NotificationCustomRelativeUnit        => 'minutes',               # (optional) minutes, hours or days unit for custom template
         NotificationCustomRelativePointOfTime => 'beforestart',           # (optional) Point of execute for custom templates
                                                                           #            Possible "beforestart", "afterstart", "beforeend", "afterend"
-        NotificationCustomDateTime            => '2016-01-01 17:00:00',   # (optional) Notification date time for custom template
-
-        UserID                => 1,                                       # (required) UserID
+        NotificationCustomDateTime => '2016-01-01 17:00:00',              # (optional) Notification date time for custom template
+        TicketAppointmentRuleID    => '9bb20ea035e7a9930652a9d82d00c725', # (optional) Ticket appointment rule ID (for ticket appointments only!)
+        UserID                     => 1,                                  # (required) UserID
     );
 
 returns 1 if successful:
@@ -1167,7 +1213,7 @@ sub AppointmentUpdate {
         qw(TeamID ResourceID RecurrenceFrequency)
         )
     {
-        if ( $Param{$Parameter} ) {
+        if ( $Param{$Parameter} && @{ $Param{$Parameter} // [] } ) {
             if ( !IsArrayRefWithData( $Param{$Parameter} ) ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
                     Priority => 'error',
@@ -1274,8 +1320,8 @@ sub AppointmentUpdate {
             team_id=?, resource_id=?, recurring=?, recur_type=?, recur_freq=?, recur_count=?,
             recur_interval=?, recur_until=?, recur_exclude=?, notify_time=?, notify_template=?,
             notify_custom=?, notify_custom_unit_count=?, notify_custom_unit=?,
-            notify_custom_unit_point=?, notify_custom_date=?, change_time=current_timestamp,
-            change_by=?
+            notify_custom_unit_point=?, notify_custom_date=?, ticket_appointment_rule_id=?,
+            change_time=current_timestamp, change_by=?
         WHERE id=?
     ';
 
@@ -1291,7 +1337,7 @@ sub AppointmentUpdate {
             \$Param{NotificationTemplate},                  \$Param{NotificationCustom},
             \$Param{NotificationCustomRelativeUnitCount},   \$Param{NotificationCustomRelativeUnit},
             \$Param{NotificationCustomRelativePointOfTime}, \$Param{NotificationCustomDateTime},
-            \$Param{UserID},                                \$Param{AppointmentID},
+            \$Param{TicketAppointmentRuleID},               \$Param{UserID}, \$Param{AppointmentID},
         ],
     );
 
@@ -1582,7 +1628,7 @@ sub GetUniqueID {
     }
 
     # calculate a hash
-    my $RandomString = $Kernel::OM->Get('Kernel::System::Calendar')->GetRandomString( Length => 32 );
+    my $RandomString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString( Length => 32 );
     my $String       = "$Param{CalendarID}-$RandomString-$Param{UserID}";
     my $Digest       = unpack( 'N', Digest::MD5->new()->add($String)->digest() );
     my $DigestHex    = sprintf( '%x', $Digest );
@@ -2132,10 +2178,8 @@ sub _AppointmentNotificationPrepare {
     # ---------------
     else {
 
-        # compute date of relative input
-        if ( $Param{Data}->{NotificationCustomRelativeInput} ) {
-
-            $Param{Data}->{NotificationCustom} = 'relative';
+        # Compute date of custom relative input.
+        if ( $Param{Data}->{NotificationCustom} eq 'relative' ) {
 
             my $CustomUnitCount = $Param{Data}->{NotificationCustomRelativeUnitCount};
             my $CustomUnit      = $Param{Data}->{NotificationCustomRelativeUnit};
@@ -2187,8 +2231,8 @@ sub _AppointmentNotificationPrepare {
             }
         }
 
-        # save date time input
-        elsif ( $Param{Data}->{NotificationCustomDateTimeInput} ) {
+        # Compute date of custom date/time input.
+        elsif ( $Param{Data}->{NotificationCustom} eq 'datetime' ) {
 
             $Param{Data}->{NotificationCustom} = 'datetime';
 
@@ -2834,4 +2878,6 @@ This software is part of the OTRS project (L<http://otrs.org/>).
 
 This software comes with ABSOLUTELY NO WARRANTY. For details, see
 the enclosed file COPYING for license information (AGPL). If you
-did not
+did not receive this file, see L<http://www.gnu.org/licenses/agpl.txt>.
+
+=cut

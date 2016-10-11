@@ -65,12 +65,12 @@
                     <Prio>8000</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
-                    <CSS>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.0.1/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-scheduler-1.3.2/scheduler.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.0.1/fullcalendar.min.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-scheduler-1.4.0/scheduler.min.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                     <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                 </Loader>
@@ -138,6 +138,7 @@
                     <CSS>thirdparty/spectrum-1.8.0/spectrum.css</CSS>
                     <JavaScript>thirdparty/clipboard.js-1.5.12/clipboard.min.js</JavaScript>
                     <JavaScript>thirdparty/spectrum-1.8.0/spectrum.js</JavaScript>
+                    <JavaScript>Core.Agent.AppointmentCalendar.Manage.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
         </Setting>
@@ -219,16 +220,6 @@
             </Array>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AppointmentCalendar::Backend" Required="1" Valid="1">
-        <Description Translatable="1">Defines which backend should be used for managing calendars.</Description>
-        <Group>OTRSAppointmentCalendar</Group>
-        <SubGroup>Core::AppointmentCalendar</SubGroup>
-        <Setting>
-            <Option SelectedID="CalDav">
-                <Item Key="CalDav" Translatable="1">CalDav</Item>
-            </Option>
-        </Setting>
-    </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::Plugin###0100-Ticket" Required="0" Valid="1">
         <Description Translatable="1">Defines the ticket plugin for calendar appointments.</Description>
         <Group>OTRSAppointmentCalendar</Group>
@@ -299,6 +290,103 @@
             <String Regex="\d+">120</String>
         </Setting>
     </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0100-FirstResponseTime" Required="0" Valid="1">
+        <Description Translatable="1">Defines the ticket appointment type backend for ticket escalation time.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
+                <Item Key="Key">FirstResponseTime</Item>
+                <Item Key="Name" Translatable="1">First response time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0200-UpdateTime" Required="0" Valid="1">
+        <Description Translatable="1">Defines the ticket appointment type backend for ticket escalation time.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
+                <Item Key="Key">UpdateTime</Item>
+                <Item Key="Name" Translatable="1">Update time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0300-SolutionTime" Required="0" Valid="1">
+        <Description Translatable="1">Defines the ticket appointment type backend for ticket escalation time.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Ticket::EscalationTime</Item>
+                <Item Key="Key">SolutionTime</Item>
+                <Item Key="Name" Translatable="1">Solution time</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate</Item>
+                <Item Key="Mark">E</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0400-PendingTime" Required="0" Valid="1">
+        <Description Translatable="1">Defines the ticket appointment type backend for ticket pending time.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Ticket::PendingTime</Item>
+                <Item Key="Key">PendingTime</Item>
+                <Item Key="Name" Translatable="1">Pending time</Item>
+                <Item Key="Event">TicketPendingTimeUpdate</Item>
+                <Item Key="Mark">P</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentType###0500-DynamicField" Required="0" Valid="1">
+        <Description Translatable="1">Defines the ticket appointment type backend for ticket dynamic field date time.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Ticket::DynamicField</Item>
+                <Item Key="Key" Translatable="1">DynamicField_%s</Item>
+                <Item Key="Name" Translatable="1">DynamicField_%s</Item>
+                <Item Key="Event" Translatable="1">TicketDynamicFieldUpdate_.*</Item>
+                <Item Key="Mark">D</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentSearchParams" Required="0" Valid="1">
+        <Description Translatable="1">Defines the list of params that can be passed to ticket search function.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
+        <Setting>
+            <Array>
+                <Item>Title</Item>
+                <Item>Types</Item>
+                <Item>States</Item>
+                <Item>StateType</Item>
+                <Item>Priorities</Item>
+                <Item>Services</Item>
+                <Item>SLAs</Item>
+                <Item>Locks</Item>
+                <Item>OwnerIDs</Item>
+                <Item>ResponsibleIDs</Item>
+                <Item>CustomerID</Item>
+                <Item>CustomerUserLogin</Item>
+                <Item>From</Item>
+                <Item>To</Item>
+                <Item>Cc</Item>
+                <Item>Subject</Item>
+                <Item>Body</Item>
+                <Item>AttachmentName</Item>
+            </Array>
+        </Setting>
+    </ConfigItem>
 
     <!-- event notifications -->
 
@@ -333,6 +421,17 @@
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Event::Notification</Item>
                 <Item Key="Event">(AppointmentCreate|AppointmentUpdate|AppointmentDelete)</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="AppointmentCalendar::EventModulePost###200-TicketAppointments" Required="0" Valid="1">
+        <Description Translatable="1">Appointment calendar event module that updates the ticket with data from ticket appointment.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::AppointmentCalendar::Event</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Calendar::Event::TicketAppointments</Item>
+                <Item Key="Event">AppointmentUpdate</Item>
             </Hash>
         </Setting>
     </ConfigItem>
@@ -402,11 +501,11 @@
                     <Prio>6500</Prio>
                 </NavBar>
                 <Loader>
-                    <CSS>thirdparty/fullcalendar-2.8.0/fullcalendar.min.css</CSS>
+                    <CSS>thirdparty/fullcalendar-3.0.1/fullcalendar.min.css</CSS>
                     <CSS>Core.AppointmentCalendar.css</CSS>
                     <CSS>Core.AppointmentCalendar.Agenda.css</CSS>
                     <JavaScript>thirdparty/momentjs-2.13.0/moment.min.js</JavaScript>
-                    <JavaScript>thirdparty/fullcalendar-2.8.0/fullcalendar.js</JavaScript>
+                    <JavaScript>thirdparty/fullcalendar-3.0.1/fullcalendar.js</JavaScript>
                     <JavaScript>Core.Agent.AppointmentCalendar.js</JavaScript>
                 </Loader>
             </FrontendModuleReg>
@@ -573,6 +672,18 @@
                 <Item Key="Text">Location</Item>
                 <Item Key="URL">http://maps.google.com/maps?z=7&amp;q=</Item>
                 <Item Key="IconName">fa-globe fa-lg</Item>
+            </Hash>
+        </Setting>
+    </ConfigItem>
+    <ConfigItem Name="Ticket::EventModulePost###950-TicketAppointments" Required="0" Valid="1">
+        <Description Translatable="1">Triggers add or update of automatic calendar appointments based on certain ticket times.</Description>
+        <Group>OTRSAppointmentCalendar</Group>
+        <SubGroup>Core::Ticket</SubGroup>
+        <Setting>
+            <Hash>
+                <Item Key="Module">Kernel::System::Ticket::Event::TicketAppointments</Item>
+                <Item Key="Event">TicketSLAUpdate|TicketQueueUpdate|TicketStateUpdate|TicketCreate|ArticleCreate|TicketPendingTimeUpdate|TicketDynamicFieldUpdate_.*</Item>
+                <Item Key="Transaction">1</Item>
             </Hash>
         </Setting>
     </ConfigItem>

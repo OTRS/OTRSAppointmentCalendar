@@ -234,6 +234,14 @@ Core.Agent.AppointmentCalendar.Init({
     CalendarSettingsButton: 'CalendarSettingsButton',
     CalendarSettingsDialogContainer: 'CalendarSettingsDialogContainer',
     CalendarSettingsShow: [% Data.CalendarSettingsShow | JSON %],
+    TicketAppointmentMarks: {
+[% RenderBlockStart("TicketAppointmentMark") %]
+        [% Data.AppointmentType %]: [% Data.AppointmentMark | JSON %]
+[% RenderBlockStart("TicketAppointmentMarkComma") %]
+        ,
+[% RenderBlockEnd("TicketAppointmentMarkComma") %]
+[% RenderBlockEnd("TicketAppointmentMark") %]
+    },
     Callbacks: {
         EditAction: [% Data.EditAction | JSON %],
         EditMaskSubaction: [% Data.EditMaskSubaction | JSON %],
@@ -270,6 +278,15 @@ Core.Agent.AppointmentCalendar.Init({
                 // workaround for removeEventSource
                 googleCalendarId: [% Data.CalendarID | JSON %],
                 eventDataTransform: function(AppointmentData) {
+                    var TicketAppointmentNoDrag = {
+[% RenderBlockStart("TicketAppointmentNoDrag") %]
+                        [% Data.AppointmentType %]: parseInt([% Data.NoDrag | JSON %], 10) ? true : false
+[% RenderBlockStart("TicketAppointmentNoDragComma") %]
+                        ,
+[% RenderBlockEnd("TicketAppointmentNoDragComma") %]
+[% RenderBlockEnd("TicketAppointmentNoDrag") %]
+                    };
+
                     return {
                         id: AppointmentData.AppointmentID,
                         parentId: AppointmentData.ParentID,
@@ -292,12 +309,10 @@ Core.Agent.AppointmentCalendar.Init({
                         calendarColor: [% Data.Color | JSON %],
                         notification: AppointmentData.NotificationDate.length ? true : false,
                         notificationDate: AppointmentData.NotificationDate,
-                        notificationTemplate: AppointmentData.NotificationTemplate,
-                        notificationCustom: AppointmentData.NotificationCustom,
-                        notificationCustomRelativeUnitCount: AppointmentData.NotificationCustomRelativeUnitCount,
-                        notificationCustomRelativeUnit: AppointmentData.NotificationCustomRelativeUnit,
-                        notificationCustomRelativePointOfTime: AppointmentData.NotificationCustomRelativePointOfTime,
-                        notificationCustomDateTime: AppointmentData.NotificationCustomDateTime
+                        ticketAppointmentType: AppointmentData.TicketAppointmentStartDate,
+                        startEditable: TicketAppointmentNoDrag[AppointmentData.TicketAppointmentStartDate] ? false : true,
+                        durationEditable: typeof AppointmentData.TicketAppointmentEndDate === 'undefined' ? true :
+                            typeof TicketAppointmentNoDrag[AppointmentData.TicketAppointmentEndDate] !== 'undefined' ? true : false
                     };
                 }
             }

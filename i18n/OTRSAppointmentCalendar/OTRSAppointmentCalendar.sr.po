@@ -1,0 +1,796 @@
+# Translators:
+# Martin Gruner <martin.gruner@otrs.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: OTRSAppointmentCalendar\n"
+"POT-Creation-Date: 2016-10-07 12:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Martin Gruner <martin.gruner@otrs.com>, 2016\n"
+"Language-Team: Serbian (https://www.transifex.com/otrs/teams/23435/sr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sr\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Agenda Overview"
+msgstr "Преглед дневног реда"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Manage Calendars"
+msgstr "Управљање календарима"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Add Appointment"
+msgstr "Додај термин"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Color"
+msgstr "Боја"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "End date"
+msgstr "Датум краја"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Repeat"
+msgstr "Понављање"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid ""
+"No calendars found. Please add a calendar first by using Manage Calendars "
+"page."
+msgstr ""
+"Није пронађен ниједан календар. Молимо прво додајте календар коришћењем "
+"екрана Управљање календарима."
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Appointment"
+msgstr "Термин"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "This is a repeating appointment"
+msgstr "Овај термин се понавља"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Would you like to edit just this occurrence or all occurrences?"
+msgstr "Да ли желите да измени само ово или сва понављања?"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "All occurrences"
+msgstr "Сва понављања"
+
+#. Template: AgentAppointmentAgendaOverview
+msgid "Just this occurrence"
+msgstr "Само ово понављање"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Calendar Management"
+msgstr "Управљање календарима"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Calendar Overview"
+msgstr "Преглед календара"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Add new Calendar"
+msgstr "Додај нови календар"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Add Calendar"
+msgstr "Додај календар"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Import Appointments"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Calendar Import"
+msgstr "Увоз календара"
+
+#. Template: AgentAppointmentCalendarManage
+msgid ""
+"Here you can upload a configuration file to import a calendar to your "
+"system. The file needs to be in .yml format as exported by calendar "
+"management module."
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Upload calendar configuration"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Import Calendar"
+msgstr "Увези календар"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Filter for calendars"
+msgstr "Филтер за календаре"
+
+#. Template: AgentAppointmentCalendarManage
+msgid ""
+"Depending on the group field, the system will allow users the access to the "
+"calendar according to their permission level."
+msgstr ""
+"У зависности од поља групе, систем ће дозволити приступ календару "
+"оператерима према њиховом нивоу приступа."
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Read only: users can see and export all appointments in the calendar."
+msgstr "RO: оператери могу прегледати и експортовати све термине у календару."
+
+#. Template: AgentAppointmentCalendarManage
+msgid ""
+"Move into: users can modify appointments in the calendar, but without "
+"changing the calendar selection."
+msgstr ""
+"Премести у: оператери могу модификовати термине у календару, али без промене"
+" ком календару припадају."
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Create: users can create and delete appointments in the calendar."
+msgstr "Креирање: оператери могу креирати и брисати термине у календару."
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Read/write: users can manage the calendar itself."
+msgstr "RW: оператери могу администрирати и сам календар."
+
+#. Template: AgentAppointmentCalendarManage
+msgid "URL"
+msgstr "Адреса"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Export calendar"
+msgstr "Извези календар"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Download calendar"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Copy public calendar URL"
+msgstr "Ископирај јавну адресу календара (URL)"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Calendar name"
+msgstr "Назив календара"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Calendar with same name already exists."
+msgstr "Календар са истим називом већ постоји."
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Permission group"
+msgstr "Група приступа"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Ticket Appointments"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Rule"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid ""
+"Use options below to narrow down for which tickets appointments will be "
+"automatically created."
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Please select a valid queue."
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Search attributes"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid ""
+"Define rules for creating automatic appointments in this calendar based on "
+"ticket data."
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Add Rule"
+msgstr ""
+
+#. Template: AgentAppointmentCalendarManage
+msgid "More"
+msgstr "Више"
+
+#. Template: AgentAppointmentCalendarManage
+msgid "Less"
+msgstr "Мање"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Add new Appointment"
+msgstr "Додај нови термин"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Calendars"
+msgstr "Календари"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "This is an overview page for the Appointment Calendar."
+msgstr "Ова страница служи за преглед календара."
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Too many active calendars"
+msgstr "Превише активних календара"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid ""
+"Please either turn some off first or increase the limit in configuration."
+msgstr ""
+"Или прво искључите приказ неког календара или повећајте лимит у "
+"конфигурацији."
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Week"
+msgstr "Седмица"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Timeline Month"
+msgstr "Месечна оса"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Timeline Week"
+msgstr "Седмична оса"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Timeline Day"
+msgstr "Дневна оса"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Jump"
+msgstr "Скочи"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Dismiss"
+msgstr "Поништи"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Show"
+msgstr "Прикажи"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Basic information"
+msgstr "Основне информације"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Resource"
+msgstr "Ресурс"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Team"
+msgstr "Тим"
+
+#. Template: AgentAppointmentCalendarOverview
+msgid "Date/Time"
+msgstr "Датум/време"
+
+#. Template: AgentAppointmentCalendarOverviewSeen
+msgid "Following appointments have been started"
+msgstr "Следећи термини су започети"
+
+#. Template: AgentAppointmentCalendarOverviewSeen
+msgid "Start time"
+msgstr "Почетак"
+
+#. Template: AgentAppointmentCalendarOverviewSeen
+msgid "End time"
+msgstr "Крај"
+
+#. Template: AgentAppointmentEdit
+msgid "Please set this to value before End date."
+msgstr "Молимо поставите овај датум пре краја."
+
+#. Template: AgentAppointmentEdit
+msgid "Please set this to value after Start date."
+msgstr "Молимо поставите овај датум после почетка."
+
+#. Template: AgentAppointmentEdit
+msgid "This an ocurrence of a repeating appointment."
+msgstr "Ово је термин који се понавља."
+
+#. Template: AgentAppointmentEdit
+msgid "Click here to see the parent appointment."
+msgstr "Кликните овде за преглед матичног термина."
+
+#. Template: AgentAppointmentEdit
+msgid "Click here to edit the parent appointment."
+msgstr "Кликните овде за измену матичног термина."
+
+#. Template: AgentAppointmentEdit
+msgid "Frequency"
+msgstr "Учесталост"
+
+#. Template: AgentAppointmentEdit
+msgid "Every"
+msgstr "Сваког(е)"
+
+#. Template: AgentAppointmentEdit
+msgid "Relative point of time"
+msgstr "Релативно време"
+
+#. Template: AgentAppointmentEdit
+msgid ""
+"Are you sure you want to delete this appointment? This operation cannot be "
+"undone."
+msgstr ""
+"Да ли сте сигурни да желите да избришете овај термин? Ову операцију није "
+"могуће опозвати."
+
+#. Template: AgentAppointmentImport
+msgid "Appointment Import"
+msgstr ""
+
+#. Template: AgentAppointmentImport
+msgid "Uploaded file must be in valid iCal format (.ics)."
+msgstr "Послати фајл мора бити у исправном iCal формату (.ics)."
+
+#. Template: AgentAppointmentImport
+msgid ""
+"If desired Calendar is not listed here, please make sure that you have at "
+"least 'create' permissions."
+msgstr ""
+"Уколико жељени календар није излистан, проверите да ли имате ниво приступа "
+"'креирање' за групу календара."
+
+#. Template: AgentAppointmentImport
+msgid "Update existing appointments?"
+msgstr "Освежи постојеће термине?"
+
+#. Template: AgentAppointmentImport
+msgid ""
+"All existing appointments in the calendar with same UniqueID will be "
+"overwritten."
+msgstr ""
+"Сви постојећи термини у календару са истим UniqueID пољем ће бити "
+"пребрисани."
+
+#. Template: AgentAppointmentImport
+msgid "Upload calendar"
+msgstr "Пошаљи календар"
+
+#. Template: AgentAppointmentImport
+msgid "Import appointments"
+msgstr ""
+
+#. Template: AgentDashboardAppointmentCalendar
+msgid "New Appointment"
+msgstr "Нови термин"
+
+#. Template: AgentDashboardAppointmentCalendar
+msgid "Soon"
+msgstr ""
+
+#. Template: AgentDashboardAppointmentCalendar
+msgid "5 days"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "System was unable to create Calendar!"
+msgstr "Систем није успео да креира календар!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "No CalendarID!"
+msgstr "Нема CalendarID!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "You have no access to this calendar!"
+msgstr "Немате приступ овом календару!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Edit Calendar"
+msgstr "Измени календар"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Error updating the calendar!"
+msgstr "Грешка приликом измене календара"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Could not import the calendar!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Calendar imported!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Need CalendarID!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Could not retrieve data for given CalendarID"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Successfully imported %s appointment(s) to calendar %s."
+msgstr "Успешно увезено %s термин(а) у календар %s."
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "+5 minutes"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "+15 minutes"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "+30 minutes"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "+1 hour"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
+msgid "All appointments"
+msgstr "Сви термини"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
+msgid "Appointments assigned to me"
+msgstr "Термини додељени мени"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
+msgid "Showing only appointments assigned to you! Change settings"
+msgstr "Приказ само термина додељених вама! Измените подешавања"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Appointment not found!"
+msgstr "Термин није пронађен!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Never"
+msgstr "Никада"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Every Day"
+msgstr "Сваки дан"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Every Week"
+msgstr "Сваке седмице"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Every Month"
+msgstr "Сваког месеца"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Every Year"
+msgstr "Сваке године"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Custom"
+msgstr "Прилагођено"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Daily"
+msgstr "Дневно"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Weekly"
+msgstr "Седмично"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Monthly"
+msgstr "Месечно"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Yearly"
+msgstr "Годишње"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "every"
+msgstr "сваког(е)"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "for %s time(s)"
+msgstr "укупно %s пут(а)"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "until ..."
+msgstr "до ..."
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "for ... time(s)"
+msgstr "укупно ... пут(а)"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "until %s"
+msgstr "до %s"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "No notification"
+msgstr "Без обавештења"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "%s minute(s) before"
+msgstr "%s минут(а) пре"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "%s hour(s) before"
+msgstr "%s сат(а) пре"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "%s day(s) before"
+msgstr "%s дан(а) пре"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "%s week before"
+msgstr "%s недеља пре"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "before the appointment starts"
+msgstr "пре него што термин започне"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "after the appointment has been started"
+msgstr "пошто термин започне"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "before the appointment ends"
+msgstr "пре него што се термин заврши"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "after the appointment has been ended"
+msgstr "пошто се термин заврши"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "No permission!"
+msgstr "Без дозволе!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Links could not be deleted!"
+msgstr "Везе не могу бити обрисане!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Link could not be created!"
+msgstr "Веза није могла бити креирана!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "Cannot delete ticket appointment!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
+msgid "No permissions!"
+msgstr "Без дозволе!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "No permissions"
+msgstr "Без дозволе"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "System was unable to import file!"
+msgstr "Систем није успео да увезе фајл!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentList.pm
+msgid "+%d more"
+msgstr "+%d више"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentList.pm
+msgid "Ongoing appointments"
+msgstr "Започети термини"
+
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "No such user!"
+msgstr "Непознат корисник!"
+
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "Invalid calendar!"
+msgstr "Неисправан календар!"
+
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "Invalid URL!"
+msgstr "Неисправна адреса!"
+
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "There was an error exporting the calendar!"
+msgstr "Грешка приликом експортовања календара!"
+
+#. Perl Module: Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm
+msgid "Refresh (minutes)"
+msgstr ""
+
+#. SysConfig
+msgid "Appointment Calendar overview page."
+msgstr "Страница за преглед календара."
+
+#. SysConfig
+msgid ""
+"Appointment calendar event module that prepares notification entries for "
+"appointments."
+msgstr "Модул догађаја календара за припрему обавештења о терминима."
+
+#. SysConfig
+msgid ""
+"Appointment calendar event module that updates the ticket with data from "
+"ticket appointment."
+msgstr ""
+
+#. SysConfig
+msgid "Appointment edit screen."
+msgstr "Страница за измену календара."
+
+#. SysConfig
+msgid "Appointment list"
+msgstr "Листа термина"
+
+#. SysConfig
+msgid "Appointment list."
+msgstr "Листа термина."
+
+#. SysConfig
+msgid "Appointments"
+msgstr ""
+
+#. SysConfig
+msgid "Calendar manage screen."
+msgstr "Страница за управљање календарима."
+
+#. SysConfig
+msgid "Create a new calendar appointment linked to this ticket"
+msgstr "Креира нови термин у календару повезан са овим тикетом"
+
+#. SysConfig
+msgid "Create new appointment."
+msgstr "Креира нови термин."
+
+#. SysConfig
+msgid ""
+"Defines an icon with link to the google map page of the current location in "
+"appointment edit screen."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Defines the event object types that will be handled via "
+"AdminNotificationEvent."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Defines the list of params that can be passed to ticket search function."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Defines the ticket appointment type backend for ticket dynamic field date "
+"time."
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Defines the ticket appointment type backend for ticket escalation time."
+msgstr ""
+
+#. SysConfig
+msgid "Defines the ticket appointment type backend for ticket pending time."
+msgstr ""
+
+#. SysConfig
+msgid "Defines the ticket plugin for calendar appointments."
+msgstr "Дефинише тикет модул за календарске термине."
+
+#. SysConfig
+msgid "DynamicField_%s"
+msgstr ""
+
+#. SysConfig
+msgid "Edit appointment"
+msgstr "Измена термина"
+
+#. SysConfig
+msgid "First response time"
+msgstr ""
+
+#. SysConfig
+msgid "Import appointments screen."
+msgstr ""
+
+#. SysConfig
+msgid "Links appointments and tickets with a \"Normal\" type link."
+msgstr "Повезује термине и тикете \"Нормалним\" врстама веза."
+
+#. SysConfig
+msgid "List of all appointment events to be displayed in the GUI."
+msgstr "Листа свих обавештења о терминима за приказ у интерфејсу."
+
+#. SysConfig
+msgid ""
+"List of colors in hexadecimal RGB which will be available for selection "
+"during calendar creation. Make sure the colors are dark enough so white text"
+" can be overlayed on them."
+msgstr ""
+"Листа боја у хексадецималном RGB запису које ће бити доступне за избор "
+"приликом прављења календара. Обратите пажњу да су боје довољно тамне тако да"
+" бели текст може бити исписан на њима."
+
+#. SysConfig
+msgid "Manage different calendars."
+msgstr "Управљање различитим календарима."
+
+#. SysConfig
+msgid ""
+"Maximum number of active calendars in overview screens. Please note that "
+"large number of active calendars can have a performance impact on your "
+"server by making too much simultaneous calls."
+msgstr ""
+"Максимални број активних календара у екранима за преглед. Обратите пажњу да "
+"велики број активних календара може имати утицај на перформансе вашег "
+"сервера прављењем превише симултаних захтева."
+
+#. SysConfig
+msgid ""
+"OTRS doesn't support recurring Appointments without end date or number of "
+"iterrations. During import process, it might happen that ICS file contains "
+"such Appointments. Instead, system creates all Appointments in the past, "
+"plus Appointments for the next n months(120 months/10 years by default)."
+msgstr ""
+"OTRS не подржава термине који се понављају без крајњег датума или броја "
+"итерација. Приликом увоза календара, може се догодити да ICS фајл садржи "
+"такве 'бесконачне' термине. Уместо таквог понашања, систем ће креирати све "
+"термине из прошлости, као и термине за следећи n број месеци (подразумевано "
+"120 месеци/10 година)."
+
+#. SysConfig
+msgid "Overview of all appointments."
+msgstr "Преглед свих термина."
+
+#. SysConfig
+msgid "Pending time"
+msgstr ""
+
+#. SysConfig
+msgid "Plugin search"
+msgstr "Модул претраге"
+
+#. SysConfig
+msgid "Plugin search module for autocomplete."
+msgstr "Модул претраге за аутоматско допуњавање."
+
+#. SysConfig
+msgid "Resource Overview"
+msgstr "Преглед ресурса"
+
+#. SysConfig
+msgid "Resource Overview (OTRS Business Solution™)"
+msgstr "Преглед ресурса (OTRS Business Solution™)"
+
+#. SysConfig
+msgid ""
+"Shows a link in the menu for creating a calendar appointment linked to the "
+"ticket directly from the ticket zoom view of the agent interface. Additional"
+" access control to show or not show this link can be done by using Key "
+"\"Group\" and Content like \"rw:group1;move_into:group2\". To cluster menu "
+"items use for Key \"ClusterName\" and for the Content any name you want to "
+"see in the UI. Use \"ClusterPriority\" to configure the order of a certain "
+"cluster within the toolbar."
+msgstr ""
+"Приказује везу у менију тикета за креирање термина у календару повезаног са "
+"тим тикетом. Додатна контрола приказа ове везе може се постићи коришћењем "
+"кључа \"Group\" са садржајем \"rw:group1;move_into:group2\". За здруживање "
+"веза у менију подесите кључ \"ClusterName\" са садржајем који ће бити назив "
+"који желите да видите у интерфејсу. Користите кључ \"ClusterPriority\" за "
+"измену редоследа група у менију."
+
+#. SysConfig
+msgid "Solution time"
+msgstr ""
+
+#. SysConfig
+msgid "TicketDynamicFieldUpdate_.*"
+msgstr ""
+
+#. SysConfig
+msgid ""
+"Triggers add or update of automatic calendar appointments based on certain "
+"ticket times."
+msgstr ""
+
+#. SysConfig
+msgid "Update time"
+msgstr ""
