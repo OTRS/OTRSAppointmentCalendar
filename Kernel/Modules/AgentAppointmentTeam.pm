@@ -111,7 +111,7 @@ sub Run {
                 $Self->_Overview();
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Team updated!' );
+                $Output .= $LayoutObject->Notify( Info => Translatable('Team updated!') );
                 $Output .= $LayoutObject->Output(
                     TemplateFile => 'AgentAppointmentTeam',
                     Data         => \%Param,
@@ -202,7 +202,7 @@ sub Run {
                 $Self->_Overview();
                 my $Output = $LayoutObject->Header();
                 $Output .= $LayoutObject->NavigationBar();
-                $Output .= $LayoutObject->Notify( Info => 'Team added!' );
+                $Output .= $LayoutObject->Notify( Info => Translatable('Team added!') );
                 $Output .= $LayoutObject->Output(
                     TemplateFile => 'AgentAppointmentTeam',
                     Data         => \%Param,
@@ -251,8 +251,8 @@ sub Run {
         my $TeamData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Content );
         if ( ref $TeamData ne 'HASH' ) {
             return (
-                Message =>
-                    "Couldn't read team configuration file. Please make sure you file is valid.",
+                Message => Translatable('Couldn\'t read team configuration file.'),
+                Comment => Translatable('Please make sure your file is valid.'),
             );
         }
 
@@ -270,7 +270,7 @@ sub Run {
             $Output .= $LayoutObject->NavigationBar();
             $Output .= $LayoutObject->Notify(
                 Priority => 'Error',
-                Info     => 'Could not import the team!'
+                Info     => Translatable('Could not import the team!'),
             );
             $Output .= $LayoutObject->Output(
                 TemplateFile => 'AgentAppointmentTeam',
@@ -284,7 +284,7 @@ sub Run {
             $Self->_Overview();
             my $Output = $LayoutObject->Header();
             $Output .= $LayoutObject->NavigationBar();
-            $Output .= $LayoutObject->Notify( Info => 'Team imported!' );
+            $Output .= $LayoutObject->Notify( Info => Translatable('Team imported!') );
             $Output .= $LayoutObject->Output(
                 TemplateFile => 'AgentAppointmentTeam',
                 Data         => \%Param,
