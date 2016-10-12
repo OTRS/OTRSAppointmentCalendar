@@ -405,19 +405,19 @@ sub SearchOptionList {
     my @SearchOptionList = (
         {
             Key  => 'CalendarName',
-            Name => 'Calendar Name',
+            Name => Translatable('Calendar Name'),
             Type => 'Text',
         },
         {
             Prefix => 'Start',
             Key    => 'StartTime',
-            Name   => 'Start Time',
+            Name   => Translatable('Start Time'),
             Type   => 'TimeLong',
         },
         {
             Prefix => 'End',
             Key    => 'EndTime',
-            Name   => 'End Time',
+            Name   => Translatable('End Time'),
             Type   => 'TimeLong',
         },
     );

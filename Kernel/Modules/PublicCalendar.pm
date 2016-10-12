@@ -43,8 +43,8 @@ sub Run {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable("No $Needed !"),
-                Comment => Translatable('Please contact the admin.'),
+                Message => $LayoutObject->{LanguageObject}->Translate( 'No %s!', $Needed ),
+                Comment => Translatable('Please contact the administrator.'),
             );
         }
     }
@@ -57,7 +57,7 @@ sub Run {
     if ( !%User ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No such user!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -70,14 +70,14 @@ sub Run {
     if ( !%Calendar ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('No permission!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
     if ( $Calendar{ValidID} != 1 ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Invalid calendar!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -90,7 +90,7 @@ sub Run {
     if ( $AccessToken ne $GetParam{Token} ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('Invalid URL!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
@@ -103,7 +103,7 @@ sub Run {
     if ( !$ICalString ) {
         return $LayoutObject->ErrorScreen(
             Message => Translatable('There was an error exporting the calendar!'),
-            Comment => Translatable('Please contact the admin.'),
+            Comment => Translatable('Please contact the administrator.'),
         );
     }
 
