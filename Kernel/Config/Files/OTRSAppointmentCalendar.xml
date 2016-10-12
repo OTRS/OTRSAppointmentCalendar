@@ -6,8 +6,8 @@
         <SubGroup>Frontend::Public::ModuleRegistration</SubGroup>
         <Setting>
             <FrontendModuleReg>
-                <Description>PublicCalendar</Description>
-                <Title>PublicCalendar</Title>
+                <Description Translatable="1">Public calendar.</Description>
+                <Title Translatable="1">Public Calendar</Title>
                 <NavBarName></NavBarName>
             </FrontendModuleReg>
         </Setting>
@@ -245,7 +245,7 @@
         </Setting>
     </ConfigItem>
     <ConfigItem Name="AppointmentCalendar::Import::RecurringMonthsLimit" Required="1" Valid="1">
-        <Description Translatable="1">OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default).</Description>
+        <Description Translatable="1">OTRS doesn't support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months (120 months/10 years by default).</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar</SubGroup>
         <Setting>
@@ -317,6 +317,7 @@
                 <Item Key="Module">Kernel::System::Calendar::Ticket::DynamicField</Item>
                 <Item Key="Key">DynamicField_%s</Item>
                 <Item Key="Name" Translatable="1">DynamicField_%s</Item>
+                <Item Key="Name">DynamicField_%s</Item>
                 <Item Key="Event">TicketDynamicFieldUpdate_.*</Item>
                 <Item Key="Mark">D</Item>
             </Hash>
@@ -631,7 +632,7 @@
             <Hash>
                 <Item Key="CSSClass">GoogleMaps</Item>
                 <Item Key="Target">_blank</Item>
-                <Item Key="Text">Location</Item>
+                <Item Key="Text" Translatable="1">Location</Item>
                 <Item Key="URL">http://maps.google.com/maps?z=7&amp;q=</Item>
                 <Item Key="IconName">fa-globe fa-lg</Item>
             </Hash>
