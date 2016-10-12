@@ -12,13 +12,17 @@ use strict;
 use warnings;
 
 use Kernel::Language qw(Translatable);
+use Kernel::System::VariableCheck qw(:all);
 use Kernel::Output::HTML::Layout;
 
 our @ObjectDependencies = (
     'Kernel::Config',
+    'Kernel::Output::HTML::Layout',
     'Kernel::System::Calendar',
     'Kernel::System::Log',
     'Kernel::System::Web::Request',
+    'Kernel::System::JSON',
+    'Kernel::System::User',
 );
 
 =head1 NAME
@@ -61,8 +65,9 @@ sub new {
 
     # define needed variables
     $Self->{ObjectData} = {
-        Object   => 'Appointment',
-        Realname => 'Appointment',
+        Object     => 'Appointment',
+        Realname   => 'Appointment',
+        ObjectName => 'TicketID',
     };
 
     return $Self;
@@ -132,12 +137,15 @@ sub TableCreateComplex {
 
     # check needed stuff
     if ( !$Param{ObjectLinkListWithData} || ref $Param{ObjectLinkListWithData} ne 'HASH' ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => 'Need ObjectLinkListWithData!',
         );
         return;
     }
+
+    # create needed objects
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
     # convert the list
     my %LinkList;
@@ -158,17 +166,154 @@ sub TableCreateComplex {
         }
     }
 
-    # create the item list
+    my $ComplexTableData = $ConfigObject->Get("LinkObject::ComplexTable");
+    my $DefaultColumns;
+    if (
+        $ComplexTableData
+        && IsHashRefWithData($ComplexTableData)
+        && $ComplexTableData->{Appointment}
+        && IsHashRefWithData( $ComplexTableData->{Appointment} )
+        )
+    {
+        $DefaultColumns = $ComplexTableData->{"Appointment"}->{"DefaultColumns"};
+    }
+
+    my @TimeLongTypes = (
+        "Created",
+        "Changed",
+        "StartTime",
+        "EndTime",
+        "NotificationTime",
+    );
+
+    # define the block data
+    my @Headline = (
+        {
+            Content => 'Title',
+        },
+    );
+
+    # Get needed objects.
+    my $UserObject = $Kernel::OM->Get('Kernel::System::User');
+    my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
+
+    # load user preferences
+    my %Preferences = $UserObject->GetPreferences(
+        UserID => $Self->{UserID},
+    );
+
+    if ( !$DefaultColumns || !IsHashRefWithData($DefaultColumns) ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Missing configuration for LinkObject::ComplexTable###Appointment!',
+        );
+        return;
+    }
+
+    # Get default column priority from SysConfig
+    # Each column in table (Title, StartTime, EndTime,...) has defined Priority in SysConfig.
+    # System use this priority to sort columns, if user doesn't have own settings.
+    my %SortOrder;
+
+    if (
+        $ComplexTableData->{"Appointment"}->{"Priority"}
+        && IsHashRefWithData( $ComplexTableData->{"Appointment"}->{"Priority"} )
+        )
+    {
+        %SortOrder = %{ $ComplexTableData->{"Appointment"}->{"Priority"} };
+    }
+
+    my %UserColumns = %{$DefaultColumns};
+
+    if ( $Preferences{'LinkObject::ComplexTable-Appointment'} ) {
+        my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
+
+        my $ColumnsEnabled = $JSONObject->Decode(
+            Data => $Preferences{'LinkObject::ComplexTable-Appointment'},
+        );
+
+        if (
+            $ColumnsEnabled
+            && IsHashRefWithData($ColumnsEnabled)
+            && $ColumnsEnabled->{Order}
+            && IsArrayRefWithData( $ColumnsEnabled->{Order} )
+            )
+        {
+            # Clear sort order
+            %SortOrder = ();
+
+            DEFAULTCOLUMN:
+            for my $DefaultColumn ( sort keys %UserColumns ) {
+                my $Index = 0;
+
+                for my $UserSetting ( @{ $ColumnsEnabled->{Order} } ) {
+                    $Index++;
+                    if ( $DefaultColumn eq $UserSetting ) {
+                        $UserColumns{$DefaultColumn} = 2;
+                        $SortOrder{$DefaultColumn}   = $Index;
+
+                        next DEFAULTCOLUMN;
+                    }
+                }
+
+                # not found, means user chose to hide this item
+                if ( $UserColumns{$DefaultColumn} == 2 ) {
+                    $UserColumns{$DefaultColumn} = 1;
+                }
+
+                if ( !$SortOrder{$DefaultColumn} ) {
+                    $SortOrder{$DefaultColumn} = 0;    # Set 0, it system will hide this item anyways
+                }
+            }
+        }
+    }
+    else {
+        # user has no own settings
+        for my $Column ( sort keys %UserColumns ) {
+            if ( !$SortOrder{$Column} ) {
+                $SortOrder{$Column} = 0;               # Set 0, it system will hide this item anyways
+            }
+        }
+    }
+
+    # Define Headline columns
+
+    # Sort
+    COLUMN:
+    for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
+
+        next COLUMN if $Column eq 'Title';    # Always present, already added.
+
+        # if enabled by default
+        if ( $UserColumns{$Column} == 2 ) {
+
+            # appointment fields
+            my $ColumnName = $Column;
+
+            push @Headline, {
+                Content => $ColumnName,
+            };
+        }
+    }
+
+    # create the item list (table content)
     my @ItemList;
+
+    APPOINTMENTID:
     for my $AppointmentID (
-        sort { lc $LinkList{$a}{Data}->{Title} cmp lc $LinkList{$b}{Data}->{Title} }
+        sort { $LinkList{$a}{Data}->{AppointmentID} <=> $LinkList{$b}{Data}->{AppointmentID} }
         keys %LinkList
         )
     {
+        next APPOINTMENTID if !$AppointmentID;
 
-        # extract appointment data
+        # extract appointment and calendar data
         my $Appointment = $LinkList{$AppointmentID}{Data};
+        my %Calendar    = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarGet(
+            CalendarID => $Appointment->{CalendarID},
+        );
 
+        # Title be present (since it contains master link to the appointment)
         my @ItemColumns = (
             {
                 Type    => 'Link',
@@ -179,48 +324,60 @@ sub TableCreateComplex {
                     . $AppointmentID,
                 MaxLength => 70,
             },
-            {
-                Type      => 'Text',
-                Content   => $Appointment->{Description},
-                MaxLength => 100,
-            },
-            {
-                Type    => 'TimeLong',
-                Content => $Appointment->{StartTime},
-            },
-            {
-                Type    => 'TimeLong',
-                Content => $Appointment->{EndTime},
-            },
         );
+
+        # Sort
+        COLUMN:
+        for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
+
+            next COLUMN if $Column eq 'Title';    # Always present, already added.
+
+            # if enabled by default
+            if ( $UserColumns{$Column} == 2 ) {
+
+                my %Hash;
+                if ( grep { $_ eq $Column } @TimeLongTypes ) {
+                    $Hash{'Type'} = 'TimeLong';
+                }
+                else {
+                    $Hash{'Type'} = 'Text';
+                }
+
+                if ( $Column eq 'Description' ) {
+                    $Hash{MaxLength} = 50;
+                }
+                elsif ( $Column eq 'NotificationTime' ) {
+                    $Hash{'Content'} = $Appointment->{NotificationDate};
+                }
+                elsif ( $Column eq 'Created' ) {
+                    $Hash{'Content'} = $Appointment->{CreateTime};
+                }
+                elsif ( $Column eq 'Changed' ) {
+                    $Hash{'Content'} = $Appointment->{ChangeTime};
+                }
+                elsif ( $Column eq 'CalendarName' ) {
+                    $Hash{'Content'} = $Calendar{CalendarName};
+                }
+                else {
+                    $Hash{'Content'} = $Appointment->{$Column};
+                }
+
+                push @ItemColumns, \%Hash;
+            }
+        }
 
         push @ItemList, \@ItemColumns;
     }
 
     return if !@ItemList;
 
-    # define the block data
     my %Block = (
-        Object    => $Self->{ObjectData}->{Object},
-        Blockname => $Self->{ObjectData}->{Realname},
-        Headline  => [
-            {
-                Content => Translatable('Title'),
-                Width   => 200,
-            },
-            {
-                Content => Translatable('Description'),
-            },
-            {
-                Content => Translatable('Start time'),
-                Width   => 150,
-            },
-            {
-                Content => Translatable('End time'),
-                Width   => 150,
-            },
-        ],
-        ItemList => \@ItemList,
+        Object     => $Self->{ObjectData}->{Object},
+        Blockname  => $Self->{ObjectData}->{Realname},
+        ObjectName => $Self->{ObjectData}->{ObjectName},
+        ObjectID   => $Param{ObjectID},
+        Headline   => \@Headline,
+        ItemList   => \@ItemList,
     );
 
     return ( \%Block );
@@ -406,17 +563,17 @@ sub SearchOptionList {
     my @SearchOptionList = (
         {
             Key  => 'AppointmentTitle',
-            Name => 'Title',
+            Name => Translatable('Title'),
             Type => 'Text',
         },
         {
             Key  => 'AppointmentDescription',
-            Name => 'Description',
+            Name => Translatable('Description'),
             Type => 'Text',
         },
         {
             Key  => 'AppointmentCalendarID',
-            Name => 'Calendar',
+            Name => Translatable('Calendar'),
             Type => 'List',
         },
     );
