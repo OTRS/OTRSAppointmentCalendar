@@ -67,7 +67,7 @@ sub new {
     $Self->{ObjectData} = {
         Object     => 'Appointment',
         Realname   => 'Appointment',
-        ObjectName => 'SourceObjectID',
+        ObjectName => 'TicketID',
     };
 
     return $Self;
@@ -187,7 +187,11 @@ sub TableCreateComplex {
     );
 
     # define the block data
-    my @Headline = ();
+    my @Headline = (
+        {
+            Content => 'Title',
+        },
+    );
 
     # Get needed objects.
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
@@ -278,6 +282,8 @@ sub TableCreateComplex {
     COLUMN:
     for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {
 
+        next COLUMN if $Column eq 'Title';    # Always present, already added.
+
         # if enabled by default
         if ( $UserColumns{$Column} == 2 ) {
 
@@ -292,16 +298,20 @@ sub TableCreateComplex {
 
     # create the item list (table content)
     my @ItemList;
+
+    APPOINTMENTID:
     for my $AppointmentID (
         sort { $LinkList{$a}{Data}->{AppointmentID} <=> $LinkList{$b}{Data}->{AppointmentID} }
         keys %LinkList
         )
     {
-        # extract ticket data
-        my $Appointment = $LinkList{$AppointmentID}{Data};
+        next APPOINTMENTID if !$AppointmentID;
 
-        # set css
-        my $CssClass;
+        # extract appointment and calendar data
+        my $Appointment = $LinkList{$AppointmentID}{Data};
+        my %Calendar    = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarGet(
+            CalendarID => $Appointment->{CalendarID},
+        );
 
         # Title be present (since it contains master link to the appointment)
         my @ItemColumns = (
@@ -315,6 +325,10 @@ sub TableCreateComplex {
                 MaxLength => 70,
             },
         );
+
+        if ( $UserColumns{Title} != 2 ) {
+            $UserColumns{Title} = 2;
+        }
 
         # Sort
         COLUMN:
@@ -333,7 +347,6 @@ sub TableCreateComplex {
                     $Hash{'Type'} = 'Text';
                 }
 
-                # appointment fields
                 if ( $Column eq 'Description' ) {
                     $Hash{MaxLength} = 50;
                 }
@@ -345,6 +358,9 @@ sub TableCreateComplex {
                 }
                 elsif ( $Column eq 'Changed' ) {
                     $Hash{'Content'} = $Appointment->{ChangeTime};
+                }
+                elsif ( $Column eq 'CalendarName' ) {
+                    $Hash{'Content'} = $Calendar{CalendarName};
                 }
                 else {
                     $Hash{'Content'} = $Appointment->{$Column};
@@ -362,7 +378,7 @@ sub TableCreateComplex {
     my %Block = (
         Object     => $Self->{ObjectData}->{Object},
         Blockname  => $Self->{ObjectData}->{Realname},
-        ObjectName => $Self->{ObjectData}->{ObjectName} || 'Appointment',
+        ObjectName => $Self->{ObjectData}->{ObjectName},
         ObjectID   => $Param{ObjectID},
         Headline   => \@Headline,
         ItemList   => \@ItemList,
