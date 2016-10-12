@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-07 12:13+0000\n"
+"POT-Creation-Date: 2016-10-12 16:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -267,7 +267,7 @@ msgid "Please set this to value after Start date."
 msgstr ""
 
 #. Template: AgentAppointmentEdit
-msgid "This an ocurrence of a repeating appointment."
+msgid "This an occurrence of a repeating appointment."
 msgstr ""
 
 #. Template: AgentAppointmentEdit
@@ -339,6 +339,10 @@ msgid "System was unable to create Calendar!"
 msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Please contact the administrator."
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
 msgstr ""
 
@@ -352,6 +356,14 @@ msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Error updating the calendar!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Couldn't read calendar configuration file."
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Please make sure your file is valid."
 msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
@@ -539,6 +551,10 @@ msgid "Ongoing appointments"
 msgstr ""
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "No %s!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No such user!"
 msgstr ""
 
@@ -596,6 +612,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Create new appointment."
+msgstr ""
+
+#. SysConfig
+msgid "Define which columns are shown in the linked appointment widget (LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default."
 msgstr ""
 
 #. SysConfig
@@ -663,7 +683,7 @@ msgid "Maximum number of active calendars in overview screens. Please note that 
 msgstr ""
 
 #. SysConfig
-msgid "OTRS doesn't support recurring Appointments without end date or number of iterrations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months(120 months/10 years by default)."
+msgid "OTRS doesn't support recurring Appointments without end date or number of iterations. During import process, it might happen that ICS file contains such Appointments. Instead, system creates all Appointments in the past, plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
 
 #. SysConfig
@@ -683,6 +703,14 @@ msgid "Plugin search module for autocomplete."
 msgstr ""
 
 #. SysConfig
+msgid "Public Calendar"
+msgstr ""
+
+#. SysConfig
+msgid "Public calendar."
+msgstr ""
+
+#. SysConfig
 msgid "Resource Overview"
 msgstr ""
 
@@ -696,10 +724,6 @@ msgstr ""
 
 #. SysConfig
 msgid "Solution time"
-msgstr ""
-
-#. SysConfig
-msgid "TicketDynamicFieldUpdate_.*"
 msgstr ""
 
 #. SysConfig
