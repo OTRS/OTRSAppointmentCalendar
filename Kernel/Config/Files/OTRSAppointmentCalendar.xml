@@ -315,9 +315,9 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Ticket::DynamicField</Item>
-                <Item Key="Key" Translatable="1">DynamicField_%s</Item>
+                <Item Key="Key">DynamicField_%s</Item>
                 <Item Key="Name" Translatable="1">DynamicField_%s</Item>
-                <Item Key="Event" Translatable="1">TicketDynamicFieldUpdate_.*</Item>
+                <Item Key="Event">TicketDynamicFieldUpdate_.*</Item>
                 <Item Key="Mark">D</Item>
             </Hash>
         </Setting>
