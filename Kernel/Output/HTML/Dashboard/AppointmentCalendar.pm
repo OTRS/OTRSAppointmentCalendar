@@ -112,7 +112,7 @@ sub Preferences {
             Name  => $Self->{PrefKeyRefresh},
             Block => 'Option',
             Data  => {
-                0  => 'off',
+                0  => Translatable('off'),
                 1  => '1',
                 2  => '2',
                 5  => '5',

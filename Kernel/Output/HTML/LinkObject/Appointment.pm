@@ -563,17 +563,17 @@ sub SearchOptionList {
     my @SearchOptionList = (
         {
             Key  => 'AppointmentTitle',
-            Name => 'Title',
+            Name => Translatable('Title'),
             Type => 'Text',
         },
         {
             Key  => 'AppointmentDescription',
-            Name => 'Description',
+            Name => Translatable('Description'),
             Type => 'Text',
         },
         {
             Key  => 'AppointmentCalendarID',
-            Name => 'Calendar',
+            Name => Translatable('Calendar'),
             Type => 'List',
         },
     );
