@@ -326,10 +326,6 @@ sub TableCreateComplex {
             },
         );
 
-        if ( $UserColumns{Title} != 2 ) {
-            $UserColumns{Title} = 2;
-        }
-
         # Sort
         COLUMN:
         for my $Column ( sort { $SortOrder{$a} <=> $SortOrder{$b} } keys %UserColumns ) {

@@ -264,7 +264,6 @@
                 <Item Key="DefaultColumns">
                     <Hash>
                         <Item Key="CalendarName">1</Item>
-                        <Item Key="Title">2</Item>
                         <Item Key="Description">2</Item>
                         <Item Key="StartTime">2</Item>
                         <Item Key="EndTime">2</Item>
@@ -276,15 +275,14 @@
                 </Item>
                 <Item Key="Priority">
                     <Hash>
-                        <Item Key="Title">100</Item>
-                        <Item Key="CalendarName">110</Item>
-                        <Item Key="Description">120</Item>
-                        <Item Key="StartTime">130</Item>
-                        <Item Key="EndTime">140</Item>
-                        <Item Key="Location">150</Item>
-                        <Item Key="NotificationTime">160</Item>
-                        <Item Key="Changed">170</Item>
-                        <Item Key="Created">180</Item>
+                        <Item Key="CalendarName">100</Item>
+                        <Item Key="Description">110</Item>
+                        <Item Key="StartTime">120</Item>
+                        <Item Key="EndTime">130</Item>
+                        <Item Key="Location">140</Item>
+                        <Item Key="NotificationTime">150</Item>
+                        <Item Key="Changed">160</Item>
+                        <Item Key="Created">170</Item>
                     </Hash>
                 </Item>
             </Hash>
