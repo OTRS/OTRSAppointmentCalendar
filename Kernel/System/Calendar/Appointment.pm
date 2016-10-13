@@ -24,6 +24,7 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar',
     'Kernel::System::Calendar::Helper',
     'Kernel::System::Daemon::SchedulerDB',
+    'Kernel::System::Scheduler',
     'Kernel::System::Group',
     'Kernel::System::DB',
     'Kernel::System::Log',
@@ -1892,13 +1893,11 @@ returns:
 sub _AppointmentFutureTasksDelete {
     my ( $Self, %Param ) = @_;
 
-    # TODO: Kernel::System::Daemon::SchedulerDB should not be used HERE, please use Kernel::System::Scheduler
-
     # get a local scheduler db object
-    my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+    my $SchedulerObject = $Kernel::OM->Get('Kernel::System::Scheduler');
 
     # get a list of already stored future tasks
-    my @FutureTaskList = $SchedulerDBObject->FutureTaskList(
+    my @FutureTaskList = $SchedulerObject->FutureTaskList(
         Type => 'CalendarAppointment',
     );
 
@@ -1911,7 +1910,7 @@ sub _AppointmentFutureTasksDelete {
             next FUTURETASK if !$FutureTask;
             next FUTURETASK if !IsHashRefWithData($FutureTask);
 
-            my $Success = $SchedulerDBObject->FutureTaskDelete(
+            my $Success = $SchedulerObject->FutureTaskDelete(
                 TaskID => $FutureTask->{TaskID},
             );
 
@@ -1963,13 +1962,11 @@ sub AppointmentFutureTasksUpdate {
         return 1;
     }
 
-    # TODO: Kernel::System::Daemon::SchedulerDB should not be used HERE, please use Kernel::System::Scheduler
-
     # get a local scheduler db object
-    my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+    my $SchedulerObject = $Kernel::OM->Get('Kernel::System::Scheduler');
 
     # get a list of already stored future tasks
-    my @FutureTaskList = $SchedulerDBObject->FutureTaskList(
+    my @FutureTaskList = $SchedulerObject->FutureTaskList(
         Type => 'CalendarAppointment',
     );
 
@@ -2010,7 +2007,7 @@ sub AppointmentFutureTasksUpdate {
             }
 
             # get the stored future task
-            my %FutureTaskData = $SchedulerDBObject->FutureTaskGet(
+            my %FutureTaskData = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskGet(
                 TaskID => $FutureTask->{TaskID},
             );
 
@@ -2053,8 +2050,9 @@ sub AppointmentFutureTasksUpdate {
     }
 
     # schedule new future tasks for notification actions
-    my $TaskID = $SchedulerDBObject->FutureTaskAdd(
+    my $TaskID = $SchedulerObject->TaskAdd(
         ExecutionTime => $UpcomingAppointments[0]->{NotificationDate},
+        Name          => 'AppointmentNotification',
         Type          => 'CalendarAppointment',
         Data          => {
             NotifyTime => $UpcomingAppointments[0]->{NotificationDate},
