@@ -341,10 +341,7 @@ sub TableCreateComplex {
                     $Hash{'Type'} = 'Text';
                 }
 
-                if ( $Column eq 'Description' ) {
-                    $Hash{MaxLength} = 50;
-                }
-                elsif ( $Column eq 'NotificationTime' ) {
+                if ( $Column eq 'NotificationTime' ) {
                     $Hash{'Content'} = $Appointment->{NotificationDate};
                 }
                 elsif ( $Column eq 'Created' ) {
@@ -533,16 +530,22 @@ Return
 
     @SearchOptionList = (
         {
-            Key       => 'CalendarName',
-            Name      => 'Calendar Name',
+            Key       => 'AppointmentTitle',
+            Name      => 'Title',
             InputStrg => $FormString,
             FormData  => '1234',
         },
         {
-            Key       => 'StartTime',
-            Name      => 'Appointment Start Time',
+            Key       => 'AppointmentDescription',
+            Name      => 'Description',
             InputStrg => $FormString,
             FormData  => 'BlaBla',
+        },
+        {
+            Key       => 'AppointmentCalendarID',
+            Name      => 'Calendar',
+            InputStrg => $FormString,
+            FormData  => 'Calendar1',
         },
     );
 

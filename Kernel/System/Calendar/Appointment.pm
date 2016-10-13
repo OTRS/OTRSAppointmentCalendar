@@ -526,10 +526,10 @@ sub AppointmentList {
     my $CacheKeyTeam     = $Param{TeamID} || 'any';
     my $CacheKeyResource = $Param{ResourceID} || 'any';
 
-    if ( $Param{Title} && $Param{Title} =~ /[\*]*/ ) {
+    if ( defined $Param{Title} && $Param{Title} =~ /^[\*]*$/ ) {
         $CacheKeyTitle = 'any';
     }
-    if ( $Param{Description} && $Param{Description} =~ /[\*]*/ ) {
+    if ( defined $Param{Description} && $Param{Description} =~ /^[\*]*$/ ) {
         $CacheKeyDesc = 'any';
     }
 
