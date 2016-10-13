@@ -51,12 +51,10 @@ sub new {
     my $Self = {};
     bless( $Self, $Type );
 
-    # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
-
     # get registered plugin modules
-    my $PluginConfig = $ConfigObject->Get("AppointmentCalendar::Plugin");
+    my $PluginConfig = $Kernel::OM->Get('Kernel::Config')->Get("AppointmentCalendar::Plugin");
+
+    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
 
     # load plugin modules
     PLUGIN:
@@ -95,7 +93,7 @@ sub PluginList {
         $_ => {
             PluginName => $Self->{Plugins}->{$_}->{PluginName},
             PluginURL  => $Self->{Plugins}->{$_}->{PluginURL},
-            },
+            }
     } keys %{ $Self->{Plugins} };
 
     return \%PluginList;
@@ -113,7 +111,7 @@ sub PluginKeys {
     my ( $Self, %Param ) = @_;
 
     my %PluginKeys = map {
-        lc $_ => $_,
+        lc $_ => $_
     } keys %{ $Self->{Plugins} };
 
     return \%PluginKeys;
@@ -136,11 +134,11 @@ sub PluginLinkAdd {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID PluginKey PluginData UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(AppointmentID PluginKey PluginData UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -168,21 +166,19 @@ sub PluginLinkList {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID PluginKey UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(AppointmentID PluginKey UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    $Param{PluginURL} = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginURL},
+    $Param{PluginURL} = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginURL};
 
-        my $LinkList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkList(
-        %Param,
-        );
+    my $LinkList = $Self->{Plugins}->{ $Param{PluginKey} }->{PluginModule}->LinkList(%Param);
 
     return $LinkList;
 }
@@ -202,11 +198,11 @@ sub PluginLinkDelete {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(AppointmentID UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -221,7 +217,7 @@ sub PluginLinkDelete {
     if ( !$Success ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Unable to delete plugin links!"
+            Message  => "Unable to delete plugin links!",
         );
     }
 
@@ -248,11 +244,11 @@ sub PluginSearch {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(PluginKey UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(PluginKey UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!",
+                Message  => "Need $Needed!",
             );
             return;
         }

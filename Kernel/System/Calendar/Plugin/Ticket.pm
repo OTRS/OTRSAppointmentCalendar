@@ -69,11 +69,11 @@ sub LinkAdd {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID PluginData UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(AppointmentID PluginData UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -114,11 +114,11 @@ sub LinkList {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID UserID PluginURL)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(AppointmentID UserID PluginURL)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -137,7 +137,7 @@ sub LinkList {
             LinkID   => $LinkKeyList{$_}->{TicketID},
             LinkName => $LinkKeyList{$_}->{TicketNumber} . ' ' . $LinkKeyList{$_}->{Title},
             LinkURL  => sprintf( $Param{PluginURL}, $LinkKeyList{$_}->{TicketID} ),
-            },
+            }
     } keys %LinkKeyList;
 
     return \%Result;
@@ -161,11 +161,11 @@ sub Search {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(UserID)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(UserID)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }

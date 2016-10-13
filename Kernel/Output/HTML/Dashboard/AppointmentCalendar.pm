@@ -150,20 +150,14 @@ sub Run {
     my $IdleMinutes = $Self->{Config}->{IdleMinutes} || 60;
     my $SortBy      = $Self->{Config}->{SortBy}      || 'UserFullname';
 
-    # get a local appointment object
-    my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-    my $CacheObject          = $Kernel::OM->Get('Kernel::System::Cache');
-
     # get a list of at least readable calendars
-    my @CalendarList = $CalendarObject->CalendarList(
+    my @CalendarList = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarList(
         UserID  => $Self->{UserID},
         ValidID => 1,
     );
 
     # collect calendar and appointment data
-    # seperate appointments to today, tomorrow
+    # separate appointments to today, tomorrow
     # and the next five days (soon)
     my %Calendars;
     my %Appointments;
@@ -173,6 +167,8 @@ sub Run {
     my $CacheKeyCalendars         = $Self->{CacheKey} . $Self->{UserID} . '::Calendars';
     my $CacheKeyAppointments      = $Self->{CacheKey} . $Self->{UserID} . '::Appointments::' . $Self->{Filter};
     my $CacheKeyAppointmentsCount = $Self->{CacheKey} . $Self->{UserID} . '::AppointmentsCount';
+
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     # get cached data
     my $DataCalendars = $CacheObject->Get(
@@ -187,6 +183,8 @@ sub Run {
         Type => 'Dashboard',
         Key  => $CacheKeyAppointmentsCount,
     );
+
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     # if cache is up-to-date, use the given data
     if (
@@ -223,6 +221,9 @@ sub Run {
 
         # prepare calendar appointments
         my %AppointmentsUnsorted;
+
+        # get a local appointment object
+        my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
         CALENDARID:
         for my $CalendarID ( sort keys %Calendars ) {

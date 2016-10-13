@@ -11,7 +11,7 @@ package Kernel::System::Calendar::Event::TicketAppointments;
 use strict;
 use warnings;
 
-use Kernel::System::AsynchronousExecutor;
+use base qw(Kernel::System::AsynchronousExecutor);
 
 our @ObjectDependencies = (
     'Kernel::System::Log',
@@ -36,7 +36,7 @@ sub Run {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -50,6 +50,7 @@ sub Run {
         return;
     }
 
+    # TODO: postfix if statement should not take more than 1 line
     # loop protection: prevent from running if update was triggered by the ticket update
     return
         if $Kernel::OM->Get('Kernel::System::Calendar')->{'_TicketAppointments::TicketUpdate'}
@@ -62,7 +63,7 @@ sub Run {
     return if !$TicketID;
 
     # update ticket in an asynchronous call
-    return Kernel::System::AsynchronousExecutor->AsyncCall(
+    return $Self->AsyncCall(
         ObjectName     => 'Kernel::System::Calendar',
         FunctionName   => 'TicketAppointmentUpdateTicket',
         FunctionParams => {

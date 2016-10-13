@@ -30,13 +30,10 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
-
     my %GetParam;
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # check needed parameters
     for my $Needed (qw(CalendarID User Token)) {
@@ -50,7 +47,7 @@ sub Run {
     }
 
     # get user
-    my %User = $UserObject->GetUserData(
+    my %User = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
         User  => $GetParam{User},
         Valid => 1,
     );
@@ -60,6 +57,8 @@ sub Run {
             Comment => Translatable('Please contact the administrator.'),
         );
     }
+
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     # get calendar
     my %Calendar = $CalendarObject->CalendarGet(

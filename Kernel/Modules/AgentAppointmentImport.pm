@@ -28,16 +28,13 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
-
-    my %GetParam;
-
     if ( $Self->{Subaction} eq 'Import' ) {
 
+        my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+
         my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+
+        my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
         return $LayoutObject->FatalError() if !$FormID;
 
@@ -98,6 +95,8 @@ sub Run {
         }
 
         my %Calendar;
+
+        my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
         if ($CalendarID) {
             %Calendar = $CalendarObject->CalendarGet(
@@ -162,14 +161,12 @@ sub Run {
 sub _Overview {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import Appointments");
     $Param{CalendarIDInvalid} //= '';
 
-    my @CalendarList = $CalendarObject->CalendarList(
+    my @CalendarList = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarList(
         UserID     => $Self->{UserID},
         Permission => 'create',
         ValidID    => 1,
@@ -204,7 +201,6 @@ sub _Overview {
 sub _Mask {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     # output page

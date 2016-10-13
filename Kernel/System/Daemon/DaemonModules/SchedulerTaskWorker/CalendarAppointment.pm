@@ -82,11 +82,9 @@ sub Run {
     # stop execution if an error in params is detected
     return if !$CheckResult;
 
-    # get a local appointment
-    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-
     # trigger the appointment notification
-    my $Success = $AppointmentObject->AppointmentNotification( %{ $Param{Data} } );
+    my $Success
+        = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentNotification( %{ $Param{Data} } );
 
     if ( !$Success ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(

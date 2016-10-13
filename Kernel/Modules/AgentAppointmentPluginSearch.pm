@@ -28,12 +28,11 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $EncodeObject = $Kernel::OM->Get('Kernel::System::Encode');
 
     $LayoutObject->ChallengeTokenCheck();
+
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get needed params
     my $Search = $ParamObject->GetParam( Param => 'Term' ) || '';

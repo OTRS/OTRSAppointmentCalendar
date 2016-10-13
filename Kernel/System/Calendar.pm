@@ -132,7 +132,7 @@ sub CalendarCreate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -201,8 +201,10 @@ sub CalendarCreate {
     );
     return if !%Calendar;
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # cache value
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+    $CacheObject->Set(
         Type  => $Self->{CacheType},
         Key   => $Calendar{CalendarID},
         Value => \%Calendar,
@@ -210,7 +212,7 @@ sub CalendarCreate {
     );
 
     # reset CalendarList
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    $CacheObject->CleanUp(
         Type => 'CalendarList',
     );
 
@@ -271,7 +273,7 @@ sub CalendarGet {
     if ( !$Param{CalendarID} && !$Param{CalendarName} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need CalendarID or CalendarName!"
+            Message  => "Need CalendarID or CalendarName!",
         );
         return;
     }
@@ -427,8 +429,10 @@ sub CalendarList {
     my $CacheKeyUser  = $Param{UserID} || 'all-user-ids';
     my $CacheKeyValid = $Param{ValidID} || 'all-valid-ids';
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # get cached value if exists
-    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+    my $Data = $CacheObject->Get(
         Type => $CacheType,
         Key  => "$CacheKeyUser-$CacheKeyValid",
     );
@@ -474,7 +478,7 @@ sub CalendarList {
         }
 
         # cache data
-        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        $CacheObject->Set(
             Type  => $CacheType,
             Key   => "$CacheKeyUser-$CacheKeyValid",
             Value => \@Result,
@@ -546,7 +550,7 @@ sub CalendarUpdate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -667,7 +671,7 @@ sub CalendarImport {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -768,9 +772,11 @@ sub CalendarImport {
             # create new appointment if NOT overwriting existing entities
             $Appointment->{UniqueID} = undef if !$Param{OverwriteExistingEntities};
 
-            # skip adding automatic recurring occurences
+            # TODO: do not use postfix if statement in variable assignment
+            # skip adding automatic recurring occurrences
             $Appointment->{RecurringRaw} = 1 if $Appointment->{Recurring};
 
+            # TODO: do not use postfix if statement in variable assignment
             # set parent id to last appointment id
             $Appointment->{ParentID} = $AppointmentID if $Appointment->{ParentID};
 
@@ -826,7 +832,7 @@ sub CalendarExport {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -850,13 +856,13 @@ sub CalendarExport {
 
     my @AppointmentData;
 
-    APPOINTMENT:
+    APPOINTMENTID:
     for my $AppointmentID (@Appointments) {
         my %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $AppointmentID,
         );
-        next APPOINTMENT if !%Appointment;
-        next APPOINTMENT if $Appointment{TicketAppointmentRuleID};
+        next APPOINTMENTID if !%Appointment;
+        next APPOINTMENTID if $Appointment{TicketAppointmentRuleID};
 
         push @AppointmentData, \%Appointment;
     }
@@ -891,7 +897,7 @@ sub CalendarPermissionGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -906,10 +912,12 @@ sub CalendarPermissionGet {
 
     my $Result = '';
 
+    my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
+
     TYPE:
     for my $Type (qw(ro move_into create rw)) {
 
-        my %GroupData = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
+        my %GroupData = $GroupObject->PermissionUserGet(
             UserID => $Param{UserID},
             Type   => $Type,
         );
@@ -1026,6 +1034,8 @@ sub TicketAppointments {
             Message  => "Processed ticket appointments for ticket $Param{TicketID}.",
         );
     }
+
+    return;
 }
 
 =item TicketAppointmentProcess()
@@ -1064,7 +1074,7 @@ sub TicketAppointmentProcess {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1073,12 +1083,12 @@ sub TicketAppointmentProcess {
     return if !IsHashRefWithData( $Param{Config} );
     return if !IsHashRefWithData( $Param{Rule} );
 
-    # get calendar helper object
-    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-
     my $Error;
     my $AppointmentType;
     my %AppointmentData;
+
+    my $MainObject           = $Kernel::OM->Get('Kernel::System::Main');
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     # get start and end time values
     for my $Field (qw(StartDate EndDate)) {
@@ -1093,7 +1103,7 @@ sub TicketAppointmentProcess {
             my $GenericModule = $Param{Config}->{$Type}->{Module};
 
             # get the time value via the module method
-            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule) ) {
+            if ( $MainObject->Require($GenericModule) ) {
                 $AppointmentData{$AppointmentField} = $GenericModule->new( %{$Self} )->GetTime(
                     Type     => $Type,
                     TicketID => $Param{TicketID},
@@ -1148,8 +1158,11 @@ sub TicketAppointmentProcess {
 
     # get appointment title
     if ( !$Error ) {
-        my $TicketHook        = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::Hook');
-        my $TicketHookDivider = $Kernel::OM->Get('Kernel::Config')->Get('Ticket::HookDivider');
+
+        my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
+        my $TicketHook        = $ConfigObject->Get('Ticket::Hook');
+        my $TicketHookDivider = $ConfigObject->Get('Ticket::HookDivider');
         my %Ticket            = $Kernel::OM->Get('Kernel::System::Ticket')->TicketGet(
             TicketID      => $Param{TicketID},
             DynamicFields => 0,
@@ -1226,13 +1239,13 @@ sub TicketAppointmentUpdateTicket {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # get appoinment data
+    # get appointment data
     my %AppointmentData = $Kernel::OM->Get('Kernel::System::Calendar::Appointment')->AppointmentGet(
         AppointmentID => $Param{AppointmentID},
     );
@@ -1250,6 +1263,9 @@ sub TicketAppointmentUpdateTicket {
     # get ticket appointment types
     my %TicketAppointmentTypes = $Self->TicketAppointmentTypesGet();
 
+    my $MainObject   = $Kernel::OM->Get('Kernel::System::Main');
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
     # process start and end time values
     for my $Field (qw(StartDate EndDate)) {
         my $Type = $Rule->{$Field};
@@ -1263,11 +1279,10 @@ sub TicketAppointmentUpdateTicket {
             my $GenericModule = $TicketAppointmentTypes{$Type}->{Module};
 
             # set the time value via the module method
-            if ( $Kernel::OM->Get('Kernel::System::Main')->Require($GenericModule) ) {
+            if ( $MainObject->Require($GenericModule) ) {
 
                 # loop protection: prevent ticket event module from running
-                $Kernel::OM->Get('Kernel::System::Ticket')->{'_TicketAppointments::AlreadyProcessed'}
-                    ->{ $Param{TicketID} }++;
+                $TicketObject->{'_TicketAppointments::AlreadyProcessed'}->{ $Param{TicketID} }++;
 
                 my $Success = $GenericModule->new( %{$Self} )->SetTime(
                     Type     => $Type,
@@ -1290,6 +1305,8 @@ sub TicketAppointmentUpdateTicket {
             Message  => "Updated ticket $Param{TicketID} from appointment $Param{AppointmentID}.",
         );
     }
+
+    return;
 }
 
 =item TicketAppointmentTicketID()
@@ -1332,7 +1349,7 @@ sub TicketAppointmentTicketID {
 
     my $TicketID;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $TicketID = $Row[0],
+        $TicketID = $Row[0];
     }
 
     return $TicketID;
@@ -1359,14 +1376,11 @@ sub TicketAppointmentRuleIDsGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
-
-    # get database object
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     my $SQL = '
         SELECT rule_id
@@ -1383,6 +1397,8 @@ sub TicketAppointmentRuleIDsGet {
         ';
         push @Bind, \$Param{TicketID};
     }
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # db query
     return if !$DBObject->Prepare(
@@ -1420,7 +1436,7 @@ sub TicketAppointmentRuleGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1460,21 +1476,20 @@ returns hash of appointment types:
 sub TicketAppointmentTypesGet {
     my ( $Self, %Param ) = @_;
 
-    # get config object
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
     # get ticket appointment types
-    my $TicketAppointmentConfig = $ConfigObject->Get('AppointmentCalendar::TicketAppointmentType') // {};
+    my $TicketAppointmentConfig = $Kernel::OM->Get('Kernel::Config')->Get('AppointmentCalendar::TicketAppointmentType')
+        // {};
     return if !$TicketAppointmentConfig;
 
     my %TicketAppointmentTypes;
+
+    my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
     TYPE:
     for my $TypeKey ( sort keys %{$TicketAppointmentConfig} ) {
         next TYPE if !$TicketAppointmentConfig->{$TypeKey}->{Key};
 
         if ( $TypeKey =~ /DynamicField$/ ) {
-            my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
 
             # get list of all valid date and date/time dynamic fields
             my $DynamicFieldList = $DynamicFieldObject->DynamicFieldListGet(
@@ -1522,7 +1537,7 @@ sub TicketAppointmentDelete {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1626,7 +1641,7 @@ sub GetAccessToken {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1678,7 +1693,7 @@ sub GetTextColor {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1807,7 +1822,7 @@ sub _TicketAppointmentGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1829,7 +1844,7 @@ sub _TicketAppointmentGet {
 
     my $AppointmentID;
     while ( my @Row = $DBObject->FetchrowArray() ) {
-        $AppointmentID = $Row[0],
+        $AppointmentID = $Row[0];
     }
 
     return $AppointmentID;
@@ -1860,7 +1875,7 @@ sub _TicketAppointmentCreate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1913,7 +1928,7 @@ sub _TicketAppointmentUpdate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }

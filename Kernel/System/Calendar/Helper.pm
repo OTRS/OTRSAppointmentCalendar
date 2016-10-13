@@ -79,11 +79,11 @@ sub TimeCheck {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(OriginalTime Time)) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw(OriginalTime Time)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -119,11 +119,11 @@ sub SystemTimeGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw( String )) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw( String )) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -153,11 +153,11 @@ sub TimestampGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw( SystemTime )) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -233,11 +233,11 @@ sub DateGet {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw( SystemTime )) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -255,7 +255,7 @@ sub DateGet {
     $Year      = int $Year;
     $DayOfWeek = int $DayOfWeek;
 
-    # Kernel::System::Time object returns 0 for sunday - we need to change this to 7 (like on other places)
+    # Kernel::System::Time object returns 0 for Sunday - we need to change this to 7 (like on other places)
     if ( !$DayOfWeek ) {
         $DayOfWeek = 7;
     }
@@ -284,11 +284,11 @@ sub Date2SystemTime {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw( Year Month Day )) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw( Year Month Day )) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -323,11 +323,11 @@ sub AddPeriod {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Time)) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw(Time)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -343,10 +343,10 @@ sub AddPeriod {
     $NextTimePiece = $NextTimePiece->add_years( $Param{Years} );
     my $EndDay = $NextTimePiece->day_of_month();
 
-    # check if month doesn't have enough days (for example: january 31 + 1 month = march 01)
+    # check if month doesn't have enough days (for example: January 31 + 1 month = March 01)
     if ( $StartDay != $EndDay ) {
 
-        # Substract needed days
+        # Subtract needed days
         my $Days = $NextTimePiece->day_of_month();
         $NextTimePiece -= $Days * 24 * 60 * 60;
     }
@@ -377,7 +377,7 @@ sub TimezoneOffsetGet {
     if ( !$Param{UserID} && !$Param{TimezoneID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need UserID or TimezoneID!"
+            Message  => "Need UserID or TimezoneID!",
         );
         return;
     }
@@ -471,11 +471,11 @@ returns:
 sub WeekDetailsGet {
     my ( $Self, %Param ) = @_;
 
-    for (qw( SystemTime )) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw( SystemTime )) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -484,7 +484,7 @@ sub WeekDetailsGet {
     # create Time::Piece object
     my $Time = localtime( $Param{SystemTime} );
 
-    # Time::Piece object returns 0 for sunday - we need to change this to 7 (like on other places)
+    # Time::Piece object returns 0 for Sunday - we need to change this to 7 (like on other places)
     my $DayOfWeek = $Time->day_of_week();
     if ( !$DayOfWeek ) {
         $DayOfWeek = 7;

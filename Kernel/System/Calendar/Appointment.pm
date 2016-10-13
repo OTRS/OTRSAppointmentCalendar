@@ -139,7 +139,7 @@ sub AppointmentCreate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -363,7 +363,7 @@ sub AppointmentCreate {
 
     my $AppointmentID;
 
-    # return parent id for appointment occurences
+    # return parent id for appointment occurrences
     if ( $Param{ParentID} ) {
         $AppointmentID = $Param{ParentID};
     }
@@ -401,11 +401,13 @@ sub AppointmentCreate {
         );
     }
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # clean up list methods cache
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    $CacheObject->CleanUp(
         Type => $Self->{CacheType} . 'List' . $Param{CalendarID},
     );
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
+    $CacheObject->CleanUp(
         Type => $Self->{CacheType} . 'Days' . $Param{UserID},
     );
 
@@ -505,7 +507,7 @@ sub AppointmentList {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -530,6 +532,8 @@ sub AppointmentList {
         $CacheKeyDesc = 'any';
     }
 
+    #TODO: better use a variable for the cache key since it is used at least 2 times.
+
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
@@ -541,7 +545,6 @@ sub AppointmentList {
         return @{$Data};
     }
 
-    # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # Filter by appointment title, with support for wildcards.
@@ -556,30 +559,32 @@ sub AppointmentList {
         $Param{Description} = '%' . $Param{Description} . '%';
     }
 
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
     # check time
     if ( $Param{StartTime} ) {
-        my $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
             String => $Param{StartTime},
         );
         if ( !$StartTimeSystem ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "StartTime invalid!"
+                Message  => "StartTime invalid!",
             );
             return;
         }
-        $Param{StartTime} = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+        $Param{StartTime} = $CalendarHelperObject->TimestampGet(
             SystemTime => $StartTimeSystem,
         );
     }
     if ( $Param{EndTime} ) {
-        my $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
             String => $Param{EndTime},
         );
         if ( !$EndTimeSystem ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "EndTime invalid!"
+                Message  => "EndTime invalid!",
             );
             return;
         }
@@ -735,7 +740,7 @@ sub AppointmentDays {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -746,36 +751,40 @@ sub AppointmentDays {
     my $CacheKeyStart = $Param{StartTime} || 'any';
     my $CacheKeyEnd   = $Param{EndTime} || 'any';
 
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+
     # check time
     if ( $Param{StartTime} ) {
-        my $StartTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $StartTimeValid = $CalendarHelperObject->SystemTimeGet(
             String => $Param{StartTime},
         );
 
         if ( !$StartTimeValid ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "StartTime invalid!"
+                Message  => "StartTime invalid!",
             );
             return;
         }
     }
     if ( $Param{EndTime} ) {
-        my $EndTimeValid = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        my $EndTimeValid = $CalendarHelperObject->SystemTimeGet(
             String => $Param{EndTime},
         );
 
         if ( !$EndTimeValid ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "EndTime invalid!"
+                Message  => "EndTime invalid!",
             );
             return;
         }
     }
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     # check cache
-    my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+    my $Data = $CacheObject->Get(
         Type => $CacheType,
         Key  => "$CacheKeyStart-$CacheKeyEnd",
     );
@@ -784,7 +793,6 @@ sub AppointmentDays {
         return %{$Data};
     }
 
-    # needed objects
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # get user groups
@@ -855,11 +863,11 @@ sub AppointmentDays {
         }
 
         # Get system times
-        $StartTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
             String => $StartTime,
         );
 
-        $EndTimeSystem = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->SystemTimeGet(
+        $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
             String => $EndTime,
         );
 
@@ -869,7 +877,7 @@ sub AppointmentDays {
             $LoopSystemTime += 60 * 60 * 24
             )
         {
-            my $LoopTime = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->TimestampGet(
+            my $LoopTime = $CalendarHelperObject->TimestampGet(
                 SystemTime => $LoopSystemTime,
             );
 
@@ -885,7 +893,7 @@ sub AppointmentDays {
     }
 
     # cache
-    $Kernel::OM->Get('Kernel::System::Cache')->Set(
+    $CacheObject->Set(
         Type  => $CacheType,
         Key   => "$CacheKeyStart-$CacheKeyEnd",
         Value => \%Result,
@@ -956,17 +964,19 @@ sub AppointmentGet {
     {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "Need AppointmentID or UniqueID and CalendarID!"
+            Message  => "Need AppointmentID or UniqueID and CalendarID!",
         );
         return;
     }
 
     my $Data;
 
+    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
     if ( $Param{AppointmentID} ) {
 
         # check cache
-        $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
+        $Data = $CacheObject->Get(
             Type => $Self->{CacheType},
             Key  => $Param{AppointmentID},
         );
@@ -1060,7 +1070,7 @@ sub AppointmentGet {
     if ( $Param{AppointmentID} ) {
 
         # cache
-        $Kernel::OM->Get('Kernel::System::Cache')->Set(
+        $CacheObject->Set(
             Type  => $Self->{CacheType},
             Key   => $Param{AppointmentID},
             Value => \%Result,
@@ -1127,7 +1137,7 @@ sub AppointmentUpdate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1288,6 +1298,7 @@ sub AppointmentUpdate {
         @RecurrenceExclude = ($RecurrenceID);
     }
 
+    # TODO: better use elsif here!
     # reset exclude list if recurrence is turned off
     else {
         @RecurrenceExclude = () if !$Param{Recurring};
@@ -1416,7 +1427,7 @@ sub AppointmentDelete {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1441,7 +1452,7 @@ sub AppointmentDelete {
     if ( !grep { $Permission eq $_ } @RequiredPermissions ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => "User($Param{UserID}) has no permission to delete Appointment($Param{AppointmentID})!"
+            Message  => "User($Param{UserID}) has no permission to delete Appointment($Param{AppointmentID})!",
         );
         return;
     }
@@ -1546,7 +1557,7 @@ sub AppointmentDeleteOccurrence {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1621,7 +1632,7 @@ sub GetUniqueID {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1670,15 +1681,13 @@ sub AppointmentSeenGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # needed objects
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-    my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
 
     # check cache
     my $Data = $CacheObject->Get(
@@ -1695,6 +1704,8 @@ sub AppointmentSeenGet {
             calendar_appointment_id=? AND
             user_id=?
     ';
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # db query
     return if !$DBObject->Prepare(
@@ -1744,16 +1755,13 @@ sub AppointmentSeenSet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
     $Param{Seen} = $Param{Seen} // 1;
-
-    # needed objects
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 
     if ( $Param{Seen} ) {
         my $SQL = '
@@ -1789,7 +1797,7 @@ sub AppointmentSeenSet {
     }
 
     # delete seen cache
-    $CacheObject->CleanUp(
+    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
         Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
     );
 
@@ -1813,12 +1821,6 @@ returns:
 sub AppointmentUpcomingGet {
     my ( $Self, %Param ) = @_;
 
-    # needed objects
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # get local calendar helper object
-    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-
     # get current timestamp
     my $CurrentTimestamp;
 
@@ -1832,11 +1834,13 @@ sub AppointmentUpcomingGet {
     }
     else {
 
-        $CurrentTimestamp = $CalendarHelperObject->CurrentTimestampGet();
+        $CurrentTimestamp = $Kernel::OM->Get('Kernel::System::Calendar::Helper')->CurrentTimestampGet();
         $SQL .= "WHERE notify_time >= ? ";
     }
 
     $SQL .= 'ORDER BY notify_time ASC';
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
 
     # db query
     return if !$DBObject->Prepare(
@@ -1889,6 +1893,8 @@ returns:
 
 sub _AppointmentFutureTasksDelete {
     my ( $Self, %Param ) = @_;
+
+    # TODO: Kernel::System::Daemon::SchedulerDB should not be used HERE, please use Kernel::System::Scheduler
 
     # get a local scheduler db object
     my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
@@ -1958,6 +1964,8 @@ sub AppointmentFutureTasksUpdate {
 
         return 1;
     }
+
+    # TODO: Kernel::System::Daemon::SchedulerDB should not be used HERE, please use Kernel::System::Scheduler
 
     # get a local scheduler db object
     my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
@@ -2047,7 +2055,7 @@ sub AppointmentFutureTasksUpdate {
     }
 
     # schedule new future tasks for notification actions
-    my $TaskID = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB')->FutureTaskAdd(
+    my $TaskID = $SchedulerDBObject->FutureTaskAdd(
         ExecutionTime => $UpcomingAppointments[0]->{NotificationDate},
         Type          => 'CalendarAppointment',
         Data          => {
@@ -2087,7 +2095,7 @@ sub _AppointmentNotificationPrepare {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2278,7 +2286,7 @@ sub AppointmentNotification {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2327,7 +2335,7 @@ sub _AppointmentRecurringCreate {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2481,7 +2489,7 @@ sub _AppointmentRecurringDelete {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2512,13 +2520,12 @@ sub _AppointmentRecurringExclude {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # needed objects
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
     my $DBObject    = $Kernel::OM->Get('Kernel::System::DB');
 
@@ -2543,7 +2550,7 @@ sub _AppointmentRecurringExclude {
     }
 
     # update db record
-    return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
+    return if !$DBObject->Do(
         SQL  => 'UPDATE calendar_appointment SET recur_exclude=? WHERE id=?',
         Bind => [ \$RecurrenceExclude, \$Param{ParentID} ],
     );
@@ -2561,11 +2568,11 @@ sub _AppointmentGetCalendarID {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID)) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw(AppointmentID)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2597,11 +2604,11 @@ sub _AppointmentGetRecurrenceID {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(AppointmentID)) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw(AppointmentID)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2633,11 +2640,11 @@ sub _CalculateRecurrenceTime {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Appointment Step OriginalTime CurrentTime)) {
-        if ( !defined $Param{$_} ) {
+    for my $Needed (qw(Appointment Step OriginalTime CurrentTime)) {
+        if ( !defined $Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -2738,7 +2745,7 @@ sub _CalculateRecurrenceTime {
             # next day if this week should be skipped
             next LOOP if ( $CW - $OriginalCW ) % $Param{Appointment}->{RecurrenceInterval};
 
-            # check if SystemTime mach requirements
+            # check if SystemTime match requirements
             if ( grep { $WeekDay == $_ } @{ $Param{Appointment}->{RecurrenceFrequency} } ) {
                 $Found = 1;
                 last LOOP;

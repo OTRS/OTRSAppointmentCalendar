@@ -97,19 +97,15 @@ sub Import {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # needed objects
-    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
-    my $Calendar             = Data::ICal->new( data => $Param{ICal} );
-
     my $UntilLimitedTimestamp = $Param{UntilLimit} || '';
+
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
     if ( !$UntilLimitedTimestamp ) {
 
@@ -128,9 +124,14 @@ sub Import {
         );
     }
 
+    my $Calendar = Data::ICal->new( data => $Param{ICal} );
+
     my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
     my %ICalTimeZones;
+
+    my $PluginObject      = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
     ENTRY:
     for my $Entry (@Entries) {
@@ -709,7 +710,9 @@ sub Import {
                 if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
 
                     # create new appointment
-                    delete $Parameters{UniqueID} if %Appointment;
+                    if (%Appointment) {
+                        delete $Parameters{UniqueID};
+                    }
                     %Appointment = ();
                 }
             }
@@ -783,7 +786,7 @@ sub _FormatTime {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
