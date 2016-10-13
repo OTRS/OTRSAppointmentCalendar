@@ -50,7 +50,6 @@ sub Run {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
-    # get needed objects
     my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
@@ -70,7 +69,7 @@ sub Run {
             # append midnight to the timestamps
             for my $Timestamp (qw(StartTime EndTime)) {
                 if ( $GetParam{$Timestamp} && !( $GetParam{$Timestamp} =~ /\s\d{2}:\d{2}:\d{2}$/ ) ) {
-                    $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00',
+                    $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00';
                 }
             }
 
@@ -181,9 +180,9 @@ sub Run {
                     if ( $Appointment->{TeamID} ) {
                         my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
                         my @TeamNames;
-                        TEAM:
+                        TEAMID:
                         for my $TeamID ( @{ $Appointment->{TeamID} } ) {
-                            next TEAM if !$TeamID;
+                            next TEAMID if !$TeamID;
                             my %Team = $TeamObject->TeamGet(
                                 TeamID => $TeamID,
                                 UserID => $Self->{UserID},
@@ -203,9 +202,9 @@ sub Run {
                     if ( $Appointment->{ResourceID} ) {
                         my $UserObject = $Kernel::OM->Get('Kernel::System::User');
                         my @ResourceNames;
-                        RESOURCE:
+                        RESOURCEID:
                         for my $ResourceID ( @{ $Appointment->{ResourceID} } ) {
-                            next RESOURCE if !$ResourceID;
+                            next RESOURCEID if !$ResourceID;
                             my %User = $UserObject->GetUserData(
                                 UserID => $ResourceID,
                             );
@@ -275,7 +274,7 @@ sub Run {
         # append midnight to the timestamps
         for my $Timestamp (qw(StartTime EndTime)) {
             if ( $GetParam{$Timestamp} && !( $GetParam{$Timestamp} =~ /\s\d{2}:\d{2}:\d{2}$/ ) ) {
-                $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00',
+                $GetParam{$Timestamp} = $GetParam{$Timestamp} . ' 00:00:00';
             }
         }
 
@@ -382,8 +381,6 @@ sub Run {
         Type        => 'inline',
         NoCache     => 1,
     );
-
-    return;
 }
 
 1;

@@ -36,15 +36,12 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
-    my $UserObject   = $Kernel::OM->Get('Kernel::System::User');
 
     my $Config = $ConfigObject->Get( $Self->{View} );
 
     # get filters stored in the user preferences
-    my %Preferences = $UserObject->GetPreferences(
+    my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
         UserID => $Self->{UserID},
     );
     my $LastFilterKey = 'UserLastFilter-' . $Self->{View};
@@ -64,6 +61,8 @@ sub Run {
             Prio => 300,
         },
     );
+
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # current filter
     $Param{Filter} = $ParamObject->GetParam( Param => 'Filter' ) || $LastFilter;

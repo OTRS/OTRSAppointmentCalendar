@@ -31,23 +31,23 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-
     # get all user's valid calendars
     my $ValidID = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
         Valid => 'valid',
     );
+
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
+
     my @Calendars = $CalendarObject->CalendarList(
         UserID  => $Self->{UserID},
         ValidID => $ValidID,
     );
 
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
     # check if we found some
     if (@Calendars) {
 
-        # get needed objects
         my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
         my $ParamObject  = $Kernel::OM->Get('Kernel::System::Web::Request');
 

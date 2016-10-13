@@ -54,7 +54,6 @@ sub Run {
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
 
-    # get needed objects
     my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
     my $LayoutObject         = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
@@ -103,7 +102,7 @@ sub Run {
 
         # transform data for ID lookup
         my %CalendarLookup = map {
-            $_->{CalendarID} => $_->{CalendarName},
+            $_->{CalendarID} => $_->{CalendarName}
         } @Calendars;
 
         for my $Calendar (@CalendarData) {
@@ -167,6 +166,7 @@ sub Run {
                 String => $Appointment{StartTime},
             );
 
+            # TODO: what is $S ?
             (
                 my $S, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
@@ -241,6 +241,8 @@ sub Run {
                         if ($DayOffset) {
                             for my $Day (@Days) {
                                 $Day += $DayOffset;
+
+                                #TODO: Do not use postfix if statement in variable assignments
                                 $Day = 1 if $Day == 8;
                             }
                         }
@@ -338,12 +340,15 @@ sub Run {
             SystemTime => $SelectedSystemTime,
         );
 
+        #TODO: Do not use postfix if statement in variable assignments
         # set week day if not set
         $Appointment{Days} = $DateInfo[6] if !$Appointment{Days};
 
+        #TODO: Do not use postfix if statement in variable assignments
         # set month day if not set
         $Appointment{MonthDays} = $DateInfo[3] if !$Appointment{MonthDays};
 
+        #TODO: Do not use postfix if statement in variable assignments
         # set month if not set
         $Appointment{Months} = $DateInfo[4] if !$Appointment{Months};
 
@@ -512,7 +517,7 @@ sub Run {
                     my %User = $UserObject->GetUserData(
                         UserID => $UserID,
                     );
-                    $TeamUserList{$UserID} = $User{UserFullname},
+                    $TeamUserList{$UserID} = $User{UserFullname};
                 }
 
                 %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
@@ -582,7 +587,7 @@ sub Run {
             },
         );
         my %RecurrenceTypeLookup = map {
-            $_->{Key} => $_->{Value},
+            $_->{Key} => $_->{Value}
         } @RecurrenceTypes;
         $Param{RecurrenceValue} = $LayoutObject->{LanguageObject}->Translate(
             $RecurrenceTypeLookup{$SelectedRecurrenceType},
@@ -618,7 +623,7 @@ sub Run {
             },
         );
         my %RecurrenceCustomTypeLookup = map {
-            $_->{Key} => $_->{Value},
+            $_->{Key} => $_->{Value}
         } @RecurrenceCustomTypes;
         my $RecurrenceCustomType = $RecurrenceCustomTypeLookup{$SelectedRecurrenceCustomType};
         $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
@@ -650,6 +655,8 @@ sub Run {
                     'year(s)',
                 ),
             );
+
+            #TODO: Do not use postfix if statement in variable assignments
             $Param{RecurrenceValue} .= ', '
                 . $LayoutObject->{LanguageObject}->Translate('every')
                 . ' ' . $Appointment{RecurrenceInterval} . ' '
@@ -675,6 +682,8 @@ sub Run {
         my $RecurrenceLimit = 1;
         if ( $Appointment{RecurrenceCount} ) {
             $RecurrenceLimit = 2;
+
+            #TODO: Do not use postfix if statement in variable assignments
             $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
                 'for %s time(s)', $Appointment{RecurrenceCount},
             ) if $SelectedRecurrenceType;
@@ -712,7 +721,7 @@ sub Run {
                 Minute => $Appointment{StartMinute} // $GetParam{StartMinute},
                 Second => 0,
             );
-            $RecurrenceUntilDiffTime = $StartTime - $SystemTime + 60 * 60 * 24 * 3,    # start +3 days
+            $RecurrenceUntilDiffTime = $StartTime - $SystemTime + 60 * 60 * 24 * 3;    # start +3 days
         }
         else {
             $Param{RecurrenceUntil} = sprintf(
@@ -721,6 +730,8 @@ sub Run {
                 $Appointment{RecurrenceUntilMonth},
                 $Appointment{RecurrenceUntilDay},
             );
+
+            #TODO: Do not use postfix if statement in variable assignments
             $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
                 'until %s', $Param{RecurrenceUntil},
             ) if $SelectedRecurrenceType;
@@ -792,7 +803,7 @@ sub Run {
             },
         );
         my %NotificationTemplateLookup = map {
-            $_->{Key} => $_->{Value},
+            $_->{Key} => $_->{Value}
         } @NotificationTemplates;
         my $SelectedNotificationTemplate = $Appointment{NotificationTemplate} || '0';
         $Param{NotificationValue} = $NotificationTemplateLookup{$SelectedNotificationTemplate};
@@ -823,7 +834,7 @@ sub Run {
             },
         );
         my %NotificationCustomUnitLookup = map {
-            $_->{Key} => $_->{Value},
+            $_->{Key} => $_->{Value}
         } @NotificationCustomUnits;
         my $SelectedNotificationCustomUnit = $Appointment{NotificationCustomRelativeUnit} || 'minutes';
 
@@ -857,7 +868,7 @@ sub Run {
             },
         );
         my %NotificationCustomUnitPointOfTimeLookup = map {
-            $_->{Key} => $_->{Value},
+            $_->{Key} => $_->{Value}
         } @NotificationCustomUnitsPointOfTime;
         my $SelectedNotificationCustomUnitPointOfTime = $Appointment{NotificationCustomRelativePointOfTime}
             || 'beforestart';
@@ -1051,7 +1062,7 @@ sub Run {
             }
         }
 
-        my $Output .= $LayoutObject->Output(
+        my $Output = $LayoutObject->Output(
             TemplateFile => 'AgentAppointmentEdit',
             Data         => {
                 %Param,
@@ -1086,8 +1097,9 @@ sub Run {
 
             my $RequiredPermission = 2;
             if ( $GetParam{CalendarID} && $GetParam{CalendarID} != $Appointment{CalendarID} ) {
-                $RequiredPermission
-                    = 3;    # in order to move appointment to another calendar, user needs "create" permission
+
+                # in order to move appointment to another calendar, user needs "create" permission
+                $RequiredPermission = 3;
             }
 
             if ( $PermissionLevel{$Permissions} < $RequiredPermission ) {
@@ -1468,10 +1480,12 @@ sub Run {
                     UserID        => $Self->{UserID},
                 );
 
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => Translatable('Links could not be deleted!'),
-                ) if !$Success;
+                if ( !$Success ) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => Translatable('Links could not be deleted!'),
+                    );
+                }
             }
 
             # get passed plugin parameters
@@ -1494,10 +1508,12 @@ sub Run {
                             UserID        => $Self->{UserID},
                         );
 
-                        $Kernel::OM->Get('Kernel::System::Log')->Log(
-                            Priority => 'error',
-                            Message  => Translatable('Link could not be created!'),
-                        ) if !$Link;
+                        if ( !$Link ) {
+                            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                                Priority => 'error',
+                                Message  => Translatable('Link could not be created!'),
+                            );
+                        }
                     }
                 }
             }
@@ -1650,7 +1666,7 @@ sub Run {
                     my %User = $UserObject->GetUserData(
                         UserID => $UserID,
                     );
-                    $TeamUserList{$UserID} = $User{UserFullname},
+                    $TeamUserList{$UserID} = $User{UserFullname};
                 }
 
                 %TeamUserListAll = ( %TeamUserListAll, %TeamUserList );
@@ -1683,7 +1699,7 @@ sub _DayOffsetGet {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
@@ -1719,6 +1735,8 @@ sub _DayOffsetGet {
     elsif ( $OriginalTimeSystem > $DestinationTimeSystem ) {
         return -1;
     }
+
+    # TODO: Maybe this else is not needed, you can return 1 outside
     else {
         return 1;
     }

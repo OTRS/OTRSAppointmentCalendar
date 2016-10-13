@@ -193,9 +193,7 @@ sub TableCreateComplex {
         },
     );
 
-    # Get needed objects.
     my $UserObject = $Kernel::OM->Get('Kernel::System::User');
-    my $JSONObject = $Kernel::OM->Get('Kernel::System::JSON');
 
     # load user preferences
     my %Preferences = $UserObject->GetPreferences(

@@ -86,23 +86,19 @@ sub Export {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $Needed!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
 
-    # needed objects
-    my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-    my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
-
-    my %Calendar = $CalendarObject->CalendarGet(
+    my %Calendar = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarGet(
         CalendarID => $Param{CalendarID},
         UserID     => $Param{UserID},
     );
     return if !$Calendar{CalendarID};
+
+    my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
 
     my @AppointmentIDs = $AppointmentObject->AppointmentList(
         CalendarID => $Calendar{CalendarID},
@@ -117,6 +113,14 @@ sub Export {
     $ICalCalendar->add_property(
         'x-apple-calendar-color' => $Calendar{Color},
     );
+
+    my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
+    my $PluginObject         = $Kernel::OM->Get('Kernel::System::Calendar::Plugin');
+
+    my $TeamObject;
+    if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+        $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
+    }
 
     APPOINTMENT_ID:
     for my $AppointmentID (@AppointmentIDs) {
@@ -281,7 +285,7 @@ sub Export {
         # occurrence appointment
         if ( $Appointment{ParentID} ) {
 
-            # overriden occurences only
+            # overridden occurrences only
             if (
                 $Appointment{RecurrenceID}
                 && grep { ( $_ // '' ) eq $Appointment{RecurrenceID} } @{ $Appointment{RecurrenceExclude} }
@@ -300,7 +304,7 @@ sub Export {
                     = $Appointment{AllDay} ? substr( $ICalRecurrenceID->ical(), 0, -1 ) : $ICalRecurrenceID->ical();
             }
 
-            # skip if not overriden
+            # skip if not overridden
             else {
                 next APPOINTMENT_ID;
             }
@@ -315,14 +319,11 @@ sub Export {
         );
 
         # check if team object is registered
-        if ( $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+        if ($TeamObject) {
 
             # include team names
             if ( $Appointment{TeamID} ) {
                 my @Teams;
-
-                # get team object
-                my $TeamObject = $Kernel::OM->Get('Kernel::System::Calendar::Team');
 
                 # get team names
                 for my $TeamID ( @{ $Appointment{TeamID} } ) {
@@ -413,7 +414,7 @@ sub Export {
     return $ICalCalendar->as_string();
 }
 
-no warnings 'redefine';
+no warnings 'redefine';    ## no critic
 
 sub Data::ICal::product_id {    ## no critic
     return 'OTRS ' . $Kernel::OM->Get('Kernel::Config')->Get('Version');

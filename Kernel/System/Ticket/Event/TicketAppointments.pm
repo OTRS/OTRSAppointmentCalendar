@@ -11,7 +11,7 @@ package Kernel::System::Ticket::Event::TicketAppointments;
 use strict;
 use warnings;
 
-use Kernel::System::AsynchronousExecutor;
+use base qw(Kernel::System::AsynchronousExecutor);
 
 our @ObjectDependencies = (
     'Kernel::Config',
@@ -33,32 +33,33 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Data Event Config)) {
-        if ( !$Param{$_} ) {
+    for my $Needed (qw(Data Event Config)) {
+        if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_!"
+                Message  => "Need $Needed!",
             );
             return;
         }
     }
-    for (qw(TicketID)) {
-        if ( !$Param{Data}->{$_} ) {
+    for my $Needed (qw(TicketID)) {
+        if ( !$Param{Data}->{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
-                Message  => "Need $_ in Data!"
+                Message  => "Need $Needed in Data!",
             );
             return;
         }
     }
 
+    # TODO: postfix if should not need more than 1 line.
     # loop protection: only execute this handler once for each ticket
     return
         if $Kernel::OM->Get('Kernel::System::Ticket')->{'_TicketAppointments::AlreadyProcessed'}
         ->{ $Param{Data}->{TicketID} }++;
 
     # handle ticket appointments in an asynchronous call
-    return Kernel::System::AsynchronousExecutor->AsyncCall(
+    return $Self->AsyncCall(
         ObjectName     => 'Kernel::System::Calendar',
         FunctionName   => 'TicketAppointments',
         FunctionParams => {

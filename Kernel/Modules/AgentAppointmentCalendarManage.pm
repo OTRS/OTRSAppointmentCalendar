@@ -12,8 +12,9 @@ use strict;
 use warnings;
 
 use Kernel::Language qw(Translatable);
-use Kernel::System::AsynchronousExecutor;
 use Kernel::System::VariableCheck qw(:all);
+
+use base qw(Kernel::System::AsynchronousExecutor);
 
 our $ObjectManagerDisabled = 1;
 
@@ -30,10 +31,7 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
-    my $ParamObject    = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get names of all parameters
     my @ParamNames = $ParamObject->GetParamNames();
@@ -52,6 +50,9 @@ sub Run {
 
         $GetParam{$Key} = $ParamObject->GetParam( Param => $Key );
     }
+
+    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     if ( $Self->{Subaction} eq 'New' ) {
 
@@ -200,7 +201,7 @@ sub Run {
         }
 
         # process ticket appointments in async call to console command
-        Kernel::System::AsynchronousExecutor->AsyncCall(
+        $Self->AsyncCall(
             ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
             FunctionName   => 'Execute',
             FunctionParams => [
@@ -427,7 +428,7 @@ sub Run {
         }
 
         # process ticket appointments in async call to console command
-        Kernel::System::AsynchronousExecutor->AsyncCall(
+        $Self->AsyncCall(
             ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
             FunctionName   => 'Execute',
             FunctionParams => [
@@ -460,7 +461,7 @@ sub Run {
         my $CalendarData = $Kernel::OM->Get('Kernel::System::YAML')->Load( Data => $Content );
         if ( ref $CalendarData ne 'HASH' ) {
             return $LayoutObject->ErrorScreen(
-                Message => Translatable('Couldn\'t read calendar configuration file.'),
+                Message => Translatable("Couldn't read calendar configuration file."),
                 Comment => Translatable('Please make sure your file is valid.'),
             );
         }
@@ -547,8 +548,6 @@ sub Run {
 sub _Overview {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject   = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
     my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
 
     # get all calendars user has RW access to
@@ -556,6 +555,8 @@ sub _Overview {
         UserID     => $Self->{UserID},
         Permission => 'rw',
     );
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     $LayoutObject->Block(
         Name => 'CalendarFilter',
@@ -580,7 +581,9 @@ sub _Overview {
         $Calendar->{Valid} = $Kernel::OM->Get('Kernel::System::Valid')->ValidLookup(
             ValidID => $Calendar->{ValidID},
         );
-        $Param{ValidCount}++ if $Calendar->{ValidID} == 1;
+        if ( $Calendar->{ValidID} == 1 ) {
+            $Param{ValidCount}++;
+        }
 
         # get access tokens
         $Calendar->{AccessToken} = $CalendarObject->GetAccessToken(
@@ -596,10 +599,11 @@ sub _Overview {
         );
     }
 
-    $LayoutObject->Block(
-        Name => 'CalendarNoDataRow',
-    ) if scalar @Calendars == 0;
-
+    if ( scalar @Calendars == 0 ) {
+        $LayoutObject->Block(
+            Name => 'CalendarNoDataRow',
+        );
+    }
     $Param{Overview} = 1;
 
     $LayoutObject->Block(
@@ -644,16 +648,13 @@ sub _Mask {
 sub _GroupSelectionGet {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-
     # get list of groups where user has RW permissions
     my %GroupList = $Kernel::OM->Get('Kernel::System::Group')->PermissionUserGet(
         UserID => $Self->{UserID},
         Type   => 'rw',
     );
 
-    my $GroupSelection = $LayoutObject->BuildSelection(
+    my $GroupSelection = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
         Data       => \%GroupList,
         Name       => 'GroupID',
         SelectedID => $Param{GroupID} || '',
@@ -682,12 +683,8 @@ sub _ColorPaletteGet {
 sub _ValidSelectionGet {
     my ( $Self, %Param ) = @_;
 
-    # get needed objects
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ValidObject  = $Kernel::OM->Get('Kernel::System::Valid');
-
-    my %Valid          = $ValidObject->ValidList();
-    my $ValidSelection = $LayoutObject->BuildSelection(
+    my %Valid          = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
+    my $ValidSelection = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
         Data       => \%Valid,
         Name       => 'ValidID',
         ID         => 'ValidID',
@@ -701,11 +698,6 @@ sub _ValidSelectionGet {
 
 sub _TicketAppointments {
     my ( $Self, %Param ) = @_;
-
-    # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $QueueObject  = $Kernel::OM->Get('Kernel::System::Queue');
 
     # get field id suffix
     my $FieldID = '';
@@ -721,6 +713,8 @@ sub _TicketAppointments {
         Type   => 'create',
     );
 
+    my $QueueObject = $Kernel::OM->Get('Kernel::System::Queue');
+
     my %Queues = $QueueObject->QueueList();
     my %AvailableQueues;
 
@@ -735,11 +729,15 @@ sub _TicketAppointments {
         $AvailableQueues{$QueueID} = $QueueData{Name};
     }
 
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
+
     # get list type
     my $TreeView = 0;
     if ( $ConfigObject->Get('Ticket::Frontend::ListType') eq 'tree' ) {
         $TreeView = 1;
     }
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
 
     $TicketAppointments{QueueIDStrg} = $LayoutObject->AgentQueueListOption(
         Class              => 'Validate_Required Modernize ' . $Param{Error}->{QueueIDInvalid},
@@ -772,7 +770,9 @@ sub _TicketAppointments {
 
             DYNAMICFIELD:
             for my $DynamicField ( @{$DynamicFieldList} ) {
-                next DYNAMICFIELD if $DynamicField->{FieldType} ne 'Date' && $DynamicField->{FieldType} ne 'DateTime';
+                if ( $DynamicField->{FieldType} ne 'Date' && $DynamicField->{FieldType} ne 'DateTime' ) {
+                    next DYNAMICFIELD;
+                }
 
                 push @DynamicFieldTypes, {
                     Key   => sprintf( $TicketAppointmentConfig->{$TypeKey}->{Key},  $DynamicField->{Name} ),
