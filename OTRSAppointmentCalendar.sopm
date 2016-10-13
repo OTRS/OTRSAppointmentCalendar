@@ -291,10 +291,6 @@
                 <Reference Local="appointment_id" Foreign="id" />
             </ForeignKey>
         </TableCreate>
-
-        <Insert Table="link_object">
-            <Data Key="name" Type="Quote">Appointment</Data>
-        </Insert>
     </DatabaseInstall>
 
     <DatabaseUninstall Type="pre">
