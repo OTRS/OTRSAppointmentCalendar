@@ -52,11 +52,15 @@ sub Run {
         }
     }
 
-    # TODO: postfix if should not need more than 1 line.
     # loop protection: only execute this handler once for each ticket
-    return
-        if $Kernel::OM->Get('Kernel::System::Ticket')->{'_TicketAppointments::AlreadyProcessed'}
-        ->{ $Param{Data}->{TicketID} }++;
+    if (
+        $Kernel::OM->Get('Kernel::System::Ticket')
+        ->{'_TicketAppointments::AlreadyProcessed'}
+        ->{ $Param{Data}->{TicketID} }++
+        )
+    {
+        return;
+    }
 
     # handle ticket appointments in an asynchronous call
     return $Self->AsyncCall(

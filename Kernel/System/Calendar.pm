@@ -772,13 +772,15 @@ sub CalendarImport {
             # create new appointment if NOT overwriting existing entities
             $Appointment->{UniqueID} = undef if !$Param{OverwriteExistingEntities};
 
-            # TODO: do not use postfix if statement in variable assignment
             # skip adding automatic recurring occurrences
-            $Appointment->{RecurringRaw} = 1 if $Appointment->{Recurring};
+            if ( $Appointment->{Recurring} ) {
+                $Appointment->{RecurringRaw} = 1;
+            }
 
-            # TODO: do not use postfix if statement in variable assignment
             # set parent id to last appointment id
-            $Appointment->{ParentID} = $AppointmentID if $Appointment->{ParentID};
+            if ( $Appointment->{ParentID} ) {
+                $Appointment->{ParentID} = $AppointmentID;
+            }
 
             $AppointmentID = $AppointmentObject->AppointmentCreate(
                 %{$Appointment},

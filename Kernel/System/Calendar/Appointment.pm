@@ -532,13 +532,13 @@ sub AppointmentList {
         $CacheKeyDesc = 'any';
     }
 
-    #TODO: better use a variable for the cache key since it is used at least 2 times.
+    my $CacheKey
+        = "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}";
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
         Type => $CacheType,
-        Key =>
-            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Key  => $CacheKey,
     );
 
     if ( ref $Data eq 'ARRAY' ) {
@@ -702,9 +702,8 @@ sub AppointmentList {
 
     # cache
     $Kernel::OM->Get('Kernel::System::Cache')->Set(
-        Type => $CacheType,
-        Key =>
-            "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}",
+        Type  => $CacheType,
+        Key   => $CacheKey,
         Value => \@Result,
         TTL   => $Self->{CacheTTL},
     );
@@ -1298,10 +1297,9 @@ sub AppointmentUpdate {
         @RecurrenceExclude = ($RecurrenceID);
     }
 
-    # TODO: better use elsif here!
     # reset exclude list if recurrence is turned off
-    else {
-        @RecurrenceExclude = () if !$Param{Recurring};
+    elsif ( !$Param{Recurring} ) {
+        @RecurrenceExclude = ();
     }
 
     # remove undefined values
