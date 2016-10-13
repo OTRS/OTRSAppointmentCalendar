@@ -166,9 +166,8 @@ sub Run {
                 String => $Appointment{StartTime},
             );
 
-            # TODO: what is $S ?
             (
-                my $S, $Appointment{StartMinute},
+                my $StartSecond, $Appointment{StartMinute},
                 $Appointment{StartHour}, $Appointment{StartDay}, $Appointment{StartMonth},
                 $Appointment{StartYear}, $Appointment{StartWeekDay}
             ) = $CalendarHelperObject->DateGet( SystemTime => $StartTime );
@@ -187,7 +186,7 @@ sub Run {
             }
 
             (
-                $S, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
+                my $EndSecond, $Appointment{EndMinute}, $Appointment{EndHour}, $Appointment{EndDay},
                 $Appointment{EndMonth}, $Appointment{EndYear}
             ) = $CalendarHelperObject->DateGet( SystemTime => $EndTime );
 
@@ -198,7 +197,7 @@ sub Run {
                 );
 
                 (
-                    $S, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
+                    my $RecurrenceUntilSecond, $Appointment{RecurrenceUntilMinute}, $Appointment{RecurrenceUntilHour},
                     $Appointment{RecurrenceUntilDay}, $Appointment{RecurrenceUntilMonth},
                     $Appointment{RecurrenceUntilYear}
                 ) = $CalendarHelperObject->DateGet( SystemTime => $RecurrenceUntil );
@@ -242,8 +241,9 @@ sub Run {
                             for my $Day (@Days) {
                                 $Day += $DayOffset;
 
-                                #TODO: Do not use postfix if statement in variable assignments
-                                $Day = 1 if $Day == 8;
+                                if ( $Day == 8 ) {
+                                    $Day = 1;
+                                }
                             }
                         }
 
@@ -340,17 +340,20 @@ sub Run {
             SystemTime => $SelectedSystemTime,
         );
 
-        #TODO: Do not use postfix if statement in variable assignments
         # set week day if not set
-        $Appointment{Days} = $DateInfo[6] if !$Appointment{Days};
+        if ( !$Appointment{Days} ) {
+            $Appointment{Days} = $DateInfo[6];
+        }
 
-        #TODO: Do not use postfix if statement in variable assignments
         # set month day if not set
-        $Appointment{MonthDays} = $DateInfo[3] if !$Appointment{MonthDays};
+        if ( !$Appointment{MonthDays} ) {
+            $Appointment{MonthDays} = $DateInfo[3];
+        }
 
-        #TODO: Do not use postfix if statement in variable assignments
         # set month if not set
-        $Appointment{Months} = $DateInfo[4] if !$Appointment{Months};
+        if ( !$Appointment{Months} ) {
+            $Appointment{Months} = $DateInfo[4];
+        }
 
         # calendar ID selection
         my $CalendarID = $Appointment{CalendarID} // $GetParam{CalendarID};
@@ -656,12 +659,12 @@ sub Run {
                 ),
             );
 
-            #TODO: Do not use postfix if statement in variable assignments
-            $Param{RecurrenceValue} .= ', '
-                . $LayoutObject->{LanguageObject}->Translate('every')
-                . ' ' . $Appointment{RecurrenceInterval} . ' '
-                . $RecurrenceIntervalLookup{$SelectedRecurrenceCustomType}
-                if $RecurrenceCustomType && $SelectedRecurrenceType eq 'Custom';
+            if ( $RecurrenceCustomType && $SelectedRecurrenceType eq 'Custom' ) {
+                $Param{RecurrenceValue} .= ', '
+                    . $LayoutObject->{LanguageObject}->Translate('every')
+                    . ' ' . $Appointment{RecurrenceInterval} . ' '
+                    . $RecurrenceIntervalLookup{$SelectedRecurrenceCustomType};
+            }
         }
 
         # add interval selection (1-31)
@@ -683,10 +686,11 @@ sub Run {
         if ( $Appointment{RecurrenceCount} ) {
             $RecurrenceLimit = 2;
 
-            #TODO: Do not use postfix if statement in variable assignments
-            $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
-                'for %s time(s)', $Appointment{RecurrenceCount},
-            ) if $SelectedRecurrenceType;
+            if ($SelectedRecurrenceType) {
+                $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
+                    'for %s time(s)', $Appointment{RecurrenceCount},
+                );
+            }
         }
 
         # recurrence limit string
@@ -731,10 +735,11 @@ sub Run {
                 $Appointment{RecurrenceUntilDay},
             );
 
-            #TODO: Do not use postfix if statement in variable assignments
-            $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
-                'until %s', $Param{RecurrenceUntil},
-            ) if $SelectedRecurrenceType;
+            if ($SelectedRecurrenceType) {
+                $Param{RecurrenceValue} .= ', ' . $LayoutObject->{LanguageObject}->Translate(
+                    'until %s', $Param{RecurrenceUntil},
+                );
+            }
         }
 
         # recurrence until date string
@@ -1736,10 +1741,7 @@ sub _DayOffsetGet {
         return -1;
     }
 
-    # TODO: Maybe this else is not needed, you can return 1 outside
-    else {
-        return 1;
-    }
+    return 1;
 }
 
 1;

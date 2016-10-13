@@ -50,11 +50,15 @@ sub Run {
         return;
     }
 
-    # TODO: postfix if statement should not take more than 1 line
     # loop protection: prevent from running if update was triggered by the ticket update
-    return
-        if $Kernel::OM->Get('Kernel::System::Calendar')->{'_TicketAppointments::TicketUpdate'}
-        ->{ $Param{Data}->{AppointmentID} }++;
+    if (
+        $Kernel::OM->Get('Kernel::System::Calendar')
+        ->{'_TicketAppointments::TicketUpdate'}
+        ->{ $Param{Data}->{AppointmentID} }++
+        )
+    {
+        return
+    }
 
     # run only on ticket appointments (get ticket id)
     my $TicketID = $Kernel::OM->Get('Kernel::System::Calendar')->TicketAppointmentTicketID(
