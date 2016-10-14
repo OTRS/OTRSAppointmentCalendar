@@ -65,7 +65,7 @@ sub Run {
     # handle ticket appointments in an asynchronous call
     return $Self->AsyncCall(
         ObjectName     => 'Kernel::System::Calendar',
-        FunctionName   => 'TicketAppointments',
+        FunctionName   => 'TicketAppointmentProcessTicket',
         FunctionParams => {
             TicketID => $Param{Data}->{TicketID},
         },

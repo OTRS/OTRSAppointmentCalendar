@@ -935,11 +935,11 @@ sub CalendarPermissionGet {
     return $Result;
 }
 
-=item TicketAppointments()
+=item TicketAppointmentProcessTicket()
 
 Handle the automatic ticket appointments for the ticket.
 
-    $CalendarObject->TicketAppointments(
+    $CalendarObject->TicketAppointmentProcessTicket(
         TicketID => 1,
     );
 
@@ -947,7 +947,7 @@ This method does not have return value.
 
 =cut
 
-sub TicketAppointments {
+sub TicketAppointmentProcessTicket {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
@@ -1009,7 +1009,7 @@ sub TicketAppointments {
             if ($Filtered) {
 
                 # process ticket appointment rule
-                $Self->TicketAppointmentProcess(
+                $Self->TicketAppointmentProcessRule(
                     CalendarID => $Calendar->{CalendarID},
                     Config     => \%TicketAppointmentTypes,
                     Rule       => $TicketAppointments,
@@ -1040,11 +1040,151 @@ sub TicketAppointments {
     return;
 }
 
-=item TicketAppointmentProcess()
+=item TicketAppointmentProcessCalendar()
+
+Handle the automatic ticket appointments for the calendar.
+
+    my %Result = $CalendarObject->TicketAppointmentProcessCalendar(
+        CalendarID => 1,
+    );
+
+Returns log of processed tickets and rules:
+
+%Result = (
+    Process => [
+        {
+            TicketID => 1,
+            RuleID   => '9bb20ea035e7a9930652a9d82d00c725',
+            Success  => 1,
+        },
+        {
+            TicketID => 2,
+            RuleID   => '9bb20ea035e7a9930652a9d82d00c725',
+            Success  => 1,
+        },
+    ],
+    Cleanup => [
+        {
+            RuleID  => 'b272a035ed82d65a927a99300e00c9b5',
+            Success => 1,
+        },
+    ],
+);
+
+=cut
+
+sub TicketAppointmentProcessCalendar {
+    my ( $Self, %Param ) = @_;
+
+    # check needed stuff
+    if ( !$Param{CalendarID} ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => 'Need CalendarID!',
+        );
+        return;
+    }
+
+    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+
+    # Get calendar configuration.
+    my %Calendar = $Self->CalendarGet(
+        CalendarID => $Param{CalendarID},
+    );
+    if ( !%Calendar ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Could not find calendar $Param{CalendarID}!",
+        );
+        return;
+    }
+
+    # Get ticket appointment types
+    my %TicketAppointmentTypes = $Self->TicketAppointmentTypesGet();
+
+    my @Process;
+    my %RuleIDLookup;
+
+    # Check ticket appointments config.
+    if ( $Calendar{TicketAppointments} && IsArrayRefWithData( $Calendar{TicketAppointments} ) ) {
+
+        # Get active rule IDs from the calendar configuration.
+        %RuleIDLookup = map { $_->{RuleID} => 1 } @{ $Calendar{TicketAppointments} };
+
+        TICKET_APPOINTMENTS:
+        for my $TicketAppointments ( @{ $Calendar{TicketAppointments} } ) {
+
+            # Check appointment types.
+            for my $Field (qw(StartDate EndDate)) {
+
+                # Allow special time presets for EndDate.
+                if ( $Field ne 'EndDate' && !( $TicketAppointments->{$Field} =~ /^Plus_/ ) ) {
+
+                    # Skip if ticket appointment type is invalid.
+                    if ( !$TicketAppointmentTypes{ $TicketAppointments->{$Field} } ) {
+                        next TICKET_APPOINTMENTS;
+                    }
+                }
+            }
+
+            # Find tickets that match search filter
+            my @TicketIDs = $TicketObject->TicketSearch(
+                Result   => 'ARRAY',
+                QueueIDs => $TicketAppointments->{QueueID},
+                UserID   => 1,
+                %{ $TicketAppointments->{SearchParam} // {} },
+            );
+
+            # Process each ticket based on ticket appointment rule.
+            TICKETID:
+            for my $TicketID ( sort @TicketIDs ) {
+                my $Success = $Self->TicketAppointmentProcessRule(
+                    CalendarID => $Param{CalendarID},
+                    Config     => \%TicketAppointmentTypes,
+                    Rule       => $TicketAppointments,
+                    TicketID   => $TicketID,
+                );
+
+                push @Process, {
+                    TicketID => $TicketID,
+                    RuleID   => $TicketAppointments->{RuleID},
+                    Success  => $Success,
+                };
+            }
+        }
+    }
+
+    my @Cleanup;
+    my @RuleIDs = $Self->TicketAppointmentRuleIDsGet(
+        CalendarID => $Param{CalendarID},
+    );
+
+    # Remove ticket appointments for missing rules.
+    for my $RuleID (@RuleIDs) {
+        if ( !$RuleIDLookup{$RuleID} ) {
+            my $Success = $Self->TicketAppointmentDelete(
+                CalendarID => $Param{CalendarID},
+                RuleID     => $RuleID,
+            );
+
+            push @Cleanup, {
+                RuleID  => $RuleID,
+                Success => $Success,
+            };
+        }
+    }
+
+    return (
+        Process => \@Process,
+        Cleanup => \@Cleanup,
+    );
+}
+
+=item TicketAppointmentProcessRule()
 
 Process the ticket appointment rule and create, update or delete appointment if necessary.
 
-    my $Success = $CalendarObject->TicketAppointmentProcess(
+    my $Success = $CalendarObject->TicketAppointmentProcessRule(
         CalendarID => 1,
         Config => {
             DynamicField_TestDate => {
@@ -1068,7 +1208,7 @@ returns 1 if successful.
 
 =cut
 
-sub TicketAppointmentProcess {
+sub TicketAppointmentProcessRule {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff

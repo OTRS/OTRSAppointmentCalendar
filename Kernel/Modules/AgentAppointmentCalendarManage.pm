@@ -202,12 +202,11 @@ sub Run {
 
         # process ticket appointments in async call to console command
         $Self->AsyncCall(
-            ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
-            FunctionName   => 'Execute',
-            FunctionParams => [
-                $Calendar{CalendarID},
-                '--quiet',
-            ],
+            ObjectName     => 'Kernel::System::Calendar',
+            FunctionName   => 'TicketAppointmentProcessCalendar',
+            FunctionParams => {
+                CalendarID => $Calendar{CalendarID},
+            },
         );
 
         # redirect
@@ -429,12 +428,11 @@ sub Run {
 
         # process ticket appointments in async call to console command
         $Self->AsyncCall(
-            ObjectName     => 'Kernel::System::Console::Command::Maint::Calendar::TicketAppointments',
-            FunctionName   => 'Execute',
-            FunctionParams => [
-                $Calendar{CalendarID},
-                '--quiet',
-            ],
+            ObjectName     => 'Kernel::System::Calendar',
+            FunctionName   => 'TicketAppointmentProcessCalendar',
+            FunctionParams => {
+                CalendarID => $Calendar{CalendarID},
+            },
         );
 
         # redirect
