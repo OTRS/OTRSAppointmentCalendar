@@ -125,6 +125,12 @@ for my $DynamicField (@DynamicFields) {
     $DynamicField->{DynamicFieldID} = $DynamicFieldID;
 }
 
+# Freeze time at this point since creating tickets and checking results can take
+#   several seconds to complete.
+$Helper->FixedTimeSet(
+    $CalendarHelperObject->CurrentSystemTime(),
+);
+
 my $TicketCount = 3;
 
 # create a few test tickets
@@ -224,11 +230,6 @@ my %Calendar     = $CalendarObject->CalendarCreate(
 $Self->True(
     $Calendar{CalendarID},
     "CalendarCreate - $CalendarName ($Calendar{CalendarID})",
-);
-
-# Freeze time at this point since testing results can take several seconds to complete.
-$Helper->FixedTimeSet(
-    $CalendarHelperObject->CurrentSystemTime(),
 );
 
 # Generate few random strings for RuleIDs.
