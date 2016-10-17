@@ -442,6 +442,18 @@ sub Import {
                 }
             }
             elsif ( $Frequency eq "MONTHLY" ) {
+
+                # Skip unsupported custom monthly recurring rules:
+                #   - FREQ=MONTHLY;BYDAY=2SA
+                if ($DayNames) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => "Skip import of unsupported recurring rule: "
+                            . $Properties->{'rrule'}->[0]->{'value'},
+                    );
+                    next ENTRY;
+                }
+
                 if ($MonthDay) {
 
                     # Custom
@@ -460,6 +472,19 @@ sub Import {
                 }
             }
             elsif ( $Frequency eq "YEARLY" ) {
+
+                # Skip unsupported custom yearly recurring rules:
+                #   - FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+                #   - FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+                if ($DayNames) {
+                    $Kernel::OM->Get('Kernel::System::Log')->Log(
+                        Priority => 'error',
+                        Message  => "Skip import of unsupported recurring rule: "
+                            . $Properties->{'rrule'}->[0]->{'value'},
+                    );
+                    next ENTRY;
+                }
+
                 my @Months = split( ',', $Months || '' );
 
                 my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
