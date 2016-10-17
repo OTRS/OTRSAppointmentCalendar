@@ -1119,7 +1119,7 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
 <chapter>
     <title>Technical Implementation Details</title>
     <para>
-        This module adds the following database tables: calendar, calendar_appointment, calendar_appointment_seen and calendar_appointment_ticket.
+        This module adds the following database tables: calendar, calendar_appointment and calendar_appointment_ticket.
     </para>
     <para>
         The appointment calendar module comes up with special CPAN libraries to support the different features properly.

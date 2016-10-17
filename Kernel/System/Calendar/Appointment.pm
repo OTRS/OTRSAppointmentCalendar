@@ -1359,13 +1359,6 @@ sub AppointmentUpdate {
         );
     }
 
-    # reset seen flag
-    $Self->AppointmentSeenSet(
-        AppointmentID => $Param{AppointmentID},
-        UserID        => $Param{UserID},
-        Seen          => 0,
-    );
-
     # delete cache
     $CacheObject->Delete(
         Type => $Self->{CacheType},
@@ -1382,11 +1375,6 @@ sub AppointmentUpdate {
     }
     $CacheObject->CleanUp(
         Type => $Self->{CacheType} . 'Days' . $Param{UserID},
-    );
-
-    # delete seen cache
-    $CacheObject->CleanUp(
-        Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
     );
 
     # fire event
@@ -1495,13 +1483,6 @@ sub AppointmentDelete {
         ],
     );
 
-    # reset seen flag
-    $Self->AppointmentSeenSet(
-        AppointmentID => $Param{AppointmentID},
-        UserID        => $Param{UserID},
-        Seen          => 0,
-    );
-
     # delete cache
     $CacheObject->Delete(
         Type => $Self->{CacheType},
@@ -1514,11 +1495,6 @@ sub AppointmentDelete {
     );
     $CacheObject->CleanUp(
         Type => $Self->{CacheType} . 'Days' . $Param{UserID},
-    );
-
-    # delete seen cache
-    $CacheObject->CleanUp(
-        Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
     );
 
     # fire event
@@ -1656,151 +1632,6 @@ sub GetUniqueID {
 
     # return UniqueID
     return "$StartTimeStrg-$Hash\@$FQDN";
-}
-
-=item AppointmentSeenGet()
-
-check if particular appointment reminder was shown to given user.
-
-    my $Seen = $AppointmentObject->AppointmentSeenGet(
-        AppointmentID   => 1,                              # (required)
-        UserID          => 1,                              # (required)
-    );
-
-returns 1 if seen:
-    $Seen = 1;
-
-=cut
-
-sub AppointmentSeenGet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(AppointmentID UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!",
-            );
-            return;
-        }
-    }
-
-    my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
-
-    # check cache
-    my $Data = $CacheObject->Get(
-        Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
-        Key  => "$Param{AppointmentID}-$Param{UserID}",
-    );
-
-    return $Data if defined $Data;
-
-    my $SQL = '
-        SELECT seen
-        FROM calendar_appointment_seen
-        WHERE
-            calendar_appointment_id=? AND
-            user_id=?
-    ';
-
-    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # db query
-    return if !$DBObject->Prepare(
-        SQL  => $SQL,
-        Bind => [
-            \$Param{AppointmentID}, \$Param{UserID},
-        ],
-    );
-
-    my $Result = 0;
-
-    while ( my @Row = $DBObject->FetchrowArray() ) {
-        $Result = $Row[0];
-    }
-
-    # cache result
-    $CacheObject->Set(
-        Type  => $Self->{CacheType} . "Seen$Param{AppointmentID}",
-        Key   => "$Param{AppointmentID}-$Param{UserID}",
-        Value => $Result,
-        TTL   => $Self->{CacheTTL},
-    );
-
-    return $Result;
-}
-
-=item AppointmentSeenSet()
-
-set the flag if appointment reminder is shown the given user.
-
-    my $Success = $AppointmentObject->AppointmentSeenSet(
-        AppointmentID   => 1,                              # (required)
-        UserID          => 1,                              # (required)
-        Seen            => 1,                              # (required) Default 1.
-    );
-
-returns 1 if successful:
-    $Seen = 1;
-
-=cut
-
-sub AppointmentSeenSet {
-    my ( $Self, %Param ) = @_;
-
-    # check needed stuff
-    for my $Needed (qw(AppointmentID UserID)) {
-        if ( !$Param{$Needed} ) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                Priority => 'error',
-                Message  => "Need $Needed!",
-            );
-            return;
-        }
-    }
-
-    $Param{Seen} = $Param{Seen} // 1;
-
-    if ( $Param{Seen} ) {
-        my $SQL = '
-            INSERT INTO calendar_appointment_seen
-                (calendar_appointment_id, user_id, seen)
-            VALUES (?, ?, ?)
-        ';
-
-        # create db record
-        return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-            SQL  => $SQL,
-            Bind => [
-                \$Param{AppointmentID}, \$Param{UserID}, \$Param{Seen},
-            ],
-        );
-    }
-    else {
-        my $SQL = '
-            DELETE
-            FROM calendar_appointment_seen
-            WHERE
-                calendar_appointment_id=? AND
-                user_id=?
-        ';
-
-        # create db record
-        return if !$Kernel::OM->Get('Kernel::System::DB')->Do(
-            SQL  => $SQL,
-            Bind => [
-                \$Param{AppointmentID}, \$Param{UserID},
-            ],
-        );
-    }
-
-    # delete seen cache
-    $Kernel::OM->Get('Kernel::System::Cache')->CleanUp(
-        Type => $Self->{CacheType} . "Seen$Param{AppointmentID}",
-    );
-
-    return 1;
 }
 
 =item AppointmentUpcomingGet()

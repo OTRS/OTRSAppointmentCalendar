@@ -318,10 +318,6 @@
         color: #000;
     }
 
-    #OngoingAppointments {
-        width: 950px;
-    }
-
     .Field.Info a {
         color: #fff;
     }
@@ -479,8 +475,7 @@
 @media only screen and (min-width: 0px) and (max-width: 1024px) {
 
     #ContextSettingsDialogResourceOverview,
-    #EditAppointmentForm,
-    #OngoingAppointments {
+    #EditAppointmentForm {
         width: auto;
     }
 
