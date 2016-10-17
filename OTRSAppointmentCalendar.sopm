@@ -73,7 +73,6 @@
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/DynamicField.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/PendingTime.pm" />
-        <File Permission="644" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm" />
         <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
         <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
