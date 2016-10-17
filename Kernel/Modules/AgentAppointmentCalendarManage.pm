@@ -200,7 +200,7 @@ sub Run {
             );
         }
 
-        # process ticket appointments in async call to console command
+        # Process ticket appointments in async call to core module method.
         $Self->AsyncCall(
             ObjectName     => 'Kernel::System::Calendar',
             FunctionName   => 'TicketAppointmentProcessCalendar',
@@ -426,7 +426,7 @@ sub Run {
             );
         }
 
-        # process ticket appointments in async call to console command
+        # Process ticket appointments in async call to core module method.
         $Self->AsyncCall(
             ObjectName     => 'Kernel::System::Calendar',
             FunctionName   => 'TicketAppointmentProcessCalendar',
