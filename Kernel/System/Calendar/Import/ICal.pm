@@ -26,6 +26,7 @@ our @ObjectDependencies = (
     'Kernel::System::Calendar::Plugin',
     'Kernel::System::Calendar::Team',
     'Kernel::System::DB',
+    'Kernel::System::Encode',
     'Kernel::System::Log',
     'Kernel::System::Main',
     'Kernel::System::User',
@@ -123,6 +124,9 @@ sub Import {
             SystemTime => $UntilLimitedSystem,
         );
     }
+
+    # Turn on UTF8 flag on supplied string for correct encoding in PostgreSQL backend.
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeInput( \$Param{ICal} );
 
     my $Calendar = Data::ICal->new( data => $Param{ICal} );
 
@@ -693,28 +697,28 @@ sub Import {
             $AppointmentObject->AppointmentDeleteOccurrence(
                 UniqueID     => $Parameters{UniqueID},
                 CalendarID   => $Param{CalendarID},
-                RecurrenceID => $Parameters{RecurrenceID},
+                RecurrenceID => $Param{RecurrenceID},
                 UserID       => $Param{UserID},
             );
         }
 
-        # check if appointment exists already (same UniqueID)
+        # Check if appointment with same UniqueID in the same calendar already exists.
         else {
             %Appointment = $AppointmentObject->AppointmentGet(
                 UniqueID   => $Parameters{UniqueID},
                 CalendarID => $Param{CalendarID},
             );
 
-            # check if old appointment in the same calendar should be updated
-            if ( $Appointment{CalendarID} ) {
-                if ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} ) {
-
-                    # create new appointment
-                    if (%Appointment) {
-                        delete $Parameters{UniqueID};
-                    }
-                    %Appointment = ();
+            if (
+                $Appointment{CalendarID}
+                && ( !$Param{UpdateExisting} || $Appointment{CalendarID} != $Param{CalendarID} )
+                )
+            {
+                # If overwrite option isn't activated, create new appointment by clearing the UniqueID.
+                if (%Appointment) {
+                    delete $Parameters{UniqueID};
                 }
+                %Appointment = ();
             }
         }
 
@@ -737,8 +741,6 @@ sub Import {
 
         # there is no appointment, create new one
         else {
-            delete $Parameters{UniqueID};
-
             $Success = $AppointmentObject->AppointmentCreate(
                 CalendarID => $Param{CalendarID},
                 UserID     => $Param{UserID},
@@ -806,6 +808,17 @@ sub _FormatTime {
     }
 
     return $TimeStamp;
+}
+
+no warnings 'redefine';    ## no critic
+
+# Include additional optional repeatable properties used by some iCalendar implementations, in order
+#   to prevent Perl warnings.
+
+sub Data::ICal::Entry::Alarm::optional_repeatable_properties {    ## no critic
+    qw(
+        uid acknowledged related-to
+    );
 }
 
 1;
