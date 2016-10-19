@@ -17,6 +17,10 @@ use Date::ICal;
 
 use Kernel::System::VariableCheck qw(:all);
 
+use constant PACKAGE_NAME => 'OTRSAppointmentCalendar';
+
+our $PackageVersion;
+
 our @ObjectDependencies = (
     'Kernel::Config',
     'Kernel::System::Cache',
@@ -28,6 +32,7 @@ our @ObjectDependencies = (
     'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Main',
+    'Kernel::System::Package',
     'Kernel::System::User',
 );
 
@@ -61,6 +66,32 @@ sub new {
     # allocate new hash for object
     my $Self = {%Param};
     bless( $Self, $Type );
+
+    my $PackageObject = $Kernel::OM->Get('Kernel::System::Package');
+
+    my $PackageInstalled = $PackageObject->PackageIsInstalled(
+        Name => PACKAGE_NAME,
+    );
+
+    # If package is installed, get version from the package manager.
+    if ($PackageInstalled) {
+        my @List = $PackageObject->RepositoryList(
+            Result => 'short',
+        );
+
+        PACKAGE:
+        for my $Package (@List) {
+            if ( $Package->{Name} eq PACKAGE_NAME ) {
+                $PackageVersion = $Package->{Version};
+                last PACKAGE;
+            }
+        }
+    }
+
+    # Otherwise, include framework version only.
+    else {
+        $PackageVersion = $Kernel::OM->Get('Kernel::Config')->Get('Version');
+    }
 
     return $Self;
 }
@@ -414,10 +445,14 @@ sub Export {
     return $ICalCalendar->as_string();
 }
 
-no warnings 'redefine';    ## no critic
+{
+    no warnings 'redefine';    ## no critic
 
-sub Data::ICal::product_id {    ## no critic
-    return 'OTRS ' . $Kernel::OM->Get('Kernel::Config')->Get('Version');
+    # Include package name and version in product ID property for debugging purposes, by redefining
+    #   external library method.
+    sub Data::ICal::product_id {    ## no critic
+        return PACKAGE_NAME . ' ' . $PackageVersion;
+    }
 }
 
 1;
