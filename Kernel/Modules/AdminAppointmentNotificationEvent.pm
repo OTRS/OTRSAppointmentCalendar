@@ -170,6 +170,8 @@ sub Run {
             }
         }
 
+        $GetParam{Data}->{NotificationType} = ['Appointment'];
+
         # required Article filter only on ArticleCreate and ArticleSend event
         # if isn't selected at least one of the article filter fields, notification isn't updated
         if ( !$ArticleFilterMissing ) {
@@ -343,6 +345,8 @@ sub Run {
             }
         }
 
+        $GetParam{Data}->{NotificationType} = ['Appointment'];
+
         # required Article filter only on ArticleCreate and Article Send event
         # if isn't selected at least one of the article filter fields, notification isn't added
         if ( !$ArticleFilterMissing ) {
@@ -465,6 +469,7 @@ sub Run {
         else {
 
             my %Notificationdetails = $NotificationEventObject->NotificationList(
+                Type    => 'Appointment',
                 UserID  => $Self->{UserID},
                 Details => 1,
             );
@@ -1195,7 +1200,7 @@ sub _Overview {
 
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
 
-    my %List = $NotificationEventObject->NotificationList();
+    my %List = $NotificationEventObject->NotificationList( Type => 'Appointment' );
 
     my $NotificationConfig
         = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Admin::AdminAppointmentNotificationEvent');
@@ -1207,51 +1212,6 @@ sub _Overview {
 
     # get a list of all notifications affected by the supported events
     my %NotificationIDs;
-
-    REGISTEREDEVENTKEY:
-    for my $RegisteredEventKey ( sort keys %RegisteredEvents ) {
-
-        next REGISTEREDEVENTKEY if !$RegisteredEventKey;
-        next REGISTEREDEVENTKEY if !IsArrayRefWithData( $RegisteredEvents{$RegisteredEventKey} );
-
-        REGISTEREDEVENT:
-        for my $RegisteredEvent ( @{ $RegisteredEvents{$RegisteredEventKey} } ) {
-
-            next REGISTEREDEVENT if !$RegisteredEvent;
-
-            my @NotificationIDs = $NotificationEventObject->NotificationEventCheck(
-                Event => $RegisteredEvent,
-            );
-
-            next REGISTEREDEVENT if !IsArrayRefWithData( \@NotificationIDs );
-
-            NOTIFICATIONID:
-            for my $NotificationID (@NotificationIDs) {
-
-                next NOTIFICATIONID if !$NotificationID;
-                next NOTIFICATIONID if $NotificationIDs{$NotificationID};
-
-                $NotificationIDs{$NotificationID} = 1;
-            }
-        }
-    }
-
-    if ( IsHashRefWithData( \%NotificationIDs ) ) {
-
-        # walk through the notification list to remove all
-        # notifications not affected by the supported events
-        NOTIFICATIONID:
-        for my $NotificationID ( sort keys %List ) {
-
-            next NOTIFICATIONID if !$NotificationID;
-            next NOTIFICATIONID if $NotificationIDs{$NotificationID};
-
-            delete $List{$NotificationID};
-        }
-    }
-    else {
-        %List = ();
-    }
 
     # if there are any notifications, they are shown
     if (%List) {

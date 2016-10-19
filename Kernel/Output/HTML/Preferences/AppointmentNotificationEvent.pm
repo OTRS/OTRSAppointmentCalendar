@@ -48,7 +48,7 @@ sub new {
     # get NotificationEvent object
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
 
-    my %NotificationListRaw = $NotificationEventObject->NotificationList();
+    my %NotificationListRaw = $NotificationEventObject->NotificationList( Type => 'Appointment' );
 
     my $NotificationConfig
         = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Admin::AdminAppointmentNotificationEvent');
