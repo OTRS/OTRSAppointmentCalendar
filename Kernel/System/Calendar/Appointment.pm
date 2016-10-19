@@ -432,6 +432,7 @@ get a hash of Appointments.
         CalendarID          => 1,                                       # (required) Valid CalendarID
         Title               => '*',                                     # (optional) Filter by title, wildcard supported
         Description         => '*',                                     # (optional) Filter by description, wildcard supported
+        Location            => '*',                                     # (optional) Filter by location, wildcard supported
         StartTime           => '2016-01-01 00:00:00',                   # (optional) Filter by start date
         EndTime             => '2016-02-01 00:00:00',                   # (optional) Filter by end date
         TeamID              => 1,                                       # (optional) Filter by team
@@ -521,20 +522,24 @@ sub AppointmentList {
     my $CacheType        = $Self->{CacheType} . 'List' . $Param{CalendarID};
     my $CacheKeyTitle    = $Param{Title} || 'any';
     my $CacheKeyDesc     = $Param{Description} || 'any';
+    my $CacheKeyLocation = $Param{Location} || 'any';
     my $CacheKeyStart    = $Param{StartTime} || 'any';
     my $CacheKeyEnd      = $Param{EndTime} || 'any';
     my $CacheKeyTeam     = $Param{TeamID} || 'any';
     my $CacheKeyResource = $Param{ResourceID} || 'any';
 
-    if ( defined $Param{Title} && $Param{Title} =~ /^[\*]*$/ ) {
+    if ( defined $Param{Title} && $Param{Title} =~ /^[\*]+$/ ) {
         $CacheKeyTitle = 'any';
     }
-    if ( defined $Param{Description} && $Param{Description} =~ /^[\*]*$/ ) {
+    if ( defined $Param{Description} && $Param{Description} =~ /^[\*]+$/ ) {
         $CacheKeyDesc = 'any';
+    }
+    if ( defined $Param{Location} && $Param{Location} =~ /^[\*]+$/ ) {
+        $CacheKeyLocation = 'any';
     }
 
     my $CacheKey
-        = "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}";
+        = "$CacheKeyTitle-$CacheKeyDesc-$CacheKeyLocation-$CacheKeyStart-$CacheKeyEnd-$CacheKeyTeam-$CacheKeyResource-$Param{Result}";
 
     # check cache
     my $Data = $Kernel::OM->Get('Kernel::System::Cache')->Get(
@@ -547,18 +552,6 @@ sub AppointmentList {
     }
 
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
-
-    # Filter by appointment title, with support for wildcards.
-    if ( $Param{Title} ) {
-        $Param{Title} =~ s/\*/%/g;
-        $Param{Title} = '%' . $Param{Title} . '%';
-    }
-
-    # Filter by appointment description, with support for wildcards.
-    if ( $Param{Description} ) {
-        $Param{Description} =~ s/\*/%/g;
-        $Param{Description} = '%' . $Param{Description} . '%';
-    }
 
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
@@ -607,21 +600,23 @@ sub AppointmentList {
 
     push @Bind, \$Param{CalendarID};
 
-    if ( $Param{Title} ) {
-
-        $SQL .= 'AND title LIKE ? ';
-        push @Bind, \$Param{Title};
-    }
-
-    if ( $Param{Description} ) {
-
-        $SQL .= 'AND description LIKE ? ';
-        push @Bind, \$Param{Description};
+    # Filter title, description and location fields by using QueryCondition method, which will
+    #   return backend specific SQL statements in order to provide case insensitive match and
+    #   wildcard support.
+    FILTER:
+    for my $Filter (qw(Title Description Location)) {
+        next FILTER if !$Param{$Filter};
+        $SQL .= ' AND ' . $DBObject->QueryCondition(
+            Key          => lc $Filter,
+            Value        => $Param{$Filter},
+            SearchPrefix => '*',
+            SearchSuffix => '*',
+        );
     }
 
     if ( $Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND (
+        $SQL .= ' AND (
             (start_time >= ? AND start_time < ?) OR
             (end_time > ? AND end_time <= ?) OR
             (start_time <= ? AND end_time >= ?)
@@ -631,16 +626,16 @@ sub AppointmentList {
     }
     elsif ( $Param{StartTime} && !$Param{EndTime} ) {
 
-        $SQL .= 'AND end_time >= ? ';
+        $SQL .= ' AND end_time >= ? ';
         push @Bind, \$Param{StartTime};
     }
     elsif ( !$Param{StartTime} && $Param{EndTime} ) {
 
-        $SQL .= 'AND start_time <= ? ';
+        $SQL .= ' AND start_time <= ? ';
         push @Bind, \$Param{EndTime};
     }
 
-    $SQL .= 'ORDER BY id ASC';
+    $SQL .= ' ORDER BY id ASC';
 
     # db query
     return if !$DBObject->Prepare(

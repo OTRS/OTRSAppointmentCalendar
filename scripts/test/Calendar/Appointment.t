@@ -14,30 +14,16 @@ use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
-# get needed objects
-my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
-my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-
-# get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
         RestoreDatabase => 1,
     },
 );
-my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
-
-# get needed objects
-my $GroupObject = $Kernel::OM->Get('Kernel::System::Group');
-my $UserObject  = $Kernel::OM->Get('Kernel::System::User');
-
-# create test user
-my $UserLogin = $Helper->TestUserCreate();
-my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
-
-$Self->True(
-    $UserID,
-    "Test user $UserID created",
-);
+my $Helper            = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
+my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+my $GroupObject       = $Kernel::OM->Get('Kernel::System::Group');
+my $UserObject        = $Kernel::OM->Get('Kernel::System::User');
 
 my $RandomID = $Helper->GetRandomID();
 
@@ -54,24 +40,15 @@ $Self->True(
     "Test group $GroupID created",
 );
 
-# add test user to test group
-my $Success = $GroupObject->PermissionGroupUserAdd(
-    GID        => $GroupID,
-    UID        => $UserID,
-    Permission => {
-        ro        => 1,
-        move_into => 1,
-        create    => 1,
-        owner     => 1,
-        priority  => 1,
-        rw        => 1,
-    },
-    UserID => 1,
+# Create test user and add it to the test group.
+my $UserLogin = $Helper->TestUserCreate(
+    Groups => [$GroupName],
 );
+my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
 
 $Self->True(
-    $Success,
-    "Test user $UserID added to test group $GroupID",
+    $UserID,
+    "Test user $UserID created",
 );
 
 # create test calendar
@@ -288,6 +265,33 @@ for my $Test (@Tests) {
             StartTime  => '2016-01-04 00:00:00',
         },
         Count   => 0,
+        Success => 1,
+    },
+    {
+        Name   => 'AppointmentList - Title search',
+        Config => {
+            CalendarID => $Calendar{CalendarID},
+            Title      => "Appointment*-$RandomID",    # wildcard
+        },
+        Count   => 2,
+        Success => 1,
+    },
+    {
+        Name   => 'AppointmentList - Description search',
+        Config => {
+            CalendarID  => $Calendar{CalendarID},
+            Description => 'foobar',                   # non-existent
+        },
+        Count   => 0,
+        Success => 1,
+    },
+    {
+        Name   => 'AppointmentList - Location search',
+        Config => {
+            CalendarID => $Calendar{CalendarID},
+            Location   => 'usa',                       # lowercase
+        },
+        Count   => 1,
         Success => 1,
     },
 );
@@ -1051,7 +1055,7 @@ $Self->True(
 );
 
 # add test user to test group with ro permissions
-$Success = $GroupObject->PermissionGroupUserAdd(
+my $Success = $GroupObject->PermissionGroupUserAdd(
     GID        => $GroupID2,
     UID        => $UserID,
     Permission => {
