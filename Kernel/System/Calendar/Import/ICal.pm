@@ -835,15 +835,16 @@ sub _FormatTime {
     return $TimeStamp;
 }
 
-no warnings 'redefine';    ## no critic
+{
+    no warnings 'redefine';    ## no critic
 
-# Include additional optional repeatable properties used by some iCalendar implementations, in order
-#   to prevent Perl warnings.
-
-sub Data::ICal::Entry::Alarm::optional_repeatable_properties {    ## no critic
-    qw(
-        uid acknowledged related-to
-    );
+    # Include additional optional repeatable properties used by some iCalendar implementations, in order
+    #   to prevent Perl warnings.
+    sub Data::ICal::Entry::Alarm::optional_repeatable_properties {    ## no critic
+        qw(
+            uid acknowledged related-to description
+        );
+    }
 }
 
 1;
