@@ -90,6 +90,7 @@
         <File Permission="644" Location="scripts/test/Calendar/TicketAppointments.t" />
         <File Permission="644" Location="scripts/test/Calendar/Export/ICal.t" />
         <File Permission="644" Location="scripts/test/Calendar/Import/ICal.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/Admin/AdminAppointmentNotificationEvent.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t" />
