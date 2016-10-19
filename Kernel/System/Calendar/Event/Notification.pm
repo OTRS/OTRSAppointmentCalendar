@@ -327,6 +327,7 @@ sub _NotificationFilter {
         next KEY if $Key eq 'LanguageID';
         next KEY if $Key eq 'SendOnOutOfOffice';
         next KEY if $Key eq 'AgentEnabledByDefault';
+        next KEY if $Key eq 'NotificationType';
 
         # check recipient fields from transport methods
         if ( $Key =~ m{\A Recipient}xms ) {
@@ -377,7 +378,6 @@ sub _NotificationFilter {
     }
 
     return 1;
-
 }
 
 sub _RecipientsGet {
