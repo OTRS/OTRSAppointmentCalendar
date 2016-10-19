@@ -507,11 +507,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
         if (Params.Resources.ResourceSettingsButton) {
             ResourceSettingsInit(Params);
         }
-
-        // Check each 5 seconds
-        setInterval(function () {
-            TargetNS.AppointmentReached(Params)
-        }, 5000);
     };
 
     /**
@@ -1867,86 +1862,6 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             }
         );
     };
-
-    /**
-     * @name AppointmentReached
-     * @memberof Core.Agent.AppointmentCalendar
-     * @function
-     * @param {Object} Params - Hash with different config options.
-     * @description
-     *      This function displays dialog with currently active Appointments if needed.
-     */
-    TargetNS.AppointmentReached = function (Params) {
-        var AppointmentIDs = [],
-            Data,
-            Index,
-            Appointments = $('#calendar').fullCalendar('clientEvents'),
-            DateCurrent = $.fullCalendar.moment();
-
-        // There is no need to check, since times are rounded to minutes
-        if (DateCurrent.second() > 6 && this.Initialized != null) {
-            return;
-        }
-
-        // Check if another dialog is already open
-        if ($("div.Dialog:visible").length > 0) {
-            return;
-        }
-
-        this.Initialized = true;
-
-        // Iterate through all appointments
-        for (Index = 0; Index < Appointments.length; Index++) {
-            if (Appointments[Index].start.isBefore(DateCurrent) &&
-                DateCurrent.isBefore(Appointments[Index].end)
-            ) {
-                if (
-                    Appointments[Index].shown != null
-                    || Appointments[Index].id === 'workingHours'
-                    )
-                {
-                    continue;
-                }
-
-                AppointmentIDs.push(Appointments[Index].id);
-            }
-        }
-
-        // Give up if no appointments found
-        if (AppointmentIDs.length === 0) {
-            return;
-        }
-
-        Data = {
-            ChallengeToken: Params.ChallengeToken,
-            Action: "AgentAppointmentList",
-            Subaction: "AppointmentsStarted",
-            AppointmentIDs: AppointmentIDs
-        };
-
-        Core.AJAX.FunctionCall(
-            Core.Config.Get('CGIHandle'),
-            Data,
-            function (Response) {
-
-                if (Response) {
-                    if (Response.Show) {
-
-                        Core.UI.Dialog.ShowContentDialog(Response.HTML, Response.Title, '100px', 'Center', true, [
-                            {
-                                Label: Params.DialogText.Dismiss,
-                                Type: "Close",
-                                Function: function () {
-                                    Core.UI.Dialog.CloseDialog($('.Dialog:visible'));
-                                }
-                            }
-                        ], true);
-                        Core.UI.InputFields.Activate($('.Dialog:visible'));
-                    }
-                }
-            }
-        );
-    }
 
     return TargetNS;
 }(Core.Agent.AppointmentCalendar || {}));

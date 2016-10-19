@@ -61,7 +61,6 @@
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentImport.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverview.tt" />
-        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarOverviewSeen.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentEdit.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/PublicCalendar.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm" />
@@ -81,7 +80,6 @@
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/DynamicField.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/EscalationTime.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Ticket/PendingTime.pm" />
-        <File Permission="644" Location="Kernel/System/Console/Command/Maint/Calendar/TicketAppointments.pm" />
         <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
         <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
@@ -254,18 +252,6 @@
                 <Reference Local="change_by" Foreign="id" />
             </ForeignKey>
         </TableCreate>
-        <TableCreate Name="calendar_appointment_seen">
-            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT" />
-            <Column Name="calendar_appointment_id" Type="BIGINT" />
-            <Column Name="user_id" Type="INTEGER" />
-            <Column Name="seen" Type="SMALLINT" />
-            <Unique Name="calendar_appointment_seen_id">
-                <UniqueColumn Name="id" />
-            </Unique>
-            <ForeignKey ForeignTable="users">
-                <Reference Local="user_id" Foreign="id" />
-            </ForeignKey>
-        </TableCreate>
         <TableCreate Name="calendar_appointment_ticket">
             <Column Name="calendar_id" Required="true" Type="BIGINT" />
             <Column Name="ticket_id" Required="true" Type="BIGINT" />
@@ -298,15 +284,10 @@
                 <Reference Local="appointment_id" Foreign="id" />
             </ForeignKey>
         </TableCreate>
-
-        <Insert Table="link_object">
-            <Data Key="name" Type="Quote">Appointment</Data>
-        </Insert>
     </DatabaseInstall>
 
     <DatabaseUninstall Type="pre">
         <TableDrop Name="calendar_appointment_ticket" />
-        <TableDrop Name="calendar_appointment_seen" />
         <TableDrop Name="calendar_appointment" />
         <TableDrop Name="calendar" />
     </DatabaseUninstall>

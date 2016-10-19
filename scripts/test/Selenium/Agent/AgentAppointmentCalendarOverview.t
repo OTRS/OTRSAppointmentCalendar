@@ -204,7 +204,7 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # go to previous week in order to disable realtime notification dialog
+        # go to previous week
         $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
@@ -332,7 +332,7 @@ $Selenium->RunTest(
         # cancel the dialog
         $Selenium->find_element( '#EditFormCancel', 'css' )->VerifiedClick();
 
-        # go to previous week in order to disable realtime notification dialog
+        # go to previous week
         $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish
@@ -551,7 +551,7 @@ $Selenium->RunTest(
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->VerifiedClick();
         $Selenium->find_element( 'Calendar' . $Calendar3{CalendarID}, 'id' )->VerifiedClick();
 
-        # go to previous week in order to disable realtime notification dialog
+        # go to previous week
         $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish

@@ -125,7 +125,13 @@ for my $DynamicField (@DynamicFields) {
     $DynamicField->{DynamicFieldID} = $DynamicFieldID;
 }
 
-my $TicketCount = 10;
+# Freeze time at this point since creating tickets and checking results can take
+#   several seconds to complete.
+$Helper->FixedTimeSet(
+    $CalendarHelperObject->CurrentSystemTime(),
+);
+
+my $TicketCount = 3;
 
 # create a few test tickets
 my @TicketIDs;
@@ -175,7 +181,8 @@ for my $Count ( 1 .. $TicketCount ) {
     );
     $Self->True(
         $Success,
-        "TicketPendingTimeSet - Ticket $TicketID",
+        "TicketPendingTimeSet - Ticket $TicketID: "
+            . sprintf( '%d-%02d-%02d %02d:%02d', $Year, $Month, $Day, $Hour, $Minute ),
     );
 
     # set dynamic field values
@@ -225,11 +232,14 @@ $Self->True(
     "CalendarCreate - $CalendarName ($Calendar{CalendarID})",
 );
 
-$Helper->FixedTimeSet(
-    $CalendarHelperObject->SystemTimeGet(
-        String => '2016-07-04 19:45:00',
-    ),
-);
+# Generate few random strings for RuleIDs.
+my @RuleIDs;
+for ( 1 .. 5 ) {
+    push @RuleIDs, $MainObject->GenerateRandomString(
+        Length     => 32,
+        Dictionary => [ 0 .. 9, 'a' .. 'f' ],
+    );
+}
 
 #
 # Tests for ticket appointments
@@ -239,10 +249,7 @@ my @Tests = (
         Name               => 'FirstResponseTime',
         TicketAppointments => [
             {
-                RuleID => $MainObject->GenerateRandomString(
-                    Length     => 32,
-                    Dictionary => [ 0 .. 9, 'a' .. 'f' ],
-                ),
+                RuleID       => $RuleIDs[0],
                 StartDate    => 'FirstResponseTime',
                 EndDate      => 'Plus_5',
                 QueueID      => [$QueueID],
@@ -256,16 +263,14 @@ my @Tests = (
             TicketAppointment => 'FirstResponseTime',
             StartTime         => 'FirstResponseTime',
             EndTime           => 'Plus_5',
+            Cleanup           => [],
         },
     },
     {
         Name               => 'UpdateTime',
         TicketAppointments => [
             {
-                RuleID => $MainObject->GenerateRandomString(
-                    Length     => 32,
-                    Dictionary => [ 0 .. 9, 'a' .. 'f' ],
-                ),
+                RuleID       => $RuleIDs[1],
                 StartDate    => 'UpdateTime',
                 EndDate      => 'Plus_15',
                 QueueID      => [$QueueID],
@@ -279,16 +284,19 @@ my @Tests = (
             TicketAppointment => 'UpdateTime',
             StartTime         => 'UpdateTime',
             EndTime           => 'Plus_15',
+            Cleanup           => [
+                {
+                    RuleID  => $RuleIDs[0],
+                    Success => 1,
+                },
+            ],
         },
     },
     {
         Name               => 'SolutionTime',
         TicketAppointments => [
             {
-                RuleID => $MainObject->GenerateRandomString(
-                    Length     => 32,
-                    Dictionary => [ 0 .. 9, 'a' .. 'f' ],
-                ),
+                RuleID       => $RuleIDs[2],
                 StartDate    => 'SolutionTime',
                 EndDate      => 'Plus_30',
                 QueueID      => [$QueueID],
@@ -302,16 +310,19 @@ my @Tests = (
             TicketAppointment => 'SolutionTime',
             StartTime         => 'SolutionTime',
             EndTime           => 'Plus_30',
+            Cleanup           => [
+                {
+                    RuleID  => $RuleIDs[1],
+                    Success => 1,
+                },
+            ],
         },
     },
     {
         Name               => 'PendingTime',
         TicketAppointments => [
             {
-                RuleID => $MainObject->GenerateRandomString(
-                    Length     => 32,
-                    Dictionary => [ 0 .. 9, 'a' .. 'f' ],
-                ),
+                RuleID       => $RuleIDs[3],
                 StartDate    => 'PendingTime',
                 EndDate      => 'Plus_60',
                 QueueID      => [$QueueID],
@@ -325,6 +336,12 @@ my @Tests = (
             TicketAppointment => 'PendingTime',
             StartTime         => 'PendingTime',
             EndTime           => 'Plus_60',
+            Cleanup           => [
+                {
+                    RuleID  => $RuleIDs[2],
+                    Success => 1,
+                },
+            ],
         },
         Update => {
             StartTime => '2016-01-01 00:00:00',
@@ -343,10 +360,7 @@ my @Tests = (
         Name               => 'DynamicField',
         TicketAppointments => [
             {
-                RuleID => $MainObject->GenerateRandomString(
-                    Length     => 32,
-                    Dictionary => [ 0 .. 9, 'a' .. 'f' ],
-                ),
+                RuleID       => $RuleIDs[4],
                 StartDate    => 'DynamicField_' . $DynamicFields[0]->{Name},
                 EndDate      => 'DynamicField_' . $DynamicFields[1]->{Name},
                 QueueID      => [$QueueID],
@@ -360,6 +374,12 @@ my @Tests = (
             TicketAppointment => 'DynamicField',
             StartTime         => 'DynamicField_' . $DynamicFields[0]->{Name},
             EndTime           => 'DynamicField_' . $DynamicFields[1]->{Name},
+            Cleanup           => [
+                {
+                    RuleID  => $RuleIDs[3],
+                    Success => 1,
+                },
+            ],
         },
         Update => {
             StartTime => '2016-03-01 00:00:00',
@@ -385,14 +405,25 @@ for my $Test (@Tests) {
         "$Test->{Name} - CalendarUpdate - Update ticket appointments rule",
     );
 
-    # execute console command
-    my $CommandObject = $Kernel::OM->Get('Kernel::System::Console::Command::Maint::Calendar::TicketAppointments');
-    my $ExitCode = $CommandObject->Execute( $Calendar{CalendarID}, '--quiet' );
+    # Process ticket appointments of the calendar.
+    my %Result = $CalendarObject->TicketAppointmentProcessCalendar(
+        CalendarID => $Calendar{CalendarID},
+    );
 
-    $Self->Is(
-        $ExitCode,
-        0,
-        "$Test->{Name} - Maint::Calendar::TicketAppointments exit code",
+    my %ResultCompare;
+    for my $TicketID ( sort @TicketIDs ) {
+        push @{ $ResultCompare{Process} }, {
+            TicketID => $TicketID,
+            RuleID   => $Test->{TicketAppointments}->[0]->{RuleID},
+            Success  => 1,
+        };
+    }
+    $ResultCompare{Cleanup} = $Test->{Result}->{Cleanup};
+
+    $Self->IsDeeply(
+        \%Result,
+        \%ResultCompare,
+        "$Test->{Name} - TicketAppointmentProcessCalendar - Result",
     );
 
     # get appointments
@@ -503,6 +534,9 @@ for my $Test (@Tests) {
                 AppointmentID => $Appointment->{AppointmentID},
                 TicketID      => $TicketID,
             );
+
+            # make sure cache is correct
+            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => 'Ticket' );
 
             # get ticket data again
             my %Ticket = $TicketObject->TicketGet(

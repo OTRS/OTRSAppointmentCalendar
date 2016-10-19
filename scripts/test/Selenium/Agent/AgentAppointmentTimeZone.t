@@ -82,7 +82,7 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # go to previous week in order to disable realtime notification dialog
+        # go to previous week
         $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->VerifiedClick();
 
         # wait for AJAX to finish

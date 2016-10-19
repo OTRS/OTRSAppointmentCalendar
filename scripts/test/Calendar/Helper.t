@@ -390,11 +390,63 @@ for my $Test (@Tests) {
         Success => 0,
     },
     {
-        Name   => 'TimezoneID',
+        Name   => 'UTC (Coordinated Universal Time)',
+        Config => {
+            TimezoneID => 'UTC',
+        },
+        Result  => 0,
+        Success => 1,
+    },
+    {
+        Name   => 'CET (Central European Time)',
         Config => {
             TimezoneID => 'Europe/Berlin',
+            Time       => 1456786800,
+        },
+        Result  => 1,
+        Success => 1,
+    },
+    {
+        Name   => 'CEDT (Central European Summer Time)',
+        Config => {
+            TimezoneID => 'Europe/Berlin',
+            Time       => 1462871162,
         },
         Result  => 2,
+        Success => 1,
+    },
+    {
+        Name   => 'CST (Central Standard Time)',
+        Config => {
+            TimezoneID => 'America/Mexico_City',
+            Time       => 1456786800,
+        },
+        Result  => -6,
+        Success => 1,
+    },
+    {
+        Name   => 'CDT (Central Daylight Time)',
+        Config => {
+            TimezoneID => 'America/Mexico_City',
+            Time       => 1462871162,
+        },
+        Result  => -5,
+        Success => 1,
+    },
+    {
+        Name   => 'IST (India Standard Time)',
+        Config => {
+            TimezoneID => 'Asia/Calcutta',
+        },
+        Result  => 5.5,
+        Success => 1,
+    },
+    {
+        Name   => 'NPT (Nepal Time)',
+        Config => {
+            TimezoneID => 'Asia/Kathmandu',
+        },
+        Result  => 5.75,
         Success => 1,
     },
 );
