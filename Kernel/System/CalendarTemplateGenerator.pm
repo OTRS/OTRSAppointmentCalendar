@@ -355,9 +355,9 @@ sub _Replace {
     # get a local time object
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    # ---
+    # -------------------
     # process appointment
-    # ---
+    # -------------------
 
     # replace config options
     $Tag = $Start . 'OTRS_APPOINTMENT_';
@@ -514,9 +514,9 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
-    # ---
+    # ----------------
     # process calendar
-    # ---
+    # ----------------
 
     # replace config options
     $Tag = $Start . 'OTRS_CALENDAR_';

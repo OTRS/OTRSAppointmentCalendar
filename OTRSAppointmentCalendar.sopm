@@ -83,6 +83,7 @@
         <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
         <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
+        <File Permission="644" Location="scripts/test/Calendar/Event/Transport/Email.t" />
         <File Permission="644" Location="scripts/test/Calendar.t" />
         <File Permission="644" Location="scripts/test/Calendar/Appointment.t" />
         <File Permission="644" Location="scripts/test/Calendar/Helper.t" />
