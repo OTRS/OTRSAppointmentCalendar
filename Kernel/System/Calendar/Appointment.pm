@@ -946,6 +946,7 @@ returns a hash:
         ChangeTime              => '2016-01-01 00:00:00',
         ChangeBy                => 2,
     );
+
 =cut
 
 sub AppointmentGet {
@@ -1704,11 +1705,11 @@ sub AppointmentUpcomingGet {
     return @Results;
 }
 
-=item _AppointmentFutureTasksDelete()
+=item AppointmentFutureTasksDelete()
 
 Delete all calendar appointment future tasks.
 
-    my $Success = $AppointmentObject->_AppointmentFutureTasksDelete();
+    my $Success = $AppointmentObject->AppointmentFutureTasksDelete();
 
 returns:
 
@@ -1716,7 +1717,7 @@ returns:
 
 =cut
 
-sub _AppointmentFutureTasksDelete {
+sub AppointmentFutureTasksDelete {
     my ( $Self, %Param ) = @_;
 
     # get a local scheduler db object
@@ -1775,7 +1776,7 @@ sub AppointmentFutureTasksUpdate {
     if ( !IsArrayRefWithData( \@UpcomingAppointments ) ) {
 
         # flush obsolete future tasks
-        my $Success = $Self->_AppointmentFutureTasksDelete();
+        my $Success = $Self->AppointmentFutureTasksDelete();
 
         if ( !$Success ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1800,7 +1801,7 @@ sub AppointmentFutureTasksUpdate {
     if ( scalar @FutureTaskList > 1 ) {
 
         # flush obsolete future tasks
-        my $Success = $Self->_AppointmentFutureTasksDelete();
+        my $Success = $Self->AppointmentFutureTasksDelete();
 
         if ( !$Success ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -1860,7 +1861,7 @@ sub AppointmentFutureTasksUpdate {
         if ($UpdateNeeded) {
 
             # flush obsolete future tasks
-            my $Success = $Self->_AppointmentFutureTasksDelete();
+            my $Success = $Self->AppointmentFutureTasksDelete();
 
             if ( !$Success ) {
                 $Kernel::OM->Get('Kernel::System::Log')->Log(
@@ -2689,6 +2690,8 @@ sub _CalculateRecurrenceTime {
 }
 
 1;
+
+=end Internal:
 
 =back
 
