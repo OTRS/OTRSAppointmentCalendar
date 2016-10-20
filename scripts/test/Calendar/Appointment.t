@@ -14,6 +14,9 @@ use vars (qw($Self));
 
 use Kernel::System::VariableCheck qw(:all);
 
+# Override local time zone for duration of the test.
+local $ENV{TZ} = 'UTC';
+
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
         RestoreDatabase => 1,
