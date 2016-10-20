@@ -83,7 +83,7 @@ sub NotificationEvent {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID Notification Recipient UserID)) {
+    for my $Needed (qw(Notification Recipient UserID)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -169,6 +169,7 @@ sub NotificationEvent {
         Text          => $Notification{Body},
         Recipient     => $Param{Recipient},
         AppointmentID => $Param{AppointmentID},
+        CalendarID    => $Param{CalendarID},
         UserID        => $Param{UserID},
         Language      => $Language,
     );
@@ -201,7 +202,7 @@ sub _Replace {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for (qw(Text AppointmentID RichText UserID)) {
+    for (qw(Text RichText UserID)) {
         if ( !defined $Param{$_} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -258,16 +259,19 @@ sub _Replace {
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
     my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 
-    # get appointment data
-    my %Appointment = $AppointmentObject->AppointmentGet(
-        AppointmentID => $Param{AppointmentID},
-    );
+    my %Calendar;
+    my %Appointment;
 
-    # get calendar data
-    my %Calendar = $CalendarObject->CalendarGet(
-        CalendarID => $Appointment{CalendarID},
-        UserID     => $Param{UserID},
-    );
+    if ( $Param{CalendarID} ) {
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Param{CalendarID},
+        );
+    }
+    if ( $Param{AppointmentID} ) {
+        %Appointment = $AppointmentObject->AppointmentGet(
+            AppointmentID => $Param{AppointmentID},
+        );
+    }
 
     # get config object
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
@@ -384,18 +388,24 @@ sub _Replace {
             || $Attribute eq 'ChangeTime'
             )
         {
-            # get the system time of the given timestamp
-            my $TagSystemTime = $TimeObject->TimeStamp2SystemTime(
-                String => $Appointment{$Attribute},
-            );
+            if ( !$Appointment{$Attribute} ) {
+                $Replacement = '-';
+            }
+            else {
 
-            # generate new timestamp with the related timezone offset
-            my $NewTimeStamp = $TimeObject->SystemTime2TimeStamp(
-                SystemTime => $TagSystemTime + $TimezoneOffset,
-            );
+                # get the system time of the given timestamp
+                my $TagSystemTime = $TimeObject->TimeStamp2SystemTime(
+                    String => $Appointment{$Attribute},
+                );
 
-            # prepare dates and times
-            $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+                # generate new timestamp with the related timezone offset
+                my $NewTimeStamp = $TimeObject->SystemTime2TimeStamp(
+                    SystemTime => $TagSystemTime + $TimezoneOffset,
+                );
+
+                # prepare dates and times
+                $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+            }
         }
 
         # process createby and changeby
@@ -448,7 +458,7 @@ sub _Replace {
             $Replacement = join ",", @TeamNames;
         }
 
-        # process team ids
+        # process resource ids
         elsif ( $Attribute eq 'ResourceID' ) {
 
             next ATTRIBUTE if !IsArrayRefWithData( $Appointment{$Attribute} );
@@ -457,6 +467,8 @@ sub _Replace {
 
             USERID:
             for my $UserID ( @{ $Appointment{$Attribute} } ) {
+
+                next USERID if !$UserID;
 
                 my $UserName = $UserObject->UserName(
                     UserID => $UserID,
@@ -469,7 +481,7 @@ sub _Replace {
 
             next ATTRIBUTE if !IsArrayRefWithData( \@UserNames );
 
-            # replace team ids with a comma seperated list of team names
+            # replace resource ids with a comma seperated list of team names
             $Replacement = join ",", @UserNames;
         }
 
@@ -492,6 +504,8 @@ sub _Replace {
         else {
             $Replacement = $Appointment{$Attribute};
         }
+
+        $Replacement ||= '';
 
         # replace the tags
         $Param{Text} =~ s{$MatchTag$End}{$Replacement}egx;

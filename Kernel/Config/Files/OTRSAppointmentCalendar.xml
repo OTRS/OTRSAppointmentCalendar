@@ -438,7 +438,7 @@
         <Setting>
             <Hash>
                 <Item Key="Module">Kernel::System::Calendar::Event::Notification</Item>
-                <Item Key="Event">(AppointmentCreate|AppointmentUpdate|AppointmentDelete|AppointmentNotification)</Item>
+                <Item Key="Event">(AppointmentCreate|AppointmentUpdate|AppointmentDelete|AppointmentNotification|CalendarCreate|CalendarUpdate)</Item>
             </Hash>
         </Setting>
     </ConfigItem>

@@ -621,7 +621,7 @@ sub CalendarUpdate {
     $Self->EventHandler(
         Event => 'CalendarUpdate',
         Data  => {
-            Calendar => $Param{CalendarID},
+            CalendarID => $Param{CalendarID},
         },
         UserID => $Param{UserID},
     );

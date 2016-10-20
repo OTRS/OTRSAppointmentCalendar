@@ -65,7 +65,7 @@ sub SendNotification {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID UserID Notification Recipient)) {
+    for my $Needed (qw(UserID Notification Recipient)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -125,9 +125,8 @@ sub SendNotification {
         $Notification{Body} = $LayoutObject->Output(
             TemplateFile => "NotificationEvent/Email/$EmailTemplate",
             Data         => {
-                AppointmentID => $Param{AppointmentID},
-                Body          => $Notification{Body},
-                Subject       => $Notification{Subject},
+                Body    => $Notification{Body},
+                Subject => $Notification{Subject},
             },
         );
     }

@@ -51,10 +51,10 @@ sub Run {
         }
     }
 
-    if ( !$Param{Data}->{AppointmentID} ) {
+    if ( !$Param{Data}->{AppointmentID} && !$Param{Data}->{CalendarID} ) {
         $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
-            Message  => 'Need AppointmentID in Data!',
+            Message  => 'Need either CalendarID or AppointmentID in Data!',
         );
         return;
     }
@@ -76,12 +76,22 @@ sub Run {
         return 1;
     }
 
-    # get a local appointment object
     my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+    my $CalendarObject    = $Kernel::OM->Get('Kernel::System::Calendar');
 
-    my %Appointment = $AppointmentObject->AppointmentGet(
-        AppointmentID => $Param{Data}->{AppointmentID},
-    );
+    my %Calendar;
+    my %Appointment;
+
+    if ( $Param{Data}->{CalendarID} ) {
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Param{Data}->{CalendarID},
+        );
+    }
+    if ( $Param{Data}->{AppointmentID} ) {
+        %Appointment = $AppointmentObject->AppointmentGet(
+            AppointmentID => $Param{Data}->{AppointmentID},
+        );
+    }
 
     NOTIFICATIONID:
     for my $NotificationID (@IDs) {
@@ -94,6 +104,7 @@ sub Run {
         my $PassFilter = $Self->_NotificationFilter(
             %Param,
             Appointment  => \%Appointment,
+            Calendar     => \%Calendar,
             Notification => \%Notification,
         );
 
@@ -103,6 +114,7 @@ sub Run {
         my @RecipientUsers = $Self->_RecipientsGet(
             %Param,
             Appointment  => \%Appointment,
+            Calendar     => \%Calendar,
             Notification => \%Notification,
         );
 
@@ -116,6 +128,7 @@ sub Run {
 
             my %ReplacedNotification = $TemplateGeneratorObject->NotificationEvent(
                 AppointmentID => $Param{Data}->{AppointmentID},
+                CalendarID    => $Param{Data}->{CalendarID},
                 Recipient     => $Recipient,
                 Notification  => \%Notification,
                 UserID        => $Param{UserID},
@@ -294,7 +307,7 @@ sub _NotificationFilter {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    for my $Needed (qw(Appointment Notification)) {
+    for my $Needed (qw(Appointment Calendar Notification)) {
         return if !$Param{$Needed};
     }
 
@@ -384,7 +397,7 @@ sub _RecipientsGet {
     my ( $Self, %Param ) = @_;
 
     # check needed params
-    for my $Needed (qw(Appointment Notification)) {
+    for my $Needed (qw(Appointment Calendar Notification)) {
         return if !$Param{$Needed};
     }
 
@@ -456,8 +469,8 @@ sub _RecipientsGet {
 
                     # get calendar information
                     my %Calendar = $CalendarObject->CalendarGet(
-                        CalendarID => $Appointment{CalendarID},
-                        UserID     => 1,
+                        CalendarID => $Appointment{CalendarID} || $Param{Calendar}->{CalendarID},
+                        UserID => 1,
                     );
 
                     # get a list of read access users for the related calendar
@@ -626,7 +639,7 @@ sub _SendRecipientNotification {
     my ( $Self, %Param ) = @_;
 
     # check needed stuff
-    for my $Needed (qw(AppointmentID UserID Notification Recipient Event Transport TransportObject)) {
+    for my $Needed (qw(UserID Notification Recipient Event Transport TransportObject)) {
         if ( !$Param{$Needed} ) {
             $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
@@ -639,7 +652,6 @@ sub _SendRecipientNotification {
 
     # send notification to each recipient
     my $Success = $TransportObject->SendNotification(
-        AppointmentID         => $Param{AppointmentID},
         UserID                => $Param{UserID},
         Notification          => $Param{Notification},
         CustomerMessageParams => $Param{CustomerMessageParams},
