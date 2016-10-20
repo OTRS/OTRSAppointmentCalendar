@@ -89,7 +89,7 @@ sub Run {
 
         my %GetParam;
         for my $Parameter (
-            qw(ID Name Comment ValidID Events ArticleSubjectMatch ArticleBodyMatch ArticleTypeID ArticleSenderTypeID Transports)
+            qw(ID Name Comment ValidID Events Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
@@ -98,8 +98,7 @@ sub Run {
         for my $Parameter (
             qw(Recipients RecipientAgents RecipientGroups RecipientRoles
             Events CalendarID TeamID ResourceID Title Location
-            ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
-            ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
+            Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
         {
@@ -151,31 +150,34 @@ sub Run {
 
         # update
         my $Ok;
-        my $ArticleFilterMissing;
-
-        # checking if article filter exist if necessary
-        if (
-            grep { $_ eq 'ArticleCreate' || $_ eq 'ArticleSend' }
-            @{ $GetParam{Data}->{Events} || [] }
-            )
-        {
-            if (
-                !$GetParam{ArticleTypeID}
-                && !$GetParam{ArticleSenderTypeID}
-                && $GetParam{ArticleSubjectMatch} eq ''
-                && $GetParam{ArticleBodyMatch} eq ''
-                )
-            {
-                $ArticleFilterMissing = 1;
-            }
-        }
+        my $DuplicatedEntry = 0;
 
         $GetParam{Data}->{NotificationType} = ['Appointment'];
 
-        # required Article filter only on ArticleCreate and ArticleSend event
-        # if isn't selected at least one of the article filter fields, notification isn't updated
-        if ( !$ArticleFilterMissing ) {
+        # Get a list of all available notifications and check if a notification with the
+        # same name and another type already exists in the database.
+        my %NotificationList = $NotificationEventObject->NotificationList(
+            Type    => 'Appointment',
+            Details => 1,
+            All     => 1,
+        );
 
+        NOTIFICATIONID:
+        for my $NotificationID ( sort keys %NotificationList ) {
+
+            next NOTIFICATIONID if !$NotificationID;
+            next NOTIFICATIONID if $GetParam{Name} ne $NotificationList{$NotificationID}->{Name};
+
+            if (
+                $GetParam{Name} eq $NotificationList{$NotificationID}->{Name}
+                && $GetParam{ID} ne $NotificationID
+                )
+            {
+                $DuplicatedEntry = 1;
+            }
+        }
+
+        if ( !$DuplicatedEntry ) {
             $Ok = $NotificationEventObject->NotificationUpdate(
                 %GetParam,
                 UserID => $Self->{UserID},
@@ -203,21 +205,16 @@ sub Run {
                 }
             }
 
-            # define ServerError Class attribute if necessary
-            $GetParam{ArticleTypeIDServerError}       = "";
-            $GetParam{ArticleSenderTypeIDServerError} = "";
-            $GetParam{ArticleSubjectMatchServerError} = "";
-            $GetParam{ArticleBodyMatchServerError}    = "";
-
-            if ($ArticleFilterMissing) {
-                $GetParam{ArticleTypeIDServerError}       = "ServerError";
-                $GetParam{ArticleSenderTypeIDServerError} = "ServerError";
-                $GetParam{ArticleSubjectMatchServerError} = "ServerError";
-                $GetParam{ArticleBodyMatchServerError}    = "ServerError";
-            }
-
             my $Output = $LayoutObject->Header();
             $Output .= $LayoutObject->NavigationBar();
+
+            if ($DuplicatedEntry) {
+                $Output .= $LayoutObject->Notify(
+                    Priority => 'Error',
+                    Info     => Translatable('Notification name already exists!')
+                );
+            }
+
             $Output .= $LayoutObject->Notify( Priority => 'Error' );
             $Self->_Edit(
                 %GetParam,
@@ -264,17 +261,15 @@ sub Run {
 
         my %GetParam;
         for my $Parameter (
-            qw(Name Comment ValidID Events ArticleSubjectMatch ArticleBodyMatch ArticleTypeID ArticleSenderTypeID Transports)
+            qw(Name Comment ValidID Events Transports)
             )
         {
             $GetParam{$Parameter} = $ParamObject->GetParam( Param => $Parameter ) || '';
         }
         PARAMETER:
         for my $Parameter (
-            qw(Recipients RecipientAgents RecipientRoles RecipientGroups Events StateID QueueID
-            PriorityID LockID TypeID ServiceID SLAID CustomerID CustomerUserID
-            ArticleTypeID ArticleSubjectMatch ArticleBodyMatch ArticleAttachmentInclude
-            ArticleSenderTypeID Transports OncePerDay SendOnOutOfOffice
+            qw(Recipients RecipientAgents RecipientRoles RecipientGroups Events
+            CustomerID CustomerUserID Transports OncePerDay SendOnOutOfOffice
             VisibleForAgent VisibleForAgentTooltip LanguageID AgentEnabledByDefault)
             )
         {
@@ -326,30 +321,28 @@ sub Run {
 
         # add
         my $ID;
-        my $ArticleFilterMissing;
-
-        # define ServerError Message if necessary
-        if (
-            grep { $_ eq 'ArticleCreate' || $_ eq 'ArticleSend' }
-            @{ $GetParam{Data}->{Events} || [] }
-            )
-        {
-            if (
-                !$GetParam{ArticleTypeID}
-                && !$GetParam{ArticleSenderTypeID}
-                && $GetParam{ArticleSubjectMatch} eq ''
-                && $GetParam{ArticleBodyMatch} eq ''
-                )
-            {
-                $ArticleFilterMissing = 1;
-            }
-        }
+        my $DuplicatedEntry = 0;
 
         $GetParam{Data}->{NotificationType} = ['Appointment'];
 
-        # required Article filter only on ArticleCreate and Article Send event
-        # if isn't selected at least one of the article filter fields, notification isn't added
-        if ( !$ArticleFilterMissing ) {
+        # Get a list of all available notifications and check if a notification with the
+        # same name and another type already exists in the database.
+        my %NotificationList = $NotificationEventObject->NotificationList(
+            Type    => 'Appointment',
+            Details => 1,
+            All     => 1,
+        );
+
+        NOTIFICATIONID:
+        for my $NotificationID ( sort keys %NotificationList ) {
+
+            next NOTIFICATIONID if !$NotificationID;
+            next NOTIFICATIONID if $GetParam{Name} ne $NotificationList{$NotificationID}->{Name};
+
+            $DuplicatedEntry = 1;
+        }
+
+        if ( !$DuplicatedEntry ) {
             $ID = $NotificationEventObject->NotificationAdd(
                 %GetParam,
                 UserID => $Self->{UserID},
@@ -381,21 +374,16 @@ sub Run {
                 }
             }
 
-            # checking if article filter exist if necessary
-            $GetParam{ArticleTypeIDServerError}       = "";
-            $GetParam{ArticleSenderTypeIDServerError} = "";
-            $GetParam{ArticleSubjectMatchServerError} = "";
-            $GetParam{ArticleBodyMatchServerError}    = "";
-
-            if ($ArticleFilterMissing) {
-                $GetParam{ArticleTypeIDServerError}       = "ServerError";
-                $GetParam{ArticleSenderTypeIDServerError} = "ServerError";
-                $GetParam{ArticleSubjectMatchServerError} = "ServerError";
-                $GetParam{ArticleBodyMatchServerError}    = "ServerError";
-            }
-
             my $Output = $LayoutObject->Header();
             $Output .= $LayoutObject->NavigationBar();
+
+            if ($DuplicatedEntry) {
+                $Output .= $LayoutObject->Notify(
+                    Priority => 'Error',
+                    Info     => Translatable('Notification name already exists!')
+                );
+            }
+
             $Output .= $LayoutObject->Notify( Priority => 'Error' );
             $Self->_Edit(
                 %GetParam,
@@ -710,18 +698,6 @@ sub _Edit {
         $EventClass .= ' ' . $Param{EventsServerError};
     }
 
-    # Set class name for article type...
-    my $ArticleTypeIDClass = '';
-    if ( $Param{ArticleTypeIDServerError} ) {
-        $ArticleTypeIDClass .= ' ' . $Param{ArticleTypeIDServerError};
-    }
-
-    # Set class name for article sender type...
-    my $ArticleSenderTypeIDClass = '';
-    if ( $Param{ArticleSenderTypeIDServerError} ) {
-        $ArticleSenderTypeIDClass .= ' ' . $Param{ArticleSenderTypeIDServerError};
-    }
-
     my $NotificationConfig = $ConfigObject->Get('Frontend::Admin::AdminAppointmentNotificationEvent');
 
     # get a list of registered events
@@ -994,46 +970,10 @@ sub _Edit {
         HTMLQuote    => 0,
     );
 
-    my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
-
-    $Param{ArticleTypesStrg} = $LayoutObject->BuildSelection(
-        Data        => { $TicketObject->ArticleTypeList( Result => 'HASH' ), },
-        Name        => 'ArticleTypeID',
-        SelectedID  => $Param{Data}->{ArticleTypeID},
-        Class       => $ArticleTypeIDClass . ' Modernize W75pc',
-        Size        => 5,
-        Multiple    => 1,
-        Translation => 1,
-        Max         => 200,
-    );
-
-    $Param{ArticleSenderTypesStrg} = $LayoutObject->BuildSelection(
-        Data        => { $TicketObject->ArticleSenderTypeList( Result => 'HASH' ), },
-        Name        => 'ArticleSenderTypeID',
-        SelectedID  => $Param{Data}->{ArticleSenderTypeID},
-        Class       => $ArticleSenderTypeIDClass . ' Modernize W75pc',
-        Size        => 5,
-        Multiple    => 1,
-        Translation => 1,
-        Max         => 200,
-    );
-
-    $Param{ArticleAttachmentIncludeStrg} = $LayoutObject->BuildSelection(
-        Data => {
-            0 => 'No',
-            1 => 'Yes',
-        },
-        Name        => 'ArticleAttachmentInclude',
-        SelectedID  => $Param{Data}->{ArticleAttachmentInclude} || 0,
-        Translation => 1,
-        Max         => 200,
-        Class       => 'Modernize W75pc',
-    );
-
     # take over data fields
     KEY:
     for my $Key (
-        qw(VisibleForAgent VisibleForAgentTooltip CustomerID CustomerUserID ArticleSubjectMatch ArticleBodyMatch)
+        qw(VisibleForAgent VisibleForAgentTooltip CustomerID CustomerUserID)
         )
     {
         next KEY if !$Param{Data}->{$Key};
