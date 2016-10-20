@@ -13,9 +13,6 @@ use utf8;
 
 use vars (qw($Self));
 
-# get config object
-my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
 # get helper object
 $Kernel::OM->ObjectParamAdd(
     'Kernel::System::UnitTest::Helper' => {
@@ -23,7 +20,20 @@ $Kernel::OM->ObjectParamAdd(
 
     },
 );
-my $Helper = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+
+# ------------------------------------------------------------ #
+# needed objects
+# ------------------------------------------------------------ #
+
+my $HelperObject    = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
+my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
+my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
+my $TestEmailObject = $Kernel::OM->Get('Kernel::System::Email::Test');
+my $CalendarObject  = $Kernel::OM->Get('Kernel::System::Calendar');
+
+# ------------------------------------------------------------ #
+# config changes
+# ------------------------------------------------------------ #
 
 # disable rich text editor
 my $Success = $ConfigObject->Set(
@@ -58,7 +68,9 @@ $Self->True(
     "Disable Agent Self Notify On Action",
 );
 
-my $TestEmailObject = $Kernel::OM->Get('Kernel::System::Email::Test');
+# ------------------------------------------------------------ #
+# email test backend
+# ------------------------------------------------------------ #
 
 $Success = $TestEmailObject->CleanUp();
 $Self->True(
@@ -72,117 +84,104 @@ $Self->IsDeeply(
     'Test backend empty after initial cleanup',
 );
 
+# ------------------------------------------------------------ #
+# user create
+# ------------------------------------------------------------ #
+
 # create a new user for current test
-my $UserLogin = $Kernel::OM->Get('Kernel::System::UnitTest::Helper')->TestUserCreate(
+my $UserLogin = $HelperObject->TestUserCreate(
     Groups => ['users'],
 );
-
 my %UserData = $Kernel::OM->Get('Kernel::System::User')->GetUserData(
     User => $UserLogin,
 );
-
 my $UserID = $UserData{UserID};
 
-# get ticket object
-my $TicketObject = $Kernel::OM->Get('Kernel::System::Ticket');
+# ------------------------------------------------------------ #
+# group create
+# ------------------------------------------------------------ #
 
-# create ticket
-my $TicketID = $TicketObject->TicketCreate(
-    Title        => 'Ticket One Title',
-    QueueID      => 1,
-    Lock         => 'unlock',
-    Priority     => '3 normal',
-    State        => 'new',
-    CustomerID   => 'example.com',
-    CustomerUser => $UserData{UserLogin},
-    OwnerID      => $UserID,
-    UserID       => $UserID,
-);
-
-# sanity check
-$Self->True(
-    $TicketID,
-    "TicketCreate() successful for Ticket ID $TicketID",
-);
-
-my $ArticleID = $TicketObject->ArticleCreate(
-    TicketID       => $TicketID,
-    ArticleType    => 'webrequest',
-    SenderType     => 'customer',
-    From           => 'customerOne@example.com, customerTwo@example.com',
-    To             => 'Some Agent A <agent-a@example.com>',
-    Subject        => 'some short description',
-    Body           => 'the message text',
-    Charset        => 'utf8',
-    MimeType       => 'text/plain',
-    HistoryType    => 'OwnerUpdate',
-    HistoryComment => 'Some free text!',
-    UserID         => 1,
-);
-
-# sanity check
-$Self->True(
-    $ArticleID,
-    "ArticleCreate() successful for Article ID $ArticleID",
-);
-
-# get a random id
-my $RandomID = $Helper->GetRandomNumber();
-
-# get dynamic field object
-my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-
-# create a dynamic field
-my $FieldID = $DynamicFieldObject->DynamicFieldAdd(
-    Name       => "DFT1$RandomID",
-    Label      => 'Description',
-    FieldOrder => 9991,
-    FieldType  => 'Text',
-    ObjectType => 'Ticket',
-    Config     => {
-        DefaultValue => 'Default',
-    },
+# create test group
+my $GroupID = $GroupObject->GroupAdd(
+    Name    => 'unittestgroup' . $HelperObject->GetRandomID(),
+    Comment => 'comment describing the group',
     ValidID => 1,
     UserID  => 1,
-    Reorder => 0,
+);
+
+$Self->True(
+    $GroupID,
+    'Group create',
+);
+
+$Success = $GroupObject->PermissionGroupUserAdd(
+    GID        => $GroupID,
+    UID        => $UserID,
+    Permission => {
+        ro        => 1,
+        move_into => 1,
+        create    => 1,
+        owner     => 1,
+        priority  => 1,
+        rw        => 1,
+    },
+    UserID => 1,
+);
+
+$Self->True(
+    $Success,
+    'Group user add',
+);
+
+# ------------------------------------------------------------ #
+# calendar create
+# ------------------------------------------------------------ #
+
+# create calendar and appointment
+my %Calendar = $CalendarObject->CalendarCreate(
+    CalendarName => 'unittestcalendar' . $HelperObject->GetRandomID(),
+    GroupID      => $GroupID,
+    Color        => '#FF7700',
+    UserID       => $UserID,
+    ValidID      => 1,
 );
 
 my @Tests = (
     {
         Name => 'Single RecipientAgent',
         Data => {
-            Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            Events          => ['AppointmentUpdate'],
             RecipientAgents => [$UserID],
         },
         ExpectedResults => [
             {
                 ToArray => [ $UserData{UserEmail} ],
-                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
     },
     {
         Name => 'RecipientAgent + RecipientEmail',
         Data => {
-            Events          => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            Events          => ['AppointmentUpdate'],
             RecipientAgents => [$UserID],
             RecipientEmail  => ['test@otrsexample.com'],
         },
         ExpectedResults => [
             {
                 ToArray => [ $UserData{UserEmail} ],
-                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
             {
                 ToArray => ['test@otrsexample.com'],
-                Body    => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
     },
     {
         Name => 'Recipient Customer - JustToRealCustomer enabled',
         Data => {
-            Events     => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            Events     => ['AppointmentUpdate'],
             Recipients => ['Customer'],
         },
         ExpectedResults    => [],
@@ -191,13 +190,13 @@ my @Tests = (
     {
         Name => 'Recipient Customer - JustToRealCustomer disabled',
         Data => {
-            Events     => [ 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update' ],
+            Events     => ['AppointmentUpdate'],
             Recipients => ['Customer'],
         },
         ExpectedResults => [
             {
                 ToArray => [ 'customerOne@example.com', 'customerTwo@example.com' ],
-                Body => "JobName $TicketID Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
             },
         ],
         JustToRealCustomer => 0,
@@ -226,7 +225,7 @@ for my $Test (@Tests) {
     );
 
     my $NotificationID = $NotificationEventObject->NotificationAdd(
-        Name    => "JobName$Count-$RandomID",
+        Name    => "JobName$Count",
         Data    => $Test->{Data},
         Message => {
             en => {
@@ -248,9 +247,9 @@ for my $Test (@Tests) {
     );
 
     my $Result = $EventNotificationEventObject->Run(
-        Event => 'TicketDynamicFieldUpdate_DFT1' . $RandomID . 'Update',
+        Event => 'CalendarUpdate',
         Data  => {
-            TicketID => $TicketID,
+            CalendarID => $Calendar{CalendarID},
         },
         Config => {},
         UserID => 1,
@@ -290,34 +289,5 @@ for my $Test (@Tests) {
 
     $Count++;
 }
-
-# cleanup
-
-# delete the dynamic field
-my $DFDelete = $DynamicFieldObject->DynamicFieldDelete(
-    ID      => $FieldID,
-    UserID  => 1,
-    Reorder => 0,
-);
-
-# sanity check
-$Self->True(
-    $DFDelete,
-    "DynamicFieldDelete() successful for Field ID $FieldID",
-);
-
-# delete the ticket
-my $TicketDelete = $TicketObject->TicketDelete(
-    TicketID => $TicketID,
-    UserID   => $UserID,
-);
-
-# sanity check
-$Self->True(
-    $TicketDelete,
-    "TicketDelete() successful for Ticket ID $TicketID",
-);
-
-# cleanup is done by RestoreDatabase.
 
 1;

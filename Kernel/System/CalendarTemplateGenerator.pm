@@ -262,14 +262,17 @@ sub _Replace {
     my %Calendar;
     my %Appointment;
 
-    if ( $Param{CalendarID} ) {
-        %Calendar = $CalendarObject->CalendarGet(
-            CalendarID => $Param{CalendarID},
-        );
-    }
     if ( $Param{AppointmentID} ) {
         %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $Param{AppointmentID},
+        );
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Appointment{CalendarID},
+        );
+    }
+    elsif ( $Param{CalendarID} ) {
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Param{CalendarID},
         );
     }
 
@@ -355,9 +358,9 @@ sub _Replace {
     # get a local time object
     my $TimeObject = $Kernel::OM->Get('Kernel::System::Time');
 
-    # -------------------
+    # ------------------------------------------------------------ #
     # process appointment
-    # -------------------
+    # ------------------------------------------------------------ #
 
     # replace config options
     $Tag = $Start . 'OTRS_APPOINTMENT_';
@@ -514,9 +517,9 @@ sub _Replace {
     # cleanup
     $Param{Text} =~ s/$Tag.+?$End/-/gi;
 
-    # ----------------
+    # ------------------------------------------------------------ #
     # process calendar
-    # ----------------
+    # ------------------------------------------------------------ #
 
     # replace config options
     $Tag = $Start . 'OTRS_CALENDAR_';

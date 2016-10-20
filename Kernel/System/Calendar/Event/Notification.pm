@@ -82,14 +82,17 @@ sub Run {
     my %Calendar;
     my %Appointment;
 
-    if ( $Param{Data}->{CalendarID} ) {
-        %Calendar = $CalendarObject->CalendarGet(
-            CalendarID => $Param{Data}->{CalendarID},
-        );
-    }
     if ( $Param{Data}->{AppointmentID} ) {
         %Appointment = $AppointmentObject->AppointmentGet(
             AppointmentID => $Param{Data}->{AppointmentID},
+        );
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Appointment{CalendarID},
+        );
+    }
+    elsif ( $Param{Data}->{CalendarID} ) {
+        %Calendar = $CalendarObject->CalendarGet(
+            CalendarID => $Param{Data}->{CalendarID},
         );
     }
 
@@ -229,7 +232,8 @@ sub Run {
                 }
 
                 my $Success = $Self->_SendRecipientNotification(
-                    AppointmentID         => $Param{Data}->{AppointmentID},
+                    AppointmentID => $Appointment{AppointmentID} || '',
+                    CalendarID => $Calendar{CalendarID} || $Appointment{CalendarID} || '',
                     Notification          => $Bundle->{Notification},
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Bundle->{Recipient},
@@ -264,7 +268,8 @@ sub Run {
                 );
 
                 my $Success = $Self->_SendRecipientNotification(
-                    AppointmentID         => $Param{Data}->{AppointmentID},
+                    AppointmentID => $Appointment{AppointmentID} || '',
+                    CalendarID => $Calendar{CalendarID} || $Appointment{CalendarID} || '',
                     Notification          => \%ReplacedNotification,
                     CustomerMessageParams => $Param{Data}->{CustomerMessageParams} || {},
                     Recipient             => $Recipient,
@@ -652,6 +657,8 @@ sub _SendRecipientNotification {
 
     # send notification to each recipient
     my $Success = $TransportObject->SendNotification(
+        AppointmentID         => $Param{AppointmentID},
+        CalendarID            => $Param{CalendarID},
         UserID                => $Param{UserID},
         Notification          => $Param{Notification},
         CustomerMessageParams => $Param{CustomerMessageParams},
