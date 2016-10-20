@@ -150,61 +150,31 @@ my @Tests = (
     {
         Name => 'Single RecipientAgent',
         Data => {
-            Events          => ['AppointmentUpdate'],
-            RecipientAgents => [$UserID],
+            Events           => ['CalendarUpdate'],
+            RecipientAgents  => [$UserID],
+            NotificationType => ['Appointment'],
         },
         ExpectedResults => [
             {
                 ToArray => [ $UserData{UserEmail} ],
-                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
-            },
-        ],
-    },
-    {
-        Name => 'RecipientAgent + RecipientEmail',
-        Data => {
-            Events          => ['AppointmentUpdate'],
-            RecipientAgents => [$UserID],
-            RecipientEmail  => ['test@otrsexample.com'],
-        },
-        ExpectedResults => [
-            {
-                ToArray => [ $UserData{UserEmail} ],
-                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
-            },
-            {
-                ToArray => ['test@otrsexample.com'],
-                Body    => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
+                Body    => "Calender: $Calendar{CalendarName}=\n",
             },
         ],
     },
     {
         Name => 'Recipient Customer - JustToRealCustomer enabled',
         Data => {
-            Events     => ['AppointmentUpdate'],
-            Recipients => ['Customer'],
+            Events           => ['CalendarUpdate'],
+            Recipients       => ['Customer'],
+            NotificationType => ['Appointment'],
         },
         ExpectedResults    => [],
         JustToRealCustomer => 1,
     },
-    {
-        Name => 'Recipient Customer - JustToRealCustomer disabled',
-        Data => {
-            Events     => ['AppointmentUpdate'],
-            Recipients => ['Customer'],
-        },
-        ExpectedResults => [
-            {
-                ToArray => [ 'customerOne@example.com', 'customerTwo@example.com' ],
-                Body => "JobName Kernel::System::Email::Test $UserData{UserFirstname}=\n",
-            },
-        ],
-        JustToRealCustomer => 0,
-    },
 );
 
 my $NotificationEventObject      = $Kernel::OM->Get('Kernel::System::NotificationEvent');
-my $EventNotificationEventObject = $Kernel::OM->Get('Kernel::System::Ticket::Event::NotificationEvent');
+my $EventNotificationEventObject = $Kernel::OM->Get('Kernel::System::Calendar::Event::Notification');
 
 my $Count = 0;
 for my $Test (@Tests) {
@@ -230,7 +200,7 @@ for my $Test (@Tests) {
         Message => {
             en => {
                 Subject     => 'JobName',
-                Body        => 'JobName <OTRS_TICKET_TicketID> <OTRS_CONFIG_SendmailModule> <OTRS_OWNER_UserFirstname>',
+                Body        => 'Calender: <OTRS_CALENDAR_CALENDARNAME>',
                 ContentType => 'text/plain',
             },
         },
