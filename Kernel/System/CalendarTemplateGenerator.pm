@@ -179,6 +179,7 @@ sub NotificationEvent {
         Text          => $Notification{Subject},
         Recipient     => $Param{Recipient},
         AppointmentID => $Param{AppointmentID},
+        CalendarID    => $Param{CalendarID},
         UserID        => $Param{UserID},
         Language      => $Language,
     );
