@@ -48,69 +48,16 @@ sub new {
     # get NotificationEvent object
     my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
 
-    my %NotificationListRaw = $NotificationEventObject->NotificationList( Type => 'Appointment' );
+    my %NotificationList = $NotificationEventObject->NotificationList( Type => 'Appointment' );
 
     my $NotificationConfig
         = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Admin::AdminAppointmentNotificationEvent');
-
-    # get a list of registered events
-    my %RegisteredEvents = $Kernel::OM->Get('Kernel::System::Event')->EventList(
-        ObjectTypes => $NotificationConfig->{EventObjectTypes},
-    );
-
-    # get a list of all notifications affected by the supported events
-    my %NotificationIDs;
-
-    REGISTEREDEVENTKEY:
-    for my $RegisteredEventKey ( sort keys %RegisteredEvents ) {
-
-        next REGISTEREDEVENTKEY if !$RegisteredEventKey;
-        next REGISTEREDEVENTKEY if !IsArrayRefWithData( $RegisteredEvents{$RegisteredEventKey} );
-
-        REGISTEREDEVENT:
-        for my $RegisteredEvent ( @{ $RegisteredEvents{$RegisteredEventKey} } ) {
-
-            next REGISTEREDEVENT if !$RegisteredEvent;
-
-            my @NotificationIDs = $NotificationEventObject->NotificationEventCheck(
-                Event => $RegisteredEvent,
-            );
-
-            next REGISTEREDEVENT if !IsArrayRefWithData( \@NotificationIDs );
-
-            NOTIFICATIONID:
-            for my $NotificationID (@NotificationIDs) {
-
-                next NOTIFICATIONID if !$NotificationID;
-                next NOTIFICATIONID if $NotificationIDs{$NotificationID};
-
-                $NotificationIDs{$NotificationID} = 1;
-            }
-        }
-    }
-
-    if ( IsHashRefWithData( \%NotificationIDs ) ) {
-
-        # walk through the notification list to remove all
-        # notifications not affected by the supported events
-        NOTIFICATIONID:
-        for my $NotificationID ( sort keys %NotificationListRaw ) {
-
-            next NOTIFICATIONID if !$NotificationID;
-            next NOTIFICATIONID if $NotificationIDs{$NotificationID};
-
-            delete $NotificationListRaw{$NotificationID};
-        }
-    }
-    else {
-        %NotificationListRaw = ();
-    }
 
     # get valid object
     my $ValidObject = $Kernel::OM->Get('Kernel::System::Valid');
 
     NOTIFICATION:
-    for my $NotificationID ( sort keys %NotificationListRaw ) {
+    for my $NotificationID ( sort keys %NotificationList ) {
 
         # get notification details
         my %Notification = $NotificationEventObject->NotificationGet(
