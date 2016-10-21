@@ -407,8 +407,23 @@ sub _Replace {
                     SystemTime => $TagSystemTime + $TimezoneOffset,
                 );
 
+                my $DateFormat = 'DateFormat';
+
+                # Do not include time component for all-day appointments,
+                #   but only for start and end dates.
+                if (
+                    $Appointment{AllDay}
+                    && (
+                        $Attribute eq 'StartTime'
+                        || $Attribute eq 'EndTime'
+                    )
+                    )
+                {
+                    $DateFormat .= 'Short';
+                }
+
                 # prepare dates and times
-                $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+                $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, $DateFormat ) || '';
             }
         }
 
@@ -459,7 +474,7 @@ sub _Replace {
             next ATTRIBUTE if !IsArrayRefWithData( \@TeamNames );
 
             # replace team ids with a comma seperated list of team names
-            $Replacement = join ",", @TeamNames;
+            $Replacement = join ', ', @TeamNames;
         }
 
         # process resource ids
@@ -486,7 +501,7 @@ sub _Replace {
             next ATTRIBUTE if !IsArrayRefWithData( \@UserNames );
 
             # replace resource ids with a comma seperated list of team names
-            $Replacement = join ",", @UserNames;
+            $Replacement = join ', ', @UserNames;
         }
 
         # process all day and recurring tags
@@ -506,7 +521,12 @@ sub _Replace {
 
         # process all other single values
         else {
-            $Replacement = $Appointment{$Attribute};
+            if ( !$Appointment{$Attribute} ) {
+                $Replacement = '-';
+            }
+            else {
+                $Replacement = $Appointment{$Attribute};
+            }
         }
 
         $Replacement ||= '';
@@ -550,7 +570,7 @@ sub _Replace {
             );
 
             # prepare dates and times
-            $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormatLong' ) || '';
+            $Replacement = $LanguageObject->FormatTimeString( $NewTimeStamp, 'DateFormat' ) || '';
         }
 
         # process createby and changeby
@@ -579,7 +599,12 @@ sub _Replace {
 
         # process all other single values
         else {
-            $Replacement = $Calendar{$Attribute};
+            if ( !$Calendar{$Attribute} ) {
+                $Replacement = '-';
+            }
+            else {
+                $Replacement = $Calendar{$Attribute};
+            }
         }
 
         # replace the tags
