@@ -10,6 +10,7 @@
     <URL>http://otrs.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
+    <Description Lang="en">Das Terminkalender-Paket.</Description>
     <Description Lang="hu">Az értekezlet naptár csomag.</Description>
     <Filelist>
         <File Permission="644" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml" />
