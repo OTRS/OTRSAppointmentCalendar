@@ -545,7 +545,7 @@
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::NotificationView</Item>
+                <Item Key="Module">Kernel::System::Calendar::Event::Transport::NotificationView</Item>
                 <Item Key="Name" Translatable="1">Web View</Item>
                 <Item Key="Icon">fa fa-th-list</Item>
                 <Item Key="Prio">110</Item>
@@ -560,7 +560,7 @@
         <SubGroup>Frontend::Admin::AdminNotificationEvent</SubGroup>
         <Setting>
             <Hash>
-                <Item Key="Module">Kernel::System::Ticket::Event::NotificationEvent::Transport::SMS</Item>
+                <Item Key="Module">Kernel::System::Calendar::Event::Transport::SMS</Item>
                 <Item Key="Name" Translatable="1">SMS (Short Message Service)</Item>
                 <Item Key="Icon">fa fa-mobile</Item>
                 <Item Key="Prio">120</Item>
