@@ -381,6 +381,12 @@ sub Run {
                     'DateFormat' . ( $Appointment->{AllDay} ? 'Short' : '' )
                 );
 
+                # formatted notification date used in display
+                $Appointment->{NotificationDate} = $LayoutObject->{LanguageObject}->FormatTimeString(
+                    $Appointment->{NotificationDate},
+                    'DateFormat'
+                );
+
                 # cut the time portion
                 $Param{StartDay} = substr( $Appointment->{StartTime}, 0, 10 );
 

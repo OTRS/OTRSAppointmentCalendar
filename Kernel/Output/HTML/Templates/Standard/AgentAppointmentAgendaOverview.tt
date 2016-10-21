@@ -85,12 +85,15 @@
                 <th class="OverviewHeader W10pc">
                     <a>[% Translate("Repeat") | html %]</a>
                 </th>
+                <th class="OverviewHeader">
+                    <a>[% Translate("Notification") | html %]</a>
+                </th>
             </tr>
         </thead>
 [% RenderBlockStart("AppointmentGroup") %]
         <tbody>
             <tr class="DateDivider [% Data.Class | html %]">
-                <td colspan="7">[% Data.CurrentDay | html %]</td>
+                <td colspan="8">[% Data.CurrentDay | html %]</td>
             </tr>
         </tbody>
         <tbody>
@@ -127,6 +130,13 @@
                 <td>
                     [% IF Data.Recurring == 1 %]
                         [% Translate("Yes") | html %]
+                    [% ELSE %]
+                        [% Translate("No") | html %]
+                    [% END %]
+                </td>
+                <td>
+                    [% IF Data.NotificationDate %]
+                        [% Data.NotificationDate | html %]
                     [% ELSE %]
                         [% Translate("No") | html %]
                     [% END %]
