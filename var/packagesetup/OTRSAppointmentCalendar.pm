@@ -194,7 +194,7 @@ Termin &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; hat seine Benachrichtigungszei
 <br />
 Beschreibung: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
 Standort: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Kalender:&nbsp;<div style="background-color: &lt;OTRS_CALENDAR_COLOR&gt;; height: 8px; width: 17px; display: inline-block; border: 1px solid rgba(0, 0, 0, 0.25); box-sizing: border-box;"></div> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Kalender: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
 Startzeitpunkt: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
 Endzeitpunkt: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
 Ganztägig: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
@@ -213,7 +213,7 @@ appointment &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; has reached its notificat
 <br />
 Description: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
 Location: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Calendar:&nbsp;<div style="background-color: &lt;OTRS_CALENDAR_COLOR&gt;; height: 8px; width: 17px; display: inline-block; border: 1px solid rgba(0, 0, 0, 0.25); box-sizing: border-box;"></div> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Calendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
 Start date: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
 End date: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
 All-day: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
@@ -232,7 +232,7 @@ Repeat: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
 <br />
 Опис: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
 Локација: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Календар:&nbsp;<div style="background-color: &lt;OTRS_CALENDAR_COLOR&gt;; height: 8px; width: 17px; display: inline-block; border: 1px solid rgba(0, 0, 0, 0.25); box-sizing: border-box;"></div> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Календар: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
 Датум почетка: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
 Датум краја: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
 Целодневно: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
@@ -251,7 +251,7 @@ vreme je za obaveštenje u vezi termina &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quo
 <br />
 Opis: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
 Lokacije: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
-Kalendar:&nbsp;<div style="background-color: &lt;OTRS_CALENDAR_COLOR&gt;; height: 8px; width: 17px; display: inline-block; border: 1px solid rgba(0, 0, 0, 0.25); box-sizing: border-box;"></div> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Kalendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
 Datum početka: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
 Datum kraja: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
 Celodnevno: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
