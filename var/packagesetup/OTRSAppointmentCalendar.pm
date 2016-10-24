@@ -16,6 +16,8 @@ use Kernel::System::VariableCheck qw(:all);
 our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Calendar::Appointment',
+    'Kernel::System::NotificationEvent',
+    'Kernel::System::Valid',
 );
 
 =head1 NAME
@@ -54,6 +56,7 @@ sub CodeInstall {
     my ( $Self, %Param ) = @_;
 
     $Self->_AppointmentFutureTasksUpdate();
+    $Self->_AppointmentNotificationAdd();
 
     return 1;
 }
@@ -70,6 +73,7 @@ sub CodeReinstall {
     my ( $Self, %Param ) = @_;
 
     $Self->_AppointmentFutureTasksUpdate();
+    $Self->_AppointmentNotificationAdd();
 
     return 1;
 }
@@ -106,9 +110,14 @@ sub CodeUninstall {
     return 1;
 }
 
-#
-# Update possible changes on the calendar appointment future tasks.
-#
+=begin Internal:
+
+=item _AppointmentFutureTasksUpdate()
+
+Update possible changes on the calendar appointment future tasks.
+
+=cut
+
 sub _AppointmentFutureTasksUpdate {
     my ( $Self, %Param ) = @_;
 
@@ -129,9 +138,12 @@ sub _AppointmentFutureTasksUpdate {
     return 1;
 }
 
-#
-# Delete all calendar appointment future tasks.
-#
+=item _AppointmentFutureTasksDelete()
+
+Delete all calendar appointment future tasks.
+
+=cut
+
 sub _AppointmentFutureTasksDelete {
     my ( $Self, %Param ) = @_;
 
@@ -151,7 +163,146 @@ sub _AppointmentFutureTasksDelete {
     return 1;
 }
 
+=item _AppointmentNotificationAdd()
+
+Add basic appointment notification for reminders.
+
+=cut
+
+sub _AppointmentNotificationAdd {
+    my ( $Self, %Param ) = @_;
+
+    my %AppointmentNotifications = (
+        'Appointment reminder notification' => {
+            Data => {
+                NotificationType       => ['Appointment'],
+                VisibleForAgent        => [1],
+                VisibleForAgentTooltip => [
+                    'You will receive a notification each time a reminder time is reached for one of your appointments.'
+                ],
+                Events                => ['AppointmentNotification'],
+                Recipients            => ['AppointmentAgentReadPermissions'],
+                SendOnOutOfOffice     => [1],
+                Transports            => ['Email'],
+                AgentEnabledByDefault => ['Email'],
+            },
+            Message => {
+                'de' => {
+                    'Body' => 'Hallo &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+<br />
+Termin &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; hat seine Benachrichtigungszeit erreicht.<br />
+<br />
+Beschreibung: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
+Standort: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
+Kalender: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Startzeitpunkt: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
+Endzeitpunkt: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
+Ganztägig: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
+Wiederholung: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+<br />
+<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<br />
+-- &lt;OTRS_CONFIG_NotificationSenderName&gt;',
+                    'ContentType' => 'text/html',
+                    'Subject'     => 'Erinnerung: <OTRS_APPOINTMENT_TITLE>',
+                },
+                'en' => {
+                    'Body' => 'Hi &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+<br />
+appointment &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot; has reached its notification time.<br />
+<br />
+Description: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
+Location: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
+Calendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Start date: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
+End date: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
+All-day: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
+Repeat: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+<br />
+<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<br />
+-- &lt;OTRS_CONFIG_NotificationSenderName&gt;',
+                    'ContentType' => 'text/html',
+                    'Subject'     => 'Reminder: <OTRS_APPOINTMENT_TITLE>',
+                },
+                'sr_Cyrl' => {
+                    'Body' => 'Здраво &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+<br />
+време је за обавештење у вези термина &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot;.<br />
+<br />
+Опис: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
+Локација: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
+Календар: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Датум почетка: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
+Датум краја: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
+Целодневно: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
+Понављање: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+<br />
+<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<br />
+-- &lt;OTRS_CONFIG_NotificationSenderName&gt;',
+                    'ContentType' => 'text/html',
+                    'Subject'     => 'Подсетник: <OTRS_APPOINTMENT_TITLE>',
+                },
+                'sr_Latn' => {
+                    'Body' => 'Zdravo &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
+<br />
+vreme je za obaveštenje u vezi termina &quot;&lt;OTRS_APPOINTMENT_TITLE&gt;&quot;.<br />
+<br />
+Opis: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
+Lokacije: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
+Kalendar: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Datum početka: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
+Datum kraja: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
+Celodnevno: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
+Ponavljanje: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+<br />
+<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<br />
+-- &lt;OTRS_CONFIG_NotificationSenderName&gt;',
+                    'ContentType' => 'text/html',
+                    'Subject'     => 'Podsetnik: <OTRS_APPOINTMENT_TITLE>',
+                },
+            },
+        },
+    );
+
+    my %ValidList        = $Kernel::OM->Get('Kernel::System::Valid')->ValidList();
+    my %ValidListReverse = reverse %ValidList;
+
+    my $NotificationEventObject = $Kernel::OM->Get('Kernel::System::NotificationEvent');
+
+    # Get all notifications of appointment type.
+    my %NotificationList = $NotificationEventObject->NotificationList(
+        Type => 'Appointment',
+    );
+    my %NotificationListReverse = reverse %NotificationList;
+
+    NEWNOTIFICATION:
+    for my $NotificationName ( sort keys %AppointmentNotifications ) {
+
+        # Do not add new notification if one with the same name exists.
+        next NEWNOTIFICATION if $NotificationListReverse{$NotificationName};
+
+        # Add new event notification.
+        my $ID = $NotificationEventObject->NotificationAdd(
+            Name    => $NotificationName,
+            Data    => $AppointmentNotifications{$NotificationName}->{Data},
+            Message => $AppointmentNotifications{$NotificationName}->{Message},
+            Comment => '',
+            ValidID => $ValidListReverse{valid},
+            UserID  => 1,
+        );
+
+        return if !$ID;
+    }
+
+    return 1;
+}
+
 1;
+
+=end Internal:
 
 =back
 

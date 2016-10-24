@@ -118,6 +118,25 @@
         </para>
     </section>
     <section>
+        <title>Event-based appointment/calendar notifications</title>
+        <para>
+            As in the well-known ticket notifications, this packages comes up with an event based notification mechanism that can be handled using an
+            administration interface. Within that interface, NotificationEvent-entries can be created, updated and/or deleted to react on different OTRS-Events
+            with related filters, recipients and content templates.
+        </para>
+        <para>
+            The content of notifications can be dynamically filled-up using OTRS smart tags, like in the event based ticket notifications.
+        </para>
+    </section>
+    <section>
+        <title>Managed ticket appointments</title>
+        <para>
+            This package offers the possibility to automatically create and update appointments in calendars based on ticket data, using special rules defined
+            within the calendar edit screen. Any ticket date/time value (i.e. pending time, escalation times or dynamic fields) can be used to define appointment
+            start and end dates.
+        </para>
+    </section>
+    <section>
         <title>Link tickets to appointments</title>
         <para>
             Within the edit screen of an appointment, it is possible link existing tickets.
@@ -839,13 +858,195 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
         </para>
     </section>
     <section>
+        <title>Event-based appointment/calendar notifications</title>
+        <para>
+            As in the well-known ticket notifications, this packages comes up with an event based notification mechanism, that can be handled using an
+            administration interface. Within that interface, NotificationEvent-entries can be created, updated and/or deleted to react on different OTRS-Events
+            with related filters, recipients and content templates.
+        </para>
+        <para>
+            During the installation of the package, one default entry "Appointment reminder notification" will be installed.
+        </para>
+        <para>
+            The management frontend for notification templates can be reached using the administration menu:
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminInterfaceLink.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            In the notification overview, all available notification templates can be displayed. Within that overview, such templates can be created, edited,
+            imported/exported and, of course, deleted.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationOverview.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            From the left sidebar, notification entries can either be created, exported or imported. The complete set of available entries can be exported,
+            or an already exported file can be used to import notification entries.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationSidebar.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            The main table on the right side will display the available appointment notifications. For each line, the related entry can be edited by clicking
+            on the name column, exported with a click on the export icon, copied with a click on the copy icon or even deleted. All icons relates just to the
+            single entries (not like the export notifications button in the sidebar).
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationTable.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            In order to create a new or update an existing entry, edit screen can be used, same as in the ticket notifications.
+            Within that screen, it is needed to define some basic parameters, like a name, which needs to be unique for the OTRS system (it cannot even
+            conflict with a name from the ticket notifications).
+        </para>
+        <para>
+            Each notification entry can be made selectable as an option in the agent preferences. Optionally, a tooltip message for the related
+            notification entry in the user preferences can be inserted, which will be displayed to the user on mouse over.
+        </para>
+        <para>
+            If needed, a comment for the entry can be added which will be displayed in the overview screen of the administration interface.
+            Last but not least, the validity state can be selected (valid by default).
+        </para>
+        <para>
+            To let the template react on OTRS-Events, at least one of the available events need to be selected from the list in widget &quot;Events&quot;.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationEvents.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            Enclosed is a list of possible events with description:
+        </para>
+        <para>
+            <itemizedlist mark="round">
+                <listitem>
+                    <para>
+                        <emphasis>AppointmentCreate</emphasis> - Executed after an appointment has been created.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis>AppointmentUpdate</emphasis> - Executed after an appointment has been updated.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis>AppointmentDelete</emphasis> - Executed after an appointment has been deleted.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis>AppointmentNotification</emphasis> - This is a special appointment event that will be executed by the OTRS-Daemon in time.
+                        If an appointment contains a date/time value for notifications, as already described in this documentation, and such a notification date
+                        is reached, the OTRS-Daemon will execute the event &quot;AppointmentNotification&quot; for every related appointment separately.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis>CalendarCreate</emphasis> - Executed after a calendar has been created.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        <emphasis>CalendarUpdate</emphasis> - Executed after a calendar has been updated.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            The appointment filter widget can optionally be used to narrow the list of appointments by matching configured values:
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationFilter.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            For example, here it's possible to select which calendar the related appointment needs to be part of, or a part or complete title or location
+            of the appointment. Also, it's possible to choose from a list of teams or resources assigned to the appointments (available only with
+            OTRS Business Solution™).
+        </para>
+        <para>
+            Within the &quot;Recipient&quot; widget, the related recipients can be selected which would receive generated notifications.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationRecipients.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            All resource related list entries are available only with OTRS Business Solution™.
+        </para>
+        <para>
+            Within the widget &quot;Notification Methods&quot;, an available transport can be selected (Email, SMS or Web View), as well as additional
+            recipients and email templates.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationNotificationMethods.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            The main content of a notification can be defined in the localized subject and the body fields. Here it's possible to define static text content
+            mixed with OTRS smart tags, if needed. The default notification entry shows how such a body and subject can look like.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AdminAppointmentNotificationBody.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+        <para>
+            A full list of available smart tags is provided in the widget &quot;Tag Reference&quot; at the bottom of the page.
+        </para>
+        <para>
+            For every added notification entry which has the option &quot;Show in agent preferences&quot; enabled, a new option will be displayed in the
+            related user preferences widget of every agent. With these options, every agent can select which types of notifications and by which available
+            transport method they want to receive.
+        </para>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata scalefit="1" width="100%" contentdepth="100%" fileref="images/AppointmentNotificationUserPreferences.png" format="PNG"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+    </section>
+    <section>
         <title>Link tickets to appointments</title>
         <para>
             The appointment calendar comes with an abstraction layer to link external objects with appointments, using the OTRS internal link object.
             Those additional objects can come up with external packages without any further need to update the code of the calendar directly.
         </para>
         <para>
-            Basically within the edit screen of an appointment, it is possible to link existing tickets. Tickets can be searched by their ticket numbers
+            Basically, within the edit screen of an appointment it is possible to link existing tickets. Tickets can be searched by their ticket numbers
             and/or ticket titles via an autocompletion field. Once the agent clicks on a result, the related ticket will be saved in a result box and
             after the appointment has been saved, the ticket will be linked to the appointment.
         </para>
@@ -857,7 +1058,7 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
             </mediaobject>
         </para>
         <para>
-            Additionally it's possible to link multiple tickets to one appointment. Since the normal OTRS link object is used to create the connection
+            Additionally, it's possible to link multiple tickets to one appointment. Since the normal OTRS link object is used to create the connection
             between both objects, the link will be displayed in the ticket zoom screen as well.
         </para>
         <para>
@@ -898,18 +1099,17 @@ shell> bin/otrs.Console.pl Admin::Package::Install /path/to/$Name-$Version.opm
         <title>Managed ticket appointments</title>
         <para>
             To make a step back to the calendar management, the package offers the possibility to automatically create and update appointments in
-            calendars, using a special ticket search method within the calendar edit screen.
+            calendars, using a special ticket search rule within the calendar edit screen.
+        </para>
+        <para>
             Tickets can have special date/time entries like pending times, escalation times (first response time, update time etc.) or assigned
-            dynamic field from type date/time.
+            dynamic field from type date/time. Logically, the calendars are able to show those date/time entries, but since the calendar appointments
+            needs to have time ranges consisting of a start time and an end time, it's needed to define a related end time for managed appointments,
+            as times like the pending time points to just a single date/time value.
         </para>
         <para>
-            Logically, the calendars are able to show those date/time entries, but since the calendar appointments needs to have time ranges consisting
-            of a start time and an end time, it's needed to define a related end time for managed appointments, as times like the pending time points
-            to just one date/time value.
-        </para>
-        <para>
-            Below the normal calendar data in the calendar edit screen, a special widget called &quot;Ticket Appointments&quot; takes care about the rules to
-            be used for automatic appointment creation.
+            Below the basic calendar configuration in the calendar edit screen, a special widget called &quot;Ticket Appointments&quot; takes care
+            about the rules to be used for automatic appointment creation.
         </para>
         <para>
             <mediaobject>

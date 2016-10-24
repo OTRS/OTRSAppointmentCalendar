@@ -47,7 +47,7 @@ sub new {
     bless( $Self, $Type );
 
     $Self->{Debug}      = $Param{Debug};
-    $Self->{WorkerName} = 'Worker: CalendarAppointmentStart';
+    $Self->{WorkerName} = 'Worker: CalendarAppointment';
 
     return $Self;
 }
@@ -76,7 +76,7 @@ sub Run {
     # check task params
     my $CheckResult = $Self->_CheckTaskParams(
         %Param,
-        NeededDataAttributes => [ 'AppointmentID', 'CalendarID', 'NotifyTime' ],
+        NeededDataAttributes => ['NotifyTime'],
     );
 
     # stop execution if an error in params is detected

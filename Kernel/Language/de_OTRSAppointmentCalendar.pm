@@ -15,6 +15,11 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AdminAppointmentNotificationEvent
+    $Self->{Translation}->{'Appointment Filter'} = 'Terminfilter';
+    $Self->{Translation}->{'Notify user just once per day about a single appointment using a selected transport.'} = 'Nur einmal am Tag pro Termin und Benachrichtigungs-Transportmethode versenden.';
+    $Self->{Translation}->{'Here you can choose which events will trigger this notification. An additional appointment filter can be applied below to only send for appointments with certain criteria.'} = 'Hier können Sie auswählen, welche Ereignisse diese Benachrichtigung auslösen. Ein zusätzlicher Termin-Filter kann weiter unten eingestellt werden, um die Benachrichtigung nur für Termine mit bestimmten Merkmalen zu versenden.';
+
     # Template: AgentAppointmentAgendaOverview
     $Self->{Translation}->{'Agenda Overview'} = 'Agendaübersicht';
     $Self->{Translation}->{'Manage Calendars'} = 'Kalender verwalten';
@@ -245,7 +250,6 @@ sub Data {
     $Self->{Translation}->{'Triggers add or update of automatic calendar appointments based on certain ticket times.'} =
         '';
     $Self->{Translation}->{'Update time'} = '';
-
 }
 
 1;

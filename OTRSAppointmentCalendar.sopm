@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <otrs_package version="1.0">
     <Name>OTRSAppointmentCalendar</Name>
-<!-- nofilter(TidyAll::Plugin::OTRS::SOPM::DocumentationPresent) -->
     <Version>0.0.0</Version>
     <Framework>5.0.x</Framework>
     <ModuleRequired>DateTime</ModuleRequired>
@@ -10,6 +9,7 @@
     <URL>http://otrs.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
+    <Description Lang="de">Das Terminkalender-Paket.</Description>
     <Description Lang="hu">Az értekezlet naptár csomag.</Description>
     <Filelist>
         <File Permission="644" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml" />
@@ -45,6 +45,7 @@
         <File Permission="644" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentAgendaOverview.pm" />
+        <File Permission="644" Location="Kernel/Modules/AdminAppointmentNotificationEvent.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentCalendarOverview.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentEdit.pm" />
@@ -53,6 +54,9 @@
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentPluginSearch.pm" />
         <File Permission="644" Location="Kernel/Modules/PublicCalendar.pm" />
         <File Permission="644" Location="Kernel/Output/HTML/LinkObject/Appointment.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Preferences/AppointmentNotificationEvent.pm" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEventTransportEmailSettings.tt" />
+        <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AdminAppointmentNotificationEvent.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentAgendaOverview.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentImport.tt" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentAppointmentCalendarManage.tt" />
@@ -62,6 +66,9 @@
         <File Permission="644" Location="Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Output/HTML/Templates/Standard/AgentDashboardAppointmentCalendar.tt" />
         <File Permission="644" Location="Kernel/System/Calendar.pm" />
+        <File Permission="644" Location="Kernel/System/CalendarTemplateGenerator.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/Transport/Email.pm" />
+        <File Permission="644" Location="Kernel/System/Calendar/Event/Transport/Base.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Helper.pm" />
         <File Permission="644" Location="Kernel/System/Calendar/Plugin.pm" />
@@ -76,6 +83,7 @@
         <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
         <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
+        <File Permission="644" Location="scripts/test/Calendar/Event/Transport/Email.t" />
         <File Permission="644" Location="scripts/test/Calendar.t" />
         <File Permission="644" Location="scripts/test/Calendar/Appointment.t" />
         <File Permission="644" Location="scripts/test/Calendar/Helper.t" />
@@ -83,6 +91,7 @@
         <File Permission="644" Location="scripts/test/Calendar/TicketAppointments.t" />
         <File Permission="644" Location="scripts/test/Calendar/Export/ICal.t" />
         <File Permission="644" Location="scripts/test/Calendar/Import/ICal.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/Admin/AdminAppointmentNotificationEvent.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentAgendaOverview.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarManage.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t" />
