@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-12 16:24+0000\n"
+"POT-Creation-Date: 2016-10-24 11:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -9,6 +9,50 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Appointment Notification Management"
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module."
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Here you can choose which events will trigger this notification. An additional appointment filter can be applied below to only send for appointments with certain criteria."
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Appointment Filter"
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Team"
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Resource"
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Notify user just once per day about a single appointment using a selected transport."
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Notifications are sent to an agent."
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the first 20 character of the appointment title."
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the appointment attribute"
+msgstr ""
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the calendar attribute"
+msgstr ""
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Agenda Overview"
@@ -235,27 +279,7 @@ msgid "Basic information"
 msgstr ""
 
 #. Template: AgentAppointmentCalendarOverview
-msgid "Resource"
-msgstr ""
-
-#. Template: AgentAppointmentCalendarOverview
-msgid "Team"
-msgstr ""
-
-#. Template: AgentAppointmentCalendarOverview
 msgid "Date/Time"
-msgstr ""
-
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "Following appointments have been started"
-msgstr ""
-
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "Start time"
-msgstr ""
-
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "End time"
 msgstr ""
 
 #. Template: AgentAppointmentEdit
@@ -332,6 +356,22 @@ msgstr ""
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "5 days"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "Notification name already exists!"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "Agent (resources), who are selected within the appointment"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "All agents with (at least) read permission for the appointment (calendar)"
+msgstr ""
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "All agents with write permission for the appointment (calendar)"
 msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
@@ -546,10 +586,6 @@ msgstr ""
 msgid "+%d more"
 msgstr ""
 
-#. Perl Module: Kernel/Modules/AgentAppointmentList.pm
-msgid "Ongoing appointments"
-msgstr ""
-
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No %s!"
 msgstr ""
@@ -579,6 +615,10 @@ msgid "Appointment Calendar overview page."
 msgstr ""
 
 #. SysConfig
+msgid "Appointment Notifications"
+msgstr ""
+
+#. SysConfig
 msgid "Appointment calendar event module that prepares notification entries for appointments."
 msgstr ""
 
@@ -599,6 +639,10 @@ msgid "Appointment list."
 msgstr ""
 
 #. SysConfig
+msgid "Appointment notifications"
+msgstr ""
+
+#. SysConfig
 msgid "Appointments"
 msgstr ""
 
@@ -607,7 +651,15 @@ msgid "Calendar manage screen."
 msgstr ""
 
 #. SysConfig
+msgid "Choose for which kind of appointment changes you want to receive notifications."
+msgstr ""
+
+#. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
+msgstr ""
+
+#. SysConfig
+msgid "Create and manage appointment notifications."
 msgstr ""
 
 #. SysConfig
@@ -623,7 +675,7 @@ msgid "Defines an icon with link to the google map page of the current location 
 msgstr ""
 
 #. SysConfig
-msgid "Defines the event object types that will be handled via AdminNotificationEvent."
+msgid "Defines the event object types that will be handled via AdminAppointmentNotificationEvent."
 msgstr ""
 
 #. SysConfig
@@ -668,6 +720,10 @@ msgstr ""
 
 #. SysConfig
 msgid "List of all appointment events to be displayed in the GUI."
+msgstr ""
+
+#. SysConfig
+msgid "List of all calendar events to be displayed in the GUI."
 msgstr ""
 
 #. SysConfig
@@ -724,6 +780,10 @@ msgstr ""
 
 #. SysConfig
 msgid "Solution time"
+msgstr ""
+
+#. SysConfig
+msgid "Transport selection for appointment notifications."
 msgstr ""
 
 #. SysConfig
