@@ -1475,49 +1475,54 @@ sub Run {
 
         my $AppointmentID = $GetParam{AppointmentID} ? $GetParam{AppointmentID} : $Success;
 
-        # plugins
         if ($AppointmentID) {
 
-            # remove all existing links
-            if ( $GetParam{AppointmentID} ) {
-                my $Success = $PluginObject->PluginLinkDelete(
-                    AppointmentID => $AppointmentID,
-                    UserID        => $Self->{UserID},
-                );
-
-                if ( !$Success ) {
-                    $Kernel::OM->Get('Kernel::System::Log')->Log(
-                        Priority => 'error',
-                        Message  => Translatable('Links could not be deleted!'),
-                    );
-                }
-            }
-
-            # get passed plugin parameters
+            # Get passed plugin parameters.
             my @PluginParams = grep { $_ =~ /^Plugin_/ } keys %GetParam;
 
-            for my $PluginParam (@PluginParams) {
-                my $PluginData = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
-                    Data => $GetParam{$PluginParam},
-                );
-                my $PluginKey = $PluginParam;
-                $PluginKey =~ s/^Plugin_//;
+            # Continue only if coming from edit screen
+            #   (there is at least one passed plugin parameter).
+            if (@PluginParams) {
 
-                # execute plugin link method
-                if ( IsArrayRefWithData($PluginData) ) {
-                    for my $LinkID ( @{$PluginData} ) {
-                        my $Link = $PluginObject->PluginLinkAdd(
-                            AppointmentID => $AppointmentID,
-                            PluginKey     => $PluginKey,
-                            PluginData    => $LinkID,
-                            UserID        => $Self->{UserID},
+                # Remove all existing links.
+                if ( $GetParam{AppointmentID} ) {
+                    my $Success = $PluginObject->PluginLinkDelete(
+                        AppointmentID => $AppointmentID,
+                        UserID        => $Self->{UserID},
+                    );
+
+                    if ( !$Success ) {
+                        $Kernel::OM->Get('Kernel::System::Log')->Log(
+                            Priority => 'error',
+                            Message  => Translatable('Links could not be deleted!'),
                         );
+                    }
+                }
 
-                        if ( !$Link ) {
-                            $Kernel::OM->Get('Kernel::System::Log')->Log(
-                                Priority => 'error',
-                                Message  => Translatable('Link could not be created!'),
+                # Process passed plugin parameters.
+                for my $PluginParam (@PluginParams) {
+                    my $PluginData = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
+                        Data => $GetParam{$PluginParam},
+                    );
+                    my $PluginKey = $PluginParam;
+                    $PluginKey =~ s/^Plugin_//;
+
+                    # Execute link add method of the plugin.
+                    if ( IsArrayRefWithData($PluginData) ) {
+                        for my $LinkID ( @{$PluginData} ) {
+                            my $Link = $PluginObject->PluginLinkAdd(
+                                AppointmentID => $AppointmentID,
+                                PluginKey     => $PluginKey,
+                                PluginData    => $LinkID,
+                                UserID        => $Self->{UserID},
                             );
+
+                            if ( !$Link ) {
+                                $Kernel::OM->Get('Kernel::System::Log')->Log(
+                                    Priority => 'error',
+                                    Message  => Translatable('Link could not be created!'),
+                                );
+                            }
                         }
                     }
                 }
