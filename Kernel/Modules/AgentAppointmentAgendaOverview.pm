@@ -36,10 +36,6 @@ sub new {
 sub Run {
     my ( $Self, %Param ) = @_;
 
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-
-    my $Config = $ConfigObject->Get( $Self->{View} );
-
     # get filters stored in the user preferences
     my %Preferences = $Kernel::OM->Get('Kernel::System::User')->GetPreferences(
         UserID => $Self->{UserID},
@@ -197,7 +193,7 @@ sub Run {
         $Param{HeaderTitle} = "$TranslateMonth $Year";
     }
     elsif ( $Param{Filter} eq 'Week' ) {
-        my $CalendarWeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 7;
+        my $CalendarWeekDayStart = $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 7;
         my $CalendarWeekDayEnd = ( $CalendarWeekDayStart - 1 ) || 7;
 
         # get start of the week
