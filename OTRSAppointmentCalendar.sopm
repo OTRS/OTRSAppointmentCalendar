@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <Name>OTRSAppointmentCalendar</Name>
     <Version>0.0.0</Version>
-    <Framework>5.0.x</Framework>
+    <Framework Minimum="5.0.14">5.0.x</Framework>
     <ModuleRequired>DateTime</ModuleRequired>
     <ModuleRequired>DateTime::TimeZone</ModuleRequired>
     <Vendor>OTRS AG</Vendor>
@@ -11,6 +11,8 @@
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Description Lang="de">Das Terminkalender-Paket.</Description>
     <Description Lang="hu">Az értekezlet naptár csomag.</Description>
+    <Description Lang="sr_Cyrl">Модул за календаре и термине.</Description>
+    <Description Lang="sr_Latn">Modul za kalendare i termine.</Description>
     <Filelist>
         <File Permission="644" Location="Kernel/Config/Files/OTRSAppointmentCalendar.xml" />
         <File Permission="644" Location="Kernel/cpan-lib/Class/ReturnValue.pm" />
@@ -123,6 +125,66 @@
         <File Permission="644" Location="var/httpd/htdocs/js/Core.Agent.AppointmentCalendar.Manage.js" />
         <File Permission="644" Location="var/packagesetup/OTRSAppointmentCalendar.pm" />
     </Filelist>
+    <IntroInstall Type="pre" Title="Install Information" Lang="en"><![CDATA[
+
+        <br/>
+        <strong>WELCOME</strong>
+        <br/>
+        <br/>
+        You are about to install the OTRS package OTRSAppointmentCalendar.<br/>
+        <br/>
+        <br/>
+        <strong>ATTENTION</strong>
+        <br/>
+        <br/>
+        Minimum framework version for this package is 5.0.14. Please make sure you have updated the framework before installing this package!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
+    <IntroInstall Type="pre" Title="Install Information" Lang="sr_Cyrl"><![CDATA[
+
+        <br/>
+        <strong>ДОБРОДОШЛИ</strong>
+        <br/>
+        <br/>
+        Ово је инсталација OTRS пакета OTRSAppointmentCalendar.<br/>
+        <br/>
+        <br/>
+        <strong>УПОЗОРЕЊЕ</strong>
+        <br/>
+        <br/>
+        Најмања подржана верзија система за овај пакет је 5.0.14. Проверите да ли сте освежили ваш систем пре инсталације пакета!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
+    <IntroInstall Type="pre" Title="Install Information" Lang="sr_Latn"><![CDATA[
+
+        <br/>
+        <strong>DOBRODOŠLI</strong>
+        <br/>
+        <br/>
+        Ovo je instalacija OTRS paketa OTRSAppointmentCalendar.<br/>
+        <br/>
+        <br/>
+        <strong>UPOZORENJE</strong>
+        <br/>
+        <br/>
+        Najmanja podržana verzija sistema za ovaj paket je 5.0.14. Proverite da li ste osvežili vaš sistem pre instalacije paketa!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
     <IntroUninstall Type="pre" Title="Uninstallation Information" Lang="en"><![CDATA[
 
         <br/>
@@ -173,6 +235,34 @@
         <br/>
         Ha eltávolítja ezt a csomagot, akkor a telepítés során létrehozott összes adatbázistábla törlésre kerül.
         Az ezekben a táblákban lévő összes adat visszavonhatatlanul el fog veszni!
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroUninstall>
+    <IntroUninstall Type="pre" Title="Деинсталација пакета" Lang="sr_Cyrl"><![CDATA[
+
+        <br/>
+        <strong>УПОЗОРЕЊЕ</strong>
+        <br/>
+        <br/>
+        Уколико деинсталирате овај пакет, све табеле у бази података које су креиране приликом инсталације ће бити обрисане.
+        Сви подаци из ових табела биће неповратно изгубљени.
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroUninstall>
+    <IntroUninstall Type="pre" Title="Deinstalacija paketa" Lang="sr_Latn"><![CDATA[
+
+        <br/>
+        <strong>UPOZORENJE</strong>
+        <br/>
+        <br/>
+        Ukoliko deinstalerate ovaj paket, sve tabele u bazi podataka koje su kreirane prilikom instalacije će biti obrisane.
+        Svi podaci iz ovih tabela biće nepovratno izgubljeni.
         <br/>
         <br/>
         ((enjoy))<br/>
