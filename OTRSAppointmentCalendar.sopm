@@ -47,8 +47,12 @@
         <File Permission="644" Location="Kernel/Language/es_CO_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Language/es_MX_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Language/es_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/hu_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/pt_BR_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/ru_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Language/sr_Cyrl_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Language/sr_Latn_OTRSAppointmentCalendar.pm" />
+        <File Permission="644" Location="Kernel/Language/zh_CN_OTRSAppointmentCalendar.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentAgendaOverview.pm" />
         <File Permission="644" Location="Kernel/Modules/AdminAppointmentNotificationEvent.pm" />
         <File Permission="644" Location="Kernel/Modules/AgentAppointmentCalendarManage.pm" />

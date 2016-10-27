@@ -1,17 +1,82 @@
 # Translators:
 # Martin Gruner <martin.gruner@otrs.com>, 2016
+# Marco Buchholz <mabu@debian-admin.de>, 2016
+# Marc A. Bonsels <marc.bonsels@otrs.com>, 2016
+# Ettore Atalan <atalanttore@googlemail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-07 12:13+0000\n"
+"POT-Creation-Date: 2016-10-24 11:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Martin Gruner <martin.gruner@otrs.com>, 2016\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>, 2016\n"
 "Language-Team: German (https://www.transifex.com/otrs/teams/23435/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Appointment Notification Management"
+msgstr "Verwaltung von Terminbenachrichtigungen"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid ""
+"Here you can upload a configuration file to import appointment notifications"
+" to your system. The file needs to be in .yml format as exported by the "
+"appointment notification module."
+msgstr ""
+"Hier können Sie eine Konfigurationsdatei hochladen, mit der "
+"Terminbenachrichtigungen im System importiert werden können. Die Datei muss "
+"im .yml-Format vorliegen, so wie sie auch vom Terminbenachrichtigungsmodul "
+"exportiert wird."
+
+#. Template: AdminAppointmentNotificationEvent
+msgid ""
+"Here you can choose which events will trigger this notification. An "
+"additional appointment filter can be applied below to only send for "
+"appointments with certain criteria."
+msgstr ""
+"Hier können Sie auswählen, welche Ereignisse diese Benachrichtigung "
+"auslösen. Ein zusätzlicher Terminfilter kann weiter unten eingestellt "
+"werden, um die Benachrichtigungen nur für Termine mit bestimmten Merkmalen "
+"zu versenden."
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Appointment Filter"
+msgstr "Terminfilter"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Team"
+msgstr "Team"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Resource"
+msgstr "Resource"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid ""
+"Notify user just once per day about a single appointment using a selected "
+"transport."
+msgstr ""
+"Nur einmal am Tag pro Termin und Benachrichtigungs-Transportmethode "
+"versenden."
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "Notifications are sent to an agent."
+msgstr "Benachrichtigungen wurden an einen Agenten versendet."
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the first 20 character of the appointment title."
+msgstr "Die ersten 20 Zeichen des Terminbetreffs."
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the appointment attribute"
+msgstr "Die Termin-Attribute"
+
+#. Template: AdminAppointmentNotificationEvent
+msgid "To get the calendar attribute"
+msgstr "Die Kalender-Attribute"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Agenda Overview"
@@ -83,7 +148,7 @@ msgstr "Neuen Kalender anlegen"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Appointments"
-msgstr ""
+msgstr "Termine importieren"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Import"
@@ -95,10 +160,13 @@ msgid ""
 "system. The file needs to be in .yml format as exported by calendar "
 "management module."
 msgstr ""
+"Hier können Sie eine Konfigurationsdatei hochladen, um einen Kalender in Ihr"
+" System zu importieren. Die Datei muss im .yml Format vorliegen, so wie sie "
+"in der Kalenderverwaltung exportiert wurde."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Upload calendar configuration"
-msgstr ""
+msgstr "Kalender-Konfiguration hochladen"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Calendar"
@@ -130,7 +198,7 @@ msgstr ""
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Create: users can create and delete appointments in the calendar."
-msgstr ""
+msgstr "Erstellen: Benutzer können Termine im Kalender erstellen und löschen."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read/write: users can manage the calendar itself."
@@ -138,15 +206,15 @@ msgstr "RO: Benutzer können die Kalender an sich verwalten."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Export calendar"
-msgstr ""
+msgstr "Kalender exportieren"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Download calendar"
-msgstr ""
+msgstr "Kalender herunterladen"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Copy public calendar URL"
@@ -166,35 +234,39 @@ msgstr "Berechtigungsgruppe"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Ticket Appointments"
-msgstr ""
+msgstr "Ticket Termine"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Rule"
-msgstr ""
+msgstr "Regel"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Use options below to narrow down for which tickets appointments will be "
 "automatically created."
 msgstr ""
+"Verwenden Sie die folgenden Optionen,  um einzugrenzen welche Ticket-Termine"
+" automatisch erstellt werden sollen."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Please select a valid queue."
-msgstr ""
+msgstr "Bitte wählen Sie eine gültige Queue aus."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Search attributes"
-msgstr ""
+msgstr "Suchattribute"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Define rules for creating automatic appointments in this calendar based on "
 "ticket data."
 msgstr ""
+"Definition von Regeln, um automatisch Termine in diesem Kalender zu "
+"erstellen, welche auf Ticketdaten basieren."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add Rule"
-msgstr ""
+msgstr "Regel hinzufügen"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "More"
@@ -218,12 +290,14 @@ msgstr "Dies ist eine Übersicht für die Terminkalender."
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Too many active calendars"
-msgstr ""
+msgstr "Zuviele aktive Kalender"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid ""
 "Please either turn some off first or increase the limit in configuration."
 msgstr ""
+"Bitte deaktivieren Sie zuerst einige oder erhöhen Sie das Limit in der "
+"Konfiguration."
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Week"
@@ -231,15 +305,15 @@ msgstr "Woche"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Month"
-msgstr ""
+msgstr "Zeitstrahl Monat"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Week"
-msgstr ""
+msgstr "Zeitstrahl Woche"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Day"
-msgstr ""
+msgstr "Zeitstrahl Tag"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Jump"
@@ -258,40 +332,20 @@ msgid "Basic information"
 msgstr "Grundlegende Informationen"
 
 #. Template: AgentAppointmentCalendarOverview
-msgid "Resource"
-msgstr "Resource"
-
-#. Template: AgentAppointmentCalendarOverview
-msgid "Team"
-msgstr "Team"
-
-#. Template: AgentAppointmentCalendarOverview
 msgid "Date/Time"
 msgstr "Datum/Zeit"
 
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "Following appointments have been started"
-msgstr "Die folgenden Termine haben begonnen"
-
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "Start time"
-msgstr "Startzeitpunkt"
-
-#. Template: AgentAppointmentCalendarOverviewSeen
-msgid "End time"
-msgstr "Endzeitpunkt"
-
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value before End date."
-msgstr ""
+msgstr "Bitte setzen Sie einen Wert vor dem Enddatum."
 
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value after Start date."
-msgstr ""
+msgstr "Bitte setzen Sie einen Wert nach dem Startdatum."
 
 #. Template: AgentAppointmentEdit
-msgid "This an ocurrence of a repeating appointment."
-msgstr ""
+msgid "This an occurrence of a repeating appointment."
+msgstr "Dies ist ein Vorkommnis eines sich wiederholenden Termins."
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to see the parent appointment."
@@ -299,7 +353,7 @@ msgstr "Klicken Sie hier, um den Eltern-Termin anzuzeigen."
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to edit the parent appointment."
-msgstr ""
+msgstr "Klicken Sie hier, um den Eltern-Termin zu bearbeiten."
 
 #. Template: AgentAppointmentEdit
 msgid "Frequency"
@@ -323,7 +377,7 @@ msgstr ""
 
 #. Template: AgentAppointmentImport
 msgid "Appointment Import"
-msgstr ""
+msgstr "Termine importieren"
 
 #. Template: AgentAppointmentImport
 msgid "Uploaded file must be in valid iCal format (.ics)."
@@ -357,7 +411,7 @@ msgstr "Kalender hochladen"
 
 #. Template: AgentAppointmentImport
 msgid "Import appointments"
-msgstr ""
+msgstr "Termine importieren"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "New Appointment"
@@ -371,9 +425,31 @@ msgstr "Demnächst"
 msgid "5 days"
 msgstr "5 Tage"
 
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "Notification name already exists!"
+msgstr "Benachrichtigungsname existiert bereits!"
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "Agent (resources), who are selected within the appointment"
+msgstr "Agenten (Resourcen), welche innerhalb des Termins ausgewählt wurden"
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid ""
+"All agents with (at least) read permission for the appointment (calendar)"
+msgstr ""
+"Alle Agenten mit (mindestens) Leseberechtigung für den Termin(kalender)"
+
+#. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
+msgid "All agents with write permission for the appointment (calendar)"
+msgstr "Alle Agenten mit Schreibberechtigung für den Termin(kalender)"
+
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "System was unable to create Calendar!"
 msgstr "Das System konnten den Kalender nicht erstellen!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Please contact the administrator."
+msgstr "Bitte kontaktieren Sie den Administrator."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
@@ -392,40 +468,48 @@ msgid "Error updating the calendar!"
 msgstr "Fehler beim Aktualisieren des Kalenders!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Couldn't read calendar configuration file."
+msgstr "Kalender Konfigurationsdatei konnte nicht gelesen werden."
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
+msgid "Please make sure your file is valid."
+msgstr "Bitte stellen Sie sicher, dass die Datei gültig ist."
+
+#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not import the calendar!"
-msgstr ""
+msgstr "Kalender konnte nicht importiert werden!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Calendar imported!"
-msgstr ""
+msgstr "Kalender wurde importiert!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Need CalendarID!"
-msgstr ""
+msgstr "CalendarID wird benötigt!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not retrieve data for given CalendarID"
-msgstr ""
+msgstr "Daten konnten nicht abgerufen werden für CalendarID"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Successfully imported %s appointment(s) to calendar %s."
-msgstr ""
+msgstr "Es wurde(n) %s Termin(e) erfolgreich in Kalender %s importiert."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+5 minutes"
-msgstr ""
+msgstr "+5 Minuten"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+15 minutes"
-msgstr ""
+msgstr "+15 Minuten"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+30 minutes"
-msgstr ""
+msgstr "+30 Minuten"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+1 hour"
-msgstr ""
+msgstr "+1 Stunde"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "All appointments"
@@ -443,7 +527,7 @@ msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Appointment not found!"
-msgstr ""
+msgstr "Termin wurde nicht gefunden!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Never"
@@ -555,7 +639,7 @@ msgstr "Links konnten nicht erstellt werden!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Cannot delete ticket appointment!"
-msgstr ""
+msgstr "Ticket-Termin konnte nicht gelöscht werden!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permissions!"
@@ -573,21 +657,21 @@ msgstr "Das System konnte die Datei nicht importieren!"
 msgid "+%d more"
 msgstr "+%d mehr"
 
-#. Perl Module: Kernel/Modules/AgentAppointmentList.pm
-msgid "Ongoing appointments"
-msgstr "Laufende Termine"
+#. Perl Module: Kernel/Modules/PublicCalendar.pm
+msgid "No %s!"
+msgstr "Kein %s!"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No such user!"
-msgstr ""
+msgstr "Kein Benutzer gefunden!"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid calendar!"
-msgstr ""
+msgstr "Ungültiger Kalender!"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid URL!"
-msgstr ""
+msgstr "Ungültige URL!"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "There was an error exporting the calendar!"
@@ -602,6 +686,10 @@ msgid "Appointment Calendar overview page."
 msgstr "Terminkalender Übersicht"
 
 #. SysConfig
+msgid "Appointment Notifications"
+msgstr "Terminbenachrichtigungen"
+
+#. SysConfig
 msgid ""
 "Appointment calendar event module that prepares notification entries for "
 "appointments."
@@ -614,6 +702,8 @@ msgid ""
 "Appointment calendar event module that updates the ticket with data from "
 "ticket appointment."
 msgstr ""
+"Termin-Kalender Eventmodul, welches Tickets mit Daten aus Ticket-Terminen "
+"aktualisiert."
 
 #. SysConfig
 msgid "Appointment edit screen."
@@ -628,6 +718,10 @@ msgid "Appointment list."
 msgstr "Terminliste."
 
 #. SysConfig
+msgid "Appointment notifications"
+msgstr "Terminbenachrichtigungen"
+
+#. SysConfig
 msgid "Appointments"
 msgstr "Termine"
 
@@ -636,10 +730,22 @@ msgid "Calendar manage screen."
 msgstr "Kalenderverwaltungsansicht"
 
 #. SysConfig
+msgid ""
+"Choose for which kind of appointment changes you want to receive "
+"notifications."
+msgstr ""
+"Für welche Veränderungen an Terminen möchten Sie Benachrichtigungen "
+"erhalten?"
+
+#. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
 msgstr ""
 "Erstellt einen neuen Termin in einem Kalender, welcher direkt mit diesem "
 "Ticket verknüpft ist"
+
+#. SysConfig
+msgid "Create and manage appointment notifications."
+msgstr "Terminbenachrichtigungen erstellen und verwalten."
 
 #. SysConfig
 msgid "Create new appointment."
@@ -647,35 +753,54 @@ msgstr "Einen neuen Termin erstellen"
 
 #. SysConfig
 msgid ""
+"Define which columns are shown in the linked appointment widget "
+"(LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = "
+"Available, 2 = Enabled by default."
+msgstr ""
+"Legt fest welche Spalten im Terminverknüpfungs-Widget angezeigt werden "
+"(LinkObject::ViewMode = \"complex\"). Mögliche Einstellungen: 0 = "
+"Deaktiviert, 1 = Verfügbar, 2 = Standardmäßig aktiviert."
+
+#. SysConfig
+msgid ""
 "Defines an icon with link to the google map page of the current location in "
 "appointment edit screen."
 msgstr ""
+"Beschreibt ein Symbol mit Verknüpfung zur Google Maps Webseite mit dem "
+"aktuellen Standort als entsprechendes Ziel in der Terminbearbeitungs-"
+"Oberfläche."
 
 #. SysConfig
 msgid ""
 "Defines the event object types that will be handled via "
-"AdminNotificationEvent."
+"AdminAppointmentNotificationEvent."
 msgstr ""
+"Legt die Event-Objekttypen fest, welche via "
+"AdminAppointmentNotificationEvent verarbeitet werden."
 
 #. SysConfig
 msgid ""
 "Defines the list of params that can be passed to ticket search function."
 msgstr ""
+"Legt die Liste der Parameter fest, welche mit der Ticketsuchfunktion "
+"verwendet werden kann."
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket dynamic field date "
 "time."
 msgstr ""
+"Beschreibt den Ticket-Termin-Backend Typ für Datum/Uhrzeit durch dynamische "
+"Felder."
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket escalation time."
-msgstr ""
+msgstr "Beschreibt den Ticket-Termin-Backend Typ für Ticketeskalationen."
 
 #. SysConfig
 msgid "Defines the ticket appointment type backend for ticket pending time."
-msgstr ""
+msgstr "Beschreibt den Ticket-Termin-Backend Typ für Ticketpendingzeiten."
 
 #. SysConfig
 msgid "Defines the ticket plugin for calendar appointments."
@@ -683,7 +808,7 @@ msgstr "Legt das Ticket-Plugin für Termine fest."
 
 #. SysConfig
 msgid "DynamicField_%s"
-msgstr ""
+msgstr "DynamicField_%s"
 
 #. SysConfig
 msgid "Edit appointment"
@@ -691,11 +816,11 @@ msgstr "Termin bearbeiten"
 
 #. SysConfig
 msgid "First response time"
-msgstr ""
+msgstr "Zeit für erste Reaktion"
 
 #. SysConfig
 msgid "Import appointments screen."
-msgstr ""
+msgstr "Termin-Import Oberfläche"
 
 #. SysConfig
 msgid "Links appointments and tickets with a \"Normal\" type link."
@@ -704,6 +829,12 @@ msgstr "Verknüpft Termine und Tickets mit einem Link vom Typ \"Normal\"."
 #. SysConfig
 msgid "List of all appointment events to be displayed in the GUI."
 msgstr "Liste aller Termin-Events, welche in der GUI angezeigt werden."
+
+#. SysConfig
+msgid "List of all calendar events to be displayed in the GUI."
+msgstr ""
+"Liste aller Kalenderereignisse, welche in der grafischen Benutzeroberfläche "
+"angezeigt werden sollen."
 
 #. SysConfig
 msgid ""
@@ -735,15 +866,15 @@ msgstr ""
 #. SysConfig
 msgid ""
 "OTRS doesn't support recurring Appointments without end date or number of "
-"iterrations. During import process, it might happen that ICS file contains "
+"iterations. During import process, it might happen that ICS file contains "
 "such Appointments. Instead, system creates all Appointments in the past, "
-"plus Appointments for the next n months(120 months/10 years by default)."
+"plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
-"OTRS unterstützt keine wiederholenden Termine oder Enddatum oder Anzahl an "
-"Iterationen. Während Import-Prozessen kann es passieren, dass ICS-Dateien "
-"solche Termine enthalten. OTRS wird stattdessen alle vergangenen Termine "
-"sowie alle Termine der kommenden n Monate (120 Monate / 10 Jahre "
-"standardmäßig) erstellen."
+"OTRS unterstützt keine wiederholenden Termine ohne Enddatum oder Anzahl der "
+"Durchläufe. Während des Importierungsprozesses kann es vorkommen, dass die "
+"entsprechende ICS-Datei solche Termin enthält. Stattdessen wird das System "
+"alle vergangenen Termine erstellen, sowie zusätzlich Termine für die "
+"kommenden n Monate (120 Monate / 10 Jahre standardmäßig)."
 
 #. SysConfig
 msgid "Overview of all appointments."
@@ -751,7 +882,7 @@ msgstr "Übersicht aller Termine"
 
 #. SysConfig
 msgid "Pending time"
-msgstr ""
+msgstr "Warten bis"
 
 #. SysConfig
 msgid "Plugin search"
@@ -760,6 +891,14 @@ msgstr "Pluginsuche"
 #. SysConfig
 msgid "Plugin search module for autocomplete."
 msgstr "Module zur Pluginsuche für die Autovervollständigung."
+
+#. SysConfig
+msgid "Public Calendar"
+msgstr "Öffentlicher Kalender"
+
+#. SysConfig
+msgid "Public calendar."
+msgstr "Öffentlicher Kalender"
 
 #. SysConfig
 msgid "Resource Overview"
@@ -791,18 +930,20 @@ msgstr ""
 
 #. SysConfig
 msgid "Solution time"
-msgstr ""
+msgstr "Lösungszeit"
 
 #. SysConfig
-msgid "TicketDynamicFieldUpdate_.*"
-msgstr ""
+msgid "Transport selection for appointment notifications."
+msgstr "Transportauswahl für Terminbenachrichtigungen"
 
 #. SysConfig
 msgid ""
 "Triggers add or update of automatic calendar appointments based on certain "
 "ticket times."
 msgstr ""
+"Stößt das Hinzufügen oder Aktualisieren von automatischen Terminen an, "
+"basierend auf Ticketzeiten."
 
 #. SysConfig
 msgid "Update time"
-msgstr ""
+msgstr "Aktualisierungszeit"

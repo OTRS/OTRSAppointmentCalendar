@@ -1,23 +1,22 @@
 # Translators:
-# Martin Gruner <martin.gruner@otrs.com>, 2016
-# Милорад Јовановић <j.milorad@gmail.com>, 2016
-# Dusan Vuckovic <dusan@dvuckovic.com>, 2016
+# 汇民 王 <whuim@qq.com>, 2016
+# 汇民 王 <whuim@163.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
 "POT-Creation-Date: 2016-10-24 11:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Dusan Vuckovic <dusan@dvuckovic.com>, 2016\n"
-"Language-Team: Serbian (https://www.transifex.com/otrs/teams/23435/sr/)\n"
+"Last-Translator: 汇民 王 <whuim@163.com>, 2016\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/otrs/teams/23435/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sr\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
-msgstr "Управљање обавештењима о терминима"
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -25,9 +24,6 @@ msgid ""
 " to your system. The file needs to be in .yml format as exported by the "
 "appointment notification module."
 msgstr ""
-"Овде можете послати конфигурациону датотеку за увоз обавештења о термину у "
-"ваш систем. Датотека мора бити у истом .yml формату који је могуће добити "
-"извозом у екрану управљања обавештењима о терминима."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -35,705 +31,679 @@ msgid ""
 "additional appointment filter can be applied below to only send for "
 "appointments with certain criteria."
 msgstr ""
-"Овде можете изабрати који догађаји ће покренути обавештавање. Додатни филтер"
-" за термине може бити примењен ради слања само за термине по одређеном "
-"критеријуму."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Filter"
-msgstr "Филтер термина"
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Team"
-msgstr "Тим"
+msgstr "团队"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Resource"
-msgstr "Ресурс"
+msgstr "资源"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
 "Notify user just once per day about a single appointment using a selected "
 "transport."
 msgstr ""
-"Обавести корисника само једном дневно о појединачном термину коришћењем "
-"изабраног транспорта."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Notifications are sent to an agent."
-msgstr "Обавештење ће бити послато оператеру."
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the first 20 character of the appointment title."
-msgstr "Да видите првих 20 карактера наслова термина."
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the appointment attribute"
-msgstr "Да видите атрибуте термина"
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the calendar attribute"
-msgstr "Да видите атрибуте календара"
+msgstr ""
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Agenda Overview"
-msgstr "Преглед дневног реда"
+msgstr "日程概览"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Manage Calendars"
-msgstr "Управљање календарима"
+msgstr "管理日历"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Add Appointment"
-msgstr "Додај термин"
+msgstr "添加预约"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Color"
-msgstr "Боја"
+msgstr "颜色"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "End date"
-msgstr "Датум краја"
+msgstr "结束日期"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Repeat"
-msgstr "Понављање"
+msgstr "重复"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid ""
 "No calendars found. Please add a calendar first by using Manage Calendars "
 "page."
-msgstr ""
-"Није пронађен ниједан календар. Молимо прво додајте календар коришћењем "
-"екрана Управљање календарима."
+msgstr "没有找到日历。请先通过管理日历界面添加一个日历。"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Appointment"
-msgstr "Термин"
+msgstr "预约"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "This is a repeating appointment"
-msgstr "Овај термин се понавља"
+msgstr "这是一个重复的预约"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Would you like to edit just this occurrence or all occurrences?"
-msgstr "Да ли желите да измени само ово или сва понављања?"
+msgstr "你想仅编辑本次预约的时间还是重复预约所有的时间？"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "All occurrences"
-msgstr "Сва понављања"
+msgstr "所有预约"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Just this occurrence"
-msgstr "Само ово понављање"
+msgstr "仅本次"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Management"
-msgstr "Управљање календарима"
+msgstr "日历管理"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Overview"
-msgstr "Преглед календара"
+msgstr "日历概览"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add new Calendar"
-msgstr "Додај нови календар"
+msgstr "添加新的日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add Calendar"
-msgstr "Додај календар"
+msgstr "添加日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Appointments"
-msgstr "Увези термине"
+msgstr "导入预约"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Import"
-msgstr "Увоз календара"
+msgstr "日历导入"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Here you can upload a configuration file to import a calendar to your "
 "system. The file needs to be in .yml format as exported by calendar "
 "management module."
-msgstr ""
-"Овде можете учитати конфигурациону датотеку за увоз календара у ваш систем. "
-"Датотека мора бити у .yml формату извезена од стране модула за управљање "
-"календарима."
+msgstr "你可以在这里上传一个配置文件来导入一个日历到系统中。这个文件必须是类似通过日历管理模块导出的.yml格式。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Upload calendar configuration"
-msgstr "Учитај конфигурацију календара"
+msgstr "上传日历配置"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Calendar"
-msgstr "Увези календар"
+msgstr "导入日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Filter for calendars"
-msgstr "Филтер за календаре"
+msgstr "过滤日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Depending on the group field, the system will allow users the access to the "
 "calendar according to their permission level."
-msgstr ""
-"У зависности од поља групе, систем ће дозволити приступ календару "
-"оператерима према њиховом нивоу приступа."
+msgstr "根据组字段，系统通过用户的权限级别来允许用户能够访问的日历。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read only: users can see and export all appointments in the calendar."
-msgstr "RO: оператери могу прегледати и експортовати све термине у календару."
+msgstr "只读：用户可以看到和导出日历中所有的预约。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Move into: users can modify appointments in the calendar, but without "
 "changing the calendar selection."
-msgstr ""
-"Премести у: оператери могу модификовати термине у календару, али без промене"
-" ком календару припадају."
+msgstr "转移：用户可以修改日历中的预约，但不能修改选择的日历。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Create: users can create and delete appointments in the calendar."
-msgstr "Креирање: оператери могу креирати и брисати термине у календару."
+msgstr "创建：用户可以创建和删除日历中的预约。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read/write: users can manage the calendar itself."
-msgstr "RW: оператери могу администрирати и сам календар."
+msgstr "读写：用户可以管理日历。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "URL"
-msgstr "Адреса"
+msgstr "网址"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Export calendar"
-msgstr "Извези календар"
+msgstr "导出日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Download calendar"
-msgstr "Преузми календар"
+msgstr "下载日历"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Copy public calendar URL"
-msgstr "Ископирај јавну адресу календара (URL)"
+msgstr "复制公共日历网址"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar name"
-msgstr "Назив календара"
+msgstr "日历名称"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar with same name already exists."
-msgstr "Календар са истим називом већ постоји."
+msgstr "已有同名的日历。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Permission group"
-msgstr "Група приступа"
+msgstr "权限组"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Ticket Appointments"
-msgstr "Термини тикета"
+msgstr "工单预约"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Rule"
-msgstr "Правило"
+msgstr "规则"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Use options below to narrow down for which tickets appointments will be "
 "automatically created."
-msgstr ""
-"Користећи опције испод изаберите за које тикете ће термини бити аутоматски "
-"креирани."
+msgstr "使用下面的选项来减少自动创建的工单预约。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Please select a valid queue."
-msgstr "Молимо да одаберете важећи ред."
+msgstr "请选择一个有效的队列。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Search attributes"
-msgstr "Атрибути претраге"
+msgstr "搜索属性"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Define rules for creating automatic appointments in this calendar based on "
 "ticket data."
-msgstr ""
-"Дефинишите правила за креирање аутоматских термина у овом календару на "
-"основу тикета."
+msgstr "定义在这个日历中基于工单数据自动创建预约的规则。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add Rule"
-msgstr "Додај правило"
+msgstr "添加规则"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "More"
-msgstr "Више"
+msgstr "更多"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Less"
-msgstr "Мање"
+msgstr "更少"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Add new Appointment"
-msgstr "Додај нови термин"
+msgstr "添加新的预约"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Calendars"
-msgstr "Календари"
+msgstr "日历"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "This is an overview page for the Appointment Calendar."
-msgstr "Ова страница служи за преглед календара."
+msgstr "这是预约日历的概览页面。"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Too many active calendars"
-msgstr "Превише активних календара"
+msgstr "激活的日历太多"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid ""
 "Please either turn some off first or increase the limit in configuration."
-msgstr ""
-"Или прво искључите приказ неког календара или повећајте лимит у "
-"конфигурацији."
+msgstr "请关闭一些日历或者在配置中增加限制数。"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Week"
-msgstr "Седмица"
+msgstr "周"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Month"
-msgstr "Месечна оса"
+msgstr "月时间表"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Week"
-msgstr "Седмична оса"
+msgstr "周时间表"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Day"
-msgstr "Дневна оса"
+msgstr "每日时间表"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Jump"
-msgstr "Скочи"
+msgstr "跳转"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Dismiss"
-msgstr "Поништи"
+msgstr "取消"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Show"
-msgstr "Прикажи"
+msgstr "显示"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Basic information"
-msgstr "Основне информације"
+msgstr "基本信息"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Date/Time"
-msgstr "Датум/време"
+msgstr "日期 / 时间"
 
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value before End date."
-msgstr "Молимо поставите овај датум пре краја."
+msgstr "请设置这个值为结束日期之前。"
 
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value after Start date."
-msgstr "Молимо поставите овај датум после почетка."
+msgstr "请设置这个值为开始日期之后。"
 
 #. Template: AgentAppointmentEdit
 msgid "This an occurrence of a repeating appointment."
-msgstr "Ово је термин који се понавља."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to see the parent appointment."
-msgstr "Кликните овде за преглед матичног термина."
+msgstr "点击这里查看父预约。"
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to edit the parent appointment."
-msgstr "Кликните овде за измену матичног термина."
+msgstr "点击这里编辑父预约。"
 
 #. Template: AgentAppointmentEdit
 msgid "Frequency"
-msgstr "Учесталост"
+msgstr "频率"
 
 #. Template: AgentAppointmentEdit
 msgid "Every"
-msgstr "Сваког(е)"
+msgstr "每"
 
 #. Template: AgentAppointmentEdit
 msgid "Relative point of time"
-msgstr "Релативно време"
+msgstr "相对的时间"
 
 #. Template: AgentAppointmentEdit
 msgid ""
 "Are you sure you want to delete this appointment? This operation cannot be "
 "undone."
-msgstr ""
-"Да ли сте сигурни да желите да избришете овај термин? Ову операцију није "
-"могуће опозвати."
+msgstr "你真的要删除这个预约吗？这个操作无法回退。"
 
 #. Template: AgentAppointmentImport
 msgid "Appointment Import"
-msgstr "Увоз термина"
+msgstr "预约导入"
 
 #. Template: AgentAppointmentImport
 msgid "Uploaded file must be in valid iCal format (.ics)."
-msgstr "Послати фајл мора бити у исправном iCal формату (.ics)."
+msgstr "上传文件必须是有效的iCal格式(.ics)。"
 
 #. Template: AgentAppointmentImport
 msgid ""
 "If desired Calendar is not listed here, please make sure that you have at "
 "least 'create' permissions."
-msgstr ""
-"Уколико жељени календар није излистан, проверите да ли имате ниво приступа "
-"'креирање' за групу календара."
+msgstr "如果期望的日历没有在这里，请确保你至少有“创建”权限。"
 
 #. Template: AgentAppointmentImport
 msgid "Update existing appointments?"
-msgstr "Освежи постојеће термине?"
+msgstr "更新已有的预约吗？"
 
 #. Template: AgentAppointmentImport
 msgid ""
 "All existing appointments in the calendar with same UniqueID will be "
 "overwritten."
-msgstr ""
-"Сви постојећи термини у календару са истим UniqueID пољем ће бити "
-"пребрисани."
+msgstr "相同UniqueID的日历中所有已有的预约都会被覆盖。"
 
 #. Template: AgentAppointmentImport
 msgid "Upload calendar"
-msgstr "Пошаљи календар"
+msgstr "上传日历"
 
 #. Template: AgentAppointmentImport
 msgid "Import appointments"
-msgstr "Увези термине"
+msgstr "导入预约"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "New Appointment"
-msgstr "Нови термин"
+msgstr "新的预约"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "Soon"
-msgstr "Ускоро"
+msgstr "很快"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "5 days"
-msgstr "5 дана"
+msgstr "5天"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Notification name already exists!"
-msgstr "Обавештење са овим називом већ постоји!"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Agent (resources), who are selected within the appointment"
-msgstr "Оператер (ресурс), који је изабран у термину"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid ""
 "All agents with (at least) read permission for the appointment (calendar)"
-msgstr "Сви оператери са (најмање) дозволом прегледа термина (календара)"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "All agents with write permission for the appointment (calendar)"
-msgstr "Сви оператери са дозволом писања у термину (календару)"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "System was unable to create Calendar!"
-msgstr "Систем није успео да креира календар!"
+msgstr "系统不能创建日历！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Please contact the administrator."
-msgstr "Молимо контактирајте администратора!"
+msgstr "请联系系统管理员。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
-msgstr "Нема CalendarID!"
+msgstr "没有日历ID！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "You have no access to this calendar!"
-msgstr "Немате приступ овом календару!"
+msgstr "你无权访问这个日历！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Edit Calendar"
-msgstr "Измени календар"
+msgstr "编辑日历"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Error updating the calendar!"
-msgstr "Грешка приликом измене календара"
+msgstr "更新日历出错！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Couldn't read calendar configuration file."
-msgstr "Учитавање конфигурације календара није било могуће."
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Please make sure your file is valid."
-msgstr "Молимо вас да проверите да ли је ваш фајл исправан."
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not import the calendar!"
-msgstr "Није могућ увоз календара!"
+msgstr "无法导入这个日历！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Calendar imported!"
-msgstr "Календар је увезен!"
+msgstr "日历已导入！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Need CalendarID!"
-msgstr "Потребан ИД календара!"
+msgstr "需要日历ID！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not retrieve data for given CalendarID"
-msgstr "Не могу прибавити податке за дати CalendarID"
+msgstr "无法返回给定的日历ID的数据"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Successfully imported %s appointment(s) to calendar %s."
-msgstr "Успешно увезено %s термин(а) у календар %s."
+msgstr "成功将预约%s导入到日历%s。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+5 minutes"
-msgstr "+5 минута"
+msgstr "+5分钟"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+15 minutes"
-msgstr "+15 минута"
+msgstr "+15分钟"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+30 minutes"
-msgstr "+30 минута"
+msgstr "+30分钟"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+1 hour"
-msgstr "+1 сат"
+msgstr "+1小时"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "All appointments"
-msgstr "Сви термини"
+msgstr "所有预约"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Appointments assigned to me"
-msgstr "Термини додељени мени"
+msgstr "分配给我的预约"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Showing only appointments assigned to you! Change settings"
-msgstr "Приказ само термина додељених вама! Измените подешавања"
+msgstr "仅显示分配给你的预约！修改设置"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Appointment not found!"
-msgstr "Термин није пронађен!"
+msgstr "没有找到预约！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Never"
-msgstr "Никада"
+msgstr "永不"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Day"
-msgstr "Сваки дан"
+msgstr "每天"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Week"
-msgstr "Сваке седмице"
+msgstr "每周"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Month"
-msgstr "Сваког месеца"
+msgstr "每月"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Year"
-msgstr "Сваке године"
+msgstr "每年"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Custom"
-msgstr "Прилагођено"
+msgstr "定制"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Daily"
-msgstr "Дневно"
+msgstr "每天一次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Weekly"
-msgstr "Седмично"
+msgstr "每周一次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Monthly"
-msgstr "Месечно"
+msgstr "每月一次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Yearly"
-msgstr "Годишње"
+msgstr "每年一次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "every"
-msgstr "сваког(е)"
+msgstr "每"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "for %s time(s)"
-msgstr "укупно %s пут(а)"
+msgstr "%s次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "until ..."
-msgstr "до ..."
+msgstr "直到..."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "for ... time(s)"
-msgstr "укупно ... пут(а)"
+msgstr "...次"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "until %s"
-msgstr "до %s"
+msgstr "直到%s"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No notification"
-msgstr "Без обавештења"
+msgstr "没有通知"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s minute(s) before"
-msgstr "%s минут(а) пре"
+msgstr "%s分钟前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s hour(s) before"
-msgstr "%s сат(а) пре"
+msgstr "%s小时前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s day(s) before"
-msgstr "%s дан(а) пре"
+msgstr "%s天前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s week before"
-msgstr "%s недеља пре"
+msgstr "%s周前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment starts"
-msgstr "пре него што термин започне"
+msgstr "在预约开始前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been started"
-msgstr "пошто термин започне"
+msgstr "在预约开始后"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment ends"
-msgstr "пре него што се термин заврши"
+msgstr "在预约结束前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been ended"
-msgstr "пошто се термин заврши"
+msgstr "在预约结束后"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permission!"
-msgstr "Без дозволе!"
+msgstr "没有权限！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Links could not be deleted!"
-msgstr "Везе не могу бити обрисане!"
+msgstr "不能删除链接！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Link could not be created!"
-msgstr "Веза није могла бити креирана!"
+msgstr "不能创建链接！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Cannot delete ticket appointment!"
-msgstr "Није могуће обрисати термин тикета!"
+msgstr "不能删除工单预约！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permissions!"
-msgstr "Без дозволе!"
+msgstr "没有权限！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "No permissions"
-msgstr "Без дозволе"
+msgstr "没有权限"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
-msgstr "Систем није успео да увезе фајл!"
+msgstr "系统无法导入文件！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"
-msgstr "+%d више"
+msgstr "多于+%d"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No %s!"
-msgstr "Без %s!"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No such user!"
-msgstr "Непознат корисник!"
+msgstr "没有这个用户！"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid calendar!"
-msgstr "Неисправан календар!"
+msgstr "无效日历！"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid URL!"
-msgstr "Неисправна адреса!"
+msgstr "无效网址！"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "There was an error exporting the calendar!"
-msgstr "Грешка приликом експортовања календара!"
+msgstr "导出日历时出错！"
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm
 msgid "Refresh (minutes)"
-msgstr "Освежи (минута)"
+msgstr "刷新（分钟）"
 
 #. SysConfig
 msgid "Appointment Calendar overview page."
-msgstr "Страница за преглед календара."
+msgstr "预约日历概览页面。"
 
 #. SysConfig
 msgid "Appointment Notifications"
-msgstr "Обавештења о термину"
+msgstr ""
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that prepares notification entries for "
 "appointments."
-msgstr "Модул догађаја календара за припрему обавештења о терминима."
+msgstr "预约日历事件模块，准备预约的通知消息。"
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that updates the ticket with data from "
 "ticket appointment."
-msgstr "Модул догађаја календара за освежавање тикета подацима из термина."
+msgstr "预约日历事件模块，更新工单的预约数据。"
 
 #. SysConfig
 msgid "Appointment edit screen."
-msgstr "Страница за измену календара."
+msgstr "预约编辑窗口。"
 
 #. SysConfig
 msgid "Appointment list"
-msgstr "Листа термина"
+msgstr "预约列表"
 
 #. SysConfig
 msgid "Appointment list."
-msgstr "Листа термина."
+msgstr "预约列表。"
 
 #. SysConfig
 msgid "Appointment notifications"
-msgstr "Обавештења о термину"
+msgstr ""
 
 #. SysConfig
 msgid "Appointments"
-msgstr "Термини"
+msgstr "预约"
 
 #. SysConfig
 msgid "Calendar manage screen."
-msgstr "Страница за управљање календарима."
+msgstr "日历管理窗口。"
 
 #. SysConfig
 msgid ""
 "Choose for which kind of appointment changes you want to receive "
 "notifications."
-msgstr "Изабери за какве промене термина желиш да примиш обавештења."
+msgstr ""
 
 #. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
-msgstr "Креира нови термин у календару повезан са овим тикетом"
+msgstr "创建一个新的日历预约到这个工单。"
 
 #. SysConfig
 msgid "Create and manage appointment notifications."
-msgstr "Креирање и управљање обавештењима за термине."
+msgstr ""
 
 #. SysConfig
 msgid "Create new appointment."
-msgstr "Креира нови термин."
+msgstr "创建新的预约。"
 
 #. SysConfig
 msgid ""
@@ -741,51 +711,42 @@ msgid ""
 "(LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = "
 "Available, 2 = Enabled by default."
 msgstr ""
-"Дефинише које колоне ће бити приказане у апликативном додатку линкованих "
-"термина (LinkObject::ViewMode = \"complex\"). Могућа подешавања: 0 = "
-"Онемогућено, 1 = Омогућено, 2 = Подразумевано омогућено."
 
 #. SysConfig
 msgid ""
 "Defines an icon with link to the google map page of the current location in "
 "appointment edit screen."
-msgstr ""
-"Дефинише икону са линком на Google мапу тренутне локације у екрану за измену"
-" термина."
+msgstr "定义一个图标，链接预约编辑窗口中的当前位置到谷歌地图页面。"
 
 #. SysConfig
 msgid ""
 "Defines the event object types that will be handled via "
 "AdminAppointmentNotificationEvent."
 msgstr ""
-"Дефинише типове објекта догађаја који ће бити процесирани путем "
-"AdminAppointmentNotificationEvent."
 
 #. SysConfig
 msgid ""
 "Defines the list of params that can be passed to ticket search function."
-msgstr ""
-"Дефинише листу параметара који могу бити прослеђени функцији претраге "
-"тикета."
+msgstr "定义能传递到工单搜索功能的参数清单。"
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket dynamic field date "
 "time."
-msgstr "Дефинише позадински модул термина тикета за динамичко поље датума."
+msgstr "定义工单预约类型后端，用于工单动态字段日期时间。"
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket escalation time."
-msgstr "Дефинише позадински модул термина тикета за време ескалације."
+msgstr "定义工单预约类型后端，用于工单升级时间。"
 
 #. SysConfig
 msgid "Defines the ticket appointment type backend for ticket pending time."
-msgstr "Дефинише позадински модул термина тикета за време чекања."
+msgstr "定义工单预约类型后端，用于工单挂起时间。"
 
 #. SysConfig
 msgid "Defines the ticket plugin for calendar appointments."
-msgstr "Дефинише тикет модул за календарске термине."
+msgstr "定义日历预约的工单插件。"
 
 #. SysConfig
 msgid "DynamicField_%s"
@@ -793,52 +754,45 @@ msgstr "DynamicField_%s"
 
 #. SysConfig
 msgid "Edit appointment"
-msgstr "Измена термина"
+msgstr "编辑预约"
 
 #. SysConfig
 msgid "First response time"
-msgstr "Време првог одговора"
+msgstr "首次响应时间"
 
 #. SysConfig
 msgid "Import appointments screen."
-msgstr "Екран за увоз термина."
+msgstr "导入预约窗口。"
 
 #. SysConfig
 msgid "Links appointments and tickets with a \"Normal\" type link."
-msgstr "Повезује термине и тикете \"Нормалним\" врстама веза."
+msgstr "将预约和工单链接为“普通”类型。"
 
 #. SysConfig
 msgid "List of all appointment events to be displayed in the GUI."
-msgstr "Листа свих обавештења о терминима за приказ у интерфејсу."
+msgstr "列出要在图形界面显示的所有预约事件。"
 
 #. SysConfig
 msgid "List of all calendar events to be displayed in the GUI."
 msgstr ""
-"Листа свих догађаја на календарима која ће бити приказана у интерфејсу."
 
 #. SysConfig
 msgid ""
 "List of colors in hexadecimal RGB which will be available for selection "
 "during calendar creation. Make sure the colors are dark enough so white text"
 " can be overlayed on them."
-msgstr ""
-"Листа боја у хексадецималном RGB запису које ће бити доступне за избор "
-"приликом прављења календара. Обратите пажњу да су боје довољно тамне тако да"
-" бели текст може бити исписан на њима."
+msgstr "在创建日历时可用于选择的16进制RGB颜色列表。请使用足够深色的颜色，以确保能够显示上面白色的文本。"
 
 #. SysConfig
 msgid "Manage different calendars."
-msgstr "Управљање различитим календарима."
+msgstr "管理不同的日历。"
 
 #. SysConfig
 msgid ""
 "Maximum number of active calendars in overview screens. Please note that "
 "large number of active calendars can have a performance impact on your "
 "server by making too much simultaneous calls."
-msgstr ""
-"Максимални број активних календара у екранима за преглед. Обратите пажњу да "
-"велики број активних календара може имати утицај на перформансе вашег "
-"сервера прављењем превише симултаних захтева."
+msgstr "日历概览窗口能激活的日历最大数。请注意：大量的激活日历会对服务器产生太多的同步调用，可能会有性能影响。"
 
 #. SysConfig
 msgid ""
@@ -847,43 +801,38 @@ msgid ""
 "such Appointments. Instead, system creates all Appointments in the past, "
 "plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
-"OTRS не подржава термине који се понављају без крајњег датума или броја "
-"итерација. Приликом увоза календара, може се догодити да ICS фајл садржи "
-"такве 'бесконачне' термине. Уместо таквог понашања, систем ће креирати све "
-"термине из прошлости, као и термине за следећи n број месеци (подразумевано "
-"120 месеци/10 година)."
 
 #. SysConfig
 msgid "Overview of all appointments."
-msgstr "Преглед свих термина."
+msgstr "所有预约的概览。"
 
 #. SysConfig
 msgid "Pending time"
-msgstr "Време чекања"
+msgstr "挂起时间"
 
 #. SysConfig
 msgid "Plugin search"
-msgstr "Модул претраге"
+msgstr "搜索插件"
 
 #. SysConfig
 msgid "Plugin search module for autocomplete."
-msgstr "Модул претраге за аутоматско допуњавање."
+msgstr "用于自动完成的搜索插件模块。"
 
 #. SysConfig
 msgid "Public Calendar"
-msgstr "Јавни календар"
+msgstr ""
 
 #. SysConfig
 msgid "Public calendar."
-msgstr "Јавни календар."
+msgstr ""
 
 #. SysConfig
 msgid "Resource Overview"
-msgstr "Преглед ресурса"
+msgstr "资源概览"
 
 #. SysConfig
 msgid "Resource Overview (OTRS Business Solution™)"
-msgstr "Преглед ресурса (OTRS Business Solution™)"
+msgstr "资源概览（OTRS商业版）"
 
 #. SysConfig
 msgid ""
@@ -895,29 +844,22 @@ msgid ""
 "see in the UI. Use \"ClusterPriority\" to configure the order of a certain "
 "cluster within the toolbar."
 msgstr ""
-"Приказује везу у менију тикета за креирање термина у календару повезаног са "
-"тим тикетом. Додатна контрола приказа ове везе може се постићи коришћењем "
-"кључа \"Group\" са садржајем \"rw:group1;move_into:group2\". За здруживање "
-"веза у менију подесите кључ \"ClusterName\" са садржајем који ће бити назив "
-"који желите да видите у интерфејсу. Користите кључ \"ClusterPriority\" за "
-"измену редоследа група у менију."
+"在服务人员界面工单详情窗口，在菜单上显示一个链接，以创建一个日历预约并直接链接到此工单。可通过键“Group”和值如“rw:group1;move_into:group2”进行额外的访问控制，以显示或不显示这个链接。如果要放到菜单组中，使用键“ClusterName”，值可以是界面上能看到的任意名称。使用键“ClusterPriority”来配置菜单组在工具栏中显示的顺序。"
 
 #. SysConfig
 msgid "Solution time"
-msgstr "Време решавања"
+msgstr "解决时间"
 
 #. SysConfig
 msgid "Transport selection for appointment notifications."
-msgstr "Избор транспорта за обавештења о термину."
+msgstr ""
 
 #. SysConfig
 msgid ""
 "Triggers add or update of automatic calendar appointments based on certain "
 "ticket times."
-msgstr ""
-"Активира додавање или освежавање аутоматских термина на основу времена "
-"тикета."
+msgstr "基于某些工单时间添加或更新自动日历预约的触发器。"
 
 #. SysConfig
 msgid "Update time"
-msgstr "Време ажурирања"
+msgstr "更新时间"
