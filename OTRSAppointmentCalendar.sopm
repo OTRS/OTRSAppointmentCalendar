@@ -141,7 +141,7 @@
         <strong>ATTENTION</strong>
         <br/>
         <br/>
-        Minimum framework version for this package is 5.0.14. Please make sure you have updated the framework before installing this package!
+        Minimum framework version for this package is <strong><u>5.0.14</u></strong>. Please make sure you have updated the framework before installing this package!
         </ul>
         <br/>
         <br/>
@@ -161,7 +161,7 @@
         <strong>УПОЗОРЕЊЕ</strong>
         <br/>
         <br/>
-        Најмања подржана верзија система за овај пакет је 5.0.14. Проверите да ли сте освежили ваш систем пре инсталације пакета!
+        Најмања подржана верзија система за овај пакет је <strong><u>5.0.14</u></strong>. Проверите да ли сте освежили ваш систем пре инсталације пакета!
         </ul>
         <br/>
         <br/>
@@ -181,7 +181,28 @@
         <strong>UPOZORENJE</strong>
         <br/>
         <br/>
-        Najmanja podržana verzija sistema za ovaj paket je 5.0.14. Proverite da li ste osvežili vaš sistem pre instalacije paketa!
+        Najmanja podržana verzija sistema za ovaj paket je <strong><u>5.0.14</u></strong>. Proverite da li ste osvežili vaš sistem pre instalacije paketa!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
+    <IntroInstall Type="pre" Title="Install Information" Lang="de"><![CDATA[
+
+        <br/>
+        <strong>Willkommen</strong>
+        <br/>
+        <br/>
+        Sie sind dabei das OTRS Paket OTRSAppointmentCalendar zu installieren.<br/>
+        <br/>
+        <br/>
+        <strong>ATTENTION</strong>
+        <br/>
+        <br/>
+        Die minimale OTRS Frameworkversion für dieses Paket ist <strong><u>5.0.14</u></strong>.
+        Bitte stellen Sie sicher, dass Sie das Framework vor der Installation dieses Pakets aktualisiert haben!
         </ul>
         <br/>
         <br/>
