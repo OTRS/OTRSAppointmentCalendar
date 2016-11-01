@@ -225,6 +225,25 @@ Repeat: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
                     'ContentType' => 'text/html',
                     'Subject'     => 'Reminder: <OTRS_APPOINTMENT_TITLE>',
                 },
+                'hu' => {
+                    'Body' => 'Kedves &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;!<br />
+<br />
+A következő esemény elérte az értesítési idejét: &lt;OTRS_APPOINTMENT_TITLE&gt;<br />
+<br />
+Leírás: &lt;OTRS_APPOINTMENT_DESCRIPTION&gt;<br />
+Hely: &lt;OTRS_APPOINTMENT_LOCATION&gt;<br />
+Naptár: <span style="color: &lt;OTRS_CALENDAR_COLOR&gt;;">■</span> &lt;OTRS_CALENDAR_CALENDARNAME&gt;<br />
+Kezdési dátum: &lt;OTRS_APPOINTMENT_STARTTIME&gt;<br />
+Befejezési dátum: &lt;OTRS_APPOINTMENT_ENDTIME&gt;<br />
+Egész napos: &lt;OTRS_APPOINTMENT_ALLDAY&gt;<br />
+Ismétlődés: &lt;OTRS_APPOINTMENT_RECURRING&gt;<br />
+<br />
+<a href="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;" title="&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;">&lt;OTRS_CONFIG_HttpType&gt;://&lt;OTRS_CONFIG_FQDN&gt;/&lt;OTRS_CONFIG_ScriptAlias&gt;index.pl?Action=AgentAppointmentCalendarOverview;AppointmentID=&lt;OTRS_APPOINTMENT_APPOINTMENTID&gt;</a><br />
+<br />
+-- &lt;OTRS_CONFIG_NotificationSenderName&gt;',
+                    'ContentType' => 'text/html',
+                    'Subject'     => 'Emlékeztető: <OTRS_APPOINTMENT_TITLE>',
+                },
                 'sr_Cyrl' => {
                     'Body' => 'Здраво &lt;OTRS_NOTIFICATION_RECIPIENT_UserFirstname&gt;,<br />
 <br />

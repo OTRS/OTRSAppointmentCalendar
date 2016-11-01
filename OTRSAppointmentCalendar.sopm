@@ -149,6 +149,47 @@
         <br/>
 
     ]]></IntroInstall>
+    <IntroInstall Type="pre" Title="Install Information" Lang="de"><![CDATA[
+
+        <br/>
+        <strong>Willkommen</strong>
+        <br/>
+        <br/>
+        Sie sind dabei das OTRS Paket OTRSAppointmentCalendar zu installieren.<br/>
+        <br/>
+        <br/>
+        <strong>ATTENTION</strong>
+        <br/>
+        <br/>
+        Die minimale OTRS Frameworkversion für dieses Paket ist <strong><u>5.0.14</u></strong>.
+        Bitte stellen Sie sicher, dass Sie das Framework vor der Installation dieses Pakets aktualisiert haben!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
+    <IntroInstall Type="pre" Title="Telepítési információk" Lang="hu"><![CDATA[
+
+        <br/>
+        <strong>ÜDVÖZÖLJÜK</strong>
+        <br/>
+        <br/>
+        Ön az OTRSAppointmentCalendar OTRS csomag telepítésére készül.<br/>
+        <br/>
+        <br/>
+        <strong>FIGYELEM</strong>
+        <br/>
+        <br/>
+        A legkisebb keretrendszer-verzió ehhez a csomaghoz az <strong><u>5.0.14</u></strong>. Győződjön meg arról, hogy frissítette-e a keretrendszert ezen csomag telepítése előtt!
+        </ul>
+        <br/>
+        <br/>
+        ((enjoy))<br/>
+        <br/>
+
+    ]]></IntroInstall>
     <IntroInstall Type="pre" Title="Install Information" Lang="sr_Cyrl"><![CDATA[
 
         <br/>
@@ -182,27 +223,6 @@
         <br/>
         <br/>
         Najmanja podržana verzija sistema za ovaj paket je <strong><u>5.0.14</u></strong>. Proverite da li ste osvežili vaš sistem pre instalacije paketa!
-        </ul>
-        <br/>
-        <br/>
-        ((enjoy))<br/>
-        <br/>
-
-    ]]></IntroInstall>
-    <IntroInstall Type="pre" Title="Install Information" Lang="de"><![CDATA[
-
-        <br/>
-        <strong>Willkommen</strong>
-        <br/>
-        <br/>
-        Sie sind dabei das OTRS Paket OTRSAppointmentCalendar zu installieren.<br/>
-        <br/>
-        <br/>
-        <strong>ATTENTION</strong>
-        <br/>
-        <br/>
-        Die minimale OTRS Frameworkversion für dieses Paket ist <strong><u>5.0.14</u></strong>.
-        Bitte stellen Sie sicher, dass Sie das Framework vor der Installation dieses Pakets aktualisiert haben!
         </ul>
         <br/>
         <br/>
