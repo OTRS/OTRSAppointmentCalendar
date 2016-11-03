@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-27 08:29+0000\n"
+"POT-Creation-Date: 2016-11-03 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -9,6 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr ""
+
+#. Template: AAANotification
+msgid "You will receive a notification each time a reminder time is reached for one of your appointments."
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"

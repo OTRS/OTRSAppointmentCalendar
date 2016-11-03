@@ -1,0 +1,13 @@
+# --
+# Copyright (C) 2001-2016 OTRS AG, http://otrs.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+# This is a dummy template file for workaround of bug#12387:
+# See https://bugs.otrs.org/show_bug.cgi?id=12387 for details.
+
+[% Translate("Appointment reminder notification") | html %]
+[% Translate("You will receive a notification each time a reminder time is reached for one of your appointments.") | html %]
