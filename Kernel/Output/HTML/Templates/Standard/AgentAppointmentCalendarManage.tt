@@ -335,7 +335,11 @@
                                     <span class="Marker">*</span>
                                     [% Data.ParamName | html %]:
                                 </label>
+                                [% IF Data.ParamStrg %]
+                                [% Data.ParamStrg %]
+                                [% ELSE %]
                                 <input id="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" name="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" data-param="[% Data.ParamName | html %]" type="text" class="SearchParam Validate_Required W25pc" value="[% Data.ParamValue | html %]"/>
+                                [% END %]
                                 <div id="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]Error" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                                 <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">
                                     <i class="fa fa-minus-square-o"></i>
@@ -439,6 +443,7 @@
                 <label for="SearchParam" class="Mandatory">
                     <span class="Marker">*</span>
                 </label>
+                [% Data.SearchParamUser %]
                 <input id="SearchParam" name="SearchParam" type="text" class="Validate_Required" />
                 <div id="SearchParamError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                 <a class="RemoveButton" title="[% Translate("Remove this entry") | html %]" href="#">

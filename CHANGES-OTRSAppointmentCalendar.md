@@ -1,4 +1,5 @@
 #5.0.2 2016-??-??
+ - 2016-11-03 Fixed bug#[12390](https://bugs.otrs.org/show_bug.cgi?id=12390) - AgentAppointmentAgendaOverview shows Tickets with wrong filter.
  - 2016-11-02 Added Hungarian install intro and notification, thanks to Balázs Úr.
 
 #5.0.1 2016-11-01

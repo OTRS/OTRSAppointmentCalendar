@@ -25,6 +25,9 @@ sub new {
     my $Self = {%Param};
     bless( $Self, $Type );
 
+    # Certain search parameters for ticket appointments should be stored as scalars, not array refs.
+    $Self->{SearchParamScalar} = [ 'From', 'To', 'Cc', 'Subject', 'Body', 'AttachmentName' ];
+
     return $Self;
 }
 
@@ -41,8 +44,13 @@ sub Run {
     PARAMNAME:
     for my $Key (@ParamNames) {
 
-        # queue is multiple selection field, get array instead
-        if ( $Key =~ /^QueueID_/ ) {
+        # Queue, OwnerIDs and ResponsibleIDs are multiple selection fields, get array instead.
+        if (
+            $Key =~ /^QueueID_/
+            || $Key =~ /^SearchParam_[0-9a-f]+_OwnerIDs$/
+            || $Key =~ /^SearchParam_[0-9a-f]+_ResponsibleIDs$/
+            )
+        {
             my @ParamArray = $ParamObject->GetArray( Param => $Key );
             $GetParam{$Key} = \@ParamArray;
             next PARAMNAME;
@@ -172,16 +180,7 @@ sub Run {
                 );
 
                 # Show any search parameter blocks too.
-                for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
-                    $LayoutObject->Block(
-                        Name => 'TicketAppointmentRuleSearchParam',
-                        Data => {
-                            ParamName  => $ParamName,
-                            ParamValue => $Rule->{SearchParam}->{$ParamName},
-                            %{$Rule},
-                        },
-                    );
-                }
+                $Self->_ShowTicketAppointmentParams( %{$Rule} );
             }
 
             return $Self->_Mask(%Param);
@@ -279,16 +278,7 @@ sub Run {
             );
 
             # Show any search parameter blocks too.
-            for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
-                $LayoutObject->Block(
-                    Name => 'TicketAppointmentRuleSearchParam',
-                    Data => {
-                        ParamName  => $ParamName,
-                        ParamValue => $Rule->{SearchParam}->{$ParamName},
-                        %{$Rule},
-                    },
-                );
-            }
+            $Self->_ShowTicketAppointmentParams( %{$Rule} );
 
             # initialize button behavior
             $LayoutObject->Block(
@@ -398,16 +388,7 @@ sub Run {
                 );
 
                 # Show any search parameter blocks too.
-                for my $ParamName ( sort keys %{ $Rule->{SearchParam} // {} } ) {
-                    $LayoutObject->Block(
-                        Name => 'TicketAppointmentRuleSearchParam',
-                        Data => {
-                            ParamName  => $ParamName,
-                            ParamValue => $Rule->{SearchParam}->{$ParamName},
-                            %{$Rule},
-                        },
-                    );
-                }
+                $Self->_ShowTicketAppointmentParams( %{$Rule} );
             }
 
             return $Self->_Mask(%Param);
@@ -694,6 +675,29 @@ sub _ValidSelectionGet {
     return $ValidSelection;
 }
 
+sub _UserSelectionGet {
+    my ( $Self, %Param ) = @_;
+
+    my %UserList = $Kernel::OM->Get('Kernel::System::User')->UserList();
+
+    my $UserSelection = $Kernel::OM->Get('Kernel::Output::HTML::Layout')->BuildSelection(
+        Data => \%UserList,
+        Name => ( $Param{RuleID} && $Param{ParamName} )
+        ? 'SearchParam_' . $Param{RuleID} . '_' . $Param{ParamName}
+        : 'SearchParamUser',
+        Multiple   => 1,
+        Class      => 'SearchParam Modernize Validate_Required',
+        SelectedID => $Param{ParamValue} || [],
+    );
+
+    # Add param name as data attribute for later reference in JS.
+    if ( $Param{ParamName} ) {
+        $UserSelection =~ s/<select/<select data-param="$Param{ParamName}"/;
+    }
+
+    return $UserSelection;
+}
+
 sub _TicketAppointments {
     my ( $Self, %Param ) = @_;
 
@@ -846,6 +850,8 @@ sub _TicketAppointments {
         Name     => 'SearchParams' . $FieldID,
     );
 
+    $TicketAppointments{SearchParamUser} = $Self->_UserSelectionGet();
+
     return %TicketAppointments;
 }
 
@@ -877,7 +883,20 @@ sub _GetTicketAppointmentParams {
                 if ( $Field eq 'SearchParam' ) {
                     if ( $Key =~ /^SearchParam_${RuleID}_([A-Za-z]+)$/ ) {
                         my $SearchParam = $1;
-                        $TicketAppointmentParams{$RuleID}->{SearchParam}->{$SearchParam} = $Param{$Key};
+
+                        # Store search params:
+                        #   - as scalar, per TicketSearch() documentation
+                        #   - as array ref, multiple selection
+                        #   - as array ref, single value
+                        if ( grep { $SearchParam eq $_ } @{ $Self->{SearchParamScalar} } ) {
+                            $TicketAppointmentParams{$RuleID}->{SearchParam}->{$SearchParam} = $Param{$Key};
+                        }
+                        elsif ( ref $Param{$Key} eq 'ARRAY' ) {
+                            $TicketAppointmentParams{$RuleID}->{SearchParam}->{$SearchParam} = $Param{$Key};
+                        }
+                        else {
+                            $TicketAppointmentParams{$RuleID}->{SearchParam}->{$SearchParam} = [ $Param{$Key} ];
+                        }
                     }
                 }
                 else {
@@ -894,6 +913,43 @@ sub _GetTicketAppointmentParams {
     }
 
     return \@TicketAppointmentData;
+}
+
+sub _ShowTicketAppointmentParams {
+    my ( $Self, %Param ) = @_;
+
+    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    for my $ParamName ( sort keys %{ $Param{SearchParam} } ) {
+        my $ParamValue;
+        my $ParamStrg;
+
+        if ( grep { $ParamName eq $_ } @{ $Self->{SearchParamScalar} } ) {
+            $ParamValue = $Param{SearchParam}->{$ParamName};
+        }
+        elsif ( ref $Param{SearchParam}->{$ParamName} eq 'ARRAY' ) {
+            $ParamValue = $Param{SearchParam}->{$ParamName}->[0] // '';
+        }
+
+        # OwnerIDs and ResponsibleIDs are multiple selection user fields.
+        if ( $ParamName eq 'OwnerIDs' || $ParamName eq 'ResponsibleIDs' ) {
+            $ParamStrg = $Self->_UserSelectionGet(
+                ParamName  => $ParamName,
+                ParamValue => $Param{SearchParam}->{$ParamName} // [],
+                %Param,
+            );
+        }
+
+        $LayoutObject->Block(
+            Name => 'TicketAppointmentRuleSearchParam',
+            Data => {
+                ParamName  => $ParamName,
+                ParamValue => $ParamValue,
+                ParamStrg  => $ParamStrg,
+                %Param,
+            },
+        );
+    }
 }
 
 1;

@@ -121,7 +121,7 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
 
         $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
             var $SearchParamObj = $(this).parent(),
-                ParamName = $SearchParamObj.find('input.SearchParam').data('param');
+                ParamName = $SearchParamObj.find('.SearchParam').data('param');
 
             $SearchParamObj.remove();
             $ParamObj.find('option[value="' + ParamName + '"]')
@@ -149,37 +149,54 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
                 .val($ParamObj.find('option:enabled').first().attr('value'))
                 .trigger('redraw.InputField');
 
+            // Label
             $SearchParamObj
-
-                // Label
                 .find('label')
                 .attr('for', 'SearchParam_' + RuleID + '_' + ParamName)
                 .find('span')
-                .after(' ' + ParamName + ':')
-                .end()
-                .end()
+                .after(' ' + ParamName + ':');
 
-                // Input field and error message
-                .find('input')
-                .attr('id', 'SearchParam_' + RuleID + '_' + ParamName)
-                .attr('name', 'SearchParam_' + RuleID + '_' + ParamName)
-                .end()
-                .find('#SearchParamError')
-                .attr('id', 'SearchParam_' + RuleID + '_' + ParamName + 'Error')
-                .end()
+            // OwnerIDs and ResponsibleIDs are multi-select fields.
+            if (ParamName === 'OwnerIDs' || ParamName === 'ResponsibleIDs') {
+                $SearchParamObj
+                    .find('select')
+                    .attr('id', 'SearchParam_' + RuleID + '_' + ParamName)
+                    .attr('name', 'SearchParam_' + RuleID + '_' + ParamName)
+                    .end()
+                    .find('#SearchParamError')
+                    .attr('id', 'SearchParam_' + RuleID + '_' + ParamName + 'Error')
+                    .end()
+                    .find('input')
+                    .remove();
+            }
 
-                .appendTo($SearchParamContainerObj);
+            // Input field and error message
+            else {
+                $SearchParamObj
+                    .find('input')
+                    .attr('id', 'SearchParam_' + RuleID + '_' + ParamName)
+                    .attr('name', 'SearchParam_' + RuleID + '_' + ParamName)
+                    .end()
+                    .find('#SearchParamError')
+                    .attr('id', 'SearchParam_' + RuleID + '_' + ParamName + 'Error')
+                    .end()
+                    .find('select')
+                    .remove();
+            }
 
-                $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
-                    $SearchParamObj.remove();
-                    $ParamObj.find('option[value="' + ParamName + '"]')
-                        .prop('disabled', false)
-                        .end()
-                        .val($ParamObj.find('option:enabled').first().attr('value'))
-                        .trigger('redraw.InputField');
+            $SearchParamObj.appendTo($SearchParamContainerObj);
+            Core.UI.InputFields.Activate($SearchParamContainerObj);
 
-                    return false;
-                });
+            $RemoveParamObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function () {
+                $SearchParamObj.remove();
+                $ParamObj.find('option[value="' + ParamName + '"]')
+                    .prop('disabled', false)
+                    .end()
+                    .val($ParamObj.find('option:enabled').first().attr('value'))
+                    .trigger('redraw.InputField');
+
+                return false;
+            });
 
             return false;
         });
