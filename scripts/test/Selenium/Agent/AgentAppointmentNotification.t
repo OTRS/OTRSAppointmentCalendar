@@ -109,9 +109,9 @@ $Selenium->RunTest(
         }
         $DataDate .= "$DateInfo[4]-01";
 
-        # ---------------------
+        #
         # Pre-Defined Templates
-        # ---------------------
+        #
 
         # define appointment test with pre-defined notification templates
         my @TemplateCreateTests = (
@@ -376,9 +376,9 @@ $Selenium->RunTest(
             );
         }
 
-        # -------------------------
+        #
         # Custom Relative Templates
-        # -------------------------
+        #
 
         # define appointment test with custom notification templates
         my @TemplateCustomRelativeCreateTests = (
@@ -642,9 +642,9 @@ $Selenium->RunTest(
             );
         }
 
-        # -------------------------
+        #
         # Custom DateTime Templates
-        # -------------------------
+        #
 
         # define appointment test with custom notification templates
         my @TemplateCustomDateTimeCreateTests = (

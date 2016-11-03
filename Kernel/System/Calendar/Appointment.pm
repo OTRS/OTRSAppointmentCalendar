@@ -1969,18 +1969,18 @@ sub _AppointmentNotificationPrepare {
     # get a local calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
-    # --------------
+    #
     # template Start
-    # --------------
+    #
     if ( $Param{Data}->{NotificationTemplate} eq 'Start' ) {
 
         # setup the appointment start date as notification date
         $Param{Data}->{NotificationDate} = $Param{Data}->{StartTime};
     }
 
-    # --------------------------
+    #
     # template time before start
-    # --------------------------
+    #
     elsif (
         $Param{Data}->{NotificationTemplate} ne 'Custom'
         && IsNumber( $Param{Data}->{NotificationTemplate} )
@@ -2004,9 +2004,9 @@ sub _AppointmentNotificationPrepare {
         );
     }
 
-    # ---------------
+    #
     # template Custom
-    # ---------------
+    #
     else {
 
         # Compute date of custom relative input.
