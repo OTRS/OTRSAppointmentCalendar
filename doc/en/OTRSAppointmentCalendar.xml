@@ -196,7 +196,8 @@
         <para>This third party software is required to use this package:</para>
         <para>
             <itemizedlist>
-                <listitem><para>None.</para></listitem>
+                <listitem><para>DateTime v0.52+ Perl library (often in the <literal>libdatetime-perl</literal> package)</para></listitem>
+                <listitem><para>DateTime::TimeZone v1.08+ Perl library (often in the <literal>libdatetime-timezone-perl</literal> package)</para></listitem>
             </itemizedlist>
         </para>
     </section>

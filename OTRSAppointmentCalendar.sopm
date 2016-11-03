@@ -3,8 +3,8 @@
     <Name>OTRSAppointmentCalendar</Name>
     <Version>0.0.0</Version>
     <Framework Minimum="5.0.14">5.0.x</Framework>
-    <ModuleRequired>DateTime</ModuleRequired>
-    <ModuleRequired>DateTime::TimeZone</ModuleRequired>
+    <ModuleRequired Version="0.52">DateTime</ModuleRequired>
+    <ModuleRequired Version="1.08">DateTime::TimeZone</ModuleRequired>
     <Vendor>OTRS AG</Vendor>
     <URL>http://otrs.org/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
@@ -141,8 +141,14 @@
         <strong>ATTENTION</strong>
         <br/>
         <br/>
-        Minimum framework version for this package is <strong><u>5.0.14</u></strong>. Please make sure you have updated the framework before installing this package!
-        </ul>
+        Minimum framework version for this package is <strong><u>5.0.14</u></strong>. Please make sure you have updated the framework before installing this package!<br/>
+        <br/>
+        <br/>
+        <strong>REQUIRED PERL MODULES</strong>
+        <br/>
+        <br/>
+        DateTime v0.52+<br/>
+        DateTime::TimeZone v1.08+<br/>
         <br/>
         <br/>
         ((enjoy))<br/>
@@ -161,9 +167,14 @@
         <strong>ATTENTION</strong>
         <br/>
         <br/>
-        Die minimale OTRS Frameworkversion für dieses Paket ist <strong><u>5.0.14</u></strong>.
-        Bitte stellen Sie sicher, dass Sie das Framework vor der Installation dieses Pakets aktualisiert haben!
-        </ul>
+        Die minimale OTRS Frameworkversion für dieses Paket ist <strong><u>5.0.14</u></strong>. Bitte stellen Sie sicher, dass Sie das Framework vor der Installation dieses Pakets aktualisiert haben!<br/>
+        <br/>
+        <br/>
+        <strong>BENÖTIGTEN PERLMODULE</strong>
+        <br/>
+        <br/>
+        DateTime v0.52+<br/>
+        DateTime::TimeZone v1.08+<br/>
         <br/>
         <br/>
         ((enjoy))<br/>
@@ -182,8 +193,14 @@
         <strong>FIGYELEM</strong>
         <br/>
         <br/>
-        A legkisebb keretrendszer-verzió ehhez a csomaghoz az <strong><u>5.0.14</u></strong>. Győződjön meg arról, hogy frissítette-e a keretrendszert ezen csomag telepítése előtt!
-        </ul>
+        A legkisebb keretrendszer-verzió ehhez a csomaghoz az <strong><u>5.0.14</u></strong>. Győződjön meg arról, hogy frissítette-e a keretrendszert ezen csomag telepítése előtt!<br/>
+        <br/>
+        <br/>
+        <strong>SZÜKSÉGES PERL MODUL</strong>
+        <br/>
+        <br/>
+        DateTime v0.52+<br/>
+        DateTime::TimeZone v1.08+<br/>
         <br/>
         <br/>
         ((enjoy))<br/>
@@ -202,8 +219,14 @@
         <strong>УПОЗОРЕЊЕ</strong>
         <br/>
         <br/>
-        Најмања подржана верзија система за овај пакет је <strong><u>5.0.14</u></strong>. Проверите да ли сте освежили ваш систем пре инсталације пакета!
-        </ul>
+        Најмања подржана верзија система за овај пакет је <strong><u>5.0.14</u></strong>. Проверите да ли сте освежили ваш систем пре инсталације пакета!<br/>
+        <br/>
+        <br/>
+        <strong>ОБАВЕЗНИ ПЕРЛ МОДУЛИ</strong>
+        <br/>
+        <br/>
+        DateTime v0.52+<br/>
+        DateTime::TimeZone v1.08+<br/>
         <br/>
         <br/>
         ((enjoy))<br/>
@@ -222,8 +245,14 @@
         <strong>UPOZORENJE</strong>
         <br/>
         <br/>
-        Najmanja podržana verzija sistema za ovaj paket je <strong><u>5.0.14</u></strong>. Proverite da li ste osvežili vaš sistem pre instalacije paketa!
-        </ul>
+        Najmanja podržana verzija sistema za ovaj paket je <strong><u>5.0.14</u></strong>. Proverite da li ste osvežili vaš sistem pre instalacije paketa!<br/>
+        <br/>
+        <br/>
+        <strong>OBAVEZNI PERL MODULI</strong>
+        <br/>
+        <br/>
+        DateTime v0.52+<br/>
+        DateTime::TimeZone v1.08+<br/>
         <br/>
         <br/>
         ((enjoy))<br/>
