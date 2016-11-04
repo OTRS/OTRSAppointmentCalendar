@@ -1024,7 +1024,7 @@ sub TicketAppointmentProcessTicket {
                 $Self->TicketAppointmentDelete(
                     CalendarID => $Calendar->{CalendarID},
                     TicketID   => $Param{TicketID},
-                    RuleID     => $Param{RuleID},
+                    RuleID     => $TicketAppointments->{RuleID},
                 );
             }
         }
@@ -1103,6 +1103,7 @@ sub TicketAppointmentProcessCalendar {
     my %TicketAppointmentTypes = $Self->TicketAppointmentTypesGet();
 
     my @Process;
+    my @Cleanup;
     my %RuleIDLookup;
 
     # Check ticket appointments config.
@@ -1126,6 +1127,12 @@ sub TicketAppointmentProcessCalendar {
                     }
                 }
             }
+
+            # Get previously created ticket appointments for this rule.
+            my %OldAppointments = $Self->_TicketAppointmentList(
+                CalendarID => $Param{CalendarID},
+                RuleID     => $TicketAppointments->{RuleID},
+            );
 
             # Find tickets that match search filter
             my @TicketIDs = $TicketObject->TicketSearch(
@@ -1151,10 +1158,29 @@ sub TicketAppointmentProcessCalendar {
                     Success  => $Success,
                 };
             }
+
+            # Remove previously created ticket appointments if they don't match the rule anymore.
+            OLDTICKETID:
+            for my $OldTicketID ( sort keys %OldAppointments ) {
+                next OLDTICKETID if grep { $OldTicketID == $_ } @TicketIDs;
+
+                my $Success = $Self->TicketAppointmentDelete(
+                    AppointmentID => $OldAppointments{$OldTicketID},
+                    TicketID      => $OldTicketID,
+                    CalendarID    => $Param{CalendarID},
+                    RuleID        => $TicketAppointments->{RuleID},
+                );
+
+                push @Cleanup, {
+                    AppointmentID => $OldAppointments{$OldTicketID},
+                    TicketID      => $OldTicketID,
+                    RuleID        => $TicketAppointments->{RuleID},
+                    Success       => $Success,
+                };
+            }
         }
     }
 
-    my @Cleanup;
     my @RuleIDs = $Self->TicketAppointmentRuleIDsGet(
         CalendarID => $Param{CalendarID},
     );
@@ -1172,6 +1198,13 @@ sub TicketAppointmentProcessCalendar {
                 Success => $Success,
             };
         }
+    }
+
+    if ( $Kernel::OM->Get('Kernel::Config')->Get('Debug') ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'debug',
+            Message  => "Processed ticket appointments for calendar $Param{CalendarID}.",
+        );
     }
 
     return (
@@ -1686,7 +1719,7 @@ sub TicketAppointmentDelete {
     }
 
     my @AppointmentIDs;
-    push @AppointmentIDs, $Param{ApointmentID} if $Param{ApointmentID};
+    push @AppointmentIDs, $Param{AppointmentID} if $Param{AppointmentID};
 
     # get database object
     my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
@@ -1715,7 +1748,7 @@ sub TicketAppointmentDelete {
         );
 
         while ( my @Row = $DBObject->FetchrowArray() ) {
-            push @AppointmentIDs, $Row[0],
+            push @AppointmentIDs, $Row[0];
         }
     }
 
@@ -1990,6 +2023,65 @@ sub _TicketAppointmentGet {
     }
 
     return $AppointmentID;
+}
+
+=item _TicketAppointmentList()
+
+Get list of ticket appointments based on a rule.
+
+    my %Appointments = $CalendarObject->_TicketAppointmentList(
+        CalendarID => 1,
+        RuleID     => '9bb20ea035e7a9930652a9d82d00c725',
+        Key        => 'TicketID',                           # (optional) Return result will be based on this key.
+                                                                         Default: TicketID, Possible: TicketID|AppointmentID
+    );
+
+Returns list of ticket appointments, where key will be either TicketID (default) or AppointmentID:
+
+%Appointments = (
+    1 => 1,
+    2 => 2,
+    ...
+);
+
+=cut
+
+sub _TicketAppointmentList {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw(CalendarID RuleID)) {
+        if ( !$Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    $Param{Key} ||= 'TicketID';
+
+    my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+
+    return if !$DBObject->Prepare(
+        SQL => '
+            SELECT appointment_id, ticket_id
+            FROM calendar_appointment_ticket
+            WHERE calendar_id = ? AND rule_id = ?
+        ',
+        Bind => [ \$Param{CalendarID}, \$Param{RuleID}, ],
+    );
+
+    my %Result;
+    while ( my @Row = $DBObject->FetchrowArray() ) {
+        $Result{ $Row[1] } = $Row[0];
+    }
+
+    if ( $Param{Key} eq 'AppointmentID' ) {
+        %Result = reverse %Result;
+    }
+
+    return %Result;
 }
 
 =item _TicketAppointmentCreate()

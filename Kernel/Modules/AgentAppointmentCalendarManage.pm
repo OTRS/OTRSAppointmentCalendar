@@ -204,7 +204,7 @@ sub Run {
             ObjectName     => 'Kernel::System::Calendar',
             FunctionName   => 'TicketAppointmentProcessCalendar',
             FunctionParams => {
-                CalendarID => $GetParam{CalendarID},
+                CalendarID => $Calendar{CalendarID},
             },
         );
 
