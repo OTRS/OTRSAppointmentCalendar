@@ -186,9 +186,7 @@ JAVASCRIPT
             ),
             "Test NotificationEvent is deleted - $NotifEventRandomID",
         ) || die;
-
-        }
-
+    }
 );
 
 1;
