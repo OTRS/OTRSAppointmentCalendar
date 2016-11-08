@@ -831,13 +831,21 @@ sub _TicketAppointments {
     );
 
     my $SearchParamsConfig =
-        $ConfigObject->Get('AppointmentCalendar::TicketAppointmentSearchParams') // [];
+        $ConfigObject->Get('AppointmentCalendar::TicketAppointmentSearchParam') // {};
 
+    # Translate search parameter labels prior to sorting.
+    for my $ParamName ( sort keys %{$SearchParamsConfig} ) {
+        $SearchParamsConfig->{$ParamName} = $LayoutObject->{LanguageObject}->Translate(
+            $SearchParamsConfig->{$ParamName}
+        );
+    }
+
+    # Sort search parameter list by translated labels.
     my @SearchParams;
-    for my $ParamName ( @{$SearchParamsConfig} ) {
+    for my $ParamName ( sort { $SearchParamsConfig->{$a} cmp $SearchParamsConfig->{$b} } keys %{$SearchParamsConfig} ) {
         push @SearchParams, {
             Key      => $ParamName,
-            Value    => $LayoutObject->{LanguageObject}->Translate($ParamName),
+            Value    => $SearchParamsConfig->{$ParamName},
             Disabled => $Param{SearchParam}->{$ParamName} || 0,
         };
     }

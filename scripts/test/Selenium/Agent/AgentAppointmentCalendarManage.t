@@ -137,7 +137,10 @@ $Selenium->RunTest(
             "return \$('#QueueID_1').val('$QueueID').trigger('redraw.InputField').trigger('change');"
         );
 
-        # add search parameter
+        # Add title as search parameter.
+        $Selenium->execute_script(
+            "return \$('#SearchParams').val('Title').trigger('redraw.InputField').trigger('change');"
+        );
         $Selenium->find_element( '.AddButton',           'css' )->VerifiedClick();
         $Selenium->find_element( '#SearchParam_1_Title', 'css' )->send_keys('Test*');
 

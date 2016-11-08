@@ -154,7 +154,7 @@ Core.Agent.AppointmentCalendar.Manage = (function (TargetNS) {
                 .find('label')
                 .attr('for', 'SearchParam_' + RuleID + '_' + ParamName)
                 .find('span')
-                .after(' ' + ParamName + ':');
+                .after(' ' + $ParamObj.find('option[value="' + ParamName + '"]').text() + ':');
 
             // OwnerIDs and ResponsibleIDs are multi-select fields.
             if (ParamName === 'OwnerIDs' || ParamName === 'ResponsibleIDs') {

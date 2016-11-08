@@ -366,31 +366,31 @@
             </Hash>
         </Setting>
     </ConfigItem>
-    <ConfigItem Name="AppointmentCalendar::TicketAppointmentSearchParams" Required="0" Valid="1">
+    <ConfigItem Name="AppointmentCalendar::TicketAppointmentSearchParam" Required="0" Valid="1">
         <Description Translatable="1">Defines the list of params that can be passed to ticket search function.</Description>
         <Group>OTRSAppointmentCalendar</Group>
         <SubGroup>Core::AppointmentCalendar::TicketAppointments</SubGroup>
         <Setting>
-            <Array>
-                <Item>Title</Item>
-                <Item>Types</Item>
-                <Item>States</Item>
-                <Item>StateType</Item>
-                <Item>Priorities</Item>
-                <Item>Services</Item>
-                <Item>SLAs</Item>
-                <Item>Locks</Item>
-                <Item>OwnerIDs</Item>
-                <Item>ResponsibleIDs</Item>
-                <Item>CustomerID</Item>
-                <Item>CustomerUserLogin</Item>
-                <Item>From</Item>
-                <Item>To</Item>
-                <Item>Cc</Item>
-                <Item>Subject</Item>
-                <Item>Body</Item>
-                <Item>AttachmentName</Item>
-            </Array>
+            <Hash>
+                <Item Key="Title" Translatable="1">Title</Item>
+                <Item Key="Types" Translatable="1">Type</Item>
+                <Item Key="States" Translatable="1">State</Item>
+                <Item Key="StateType" Translatable="1">State type</Item>
+                <Item Key="Priorities" Translatable="1">Priority</Item>
+                <Item Key="Services" Translatable="1">Service</Item>
+                <Item Key="SLAs" Translatable="1">SLA</Item>
+                <Item Key="Locks" Translatable="1">Lock state</Item>
+                <Item Key="OwnerIDs" Translatable="1">Owner</Item>
+                <Item Key="ResponsibleIDs" Translatable="1">Responsible</Item>
+                <Item Key="CustomerID" Translatable="1">CustomerID</Item>
+                <Item Key="CustomerUserLogin" Translatable="1">Customer user</Item>
+                <Item Key="From" Translatable="1">From</Item>
+                <Item Key="To" Translatable="1">To</Item>
+                <Item Key="Cc" Translatable="1">Cc</Item>
+                <Item Key="Subject" Translatable="1">Subject</Item>
+                <Item Key="Body" Translatable="1">Body</Item>
+                <Item Key="AttachmentName" Translatable="1">Attachment Name</Item>
+            </Hash>
         </Setting>
     </ConfigItem>
 

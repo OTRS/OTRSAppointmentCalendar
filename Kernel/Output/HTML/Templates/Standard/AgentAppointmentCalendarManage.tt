@@ -333,7 +333,7 @@
                             <div class="Field SpacingTopSmall">
                                 <label for="SearchParam_[% Data.RuleID | html %]_[% Data.ParamName | html %]" class="Mandatory">
                                     <span class="Marker">*</span>
-                                    [% Data.ParamName | html %]:
+                                    [% Translate(Config("AppointmentCalendar::TicketAppointmentSearchParam").${Data.ParamName}) | html %]:
                                 </label>
                                 [% IF Data.ParamStrg %]
                                 [% Data.ParamStrg %]
