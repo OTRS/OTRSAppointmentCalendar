@@ -493,6 +493,71 @@ sub WeekDetailsGet {
     return ( $DayOfWeek, $Time->week() );
 }
 
+=item CWDiff()
+
+returns how many calendar weeks has been passed between two unix times.
+
+    my $CWDiff = $CalendarHelperObject->CWDiff(
+        SystemTime   => '1462880778',
+        OriginalTime => '1462980778',
+    );
+
+returns:
+    $CWDiff = 5;
+=cut
+
+sub CWDiff {
+    my ( $Self, %Param ) = @_;
+
+    for my $Needed (qw( SystemTime OriginalTime )) {
+        if ( !defined $Param{$Needed} ) {
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
+                Priority => 'error',
+                Message  => "Need $Needed!",
+            );
+            return;
+        }
+    }
+
+    my $StartTime = localtime( $Param{OriginalTime} );
+    my $EndTime   = localtime( $Param{SystemTime} );
+
+    my $StartYear = $StartTime->year();
+    my $EndYear   = $EndTime->year();
+
+    my $Result = $EndTime->week() - $StartTime->week();
+    if ( $Result < 0 && $EndTime->mday() == 31 && $EndTime->mon() == 12 ) {
+
+        # If date is end of the year and date CW starts with 1, we need to include additional year.
+        $EndYear++;
+    }
+
+    for my $Year ( $StartYear .. $EndYear - 1 ) {
+
+        my $CW  = 0;
+        my $Day = 31;
+
+        while ( $CW < 50 ) {
+
+            # To get how many CW's are in this year, we set temporary date to 31-dec.
+            my $Timestamp  = "$Year-12-$Day 23:59:00";
+            my $SystemTime = $Self->SystemTimeGet(
+                String => $Timestamp,
+            );
+
+            my $Time = localtime($SystemTime);
+
+            $CW = $Time->week();
+            $Day--;
+        }
+
+        $Result += $CW;
+
+    }
+
+    return $Result;
+}
+
 1;
 
 =back

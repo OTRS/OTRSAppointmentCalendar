@@ -176,7 +176,7 @@ sub AppointmentCreate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -1169,7 +1169,7 @@ sub AppointmentUpdate {
 
         if (
             (
-                $Param{RecurrenceType} eq 'CustomWeekly'
+                $Param{RecurrenceType}    eq 'CustomWeekly'
                 || $Param{RecurrenceType} eq 'CustomMonthly'
                 || $Param{RecurrenceType} eq 'CustomYearly'
             )
@@ -2552,12 +2552,20 @@ sub _CalculateRecurrenceTime {
 
             my ( $WeekDay, $CW );
 
+            my %DiffParameters = (
+                SystemTime   => $SystemTime,
+                OriginalTime => $Param{OriginalTime},
+            );
+
             if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
 
                 # in all day appointment, end time is usually midnight of the next day, so we need to check for 23:59:59
                 ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
                     SystemTime => $SystemTime - 1,
                 );
+
+                $DiffParameters{SystemTime}--;
+                $DiffParameters{OriginalTime}--;
             }
             else {
                 ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
@@ -2565,8 +2573,11 @@ sub _CalculateRecurrenceTime {
                 );
             }
 
-            # next day if this week should be skipped
-            next LOOP if ( $CW - $OriginalCW ) % $Param{Appointment}->{RecurrenceInterval};
+            my $CWDiff = $CalendarHelperObject->CWDiff(
+                %DiffParameters,
+            );
+
+            next LOOP if $CWDiff % $Param{Appointment}->{RecurrenceInterval};
 
             # check if SystemTime match requirements
             if ( grep { $WeekDay == $_ } @{ $Param{Appointment}->{RecurrenceFrequency} } ) {
