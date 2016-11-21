@@ -2204,14 +2204,8 @@ sub _AppointmentRecurringCreate {
                 OriginalTime => $OriginalStartTime,
                 CurrentTime  => $StartTimeSystem,
             );
-            $EndTimeSystem = $Self->_CalculateRecurrenceTime(
-                Appointment   => $Param{Appointment},
-                Step          => $Step,
-                OriginalTime  => $OriginalEndTime,
-                CurrentTime   => $EndTimeSystem,
-                IsEndTime     => 1,
-                LastStartTime => $StartTimeSystem,
-            );
+
+            $EndTimeSystem = $StartTimeSystem + $OriginalEndTime - $OriginalStartTime;
 
             last UNTIL_TIME if !$StartTimeSystem;
             last UNTIL_TIME if $StartTimeSystem > $RecurrenceUntilSystem;
@@ -2260,14 +2254,8 @@ sub _AppointmentRecurringCreate {
                 OriginalTime => $OriginalStartTime,
                 CurrentTime  => $StartTimeSystem,
             );
-            $EndTimeSystem = $Self->_CalculateRecurrenceTime(
-                Appointment   => $Param{Appointment},
-                Step          => $Step,
-                OriginalTime  => $OriginalEndTime,
-                CurrentTime   => $EndTimeSystem,
-                IsEndTime     => 1,
-                LastStartTime => $StartTimeSystem,
-            );
+
+            $EndTimeSystem = $StartTimeSystem + $OriginalEndTime - $OriginalStartTime;
 
             last COUNT if !$StartTimeSystem;
 
@@ -2494,32 +2482,6 @@ sub _CalculateRecurrenceTime {
             Time   => $Param{OriginalTime},
             Months => $Param{Step},
         );
-
-        if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
-
-            # Get Original StartTime
-            my $StartTimeSystem = $CalendarHelperObject->SystemTimeGet(
-                String => $Param{Appointment}->{StartTime},
-            );
-
-            # Get Original EndTime
-            my $EndTimeSystem = $CalendarHelperObject->SystemTimeGet(
-                String => $Param{Appointment}->{EndTime},
-            );
-
-            # Calculate delta (EndTime-StartTime)
-            my $OriginalDelta = $EndTimeSystem - $StartTimeSystem;
-
-            # Calculate current delta
-            my $CurrentDelta = $SystemTime - $Param{LastStartTime};
-
-            # Compare
-            while ( $CurrentDelta > $OriginalDelta + 23 * 3600 ) {
-                $SystemTime -= 24 * 3600;
-
-                $CurrentDelta = $SystemTime - $Param{LastStartTime};
-            }
-        }
     }
     elsif ( $Param{Appointment}->{RecurrenceType} eq 'Yearly' ) {
 
@@ -2557,21 +2519,9 @@ sub _CalculateRecurrenceTime {
                 OriginalTime => $Param{OriginalTime},
             );
 
-            if ( $Param{IsEndTime} && $Param{Appointment}->{AllDay} ) {
-
-                # in all day appointment, end time is usually midnight of the next day, so we need to check for 23:59:59
-                ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
-                    SystemTime => $SystemTime - 1,
-                );
-
-                $DiffParameters{SystemTime}--;
-                $DiffParameters{OriginalTime}--;
-            }
-            else {
-                ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
-                    SystemTime => $SystemTime,
-                );
-            }
+            ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
+                SystemTime => $SystemTime,
+            );
 
             my $CWDiff = $CalendarHelperObject->CWDiff(
                 %DiffParameters,
@@ -2607,16 +2557,10 @@ sub _CalculateRecurrenceTime {
             $SystemTime += 24 * 60 * 60;
 
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay );
-            if ( $Param{IsEndTime} ) {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
-                    SystemTime => $SystemTime - 1,
-                );
-            }
-            else {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
-                    SystemTime => $SystemTime,
-                );
-            }
+
+            ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime,
+            );
 
             # Skip month if needed
             next DAY if ( $Month - $OriginalMonth ) % $Param{Appointment}->{RecurrenceInterval};
@@ -2671,16 +2615,9 @@ sub _CalculateRecurrenceTime {
 
             my ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay );
 
-            if ( $Param{IsEndTime} ) {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
-                    SystemTime => $SystemTime - 1,
-                );
-            }
-            else {
-                ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
-                    SystemTime => $SystemTime,
-                );
-            }
+            ( $Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay ) = $CalendarHelperObject->DateGet(
+                SystemTime => $SystemTime,
+            );
 
             # check if year is OK
             next MONTH if ( $Year - $OriginalYear ) % $Param{Appointment}->{RecurrenceInterval};
