@@ -1135,7 +1135,7 @@ for my $Test (@Tests) {
         Success => 1,
     },
     {
-        Name   => 'Recurring - On Thuesday and Friday, recurring every fiwe weeks.',
+        Name   => 'Recurring - On Tuesday and Friday, recurring every five weeks.',
         Config => {
             CalendarID          => $Calendar{CalendarID},
             Title               => 'Custom weekly recurring appointment',
@@ -1145,7 +1145,7 @@ for my $Test (@Tests) {
             Recurring           => 1,
             RecurrenceType      => 'CustomWeekly',
             RecurrenceInterval  => 5,                                       # each 5th week
-            RecurrenceFrequency => [ 2, 5 ],                                # Thuesday and Friday
+            RecurrenceFrequency => [ 2, 5 ],                                # Tuesday and Friday
             RecurrenceUntil     => '2021-12-31 23:59:00',
             UserID              => $UserID,
         },
