@@ -16,7 +16,7 @@
                 <h2>[% Translate("Actions") | html %]</h2>
             </div>
             <div class="Content">
-
+[% IF Data.ModulePermissions.AgentAppointmentCalendarManage %]
                 <ul class="ActionList">
                     <li>
                         <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
@@ -24,6 +24,7 @@
                         </a>
                     </li>
                 </ul>
+[% END %]
             </div>
         </div>
         <div class="WidgetSimple">

@@ -20,11 +20,13 @@
 
                 <ul class="ActionList">
 [% IF Env("Subaction") == "Overview" %]
+[% IF Data.ModulePermissions.AgentAppointmentCalendarOverview %]
                     <li>
                         <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
                             <span><i class="fa fa-caret-left"></i>[% Translate("Go back") | html %]</span>
                         </a>
                     </li>
+[% END %]
 [% ELSIF Env("Subaction") != "" %]
                     <li>
                         <a id="Back" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage" class="CallForAction Fullsize Center" title="[% Translate("Go back") | html %]">
@@ -32,11 +34,13 @@
                         </a>
                     </li>
 [% ELSE %]
+[% IF Data.ModulePermissions.AgentAppointmentCalendarOverview %]
                     <li>
                         <a id="Overview" href="[% Env("Baselink") %]Action=AgentAppointmentCalendarOverview" class="CallForAction Fullsize Center" title="[% Translate("Calendar Overview") | html %]">
                             <span><i class="fa fa-calendar"></i>[% Translate("Calendar Overview") | html %]</span>
                         </a>
                     </li>
+[% END %]
 [% END %]
 [% RenderBlockStart("MainActions") %]
                     <li>
@@ -44,6 +48,7 @@
                             <span><i class="fa fa-plus-square"></i>[% Translate("Add Calendar") | html %]</span>
                         </a>
                     </li>
+[% IF Data.ModulePermissions.AgentAppointmentImport %]
                     <li>
 [% IF Data.ValidCount %]
                         <a id="ImportAppointments" href="[% Env("Baselink") %]Action=AgentAppointmentImport" class="CallForAction Fullsize Center" title="[% Translate("Import Appointments") | html %]">
@@ -53,6 +58,7 @@
                             <span><i class="fa fa-upload"></i>[% Translate("Import Appointments") | html %]</span>
                         </a>
                     </li>
+[% END %]
 [% RenderBlockEnd("MainActions") %]
                 </ul>
             </div>

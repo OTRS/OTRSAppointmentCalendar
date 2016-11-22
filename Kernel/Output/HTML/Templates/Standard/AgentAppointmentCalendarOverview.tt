@@ -16,11 +16,13 @@
             </div>
             <div class="Content">
                 <ul class="ActionList">
+[% IF Data.ModulePermissions.AgentAppointmentCalendarManage %]
                     <li>
                         <a href="[% Env("CGIHandle") %]?Action=AgentAppointmentCalendarManage;Subaction=Overview" class="CallForAction Fullsize Center">
                             <span><i class="fa fa-calendar-o"></i>[% Translate("Manage Calendars") | html %]</span>
                         </a>
                     </li>
+[% END %]
 [% RenderBlockStart("AppointmentCreateButton") %]
                     <li>
                         <a id="AppointmentCreateButton" href="#" class="CallForAction Fullsize Center" title="[% Translate("Add new Appointment") | html %]">

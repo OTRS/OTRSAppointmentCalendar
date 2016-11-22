@@ -82,6 +82,27 @@ sub Run {
         };
     }
 
+    # Get user's permissions to associated modules which are displayed as links.
+    for my $Module (qw(AgentAppointmentCalendarManage)) {
+        my $ModuleGroups = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Module')
+            ->{$Module}->{Group} // [];
+
+        if ( IsArrayRefWithData($ModuleGroups) ) {
+            MODULE_GROUP:
+            for my $ModuleGroup ( @{$ModuleGroups} ) {
+                if ( $LayoutObject->{"UserIsGroup[$ModuleGroup]"} ) {
+                    $Param{ModulePermissions}->{$Module} = 1;
+                    last MODULE_GROUP;
+                }
+            }
+        }
+
+        # Always allow links if no groups are specified.
+        else {
+            $Param{ModulePermissions}->{$Module} = 1;
+        }
+    }
+
     # get calendar helper object
     my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 

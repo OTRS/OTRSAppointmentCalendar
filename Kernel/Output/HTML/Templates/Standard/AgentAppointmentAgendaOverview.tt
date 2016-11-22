@@ -32,9 +32,11 @@
             </div>
             <div class="ActionRow">
                 <div class="Buttons HeaderLeft">
+[% IF Data.ModulePermissions.AgentAppointmentCalendarManage %]
                     <a href="[% Env("Baselink") %]Action=AgentAppointmentCalendarManage;Subaction=Overview" class="CallForAction Inline">
                         <span><i class="fa fa-calendar-o"></i> [% Translate("Manage Calendars") | html %]</span>
                     </a>
+[% END %]
 [% RenderBlockStart("AppointmentCreateButton") %]
                     <a id="AppointmentCreateButton" href="#" class="CallForAction Inline">
                         <span><i class="fa fa-plus-square"></i> [% Translate("Add Appointment") | html %]</span>

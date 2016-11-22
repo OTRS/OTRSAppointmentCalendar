@@ -12,6 +12,7 @@ use strict;
 use warnings;
 
 use Kernel::Language qw(Translatable);
+use Kernel::System::VariableCheck qw(:all);
 
 our $ObjectManagerDisabled = 1;
 
@@ -162,6 +163,27 @@ sub _Overview {
     my ( $Self, %Param ) = @_;
 
     my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+
+    # Get user's permissions to associated modules which are displayed as links.
+    for my $Module (qw(AgentAppointmentCalendarManage)) {
+        my $ModuleGroups = $Kernel::OM->Get('Kernel::Config')->Get('Frontend::Module')
+            ->{$Module}->{Group} // [];
+
+        if ( IsArrayRefWithData($ModuleGroups) ) {
+            MODULE_GROUP:
+            for my $ModuleGroup ( @{$ModuleGroups} ) {
+                if ( $LayoutObject->{"UserIsGroup[$ModuleGroup]"} ) {
+                    $Param{ModulePermissions}->{$Module} = 1;
+                    last MODULE_GROUP;
+                }
+            }
+        }
+
+        # Always allow links if no groups are specified.
+        else {
+            $Param{ModulePermissions}->{$Module} = 1;
+        }
+    }
 
     $Param{Title} = $LayoutObject->{LanguageObject}->Translate("Import Appointments");
     $Param{CalendarIDInvalid} //= '';
