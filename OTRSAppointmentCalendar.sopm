@@ -451,10 +451,10 @@
     </DatabaseInstall>
     <DatabaseUpgrade Type="post">
         <TableAlter Name="calendar" Version="5.0.2">
-            <UniqueDrop Name="calendar_id"/>
+            <UniqueDrop Name="calendar_id" />
         </TableAlter>
         <TableAlter Name="calendar_appointment" Version="5.0.2">
-            <UniqueDrop Name="calendar_appointment_id"/>
+            <UniqueDrop Name="calendar_appointment_id" />
         </TableAlter>
     </DatabaseUpgrade>
     <DatabaseUninstall Type="pre">
