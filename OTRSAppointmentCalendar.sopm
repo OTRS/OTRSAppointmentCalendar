@@ -358,9 +358,6 @@
             <Column Name="create_by" Required="true" Type="INTEGER" />
             <Column Name="change_time" Required="true" Type="DATE" />
             <Column Name="change_by" Required="true" Type="INTEGER" />
-            <Unique Name="calendar_id">
-                <UniqueColumn Name="id" />
-            </Unique>
             <Unique Name="calendar_name">
                 <UniqueColumn Name="name" />
             </Unique>
@@ -408,9 +405,6 @@
             <Column Name="create_by" Type="INTEGER" />
             <Column Name="change_time" Type="DATE" />
             <Column Name="change_by" Type="INTEGER" />
-            <Unique Name="calendar_appointment_id">
-                <UniqueColumn Name="id" />
-            </Unique>
             <ForeignKey ForeignTable="calendar">
                 <Reference Local="calendar_id" Foreign="id" />
             </ForeignKey>
