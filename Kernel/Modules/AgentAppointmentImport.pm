@@ -140,8 +140,8 @@ sub Run {
 
         if ( !$Count ) {
             return $LayoutObject->FatalError(
-                Message =>
-                    $LayoutObject->{LanguageObject}->Translate('System was unable to import file!'),
+                Message => Translatable('System was unable to import file!'),
+                Comment => Translatable('Please check the log for more information.'),
             );
         }
 

@@ -130,6 +130,17 @@ sub Import {
 
     my $Calendar = Data::ICal->new( data => $Param{ICal} );
 
+    # If external library encountered an error while parsing the ICS file, log the received message
+    #   at this time and return.
+    if ( $Calendar->{errno} ) {
+        my $ErrorMessage = $Calendar->{error_message} // '';
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "[Data::ICal] $ErrorMessage",
+        );
+        return;
+    }
+
     my @Entries              = @{ $Calendar->entries() };
     my $AppointmentsImported = 0;
     my %ICalTimeZones;
@@ -335,6 +346,12 @@ sub Import {
             $Parameters{EndTime} = $CalendarHelperObject->TimestampGet(
                 SystemTime => $EndTime,
             );
+        }
+
+        # Some iCalendar implementations (looking at you icalendar-ruby) do not require nor include
+        #   end time for appointments. In this case, prevent failing and use start time instead.
+        else {
+            $Parameters{EndTime} = $Parameters{StartTime};
         }
 
         # get location
