@@ -1,4 +1,5 @@
 #5.0.2 2016-??-??
+ - 2016-12-14 Fixed bug#[12485](https://bugs.otrs.org/show_bug.cgi?id=12485) - Wrong time offset in Appointment Calendar.
  - 2016-12-05 Fixed bug#[12436](https://bugs.otrs.org/show_bug.cgi?id=12436) - OTRSCloneDB error on oracle.
  - 2016-11-22 Fixed bug#[12444](https://bugs.otrs.org/show_bug.cgi?id=12444) - Permission delete the menu but not in the calendar overview.
  - 2016-11-18 Fixed bug#[12404](https://bugs.otrs.org/show_bug.cgi?id=12404) - Custom Weekly Recurring Event Bug - Missing appointments after new year.

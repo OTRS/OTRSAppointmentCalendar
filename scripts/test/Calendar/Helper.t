@@ -449,6 +449,14 @@ for my $Test (@Tests) {
         Result  => 5.75,
         Success => 1,
     },
+    {
+        Name   => 'Outlook export (non-standard format)',    # bug#12485
+        Config => {
+            TimezoneID => '(UTC-02:30) Newfoundland Standard Time (NST)',
+        },
+        Result  => -2.5,
+        Success => 1,
+    },
 );
 
 for my $Test (@Tests) {

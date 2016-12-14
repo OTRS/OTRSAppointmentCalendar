@@ -417,6 +417,15 @@ sub TimezoneOffsetGet {
         return $Timezone->offset_for_datetime($DateTime) / 3600.00;    # in hours
     }
 
+    # Last resort detection of timezone offset from the supplied TimezoneID,
+    #   i.e. (UTC+01:00) Belgrád, Budapest, Ljubljana, Pozsony, Prága
+    #   Please see bug#12485 for more information.
+    if ( $Param{TimezoneID} =~ /([+-]?)([0-9]+):([0-9]+)/ ) {
+        my $Sign  = int "${1}1";
+        my $Hours = $2 + $3 / 60.00;
+        return $Sign * $Hours;
+    }
+
     $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'error',
         Message  => "Could not find offset for '$Param{TimezoneID}', assuming UTC!",
