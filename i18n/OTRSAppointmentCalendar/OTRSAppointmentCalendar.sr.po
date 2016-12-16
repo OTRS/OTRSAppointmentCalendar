@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-24 11:06+0000\n"
+"POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Dusan Vuckovic <dusan@dvuckovic.com>, 2016\n"
 "Language-Team: Serbian (https://www.transifex.com/otrs/teams/23435/sr/)\n"
@@ -14,6 +14,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sr\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr "Обавештење подсетника о термину"
+
+#. Template: AAANotification
+msgid ""
+"You will receive a notification each time a reminder time is reached for one"
+" of your appointments."
+msgstr ""
+"Добићете обавештење сваки пут кадa дође до времена подсетника за неки од "
+"ваших термина."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
@@ -442,10 +454,6 @@ msgid "System was unable to create Calendar!"
 msgstr "Систем није успео да креира календар!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
-msgid "Please contact the administrator."
-msgstr "Молимо контактирајте администратора!"
-
-#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
 msgstr "Нема CalendarID!"
 
@@ -644,6 +652,10 @@ msgstr "Без дозволе"
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
 msgstr "Систем није успео да увезе фајл!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "Please check the log for more information."
+msgstr "Молимо проверите лог за више информација."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-24 11:06+0000\n"
+"POT-Creation-Date: 2016-11-03 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: 汇民 王 <whuim@163.com>, 2016\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/otrs/teams/23435/zh_CN/)\n"
@@ -14,27 +14,37 @@ msgstr ""
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr "预约提醒通知。"
+
+#. Template: AAANotification
+msgid ""
+"You will receive a notification each time a reminder time is reached for one"
+" of your appointments."
+msgstr "每当你的一个预约到达提醒时间时，你就会收到一个通知。"
+
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
-msgstr ""
+msgstr "预约通知管理"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
 "Here you can upload a configuration file to import appointment notifications"
 " to your system. The file needs to be in .yml format as exported by the "
 "appointment notification module."
-msgstr ""
+msgstr "在这里你可以上传一个配置文件以便导入预约通知，必须是与预约通知模块导出的文件一样的.yml格式。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
 "Here you can choose which events will trigger this notification. An "
 "additional appointment filter can be applied below to only send for "
 "appointments with certain criteria."
-msgstr ""
+msgstr "在这里你可以选择哪个事件将会触发这个通知，下面的预约过滤器可以选择符合特定条件的预约。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Filter"
-msgstr ""
+msgstr "过滤预约"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Team"
@@ -48,23 +58,23 @@ msgstr "资源"
 msgid ""
 "Notify user just once per day about a single appointment using a selected "
 "transport."
-msgstr ""
+msgstr "每个预约的通知使用选择的方式一天只发送一次。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Notifications are sent to an agent."
-msgstr ""
+msgstr "发送给服务人员的通知。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the first 20 character of the appointment title."
-msgstr ""
+msgstr "获取预约的前20个字符。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the appointment attribute"
-msgstr ""
+msgstr "获取预约的属性"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the calendar attribute"
-msgstr ""
+msgstr "获取日历的属性"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Agenda Overview"
@@ -318,7 +328,7 @@ msgstr "请设置这个值为开始日期之后。"
 
 #. Template: AgentAppointmentEdit
 msgid "This an occurrence of a repeating appointment."
-msgstr ""
+msgstr "这是一个重复预约的一次时间。"
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to see the parent appointment."
@@ -392,20 +402,20 @@ msgstr "5天"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Notification name already exists!"
-msgstr ""
+msgstr "这个通知的名字已存在!"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Agent (resources), who are selected within the appointment"
-msgstr ""
+msgstr "这个预约选择的服务人员（资源）。"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid ""
 "All agents with (at least) read permission for the appointment (calendar)"
-msgstr ""
+msgstr "所有对这个预约（日历）至少有读权限的服务人员。"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "All agents with write permission for the appointment (calendar)"
-msgstr ""
+msgstr "所有对这个预约（日历）有写权限的服务人员。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "System was unable to create Calendar!"
@@ -433,11 +443,11 @@ msgstr "更新日历出错！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Couldn't read calendar configuration file."
-msgstr ""
+msgstr "不能读取日历的配置文件。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Please make sure your file is valid."
-msgstr ""
+msgstr "请确保你的文件是有效的。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not import the calendar!"
@@ -621,7 +631,7 @@ msgstr "多于+%d"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No %s!"
-msgstr ""
+msgstr "没有%s!"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No such user!"
@@ -649,7 +659,7 @@ msgstr "预约日历概览页面。"
 
 #. SysConfig
 msgid "Appointment Notifications"
-msgstr ""
+msgstr "预约通知"
 
 #. SysConfig
 msgid ""
@@ -677,7 +687,7 @@ msgstr "预约列表。"
 
 #. SysConfig
 msgid "Appointment notifications"
-msgstr ""
+msgstr "预约通知"
 
 #. SysConfig
 msgid "Appointments"
@@ -691,7 +701,7 @@ msgstr "日历管理窗口。"
 msgid ""
 "Choose for which kind of appointment changes you want to receive "
 "notifications."
-msgstr ""
+msgstr "选择你需要接收哪些预约变动通知消息。"
 
 #. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
@@ -699,7 +709,7 @@ msgstr "创建一个新的日历预约到这个工单。"
 
 #. SysConfig
 msgid "Create and manage appointment notifications."
-msgstr ""
+msgstr "创建和管理预约通知."
 
 #. SysConfig
 msgid "Create new appointment."
@@ -711,6 +721,8 @@ msgid ""
 "(LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = "
 "Available, 2 = Enabled by default."
 msgstr ""
+"定义链接的预约小部件(LinkObject::ViewMode = \"complex\")要显示的列。可用的设置值为：0 = 禁用，1 = 可用， 2"
+" = 默认启用。"
 
 #. SysConfig
 msgid ""
@@ -722,7 +734,7 @@ msgstr "定义一个图标，链接预约编辑窗口中的当前位置到谷歌
 msgid ""
 "Defines the event object types that will be handled via "
 "AdminAppointmentNotificationEvent."
-msgstr ""
+msgstr "定义事件对象类型，以便通过AdminAppointmentNotificationEvent（管理预约通知事件）处理。"
 
 #. SysConfig
 msgid ""
@@ -774,7 +786,7 @@ msgstr "列出要在图形界面显示的所有预约事件。"
 
 #. SysConfig
 msgid "List of all calendar events to be displayed in the GUI."
-msgstr ""
+msgstr "图形界面显示的所有日历事件列表。"
 
 #. SysConfig
 msgid ""
@@ -801,6 +813,7 @@ msgid ""
 "such Appointments. Instead, system creates all Appointments in the past, "
 "plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
+"OTRS不支持对没有结束日期或没有重复次数的预约做循环处理。在导入过程中，可能有ICS文件包含了此类预约。作为替代，系统将所有的此类预约创建为已过去的预约，然后加上接下来的n个月(默认120个月或10年)的重复预约。"
 
 #. SysConfig
 msgid "Overview of all appointments."
@@ -820,11 +833,11 @@ msgstr "用于自动完成的搜索插件模块。"
 
 #. SysConfig
 msgid "Public Calendar"
-msgstr ""
+msgstr "公共日历"
 
 #. SysConfig
 msgid "Public calendar."
-msgstr ""
+msgstr "公共日历。"
 
 #. SysConfig
 msgid "Resource Overview"
@@ -852,7 +865,7 @@ msgstr "解决时间"
 
 #. SysConfig
 msgid "Transport selection for appointment notifications."
-msgstr ""
+msgstr "预约通知的传输方式选择。"
 
 #. SysConfig
 msgid ""

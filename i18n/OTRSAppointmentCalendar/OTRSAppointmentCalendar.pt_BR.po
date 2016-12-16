@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-24 11:06+0000\n"
+"POT-Creation-Date: 2016-11-03 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Edicarlos Lopes Santos <esantos@beonup.com.br>, 2016\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/otrs/teams/23435/pt_BR/)\n"
@@ -14,6 +14,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr "Notificação de lembrete do compromisso"
+
+#. Template: AAANotification
+msgid ""
+"You will receive a notification each time a reminder time is reached for one"
+" of your appointments."
+msgstr ""
+"Você receberá uma notificação toda vez que o tempo de lembrete para um de "
+"seus compromissos for atingido ."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
@@ -178,13 +190,13 @@ msgid ""
 "Depending on the group field, the system will allow users the access to the "
 "calendar according to their permission level."
 msgstr ""
-"Dependendo do campo grupo, o sistema liberará usuário para acessar o "
+"Dependendo do campo grupo, o sistema liberará usuários para acessar o "
 "calendário de acordo com o nível de permissão deles."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read only: users can see and export all appointments in the calendar."
 msgstr ""
-"Apenas leitura: Usuários podem ver e exportar todas os compromissos nesse "
+"Apenas leitura: usuários podem ver e exportar todos os compromissos nesse "
 "calendário."
 
 #. Template: AgentAppointmentCalendarManage
@@ -192,7 +204,7 @@ msgid ""
 "Move into: users can modify appointments in the calendar, but without "
 "changing the calendar selection."
 msgstr ""
-"Mover para: Usuário poderão modificar compromissos no calendário, mas sem "
+"Mover para: usuários poderão modificar compromissos no calendário, mas sem "
 "alterar a seleção do calendário."
 
 #. Template: AgentAppointmentCalendarManage
@@ -285,7 +297,7 @@ msgstr "Calendários"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "This is an overview page for the Appointment Calendar."
-msgstr "Esta página é uma de visão geral para o calendário de compromissos."
+msgstr "Esta página é uma visão geral para o calendário de compromissos."
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Too many active calendars"

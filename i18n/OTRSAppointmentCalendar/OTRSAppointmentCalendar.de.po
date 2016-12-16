@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-24 11:06+0000\n"
+"POT-Creation-Date: 2016-11-03 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>, 2016\n"
 "Language-Team: German (https://www.transifex.com/otrs/teams/23435/de/)\n"
@@ -15,6 +15,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr "Benachrichtigung über Erreichen der Erinnerungszeit von Terminen"
+
+#. Template: AAANotification
+msgid ""
+"You will receive a notification each time a reminder time is reached for one"
+" of your appointments."
+msgstr ""
+"Sie erhalten immer dann eine Benachrichtigung, wenn der "
+"Benachrichtigungszeitpunkt für einen Ihrer Termine erreicht wurde."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"

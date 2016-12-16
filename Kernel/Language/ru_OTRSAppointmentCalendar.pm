@@ -15,21 +15,26 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AAANotification
+    $Self->{Translation}->{'Appointment reminder notification'} = 'Уведомление о напоминании о мероприятии';
+    $Self->{Translation}->{'You will receive a notification each time a reminder time is reached for one of your appointments.'} =
+        'Вы получите такое уведомление всякий раз когда наступит срок напоминания по одному из ваших мероприятий.';
+
     # Template: AdminAppointmentNotificationEvent
-    $Self->{Translation}->{'Appointment Notification Management'} = '';
+    $Self->{Translation}->{'Appointment Notification Management'} = 'Управление уведомлениями о мероприятиях';
     $Self->{Translation}->{'Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module.'} =
-        '';
+        'Здесь вы можете загрузить конфигурационный файл для импорта уведомлений о мероприятиях в вашу систему. Файл должен быть в формате .yml в котором экспортируются из модуля уведомлений о мероприятиях.';
     $Self->{Translation}->{'Here you can choose which events will trigger this notification. An additional appointment filter can be applied below to only send for appointments with certain criteria.'} =
-        '';
-    $Self->{Translation}->{'Appointment Filter'} = '';
+        'Здесь вы можете выбрать какие события будут включать это уведомление. Дополнительный фильтр может быть применён ниже для их отправки для мероприятий, удовлетворяющих заданному условию.';
+    $Self->{Translation}->{'Appointment Filter'} = 'Фильтр мероприятий.';
     $Self->{Translation}->{'Team'} = 'Команда';
     $Self->{Translation}->{'Resource'} = 'Ресурсы';
     $Self->{Translation}->{'Notify user just once per day about a single appointment using a selected transport.'} =
-        '';
-    $Self->{Translation}->{'Notifications are sent to an agent.'} = '';
-    $Self->{Translation}->{'To get the first 20 character of the appointment title.'} = '';
-    $Self->{Translation}->{'To get the appointment attribute'} = '';
-    $Self->{Translation}->{'To get the calendar attribute'} = '';
+        'Уведомить пользователя только раз в день для каждого отдельного мероприятия, используя указанный способ доставки.';
+    $Self->{Translation}->{'Notifications are sent to an agent.'} = 'Уведомления направляются к агенту.';
+    $Self->{Translation}->{'To get the first 20 character of the appointment title.'} = 'Чтобы получить первые 20 символов темы мероприятия.';
+    $Self->{Translation}->{'To get the appointment attribute'} = 'Чтобы получить атрибут мероприятия';
+    $Self->{Translation}->{'To get the calendar attribute'} = 'Чтобы получить атрибут календаря';
 
     # Template: AgentAppointmentAgendaOverview
     $Self->{Translation}->{'Agenda Overview'} = 'Обзор повестки дня';
@@ -133,16 +138,15 @@ sub Data {
     $Self->{Translation}->{'5 days'} = '5 дней';
 
     # Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
-    $Self->{Translation}->{'Notification name already exists!'} = '';
-    $Self->{Translation}->{'Agent (resources), who are selected within the appointment'} = '';
+    $Self->{Translation}->{'Notification name already exists!'} = 'Уведомление с таким именем уже существует!';
+    $Self->{Translation}->{'Agent (resources), who are selected within the appointment'} = 'Агент (ресурс), который выбран в мероприятии';
     $Self->{Translation}->{'All agents with (at least) read permission for the appointment (calendar)'} =
-        '';
+        'Все агенты с правом чтения (как минимум) для мероприятия (календаря)';
     $Self->{Translation}->{'All agents with write permission for the appointment (calendar)'} =
-        '';
+        'Все агенты с правом -w/записи на заявку для мероприятия (календаря)';
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Системе не удалось создать календарь!';
-    $Self->{Translation}->{'Please contact the administrator.'} = 'Свяжитесь с администратором.';
     $Self->{Translation}->{'No CalendarID!'} = 'Отсутствует CalendarID!';
     $Self->{Translation}->{'You have no access to this calendar!'} = 'У вас нет прав на доступ к этому календарю!';
     $Self->{Translation}->{'Edit Calendar'} = 'Редактировать календарь';
@@ -199,6 +203,7 @@ sub Data {
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Нет прав доступа';
     $Self->{Translation}->{'System was unable to import file!'} = 'Системе не удалось импортировать файл!';
+    $Self->{Translation}->{'Please check the log for more information.'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d еще';
@@ -215,7 +220,7 @@ sub Data {
 
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Страница обзора Календаря мероприятий.';
-    $Self->{Translation}->{'Appointment Notifications'} = '';
+    $Self->{Translation}->{'Appointment Notifications'} = 'Уведомления о мероприятиях';
     $Self->{Translation}->{'Appointment calendar event module that prepares notification entries for appointments.'} =
         'Модуль управления событиями Календаря мероприятий, который подготавливает уведомления для мероприятий.';
     $Self->{Translation}->{'Appointment calendar event module that updates the ticket with data from ticket appointment.'} =
@@ -223,28 +228,28 @@ sub Data {
     $Self->{Translation}->{'Appointment edit screen.'} = 'Экран редактирования Мероприятий.';
     $Self->{Translation}->{'Appointment list'} = 'Список мероприятий';
     $Self->{Translation}->{'Appointment list.'} = 'Список мероприятий.';
-    $Self->{Translation}->{'Appointment notifications'} = '';
+    $Self->{Translation}->{'Appointment notifications'} = 'Уведомления о мероприятиях';
     $Self->{Translation}->{'Appointments'} = 'Мероприятия';
     $Self->{Translation}->{'Calendar manage screen.'} = 'Экран Управление календарями.';
     $Self->{Translation}->{'Choose for which kind of appointment changes you want to receive notifications.'} =
-        '';
+        'Выберите для какого типа изменений мероприятий вы желаете получать уведомления.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Создать новое мероприятие календаря связанное с этой заявкой';
-    $Self->{Translation}->{'Create and manage appointment notifications.'} = '';
+    $Self->{Translation}->{'Create and manage appointment notifications.'} = 'Создание и управление уведомлениями по мероприятиям.';
     $Self->{Translation}->{'Create new appointment.'} = 'Создать новое мероприятие.';
     $Self->{Translation}->{'Define which columns are shown in the linked appointment widget (LinkObject::ViewMode = "complex"). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.'} =
         'Задайте, какие колонки отображать в связанном виджете мероприятий (LinkObject::ViewMode = "complex"). Возможные значения: 0 = Отключено, 1 = Да, 2 = Включена по умолчанию.';
     $Self->{Translation}->{'Defines an icon with link to the google map page of the current location in appointment edit screen.'} =
         'Задает иконку со ссылкой на страницу текущего местоположения в Google Map на экране редактирования мероприятий.';
     $Self->{Translation}->{'Defines the event object types that will be handled via AdminAppointmentNotificationEvent.'} =
-        '';
+        'Задает типы событий, которые будут управляться  с помощью AdminAppointmentNotificationEvent.';
     $Self->{Translation}->{'Defines the list of params that can be passed to ticket search function.'} =
         'Задает перечень атрибутов, которые могут использоваться при поиске заявок.';
     $Self->{Translation}->{'Defines the ticket appointment type backend for ticket dynamic field date time.'} =
-        '';
+        'Задает модуль обработки для мероприятий заявки для динамических полей типа дата/время / date time.';
     $Self->{Translation}->{'Defines the ticket appointment type backend for ticket escalation time.'} =
-        '';
+        'Задает модуль обработки для мероприятий заявки по ticket escalation time.';
     $Self->{Translation}->{'Defines the ticket appointment type backend for ticket pending time.'} =
-        '';
+        'Задает модуль обработки для мероприятий заявки по ticket pending time.';
     $Self->{Translation}->{'Defines the ticket plugin for calendar appointments.'} = 'Задает плагин обработки заявок для мероприятий календаря.';
     $Self->{Translation}->{'DynamicField_%s'} = 'DynamicField_%s';
     $Self->{Translation}->{'Edit appointment'} = 'Редактировать мероприятие';
@@ -252,7 +257,7 @@ sub Data {
     $Self->{Translation}->{'Import appointments screen.'} = 'Экран импорта мероприятий.';
     $Self->{Translation}->{'Links appointments and tickets with a "Normal" type link.'} = 'Связывает мероприятия с заявками связью типа "Normal/Обычная".';
     $Self->{Translation}->{'List of all appointment events to be displayed in the GUI.'} = 'Список всех событий, для мероприятий, отображаемых в интерфейсе.';
-    $Self->{Translation}->{'List of all calendar events to be displayed in the GUI.'} = '';
+    $Self->{Translation}->{'List of all calendar events to be displayed in the GUI.'} = 'Список всех событий календаря, отображаемых в интерфейсе.';
     $Self->{Translation}->{'List of colors in hexadecimal RGB which will be available for selection during calendar creation. Make sure the colors are dark enough so white text can be overlayed on them.'} =
         'Список цветов в шестнадцатеричном RGB доступных для выбора при создании календаря. Убедитесь при выборе, что цвет фона достаточно темный, чтобы белый текст был на нем виден/читаем.';
     $Self->{Translation}->{'Manage different calendars.'} = 'Управлять различными календарями.';
@@ -271,7 +276,7 @@ sub Data {
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} =
         'Отображает ссылку/пункт меню для создания мероприятия календаря, связанного с заявкой непосредственно из подробного просмотра заявки/TicketZoom в интерфейсе агента. Дополнительно, можно ограничить доступ к этому пункту меню, использованием ключа "Group", где в содержании указывается перечень групп, которым эта кнопка будет доступна "rw:group1;move_into:group2". Для организации пунктов меню в группы/кластеры используйте в качестве ключа "ClusterName" и в содержании укажите то имя, которое желаете увидеть в строке меню. Используйте "ClusterPriority" для настройки порядка отображения групп/кластеров в меню.';
     $Self->{Translation}->{'Solution time'} = 'Время решения';
-    $Self->{Translation}->{'Transport selection for appointment notifications.'} = '';
+    $Self->{Translation}->{'Transport selection for appointment notifications.'} = 'Выбор способа отправки для уведомлений по мероприятиям.';
     $Self->{Translation}->{'Triggers add or update of automatic calendar appointments based on certain ticket times.'} =
         'Переключает добавить или изменить автоматическое создание мероприятий календаря, основанное на определенных временНых параметрах заявки';
     $Self->{Translation}->{'Update time'} = 'Время изменения заявки';

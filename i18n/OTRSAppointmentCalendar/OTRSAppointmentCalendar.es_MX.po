@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-10-24 11:06+0000\n"
+"POT-Creation-Date: 2016-11-03 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Armando Rios <armando.rios@otrs.com>, 2016\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/otrs/teams/23435/es_MX/)\n"
@@ -13,6 +13,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es_MX\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Template: AAANotification
+msgid "Appointment reminder notification"
+msgstr ""
+
+#. Template: AAANotification
+msgid ""
+"You will receive a notification each time a reminder time is reached for one"
+" of your appointments."
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"

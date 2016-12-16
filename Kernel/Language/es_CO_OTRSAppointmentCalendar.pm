@@ -15,6 +15,11 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AAANotification
+    $Self->{Translation}->{'Appointment reminder notification'} = '';
+    $Self->{Translation}->{'You will receive a notification each time a reminder time is reached for one of your appointments.'} =
+        '';
+
     # Template: AdminAppointmentNotificationEvent
     $Self->{Translation}->{'Appointment Notification Management'} = 'Gestión de Notificaciones de Citas';
     $Self->{Translation}->{'Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module.'} =
@@ -142,7 +147,6 @@ sub Data {
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'El sistema no pudo crear el Calendario!';
-    $Self->{Translation}->{'Please contact the administrator.'} = 'Por favor contacte el administrador.';
     $Self->{Translation}->{'No CalendarID!'} = 'No se tiene el CalendarID!';
     $Self->{Translation}->{'You have no access to this calendar!'} = 'No tiene acceso a este calendario!';
     $Self->{Translation}->{'Edit Calendar'} = 'Editar Calendario';
@@ -199,6 +203,7 @@ sub Data {
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'No tiene permisos';
     $Self->{Translation}->{'System was unable to import file!'} = 'El sistema no pudo importar el archivo!';
+    $Self->{Translation}->{'Please check the log for more information.'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d más';

@@ -15,6 +15,11 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AAANotification
+    $Self->{Translation}->{'Appointment reminder notification'} = 'Értekezlet emlékeztető értesítés';
+    $Self->{Translation}->{'You will receive a notification each time a reminder time is reached for one of your appointments.'} =
+        'Egy értesítést fog kapni minden alkalommal, amikor egy emlékeztető idő elérésre kerül az értekezletei egyikénél.';
+
     # Template: AdminAppointmentNotificationEvent
     $Self->{Translation}->{'Appointment Notification Management'} = 'Értekezlet-értesítés kezelés';
     $Self->{Translation}->{'Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module.'} =
@@ -142,7 +147,6 @@ sub Data {
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'A rendszer nem tudta létrehozni a naptárat!';
-    $Self->{Translation}->{'Please contact the administrator.'} = 'Vegye fel a kapcsolatot a rendszergazdával.';
     $Self->{Translation}->{'No CalendarID!'} = 'Nincs naptár-azonosító!';
     $Self->{Translation}->{'You have no access to this calendar!'} = 'Nincs hozzáférése ehhez a naptárhoz!';
     $Self->{Translation}->{'Edit Calendar'} = 'Naptár szerkesztése';
@@ -199,6 +203,7 @@ sub Data {
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Nincsenek jogosultságok';
     $Self->{Translation}->{'System was unable to import file!'} = 'A rendszer nem tudta importálni a fájlt!';
+    $Self->{Translation}->{'Please check the log for more information.'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = 'további +%d';

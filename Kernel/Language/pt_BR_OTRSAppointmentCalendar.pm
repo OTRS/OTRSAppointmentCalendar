@@ -15,6 +15,11 @@ use utf8;
 sub Data {
     my $Self = shift;
 
+    # Template: AAANotification
+    $Self->{Translation}->{'Appointment reminder notification'} = 'Notificação de lembrete do compromisso';
+    $Self->{Translation}->{'You will receive a notification each time a reminder time is reached for one of your appointments.'} =
+        'Você receberá uma notificação toda vez que o tempo de lembrete para um de seus compromissos for atingido .';
+
     # Template: AdminAppointmentNotificationEvent
     $Self->{Translation}->{'Appointment Notification Management'} = 'Gerenciamento de notificação do compromisso';
     $Self->{Translation}->{'Here you can upload a configuration file to import appointment notifications to your system. The file needs to be in .yml format as exported by the appointment notification module.'} =
@@ -60,11 +65,11 @@ sub Data {
     $Self->{Translation}->{'Import Calendar'} = 'Importar Calendário';
     $Self->{Translation}->{'Filter for calendars'} = 'Filtro para calendários';
     $Self->{Translation}->{'Depending on the group field, the system will allow users the access to the calendar according to their permission level.'} =
-        'Dependendo do campo grupo, o sistema liberará usuário para acessar o calendário de acordo com o nível de permissão deles.';
+        'Dependendo do campo grupo, o sistema liberará usuários para acessar o calendário de acordo com o nível de permissão deles.';
     $Self->{Translation}->{'Read only: users can see and export all appointments in the calendar.'} =
-        'Apenas leitura: Usuários podem ver e exportar todas os compromissos nesse calendário.';
+        'Apenas leitura: usuários podem ver e exportar todos os compromissos nesse calendário.';
     $Self->{Translation}->{'Move into: users can modify appointments in the calendar, but without changing the calendar selection.'} =
-        'Mover para: Usuário poderão modificar compromissos no calendário, mas sem alterar a seleção do calendário.';
+        'Mover para: usuários poderão modificar compromissos no calendário, mas sem alterar a seleção do calendário.';
     $Self->{Translation}->{'Create: users can create and delete appointments in the calendar.'} =
         'Criar: usuários podem criar e excluir compromissos no calendário.';
     $Self->{Translation}->{'Read/write: users can manage the calendar itself.'} = 'Leitura/escrita: os usuários podem gerenciar o próprio calendário.';
@@ -90,7 +95,7 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Adicionar novo Compromisso';
     $Self->{Translation}->{'Calendars'} = 'Calendários';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Esta página é uma de visão geral para o calendário de compromissos.';
+    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Esta página é uma visão geral para o calendário de compromissos.';
     $Self->{Translation}->{'Too many active calendars'} = 'Muitos calendários ativos';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Por favor, desligue alguns primeiro ou aumente o limite na configuração.';
@@ -142,7 +147,6 @@ sub Data {
 
     # Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
     $Self->{Translation}->{'System was unable to create Calendar!'} = 'Sistema não foi capaz de criar o Calendário!';
-    $Self->{Translation}->{'Please contact the administrator.'} = 'Por favor, entre em contato com o administrador.';
     $Self->{Translation}->{'No CalendarID!'} = 'Nenhum CalendarID!';
     $Self->{Translation}->{'You have no access to this calendar!'} = 'Você não tem acesso a este calendário!';
     $Self->{Translation}->{'Edit Calendar'} = 'Editar Calendário';
@@ -199,6 +203,7 @@ sub Data {
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Sem permissão';
     $Self->{Translation}->{'System was unable to import file!'} = 'Sistema não foi capaz de importar arquivo!';
+    $Self->{Translation}->{'Please check the log for more information.'} = '';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d mais';
