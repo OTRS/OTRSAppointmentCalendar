@@ -453,6 +453,10 @@ $Selenium->RunTest(
 
         # show all three calendars
         $Selenium->find_element( 'Calendar' . $Calendar1{CalendarID}, 'id' )->VerifiedClick();
+
+        # wait for AJAX to finish
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->VerifiedClick();
 
         # wait for AJAX to finish
