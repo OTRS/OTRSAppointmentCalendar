@@ -358,7 +358,7 @@ $Selenium->RunTest(
             for my $ResultKey ( sort keys %{ $Test->{Result} } ) {
 
                 $Self->Is(
-                    $AppointmentList[0]->{$ResultKey},
+                    $AppointmentList[0]->{$ResultKey} // '',
                     $Test->{Result}->{$ResultKey},
                     'Notification appointment result: ' . $ResultKey . ' - ' . $Test->{Data}->{Description},
                 );
