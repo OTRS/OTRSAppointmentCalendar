@@ -59,7 +59,7 @@
                 <input type="text" id="Location" name="Location" value="[% Data.Location | html %]" class="W50pc" />
 [% END %]
 [% RenderBlockStart("LocationLink") %]
-                <a class="LocationLink Hidden [% Data.CSSClass | html %]" href="[% Data.URL | html %][% Data.Location | uri %]" data-base-url="[% Data.URL | html %]" title="[% Data.Text | html %]" target="[% Data.Target | html %]">
+                <a class="LocationLink Hidden [% Data.CSSClass | html %]" href="[% Data.URL | html %][% Data.Location | uri %]" data-base-url="[% Data.URL | html %]" title="[% Data.Text | Translate | html %]" target="[% Data.Target | html %]">
                     <i class="fa [% Data.IconName | html %]"></i>
                 </a>
 [% RenderBlockEnd("LocationLink") %]
