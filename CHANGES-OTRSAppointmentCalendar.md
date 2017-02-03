@@ -1,4 +1,5 @@
 #5.0.2 2016-??-??
+ - 2016-02-03 Translated location hover title, thanks to Balázs Úr (PR#7).
  - 2016-12-14 Fixed import issues with wrongly encoded files and appointments with missing end time.
  - 2016-12-14 Fixed bug#[12485](https://bugs.otrs.org/show_bug.cgi?id=12485) - Wrong time offset in Appointment Calendar.
  - 2016-12-05 Fixed bug#[12436](https://bugs.otrs.org/show_bug.cgi?id=12436) - OTRSCloneDB error on oracle.
