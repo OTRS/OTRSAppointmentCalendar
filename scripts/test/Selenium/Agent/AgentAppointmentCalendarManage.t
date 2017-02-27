@@ -221,8 +221,8 @@ $Selenium->RunTest(
 
         # cleanup
 
-        # get database object
-        my $DBObject = $Kernel::OM->Get('Kernel::System::DB');
+        my $DBObject          = $Kernel::OM->Get('Kernel::System::DB');
+        my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
 
         # delete test calendars
         my $Success = $DBObject->Do(
@@ -243,6 +243,26 @@ $Selenium->RunTest(
             $Success,
             "Deleted test queue - $QueueID",
         );
+
+        # Remove scheduled asynchronous tasks from DB, as they may interfere with tests run later.
+        my @TaskIDs;
+        my @AllTasks = $SchedulerDBObject->TaskList(
+            Type => 'AsynchronousExecutor',
+        );
+        for my $Task (@AllTasks) {
+            if ( $Task->{Name} eq 'Kernel::System::Calendar-TicketAppointmentProcessCalendar()' ) {
+                push @TaskIDs, $Task->{TaskID};
+            }
+        }
+        for my $TaskID (@TaskIDs) {
+            my $Success = $SchedulerDBObject->TaskDelete(
+                TaskID => $TaskID,
+            );
+            $Self->True(
+                $Success,
+                "TaskDelete - Removed scheduled asynchronous task $TaskID",
+            );
+        }
 
         # make sure cache is correct
         for my $Cache (qw(Calendar Queue)) {

@@ -723,6 +723,92 @@ $Selenium->RunTest(
                 Value          => 1,
             );
         }
+
+        #
+        # Cleanup
+        #
+
+        my $SchedulerDBObject = $Kernel::OM->Get('Kernel::System::Daemon::SchedulerDB');
+        my $AppointmentObject = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
+        my $DBObject          = $Kernel::OM->Get('Kernel::System::DB');
+
+        # Delete appointments and calendars.
+        for my $CalendarID ( $Calendar1{CalendarID}, $Calendar2{CalendarID}, $Calendar3{CalendarID}, $Calendar4{CalendarID} ) {
+            my @Appointments = $AppointmentObject->AppointmentList(
+                CalendarID => $CalendarID,
+                Result     => 'ARRAY',
+            );
+            for my $AppointmentID (@Appointments) {
+                $AppointmentObject->AppointmentDelete(
+                    AppointmentID => $AppointmentID,
+                    UserID        => 1,
+                );
+            }
+
+            # Delete test calendars.
+            my $Success = $DBObject->Do(
+                SQL => "DELETE FROM calendar WHERE id = $CalendarID",
+            );
+            $Self->True(
+                $Success,
+                "Deleted test calendar - $CalendarID",
+            );
+        }
+
+        # Delete test ticket.
+        my $Success = $TicketObject->TicketDelete(
+            TicketID => $TicketID,
+            UserID   => 1,
+        );
+        $Self->True(
+            $Success,
+            "Deleted test ticket - $TicketID",
+        );
+
+        # Remove scheduled asynchronous tasks from DB, as they may interfere with tests run later.
+        my @TaskIDs;
+        my @AllTasks = $SchedulerDBObject->TaskList(
+            Type => 'AsynchronousExecutor',
+        );
+        for my $Task (@AllTasks) {
+            if ( $Task->{Name} eq 'Kernel::System::Calendar-TicketAppointmentProcessTicket()' ) {
+                push @TaskIDs, $Task->{TaskID};
+            }
+        }
+        for my $TaskID (@TaskIDs) {
+            my $Success = $SchedulerDBObject->TaskDelete(
+                TaskID => $TaskID,
+            );
+            $Self->True(
+                $Success,
+                "TaskDelete - Removed scheduled asynchronous task $TaskID",
+            );
+        }
+
+        # Delete group-user relations.
+        $Success = $DBObject->Do(
+            SQL => "DELETE FROM group_user WHERE group_id = $GroupID OR group_id = $GroupID2",
+        );
+        if ($Success) {
+            $Self->True(
+                $Success,
+                "GroupUserDelete - $RandomID",
+            );
+        }
+
+        # Delete groups.
+        $Success  = $DBObject->Do(
+            SQL  => "DELETE FROM groups WHERE id = $GroupID OR id = $GroupID2",
+        );
+        $Self->True(
+            $Success,
+            "GroupDelete - $RandomID",
+        );
+
+        # Make sure cache is correct.
+        for my $Cache (qw(Appointment Calendar Group Ticket)) {
+            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+        }
     },
 );
 
