@@ -733,7 +733,9 @@ $Selenium->RunTest(
         my $DBObject          = $Kernel::OM->Get('Kernel::System::DB');
 
         # Delete appointments and calendars.
-        for my $CalendarID ( $Calendar1{CalendarID}, $Calendar2{CalendarID}, $Calendar3{CalendarID}, $Calendar4{CalendarID} ) {
+        for my $CalendarID ( $Calendar1{CalendarID}, $Calendar2{CalendarID}, $Calendar3{CalendarID},
+            $Calendar4{CalendarID} )
+        {
             my @Appointments = $AppointmentObject->AppointmentList(
                 CalendarID => $CalendarID,
                 Result     => 'ARRAY',
@@ -797,8 +799,8 @@ $Selenium->RunTest(
         }
 
         # Delete groups.
-        $Success  = $DBObject->Do(
-            SQL  => "DELETE FROM groups WHERE id = $GroupID OR id = $GroupID2",
+        $Success = $DBObject->Do(
+            SQL => "DELETE FROM groups WHERE id = $GroupID OR id = $GroupID2",
         );
         $Self->True(
             $Success,
