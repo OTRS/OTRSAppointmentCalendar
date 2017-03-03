@@ -24,6 +24,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
     var AppointmentDaysCache,
         AppointmentDaysCacheRefreshed = false,
         AJAXCounter = 0,
+        RestoreDefaultSettings,
         CurrentView;
 
     /**
@@ -194,14 +195,19 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             },
             viewRender: function(View) {
 
-                // Add calendar week number to timeline view titles
+                // Check if we are on a timeline view.
                 if (View.name === 'timelineWeek' || View.name === 'timelineDay') {
+
+                    // Add calendar week number to timeline view titles.
                     window.setTimeout(function () {
                         $CalendarObj.find('.fc-toolbar > div > h2').append(
                             $('<span />').addClass('fc-week-number')
                                 .text(View.start.format(' #W'))
                         );
                     }, 0);
+
+                    // Initialize restore settings button.
+                    RestoreDefaultSettingsInit();
                 }
 
                 // Remember view selection
@@ -1568,8 +1574,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
      */
     function ResourceSettingsInit(Params) {
         var $ResourceSettingsObj = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsButton)),
-            $ResourceSettingsDialog = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsDialogContainer)),
-            $RestoreSettingsObj;
+            $ResourceSettingsDialog = $('#' + Core.App.EscapeSelector(Params.Resources.ResourceSettingsDialogContainer));
 
         // Resource settings button
         $ResourceSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
@@ -1620,41 +1625,65 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             return false;
         });
 
-        // Restore settings button
-        if (Params.Resources.RestoreDefaultSettings) {
-            $RestoreSettingsObj = $('<a />').attr('id', 'RestoreDefaultSettings')
-                .attr('href', '#')
-                .attr('title', Core.Config.Get('AppointmentCalendarTranslationsRestore'))
-                .append($('<i />').addClass('fa fa-trash'));
+        RestoreDefaultSettings = Params.Resources.RestoreDefaultSettings;
 
-            // Add it to the column header
-            $('tr.fc-super + tr .fc-cell-content').append($RestoreSettingsObj);
+        // Initialize restore settings button.
+        RestoreDefaultSettingsInit();
+    }
 
-            $RestoreSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
-                Core.AJAX.FunctionCall(
-                    Core.Config.Get('CGIHandle'),
-                    {
-                        ChallengeToken: Params.ChallengeToken,
-                        Action: Params.Callbacks.EditAction ? Params.Callbacks.EditAction : 'AgentAppointmentEdit',
-                        Subaction: Params.Callbacks.PrefSubaction ? Params.Callbacks.PrefSubaction : 'UpdatePreferences',
-                        OverviewScreen: Params.OverviewScreen ? Params.OverviewScreen : 'ResourceOverview',
-                        RestoreDefaultSettings: 'ShownResources',
-                        TeamID: $('#Team').val()
-                    },
-                    function (Response) {
-                        if (!Response.Success) {
-                            Core.Debug.Log('Error updating user preferences!');
-                        }
-                        location.reload();
-                    }
-                );
+    /**
+     * @private
+     * @name RestoreDefaultSettingsInit
+     * @memberof Core.Agent.AppointmentCalendar
+     * @description
+     *      Adds restore default settings button (trash can) to view and initializes its behavior.
+     */
+    function RestoreDefaultSettingsInit() {
+        var $RestoreSettingsObj;
 
-                Event.preventDefault();
-                Event.stopPropagation();
-
-                return false;
-            });
+        // Skip if button is not needed or we already have one.
+        if (
+            !RestoreDefaultSettings
+            || $('#RestoreDefaultSettings').length > 0
+            )
+        {
+            return;
         }
+
+        // Create the button.
+        $RestoreSettingsObj = $('<a />').attr('id', 'RestoreDefaultSettings')
+            .attr('href', '#')
+            .attr('title', Core.Config.Get('AppointmentCalendarTranslationsRestore'))
+            .append($('<i />').addClass('fa fa-trash'));
+
+        // Add it to the column header.
+        $('tr.fc-super + tr .fc-cell-content').append($RestoreSettingsObj);
+
+        // Register click handler.
+        $RestoreSettingsObj.off('click.AppointmentCalendar').on('click.AppointmentCalendar', function (Event) {
+            Core.AJAX.FunctionCall(
+                Core.Config.Get('CGIHandle'),
+                {
+                    ChallengeToken: $('#ChallengeToken').val(),
+                    Action: 'AgentAppointmentEdit',
+                    Subaction: 'UpdatePreferences',
+                    OverviewScreen: 'ResourceOverview',
+                    RestoreDefaultSettings: 'ShownResources',
+                    TeamID: $('#Team').val()
+                },
+                function (Response) {
+                    if (!Response.Success) {
+                        Core.Debug.Log('Error updating user preferences!');
+                    }
+                    location.reload();
+                }
+            );
+
+            Event.preventDefault();
+            Event.stopPropagation();
+
+            return false;
+        });
     }
 
     /**
