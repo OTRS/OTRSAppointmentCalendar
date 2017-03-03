@@ -1840,6 +1840,11 @@ sub GetAccessToken {
 
     return if !$SaltString;
 
+    # Encode user login to UTF8 representation, since MD5 is defined only for strings of bytes.
+    #   If login contains a Unicode character, MD5 might fail otherwise. Please see bug#12593 for
+    #   more information.
+    $Kernel::OM->Get('Kernel::System::Encode')->EncodeOutput( \$Param{UserLogin} );
+
     # calculate md5 sum
     my $String = "$Param{UserLogin}-$SaltString";
     my $MD5    = Digest::MD5->new()->add($String)->hexdigest();

@@ -13,7 +13,6 @@ package Kernel::System::Calendar::Helper;
 use strict;
 use warnings;
 
-use Digest::MD5;
 use Time::Piece;
 
 use Kernel::System::VariableCheck qw(:all);
