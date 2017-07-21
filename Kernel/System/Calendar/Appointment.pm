@@ -1498,6 +1498,7 @@ sub AppointmentDelete {
         Event => 'AppointmentDelete',
         Data  => {
             AppointmentID => $Param{AppointmentID},
+            CalendarID    => $CalendarID,
         },
         UserID => $Param{UserID},
     );

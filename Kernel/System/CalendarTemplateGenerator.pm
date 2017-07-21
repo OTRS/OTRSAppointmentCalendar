@@ -268,7 +268,7 @@ sub _Replace {
             AppointmentID => $Param{AppointmentID},
         );
         %Calendar = $CalendarObject->CalendarGet(
-            CalendarID => $Appointment{CalendarID},
+            CalendarID => $Appointment{CalendarID} || $Param{CalendarID},
         );
     }
     elsif ( $Param{CalendarID} ) {

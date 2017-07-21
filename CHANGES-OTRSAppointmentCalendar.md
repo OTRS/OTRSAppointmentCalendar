@@ -1,4 +1,5 @@
 #5.0.3 2017-??-??
+ - 2017-07-21 Fixed bug#[12958](https://bugs.otrs.org/show_bug.cgi?id=12958) - OTRSAppointmentCalendar Module sends an update notification when an event is deleted.
  - 2017-07-14 Fixed bug#[12945](https://bugs.otrs.org/show_bug.cgi?id=12945) - Assigned appointments notification is not translated.
  - 2017-07-06 Fixed bug#[12667](https://bugs.otrs.org/show_bug.cgi?id=12667) - iCal copied URL from OTRS Calendar does not update in iCloud.
  - 2016-03-03 Fixed bug#[12593](https://bugs.otrs.org/show_bug.cgi?id=12593) - Error in calendar if UserLogin contain Unicode character.
