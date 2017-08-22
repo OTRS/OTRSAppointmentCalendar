@@ -146,8 +146,8 @@ $Selenium->RunTest(
         );
 
         # update calendar name
-        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->VerifiedClick();
-        $Selenium->send_keys_to_active_element(' 2');
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->clear();
+        $Selenium->find_element( 'form#CalendarFrom input#CalendarName', 'css' )->send_keys("Calendar $RandomID 2");
 
         # set it to invalid
         $Selenium->execute_script(
