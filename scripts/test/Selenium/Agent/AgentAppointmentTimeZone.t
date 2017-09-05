@@ -170,6 +170,16 @@ $Selenium->RunTest(
             Key    => 'UserTimeZone',
             Value  => '+2',             # Europe/Berlin
             UserID => $UserID,
+        ) || die 'Did not set preference UserTimeZone';
+
+        my %Preferences = $UserObject->GetPreferences(
+            UserID => $UserID,
+        );
+
+        $Self->Is(
+            $Preferences{UserTimeZone},
+            '+2',
+            'Preference UserTimeZone correct',
         );
 
         # make sure cache is correct
