@@ -175,7 +175,6 @@ $Selenium->RunTest(
         my %Preferences = $UserObject->GetPreferences(
             UserID => $UserID,
         );
-
         $Self->Is(
             $Preferences{UserTimeZone},
             '+2',
