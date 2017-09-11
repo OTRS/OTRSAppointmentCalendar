@@ -10,7 +10,7 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Description Lang="de">Das Terminkalender-Paket.</Description>
-    <Description Lang="hu">Az értekezlet naptár csomag.</Description>
+    <Description Lang="hu">A naptár csomag.</Description>
     <Description Lang="sr_Cyrl">Модул за календаре и термине.</Description>
     <Description Lang="sr_Latn">Modul za kalendare i termine.</Description>
     <Filelist>
