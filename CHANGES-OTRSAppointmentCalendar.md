@@ -1,4 +1,5 @@
 #5.0.3 2017-??-??
+ - 2017-09-13 Fixed bug#[13035](https://bugs.otrs.org/show_bug.cgi?id=13035) - OTRS notification option for OTRS Business Solution™ Feature are shown in the free.
  - 2017-07-24 Fixed bug#[12943](https://bugs.otrs.org/show_bug.cgi?id=12943) - Useless "Description" widget in sidebar.
  - 2017-07-21 Fixed bug#[12958](https://bugs.otrs.org/show_bug.cgi?id=12958) - OTRSAppointmentCalendar Module sends an update notification when an event is deleted.
  - 2017-07-14 Fixed bug#[12945](https://bugs.otrs.org/show_bug.cgi?id=12945) - Assigned appointments notification is not translated.
