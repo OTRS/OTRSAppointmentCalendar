@@ -107,6 +107,7 @@
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCalendarOverview.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentCreate.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentDashboardWidget.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentLinks.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentTimeZone.t" />
         <File Permission="644" Location="scripts/test/sample/Calendar/SampleCalendar.ics" />
