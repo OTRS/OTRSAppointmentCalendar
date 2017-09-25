@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = '添加新的预约';
     $Self->{Translation}->{'Calendars'} = '日历';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = '这是预约日历的概览页面。';
     $Self->{Translation}->{'Too many active calendars'} = '激活的日历太多';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         '请关闭一些日历或者在配置中增加限制数。';
@@ -195,15 +194,13 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = '在预约结束前';
     $Self->{Translation}->{'after the appointment has been ended'} = '在预约结束后';
     $Self->{Translation}->{'No permission!'} = '没有权限！';
-    $Self->{Translation}->{'Links could not be deleted!'} = '不能删除链接！';
-    $Self->{Translation}->{'Link could not be created!'} = '不能创建链接！';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = '不能删除工单预约！';
     $Self->{Translation}->{'No permissions!'} = '没有权限！';
 
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = '没有权限';
     $Self->{Translation}->{'System was unable to import file!'} = '系统无法导入文件！';
-    $Self->{Translation}->{'Please check the log for more information.'} = '';
+    $Self->{Translation}->{'Please check the log for more information.'} = '更多信息请检查日志。';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '多于+%d';

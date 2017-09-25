@@ -1,14 +1,14 @@
 # Translators:
 # Martin Gruner <martin.gruner@otrs.com>, 2016
+# Florian Edlhuber <florian.edlhuber@otrs.com>, 2016
 # Marco Buchholz <mabu@debian-admin.de>, 2016
 # Marc A. Bonsels <marc.bonsels@otrs.com>, 2016
-# Ettore Atalan <atalanttore@googlemail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-11-03 13:51+0000\n"
+"POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>, 2016\n"
+"Last-Translator: Marc A. Bonsels <marc.bonsels@otrs.com>, 2016\n"
 "Language-Team: German (https://www.transifex.com/otrs/teams/23435/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -214,7 +214,7 @@ msgstr "Erstellen: Benutzer können Termine im Kalender erstellen und löschen."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read/write: users can manage the calendar itself."
-msgstr "RO: Benutzer können die Kalender an sich verwalten."
+msgstr "rw: Benutzer können die Kalender an sich verwalten."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "URL"
@@ -460,10 +460,6 @@ msgid "System was unable to create Calendar!"
 msgstr "Das System konnten den Kalender nicht erstellen!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
-msgid "Please contact the administrator."
-msgstr "Bitte kontaktieren Sie den Administrator."
-
-#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
 msgstr "Keine CalenderID!"
 
@@ -664,6 +660,10 @@ msgstr "Keine Berechtigung"
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
 msgstr "Das System konnte die Datei nicht importieren!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "Please check the log for more information."
+msgstr "Bitte prüfen Sie das Systemprotokoll für weitere Informationen."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"

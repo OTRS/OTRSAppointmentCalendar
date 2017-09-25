@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Adicionar novo Compromisso';
     $Self->{Translation}->{'Calendars'} = 'Calendários';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Esta página é uma visão geral para o calendário de compromissos.';
     $Self->{Translation}->{'Too many active calendars'} = 'Muitos calendários ativos';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Por favor, desligue alguns primeiro ou aumente o limite na configuração.';
@@ -195,15 +194,13 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = 'antes do compromisso encerrar';
     $Self->{Translation}->{'after the appointment has been ended'} = 'depois que o compromisso foi encerrado';
     $Self->{Translation}->{'No permission!'} = 'Sem permissão!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Os links não pode ser apagado!';
-    $Self->{Translation}->{'Link could not be created!'} = 'O Link não pode ser criado!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'Não é possível excluir o compromisso do chamado.';
     $Self->{Translation}->{'No permissions!'} = 'Sem permissões!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Sem permissão';
     $Self->{Translation}->{'System was unable to import file!'} = 'Sistema não foi capaz de importar arquivo!';
-    $Self->{Translation}->{'Please check the log for more information.'} = '';
+    $Self->{Translation}->{'Please check the log for more information.'} = 'Por favor verifique o log para mais informações.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d mais';

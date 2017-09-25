@@ -1,22 +1,23 @@
 # Translators:
-# Carlos Rodríguez <carlos.rodriguez@otrs.com>, 2016
-# Armando Rios <armando.rios@otrs.com>, 2016
+# Udo Bretz <udo.bretz@web.de>, 2016
+# Hisatoshi Onishi <hisatoshi.onishi@gmail.com>, 2016
+# Kozo Sakurai <sakurai@io-architect.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
 "POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Armando Rios <armando.rios@otrs.com>, 2016\n"
-"Language-Team: Spanish (Mexico) (https://www.transifex.com/otrs/teams/23435/es_MX/)\n"
+"Last-Translator: Kozo Sakurai <sakurai@io-architect.com>, 2017\n"
+"Language-Team: Japanese (https://www.transifex.com/otrs/teams/23435/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_MX\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #. Template: AAANotification
 msgid "Appointment reminder notification"
-msgstr ""
+msgstr "予約リマインダーの通知"
 
 #. Template: AAANotification
 msgid ""
@@ -26,7 +27,7 @@ msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
-msgstr "Gestión de Notificaciones de Citas"
+msgstr "予約通知の管理"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -34,9 +35,6 @@ msgid ""
 " to your system. The file needs to be in .yml format as exported by the "
 "appointment notification module."
 msgstr ""
-"Aquí es posible cargar un archivo de configuración para importar las "
-"notificaciones de las citas a su sistema. El archivo necesita estar en el "
-"formato .yml como los exportados por el módulo de notificaciones de citas."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -44,121 +42,114 @@ msgid ""
 "additional appointment filter can be applied below to only send for "
 "appointments with certain criteria."
 msgstr ""
-"Aquí es posible elegir los eventos que iniciarán esta notificación. Un "
-"filtro adicional de la cita se puede aplicar a continuación para enviar sólo"
-" para citas con ciertos criterios."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Filter"
-msgstr "Filtro de citas"
+msgstr "予約のフィルター"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Team"
-msgstr "Equipo"
+msgstr "チーム"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Resource"
-msgstr "Recurso"
+msgstr "リソース"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
 "Notify user just once per day about a single appointment using a selected "
 "transport."
 msgstr ""
-"Notificar al usuario solo una vez al día acerca de una sola cita usando el "
-"transporte seleccionado."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Notifications are sent to an agent."
-msgstr "Las notificaciones se envían a un agente."
+msgstr "通知は担当者へ送信されます。"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the first 20 character of the appointment title."
-msgstr "Para obtener los primeros 20 caracteres del título de la cita"
+msgstr ""
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the appointment attribute"
-msgstr "Para obtener el atributo de la cita"
+msgstr "予定の属性を取得すること"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the calendar attribute"
-msgstr "Para obtener el atributo del calendario"
+msgstr "カレンダーの属性を取得すること"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Agenda Overview"
-msgstr "Resumen de la Agenda"
+msgstr "アジェンダ表示"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Manage Calendars"
-msgstr "Gestionar Calendarios"
+msgstr "カレンダー管理"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Add Appointment"
-msgstr "Añadir Cita"
+msgstr "予約の登録"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Color"
-msgstr "Color"
+msgstr "色"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "End date"
-msgstr "Fecha de término"
+msgstr "終了日時"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Repeat"
-msgstr "Repetición"
+msgstr "繰り返し"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid ""
 "No calendars found. Please add a calendar first by using Manage Calendars "
 "page."
 msgstr ""
-"No se encontraron calendario. Por favor primero añada un calendario "
-"utilizado la pagina de Gestionar Calendarios."
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Appointment"
-msgstr "Cita"
+msgstr "予約"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "This is a repeating appointment"
-msgstr "Esta es una cita repetitiva"
+msgstr "これは繰り返しの予定です。"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Would you like to edit just this occurrence or all occurrences?"
-msgstr "Desea editar solo esta o todas las ocurrencias"
+msgstr "この発生またはすべて発生だけを編集しますか？"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "All occurrences"
-msgstr "Todas las ocurrencias"
+msgstr "全ての発生"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Just this occurrence"
-msgstr "Solo esta"
+msgstr "この発生時点"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Management"
-msgstr "Gestión de Calendarios"
+msgstr "カレンダー管理"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Overview"
-msgstr "Resumen de Calendarios"
+msgstr "カレンダー表示"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add new Calendar"
-msgstr "Añadir un Calendario nuevo"
+msgstr "カレンダーの登録"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add Calendar"
-msgstr "Añadir Calendario"
+msgstr "カレンダーの登録"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Appointments"
-msgstr "Importar Citas"
+msgstr "予約のインポート"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Import"
-msgstr "Importar Calendario"
+msgstr "カレンダーをインポート"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
@@ -166,50 +157,43 @@ msgid ""
 "system. The file needs to be in .yml format as exported by calendar "
 "management module."
 msgstr ""
-"Aquí es posible cargar un archivo de configuración para importar un "
-"calendario a su sistema. El archivo necesita estar en el formato .yml para "
-"poder ser exportado por el módulo de gestión de calendarios."
+"ここでカレンダーの設定ファイルをアップロードすることができます。ファイルはカレンダー管理モジュールがエクスポートした\".yml\"フォーマットである必要があります。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Upload calendar configuration"
-msgstr "Cargar configuración de calendario"
+msgstr "カレンダー設定をアップロードする"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Calendar"
-msgstr "Importar Calendario"
+msgstr "カレンダーをインポート"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Filter for calendars"
-msgstr "Filtro para Calendarios"
+msgstr "カレンダーでフィルター"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Depending on the group field, the system will allow users the access to the "
 "calendar according to their permission level."
 msgstr ""
-"Dependiendo del campo de grupo, el sistema permite el acceso a usuarios al "
-"calendario de acuerdo a sus niveles de permisos."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read only: users can see and export all appointments in the calendar."
 msgstr ""
-"RO: usuarios que pueden ver y exportar todas las citas en el calendario."
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Move into: users can modify appointments in the calendar, but without "
 "changing the calendar selection."
 msgstr ""
-"Mover_A: usuarios que pueden modificar citas en el calendario, pero sin "
-"cambiar la selección de calendario."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Create: users can create and delete appointments in the calendar."
-msgstr "Crear: usuarios que pueden crear y borrar citas en el calendario."
+msgstr ""
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Read/write: users can manage the calendar itself."
-msgstr "RW: usuario que pueden gestionar el calendario en sí"
+msgstr ""
 
 #. Template: AgentAppointmentCalendarManage
 msgid "URL"
@@ -217,439 +201,427 @@ msgstr "URL"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Export calendar"
-msgstr "Exportar calendario"
+msgstr "カレンダーのエクスポート"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Download calendar"
-msgstr "Descargar calendario"
+msgstr "カレンダーのダウンロード"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Copy public calendar URL"
-msgstr "Copiar URL pública de calendario"
+msgstr "公開カレンダーのURLをコピーする"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar name"
-msgstr "Nombre del calendario"
+msgstr "カレンダー名"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar with same name already exists."
-msgstr "Ya existe un calendario con el mismo nombre."
+msgstr "同じ名前のカレンダーは既に存在します。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Permission group"
-msgstr "Grupo de permisos"
+msgstr "権限グループ"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Ticket Appointments"
-msgstr "Citas de Ticket"
+msgstr "チケットの予約"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Rule"
-msgstr "Regla"
+msgstr "ルール"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Use options below to narrow down for which tickets appointments will be "
 "automatically created."
 msgstr ""
-"Use las opciones mostradas abajo para acortar las citas de tickets serán "
-"creadas automáticamente."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Please select a valid queue."
-msgstr "Poor favor seleccione una fila válida"
+msgstr "有効なキューを選択して下さい。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Search attributes"
-msgstr "Atributos de búsqueda"
+msgstr "検索属性"
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Define rules for creating automatic appointments in this calendar based on "
 "ticket data."
-msgstr ""
-"Define reglas para creación de citas automáticas en este calendario basadas "
-"en los datos de los tickets."
+msgstr "チケットデータに基づいてこのカレンダーで自動予定を作成するためのルールを定義します。"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Add Rule"
-msgstr "Añadir regla"
+msgstr "ルールを追加"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "More"
-msgstr "Más"
+msgstr "もっと多く"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Less"
-msgstr "Menos"
+msgstr "もっと少なく"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Add new Appointment"
-msgstr "Añadir nueva cita"
+msgstr "予約の登録"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Calendars"
-msgstr "Calendarios"
+msgstr "カレンダー"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "This is an overview page for the Appointment Calendar."
-msgstr "Esta es una página de resumen para el Calendario de Citas"
+msgstr ""
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Too many active calendars"
-msgstr "Demasiados calendarios activos"
+msgstr "有効化されたカレンダーが多すぎます"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid ""
 "Please either turn some off first or increase the limit in configuration."
 msgstr ""
-"Por favor desactive algunos primero o incremente el límite en la "
-"configuración"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Week"
-msgstr "Semana"
+msgstr "週"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Month"
-msgstr "Línea de tiempo Mensual"
+msgstr "月間タイムライン"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Week"
-msgstr "Línea de tiempo Semanal"
+msgstr "週間タイムライン"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Timeline Day"
-msgstr "Línea de tiempo Diaria"
+msgstr "日中タイムライン"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Jump"
-msgstr "Saltar a"
+msgstr "カレンダー"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Dismiss"
-msgstr "Descartar"
+msgstr "削除"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Show"
-msgstr "Mostrar"
+msgstr "表示"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Basic information"
-msgstr "Información básica"
+msgstr "基本情報"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Date/Time"
-msgstr "Fecha/Hora"
+msgstr "日にち/時間"
 
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value before End date."
-msgstr "Por favor fije este valor antes de la fecha de término."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Please set this to value after Start date."
-msgstr "Por favor fije este valor después de la fecha de inicio"
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "This an occurrence of a repeating appointment."
-msgstr "Esta es una ocurrencia de una cita repetitiva."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to see the parent appointment."
-msgstr "Precione aquí  para ver la cita padre."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to edit the parent appointment."
-msgstr "Precione aquí  para editar la cita padre."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Frequency"
-msgstr "Frecuencia"
+msgstr "頻度"
 
 #. Template: AgentAppointmentEdit
 msgid "Every"
-msgstr "Cada"
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid "Relative point of time"
-msgstr "Punto de tiempo relativo."
+msgstr ""
 
 #. Template: AgentAppointmentEdit
 msgid ""
 "Are you sure you want to delete this appointment? This operation cannot be "
 "undone."
 msgstr ""
-"¿Está seguro de que desea eliminar esta cita? Esta operación no se puede "
-"deshacer."
 
 #. Template: AgentAppointmentImport
 msgid "Appointment Import"
-msgstr "Importar Cita"
+msgstr "予約のインポート"
 
 #. Template: AgentAppointmentImport
 msgid "Uploaded file must be in valid iCal format (.ics)."
-msgstr "El archivo cargado tiene que estar en un formato iCal válido (.ics)"
+msgstr ""
 
 #. Template: AgentAppointmentImport
 msgid ""
 "If desired Calendar is not listed here, please make sure that you have at "
 "least 'create' permissions."
 msgstr ""
-"Si el Calendario deseado no aparece en la lista, por favor asegúrese de que "
-"tenga al menos el permiso de \"crear\""
 
 #. Template: AgentAppointmentImport
 msgid "Update existing appointments?"
-msgstr "¿Actualizar las citas existentes?"
+msgstr ""
 
 #. Template: AgentAppointmentImport
 msgid ""
 "All existing appointments in the calendar with same UniqueID will be "
 "overwritten."
 msgstr ""
-"Todas las citas existentes en el calendario con el mismo UniqueID se "
-"sobrescribirán"
 
 #. Template: AgentAppointmentImport
 msgid "Upload calendar"
-msgstr "Cargar calendario"
+msgstr "カレンダーをアップロード"
 
 #. Template: AgentAppointmentImport
 msgid "Import appointments"
-msgstr "Importar citas"
+msgstr "予約のインポート"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "New Appointment"
-msgstr "Nueva Cita"
+msgstr "予約の登録"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "Soon"
-msgstr "Pronto"
+msgstr ""
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "5 days"
-msgstr "5 días"
+msgstr "5日"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Notification name already exists!"
-msgstr "El nombre de la notificación ya existe!"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Agent (resources), who are selected within the appointment"
-msgstr "Agentes (recursos), que pueden ser seleccionados dentro de una cita"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid ""
 "All agents with (at least) read permission for the appointment (calendar)"
-msgstr "Agentes con (al menos) permisos de lectura para la cita (calendario)"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "All agents with write permission for the appointment (calendar)"
-msgstr "Todos los agentes con permisos de escritura para la cita (calendario)"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "System was unable to create Calendar!"
-msgstr "El sistema no pudo crear el Calendario!"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
-msgstr "No se tiene el CalendarID!"
+msgstr "CalendarIDがない!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "You have no access to this calendar!"
-msgstr "No tiene acceso a este calendario!"
+msgstr "あなたはこのカレンダーにアクセスできません！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Edit Calendar"
-msgstr "Editar Calendario"
+msgstr "カレンダーを編集"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Error updating the calendar!"
-msgstr "Error al actualizer el calendario!"
+msgstr "カレンダーの更新中にエラーが発生しました!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Couldn't read calendar configuration file."
-msgstr "No se puede leer el archivo de configuración del calendario."
+msgstr "カレンダー設定ファイルを読み込めませんでした。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Please make sure your file is valid."
-msgstr "Por favor asegúrese de que el archivo es válido."
+msgstr "あなたのファイルが有効であることを確認して下さい。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not import the calendar!"
-msgstr "No se puede importar el calendario!"
+msgstr "カレンダーをインポートできませんでした!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Calendar imported!"
-msgstr "Calendario importado!"
+msgstr "カレンダーをインポート!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Need CalendarID!"
-msgstr "Se necesita CalendarID!"
+msgstr "CalendarIDが必要!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Could not retrieve data for given CalendarID"
-msgstr "Not se pueden obtener los datos para el CalendarID especificado"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Successfully imported %s appointment(s) to calendar %s."
-msgstr "Se han importado %s cita(s) al calendario %s."
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+5 minutes"
-msgstr "+5 minutos"
+msgstr "+5分"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+15 minutes"
-msgstr "+15 minutos "
+msgstr "+15分"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+30 minutes"
-msgstr "+30 minutos"
+msgstr "+30分"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+1 hour"
-msgstr "+1 hora"
+msgstr "+1時間"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "All appointments"
-msgstr "Todas las citas"
+msgstr "全ての予約"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Appointments assigned to me"
-msgstr "Citas asignadas a mí "
+msgstr "私に割り当てられた予定"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Showing only appointments assigned to you! Change settings"
-msgstr "Mostrando solo citas asignadas a tí! Cambiar configuración"
+msgstr "あなたに割り当てられた予約だけを表示する！ 設定を変更して下さい。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Appointment not found!"
-msgstr "La cita no fue encontrada!"
+msgstr "予約が見つかりません！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Never"
-msgstr "Nunca"
+msgstr "なし"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Day"
-msgstr "Cada Día"
+msgstr "毎日"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Week"
-msgstr "Cada Semana"
+msgstr "毎週"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Month"
-msgstr "Cada Mes"
+msgstr "毎月"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Every Year"
-msgstr "Cada Año"
+msgstr "毎年"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "カスタム"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Daily"
-msgstr "Diario"
+msgstr "毎日"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Weekly"
-msgstr "Semanal"
+msgstr "毎週"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Monthly"
-msgstr "Mensual"
+msgstr "毎月"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Yearly"
-msgstr "Anual"
+msgstr "毎年"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "every"
-msgstr "cada"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "for %s time(s)"
-msgstr "por %s vez(ces)"
+msgstr "for %s time(s)"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "until ..."
-msgstr "hasta ..."
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "for ... time(s)"
-msgstr "por ... vez(ces)"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "until %s"
-msgstr "hasta %s"
+msgstr "%s まで"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No notification"
-msgstr "Sin notificaciones"
+msgstr "通知なし"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s minute(s) before"
-msgstr "%s minuto(s) antes"
+msgstr "%s 分前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s hour(s) before"
-msgstr "%s hora(s) antes"
+msgstr "%s 時間前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s day(s) before"
-msgstr "%s día(s) antes"
+msgstr "%s 日前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "%s week before"
-msgstr "%s semanas antes"
+msgstr "%s 週間前"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment starts"
-msgstr "antes de que la cita inicie"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been started"
-msgstr "después de que la cita halla iniciado"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment ends"
-msgstr "antes de que termine la cita"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been ended"
-msgstr "después de que la cita halla finalizado"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permission!"
-msgstr "No tiene permisos!"
+msgstr "権限がない!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Links could not be deleted!"
-msgstr "Los vínculos no pudieron ser borrados!"
+msgstr "リンクを削除できませんでした!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Link could not be created!"
-msgstr "El vínculo no pudo ser borrado!"
+msgstr "リンクを作成できませんでした!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Cannot delete ticket appointment!"
-msgstr "La cita no puede ser borrada!"
+msgstr "チケット予約を削除できません！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permissions!"
-msgstr "No tiene permisos!"
+msgstr "権限がない!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "No permissions"
-msgstr "No tiene permisos"
+msgstr "権限がない!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
-msgstr "El sistema no pudo importar el archivo!"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "Please check the log for more information."
@@ -657,98 +629,93 @@ msgstr ""
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"
-msgstr "+%d más"
+msgstr ""
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No %s!"
-msgstr "No se tiene %s!"
+msgstr "%sがありません！"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "No such user!"
-msgstr "No existe el usuario!"
+msgstr "そのようなユーザーはありません！"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid calendar!"
-msgstr "Calendario inválido"
+msgstr "無効なカレンダー"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "Invalid URL!"
-msgstr "URL inválido!"
+msgstr "無効なURL"
 
 #. Perl Module: Kernel/Modules/PublicCalendar.pm
 msgid "There was an error exporting the calendar!"
-msgstr "Se produjo un error al exportar el calendario!"
+msgstr ""
 
 #. Perl Module: Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm
 msgid "Refresh (minutes)"
-msgstr "Actualization (minutos)"
+msgstr "更新 (分)"
 
 #. SysConfig
 msgid "Appointment Calendar overview page."
-msgstr "Página de resumen del Calendario de Citas"
+msgstr "予約カレンダーの表示"
 
 #. SysConfig
 msgid "Appointment Notifications"
-msgstr "Notificaciones de Citas"
+msgstr "予約の通知"
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that prepares notification entries for "
 "appointments."
 msgstr ""
-"Módulo de eventos del calendario de citas que prepara entradas para citas."
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that updates the ticket with data from "
 "ticket appointment."
 msgstr ""
-"Módulo de eventos de calendario que actualiza los datos del ticket desde una"
-" cita de ticket."
 
 #. SysConfig
 msgid "Appointment edit screen."
-msgstr "Pantalla de edición de citas."
+msgstr ""
 
 #. SysConfig
 msgid "Appointment list"
-msgstr "Lista de citas"
+msgstr "予約リスト"
 
 #. SysConfig
 msgid "Appointment list."
-msgstr "Lista de citas."
+msgstr "予約リスト"
 
 #. SysConfig
 msgid "Appointment notifications"
-msgstr "Notificaciones de citas"
+msgstr "予約通知"
 
 #. SysConfig
 msgid "Appointments"
-msgstr "Citas"
+msgstr "予約"
 
 #. SysConfig
 msgid "Calendar manage screen."
-msgstr "Pantalla de gestión de Calendarios"
+msgstr "カレンダー管理の画面"
 
 #. SysConfig
 msgid ""
 "Choose for which kind of appointment changes you want to receive "
 "notifications."
 msgstr ""
-"Elija el tipo de cambios en las citas par las cuales desea recibir "
-"notificaciones."
 
 #. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
-msgstr "Crear una nueva cita de calendario vinculada a este ticket"
+msgstr ""
 
 #. SysConfig
 msgid "Create and manage appointment notifications."
-msgstr "Crear y gestionar notificaciones de citas."
+msgstr ""
 
 #. SysConfig
 msgid "Create new appointment."
-msgstr "Crear nueva cita."
+msgstr "予約を登録"
 
 #. SysConfig
 msgid ""
@@ -756,86 +723,70 @@ msgid ""
 "(LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = "
 "Available, 2 = Enabled by default."
 msgstr ""
-"Define cuales columnas serán mostradas en widget de citas vinculadas "
-"(LinkObject::ViewMode = \"compleja\"). Posibles ajustes: 0 = Deshabitada, 1 "
-"= Habilitada, 2 = Habilitada por omisión."
 
 #. SysConfig
 msgid ""
 "Defines an icon with link to the google map page of the current location in "
 "appointment edit screen."
 msgstr ""
-"Define un icono de vínculo a la pagina de google map de la ubicación actual "
-"en la pantalla de edición de citas."
 
 #. SysConfig
 msgid ""
 "Defines the event object types that will be handled via "
 "AdminAppointmentNotificationEvent."
 msgstr ""
-"Define los tipos de objeto de evento que se manejan a través del "
-"AdminAppointmentNotificationEvent."
 
 #. SysConfig
 msgid ""
 "Defines the list of params that can be passed to ticket search function."
 msgstr ""
-"Define la lista de parámetros que pueden ser enviados a la función de "
-"búsqueda de tickets"
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket dynamic field date "
 "time."
 msgstr ""
-"Define el tipo de backed de cita de ticket para campos dinámicos de ticket "
-"de tipo fecha y hora"
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket escalation time."
 msgstr ""
-"Define el tipo de backed de cita de ticket para el tiempo de escalamiento de"
-" ticket"
 
 #. SysConfig
 msgid "Defines the ticket appointment type backend for ticket pending time."
 msgstr ""
-"Define el tipo de backed de cita de ticket para el tiempo de espera de "
-"ticket"
 
 #. SysConfig
 msgid "Defines the ticket plugin for calendar appointments."
-msgstr "Define el plugin de ticket para las citas de calendario."
+msgstr ""
 
 #. SysConfig
 msgid "DynamicField_%s"
-msgstr "CampoDinámico_%s"
+msgstr "DynamicField_%s"
 
 #. SysConfig
 msgid "Edit appointment"
-msgstr "Editar cita"
+msgstr "予約の編集"
 
 #. SysConfig
 msgid "First response time"
-msgstr "Tiempo de primera respuesta"
+msgstr "初回応答期限"
 
 #. SysConfig
 msgid "Import appointments screen."
-msgstr "Pantalla de importación de citas."
+msgstr "予約画面をインポート"
 
 #. SysConfig
 msgid "Links appointments and tickets with a \"Normal\" type link."
-msgstr "Vincular citas y tickets con el tipo de vínculo \"Normal\"."
+msgstr ""
 
 #. SysConfig
 msgid "List of all appointment events to be displayed in the GUI."
-msgstr "Lista de todos los eventos de citas que son desplegaos en la GUI."
+msgstr ""
 
 #. SysConfig
 msgid "List of all calendar events to be displayed in the GUI."
 msgstr ""
-"Lista de todos los eventos de calendario que son desplegados en la GUI."
 
 #. SysConfig
 msgid ""
@@ -843,14 +794,10 @@ msgid ""
 "during calendar creation. Make sure the colors are dark enough so white text"
 " can be overlayed on them."
 msgstr ""
-"Lista de colores en hexadecimal RGB que estarán disponibles para su "
-"selección durante la creación de calendarios. Asegúrese que los colores sean"
-" suficientemente obscuros para que el texto banco se vea correctamente sobre"
-" ellos."
 
 #. SysConfig
 msgid "Manage different calendars."
-msgstr "Gestionar diferentes calendarios."
+msgstr "様々なカレンダーを管理します。"
 
 #. SysConfig
 msgid ""
@@ -858,10 +805,6 @@ msgid ""
 "large number of active calendars can have a performance impact on your "
 "server by making too much simultaneous calls."
 msgstr ""
-"Numero máximo de calendarios activos en las pantallas de resumen. Por favor "
-"note que un numero grande de calendarios activos puede tener un impacto "
-"negativo en el desempeño del servidor debido a una gran cantidad de llamadas"
-" simultáneas."
 
 #. SysConfig
 msgid ""
@@ -870,43 +813,38 @@ msgid ""
 "such Appointments. Instead, system creates all Appointments in the past, "
 "plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
-"OTRS no admite citas recurrentes sin fecha de finalización o sin número de "
-"iteraciones. Durante el proceso de importación, puede ocurrir que el archivo"
-" ICS contenga dichas citas. En su lugar, el sistema crea todas las citas en "
-"el pasado, además de citas para los próximos n meses (120 meses / 10 años "
-"por defecto)."
 
 #. SysConfig
 msgid "Overview of all appointments."
-msgstr "Resumen de todas las citas"
+msgstr "全ての予約の一覧"
 
 #. SysConfig
 msgid "Pending time"
-msgstr "Tiempo de espera"
+msgstr "保留期限"
 
 #. SysConfig
 msgid "Plugin search"
-msgstr "Búsqueda de plug-ins"
+msgstr "プラグイン検索"
 
 #. SysConfig
 msgid "Plugin search module for autocomplete."
-msgstr "Módulo Plug-in de búsqueda para auto-completar."
+msgstr "オートコンプリート用のプラグイン検索モジュール"
 
 #. SysConfig
 msgid "Public Calendar"
-msgstr "Calendario Púplico"
+msgstr "公開するカレンダー"
 
 #. SysConfig
 msgid "Public calendar."
-msgstr "Calendario público."
+msgstr "公開するカレンダー"
 
 #. SysConfig
 msgid "Resource Overview"
-msgstr "Resumen de Recursos"
+msgstr "リソース表示"
 
 #. SysConfig
 msgid "Resource Overview (OTRS Business Solution™)"
-msgstr "Resumen de Recursos (OTRS Business Solution™)"
+msgstr "リソース表示 (OTRS Business Solution™)"
 
 #. SysConfig
 msgid ""
@@ -918,31 +856,21 @@ msgid ""
 "see in the UI. Use \"ClusterPriority\" to configure the order of a certain "
 "cluster within the toolbar."
 msgstr ""
-"Muestra un vínculo en el menú para crear una cita de calendario vinculada al"
-" ticket directo desde  la vista de detalle de ticket de la interface del "
-"agente. Adicionalmente se puede hacer in control de acceso para mostrar o no"
-" este vínculo usando la Clave \"Group\" y el Contenido como "
-"\"rw:group1;move_into:group2\". Para agrupar elemento del menú use la Clave "
-"\"ClusterName\" para el Contenido cualquier nombre que desee ver en la "
-"interface del usuario. Utilize \"ClusterPriority\" para configurar el orden "
-"de un cierto grupo dentro de la barra de herramientas."
 
 #. SysConfig
 msgid "Solution time"
-msgstr "Tiempo de Solución"
+msgstr "解決期限"
 
 #. SysConfig
 msgid "Transport selection for appointment notifications."
-msgstr "Selection de transporte para notificaciones de citas."
+msgstr ""
 
 #. SysConfig
 msgid ""
 "Triggers add or update of automatic calendar appointments based on certain "
 "ticket times."
 msgstr ""
-"Dispara la acción de añadir o actualizar citas automáticas de calendarios "
-"basadas en ciertos tiempos de tickets."
 
 #. SysConfig
 msgid "Update time"
-msgstr "Tiempo de Actualización"
+msgstr "更新日時"

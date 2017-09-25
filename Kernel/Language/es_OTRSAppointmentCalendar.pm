@@ -16,9 +16,9 @@ sub Data {
     my $Self = shift;
 
     # Template: AAANotification
-    $Self->{Translation}->{'Appointment reminder notification'} = '';
+    $Self->{Translation}->{'Appointment reminder notification'} = 'Notificación de recordatorio de cita';
     $Self->{Translation}->{'You will receive a notification each time a reminder time is reached for one of your appointments.'} =
-        '';
+        'Recibirá una notificación cada vez que se alcance la hora de un recordatorio para una de sus citas.';
 
     # Template: AdminAppointmentNotificationEvent
     $Self->{Translation}->{'Appointment Notification Management'} = 'Gestión de Notificaciones de Citas';
@@ -76,18 +76,18 @@ sub Data {
     $Self->{Translation}->{'URL'} = 'URL';
     $Self->{Translation}->{'Export calendar'} = 'Exportar calendario';
     $Self->{Translation}->{'Download calendar'} = 'Descargar calendario';
-    $Self->{Translation}->{'Copy public calendar URL'} = 'Copiar URL pública de calendario';
+    $Self->{Translation}->{'Copy public calendar URL'} = 'Copiar la URL pública de calendario';
     $Self->{Translation}->{'Calendar name'} = 'Nombre del calendario';
     $Self->{Translation}->{'Calendar with same name already exists.'} = 'Ya existe un calendario con el mismo nombre.';
     $Self->{Translation}->{'Permission group'} = 'Grupo de permisos';
     $Self->{Translation}->{'Ticket Appointments'} = 'Citas de Ticket';
     $Self->{Translation}->{'Rule'} = 'Regla';
     $Self->{Translation}->{'Use options below to narrow down for which tickets appointments will be automatically created.'} =
-        'Use las opciones mostradas abajo para acortar las citas de tickets serán creadas automáticamente.';
-    $Self->{Translation}->{'Please select a valid queue.'} = 'Poor favor seleccione una fila válida';
+        'Use las opciones mostradas abajo para acortar las citas de tickets que serán creadas automáticamente.';
+    $Self->{Translation}->{'Please select a valid queue.'} = 'Por favor seleccione una cola válida.';
     $Self->{Translation}->{'Search attributes'} = 'Atributos de búsqueda';
     $Self->{Translation}->{'Define rules for creating automatic appointments in this calendar based on ticket data.'} =
-        'Define reglas para creación de citas automáticas en este calendario basadas en los datos de los tickets.';
+        'Define reglas para creación de las citas automáticas en este calendario basadas en los datos de los tickets.';
     $Self->{Translation}->{'Add Rule'} = 'Añadir regla';
     $Self->{Translation}->{'More'} = 'Más';
     $Self->{Translation}->{'Less'} = 'Menos';
@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Añadir nueva cita';
     $Self->{Translation}->{'Calendars'} = 'Calendarios';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Esta es una página de resumen para el Calendario de Citas';
     $Self->{Translation}->{'Too many active calendars'} = 'Demasiados calendarios activos';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Por favor desactive algunos primero o incremente el límite en la configuración';
@@ -117,7 +116,7 @@ sub Data {
     $Self->{Translation}->{'Click here to edit the parent appointment.'} = 'Precione aquí  para editar la cita padre.';
     $Self->{Translation}->{'Frequency'} = 'Frecuencia';
     $Self->{Translation}->{'Every'} = 'Cada';
-    $Self->{Translation}->{'Relative point of time'} = 'Punto de tiempo relativo.';
+    $Self->{Translation}->{'Relative point of time'} = 'Punto de tiempo relativo';
     $Self->{Translation}->{'Are you sure you want to delete this appointment? This operation cannot be undone.'} =
         '¿Está seguro de que desea eliminar esta cita? Esta operación no se puede deshacer.';
 
@@ -138,7 +137,7 @@ sub Data {
     $Self->{Translation}->{'5 days'} = '5 días';
 
     # Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
-    $Self->{Translation}->{'Notification name already exists!'} = 'El nombre de la notificación ya existe!';
+    $Self->{Translation}->{'Notification name already exists!'} = '¡El nombre de la notificación ya existe!';
     $Self->{Translation}->{'Agent (resources), who are selected within the appointment'} = 'Agentes (recursos), que pueden ser seleccionados dentro de una cita';
     $Self->{Translation}->{'All agents with (at least) read permission for the appointment (calendar)'} =
         'Agentes con (al menos) permisos de lectura para la cita (calendario)';
@@ -154,7 +153,7 @@ sub Data {
     $Self->{Translation}->{'Couldn\'t read calendar configuration file.'} = 'No se puede leer el archivo de configuración del calendario.';
     $Self->{Translation}->{'Please make sure your file is valid.'} = 'Por favor asegúrese de que el archivo es válido.';
     $Self->{Translation}->{'Could not import the calendar!'} = 'No se puede importar el calendario!';
-    $Self->{Translation}->{'Calendar imported!'} = 'Calendario importado!';
+    $Self->{Translation}->{'Calendar imported!'} = '¡Calendario importado!';
     $Self->{Translation}->{'Need CalendarID!'} = 'Se necesita CalendarID!';
     $Self->{Translation}->{'Could not retrieve data for given CalendarID'} = 'Not se pueden obtener los datos para el CalendarID especificado';
     $Self->{Translation}->{'Successfully imported %s appointment(s) to calendar %s.'} = 'Se han importado %s cita(s) al calendario %s.';
@@ -169,7 +168,7 @@ sub Data {
     $Self->{Translation}->{'Showing only appointments assigned to you! Change settings'} = 'Mostrando solo citas asignadas a tí! Cambiar configuración';
 
     # Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
-    $Self->{Translation}->{'Appointment not found!'} = 'La cita no fue encontrada!';
+    $Self->{Translation}->{'Appointment not found!'} = '¡Cita no encontrada!';
     $Self->{Translation}->{'Never'} = 'Nunca';
     $Self->{Translation}->{'Every Day'} = 'Cada Día';
     $Self->{Translation}->{'Every Week'} = 'Cada Semana';
@@ -190,33 +189,31 @@ sub Data {
     $Self->{Translation}->{'%s hour(s) before'} = '%s hora(s) antes';
     $Self->{Translation}->{'%s day(s) before'} = '%s día(s) antes';
     $Self->{Translation}->{'%s week before'} = '%s semanas antes';
-    $Self->{Translation}->{'before the appointment starts'} = 'antes de que la cita inicie';
-    $Self->{Translation}->{'after the appointment has been started'} = 'después de que la cita halla iniciado';
-    $Self->{Translation}->{'before the appointment ends'} = 'antes de que termine la cita';
-    $Self->{Translation}->{'after the appointment has been ended'} = 'después de que la cita halla finalizado';
-    $Self->{Translation}->{'No permission!'} = 'No tiene permisos!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Los vínculos no pudieron ser borrados!';
-    $Self->{Translation}->{'Link could not be created!'} = 'El vínculo no pudo ser borrado!';
+    $Self->{Translation}->{'before the appointment starts'} = 'antes del inicio de la cita';
+    $Self->{Translation}->{'after the appointment has been started'} = 'después del inicio de la cita';
+    $Self->{Translation}->{'before the appointment ends'} = 'antes del fin de la cita';
+    $Self->{Translation}->{'after the appointment has been ended'} = 'después del fin de la cita';
+    $Self->{Translation}->{'No permission!'} = '¡No tiene permisos!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'La cita no puede ser borrada!';
-    $Self->{Translation}->{'No permissions!'} = 'No tiene permisos!';
+    $Self->{Translation}->{'No permissions!'} = '¡No tiene permisos!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'No tiene permisos';
     $Self->{Translation}->{'System was unable to import file!'} = 'El sistema no pudo importar el archivo!';
-    $Self->{Translation}->{'Please check the log for more information.'} = '';
+    $Self->{Translation}->{'Please check the log for more information.'} = 'Por favor, revise el registro para mas información.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d más';
 
     # Perl Module: Kernel/Modules/PublicCalendar.pm
-    $Self->{Translation}->{'No %s!'} = 'No se tiene %s!';
-    $Self->{Translation}->{'No such user!'} = 'No existe el usuario!';
-    $Self->{Translation}->{'Invalid calendar!'} = 'Calendario inválido';
-    $Self->{Translation}->{'Invalid URL!'} = 'URL inválido!';
-    $Self->{Translation}->{'There was an error exporting the calendar!'} = 'Se produjo un error al exportar el calendario!';
+    $Self->{Translation}->{'No %s!'} = '¡No se tiene %s!';
+    $Self->{Translation}->{'No such user!'} = '¡No existe el usuario!';
+    $Self->{Translation}->{'Invalid calendar!'} = '¡Calendario no valido!';
+    $Self->{Translation}->{'Invalid URL!'} = '¡URL no válida!';
+    $Self->{Translation}->{'There was an error exporting the calendar!'} = '¡Se produjo un error al exportar el calendario!';
 
     # Perl Module: Kernel/Output/HTML/Dashboard/AppointmentCalendar.pm
-    $Self->{Translation}->{'Refresh (minutes)'} = 'Actualization (minutos)';
+    $Self->{Translation}->{'Refresh (minutes)'} = 'Actualización (minutos)';
 
     # SysConfig
     $Self->{Translation}->{'Appointment Calendar overview page.'} = 'Página de resumen del Calendario de Citas';
@@ -234,10 +231,10 @@ sub Data {
     $Self->{Translation}->{'Choose for which kind of appointment changes you want to receive notifications.'} =
         'Elija el tipo de cambios en las citas par las cuales desea recibir notificaciones.';
     $Self->{Translation}->{'Create a new calendar appointment linked to this ticket'} = 'Crear una nueva cita de calendario vinculada a este ticket';
-    $Self->{Translation}->{'Create and manage appointment notifications.'} = 'Crear y gestionar notificaciones de citas.';
+    $Self->{Translation}->{'Create and manage appointment notifications.'} = 'Crea y gestiona las notificaciones de citas.';
     $Self->{Translation}->{'Create new appointment.'} = 'Crear nueva cita.';
     $Self->{Translation}->{'Define which columns are shown in the linked appointment widget (LinkObject::ViewMode = "complex"). Possible settings: 0 = Disabled, 1 = Available, 2 = Enabled by default.'} =
-        'Define cuales columnas serán mostradas en widget de citas vinculadas (LinkObject::ViewMode = "compleja"). Posibles ajustes: 0 = Deshabitada, 1 = Habilitada, 2 = Habilitada por omisión.';
+        'Define cuales columnas serán mostradas en widget de citas vinculadas (LinkObject::ViewMode = "complex"). Ajustes posibles: 0 = Desactivado, 1 = Disponible, 2 = Activado de forma predeterminada.';
     $Self->{Translation}->{'Defines an icon with link to the google map page of the current location in appointment edit screen.'} =
         'Define un icono de vínculo a la pagina de google map de la ubicación actual en la pantalla de edición de citas.';
     $Self->{Translation}->{'Defines the event object types that will be handled via AdminAppointmentNotificationEvent.'} =
@@ -275,11 +272,11 @@ sub Data {
     $Self->{Translation}->{'Resource Overview (OTRS Business Solution™)'} = 'Resumen de Recursos (OTRS Business Solution™)';
     $Self->{Translation}->{'Shows a link in the menu for creating a calendar appointment linked to the ticket directly from the ticket zoom view of the agent interface. Additional access control to show or not show this link can be done by using Key "Group" and Content like "rw:group1;move_into:group2". To cluster menu items use for Key "ClusterName" and for the Content any name you want to see in the UI. Use "ClusterPriority" to configure the order of a certain cluster within the toolbar.'} =
         'Muestra un vínculo en el menú para crear una cita de calendario vinculada al ticket directo desde  la vista de detalle de ticket de la interface del agente. Adicionalmente se puede hacer in control de acceso para mostrar o no este vínculo usando la Clave "Group" y el Contenido como "rw:group1;move_into:group2". Para agrupar elemento del menú use la Clave "ClusterName" para el Contenido cualquier nombre que desee ver en la interface del usuario. Utilize "ClusterPriority" para configurar el orden de un cierto grupo dentro de la barra de herramientas.';
-    $Self->{Translation}->{'Solution time'} = 'Tiempo de Solución';
+    $Self->{Translation}->{'Solution time'} = 'Tiempo de solución';
     $Self->{Translation}->{'Transport selection for appointment notifications.'} = 'Selection de transporte para notificaciones de citas.';
     $Self->{Translation}->{'Triggers add or update of automatic calendar appointments based on certain ticket times.'} =
         'Dispara la acción de añadir o actualizar citas automáticas de calendarios basadas en ciertos tiempos de tickets.';
-    $Self->{Translation}->{'Update time'} = 'Tiempo de Actualización';
+    $Self->{Translation}->{'Update time'} = 'Tiempo de actualización';
 
 }
 

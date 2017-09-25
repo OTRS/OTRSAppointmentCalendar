@@ -2,12 +2,13 @@
 # Udo Bretz <udo.bretz@web.de>, 2016
 # José Ribeiro <joserribeiro26@gmail.com>, 2016
 # Edicarlos Lopes Santos <esantos@beonup.com.br>, 2016
+# Kleber Tertulino <contato@ktertulino.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-11-03 13:51+0000\n"
+"POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Edicarlos Lopes Santos <esantos@beonup.com.br>, 2016\n"
+"Last-Translator: Kleber Tertulino <contato@ktertulino.com>, 2017\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/otrs/teams/23435/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -458,10 +459,6 @@ msgid "System was unable to create Calendar!"
 msgstr "Sistema não foi capaz de criar o Calendário!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
-msgid "Please contact the administrator."
-msgstr "Por favor, entre em contato com o administrador."
-
-#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
 msgstr "Nenhum CalendarID!"
 
@@ -660,6 +657,10 @@ msgstr "Sem permissão"
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
 msgstr "Sistema não foi capaz de importar arquivo!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "Please check the log for more information."
+msgstr "Por favor verifique o log para mais informações."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"

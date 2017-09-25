@@ -72,7 +72,7 @@ sub Data {
         'Verschieben in: Benutzer können Termine innerhalb eines Kalenders bearbeiten, diese jedoch nicht in andere Kalender verschieben.';
     $Self->{Translation}->{'Create: users can create and delete appointments in the calendar.'} =
         'Erstellen: Benutzer können Termine im Kalender erstellen und löschen.';
-    $Self->{Translation}->{'Read/write: users can manage the calendar itself.'} = 'RO: Benutzer können die Kalender an sich verwalten.';
+    $Self->{Translation}->{'Read/write: users can manage the calendar itself.'} = 'rw: Benutzer können die Kalender an sich verwalten.';
     $Self->{Translation}->{'URL'} = 'URL';
     $Self->{Translation}->{'Export calendar'} = 'Kalender exportieren';
     $Self->{Translation}->{'Download calendar'} = 'Kalender herunterladen';
@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Einen neuen Termin anlegen';
     $Self->{Translation}->{'Calendars'} = 'Kalender';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Dies ist eine Übersicht für die Terminkalender.';
     $Self->{Translation}->{'Too many active calendars'} = 'Zuviele aktive Kalender';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Bitte deaktivieren Sie zuerst einige oder erhöhen Sie das Limit in der Konfiguration.';
@@ -195,15 +194,13 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = 'bevor der Termin endet';
     $Self->{Translation}->{'after the appointment has been ended'} = 'nachdem der Termin geendet hat';
     $Self->{Translation}->{'No permission!'} = 'Keine Berechtigung!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Links konnten nicht gelöscht werden!';
-    $Self->{Translation}->{'Link could not be created!'} = 'Links konnten nicht erstellt werden!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'Ticket-Termin konnte nicht gelöscht werden!';
     $Self->{Translation}->{'No permissions!'} = 'Keine Berechtigung!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Keine Berechtigung';
     $Self->{Translation}->{'System was unable to import file!'} = 'Das System konnte die Datei nicht importieren!';
-    $Self->{Translation}->{'Please check the log for more information.'} = '';
+    $Self->{Translation}->{'Please check the log for more information.'} = 'Bitte prüfen Sie das Systemprotokoll für weitere Informationen.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d mehr';

@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Добавить новое мероприятие';
     $Self->{Translation}->{'Calendars'} = 'Календари';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Это страница обзора Мероприятий календаря.';
     $Self->{Translation}->{'Too many active calendars'} = 'Слишком много активных календарей';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Пожалуйста или отключите некоторые или увеличьте предельное количество в настройках.';
@@ -195,15 +194,13 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = 'до окончания мероприятия';
     $Self->{Translation}->{'after the appointment has been ended'} = 'после окончания мероприятия';
     $Self->{Translation}->{'No permission!'} = 'Нет прав доступа!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Связь не может быть удалена!';
-    $Self->{Translation}->{'Link could not be created!'} = 'Связь не может быть создана!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'Невозможно удалить мероприятие заявки!';
     $Self->{Translation}->{'No permissions!'} = 'Нет прав доступа!';
 
     # Perl Module: Kernel/Modules/AgentAppointmentImport.pm
     $Self->{Translation}->{'No permissions'} = 'Нет прав доступа';
     $Self->{Translation}->{'System was unable to import file!'} = 'Системе не удалось импортировать файл!';
-    $Self->{Translation}->{'Please check the log for more information.'} = '';
+    $Self->{Translation}->{'Please check the log for more information.'} = 'Пожалуйста, проверьте журнал для получения дополнительной информации.';
 
     # Perl Module: Kernel/Modules/AgentAppointmentList.pm
     $Self->{Translation}->{'+%d more'} = '+%d еще';

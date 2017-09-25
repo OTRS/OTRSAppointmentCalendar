@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Dodaj novi termin';
     $Self->{Translation}->{'Calendars'} = 'Kalendari';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Ova stranica služi za pregled kalendara.';
     $Self->{Translation}->{'Too many active calendars'} = 'Previše aktivnih kalendara';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Ili prvo isključite prikaz nekog kalendara ili povećajte limit u konfiguraciji.';
@@ -195,8 +194,6 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = 'pre nego što se termin završi';
     $Self->{Translation}->{'after the appointment has been ended'} = 'pošto se termin završi';
     $Self->{Translation}->{'No permission!'} = 'Bez dozvole!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Veze ne mogu biti obrisane!';
-    $Self->{Translation}->{'Link could not be created!'} = 'Veza nije mogla biti kreirana!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'Nije moguće obrisati termin tiketa!';
     $Self->{Translation}->{'No permissions!'} = 'Bez dozvole!';
 

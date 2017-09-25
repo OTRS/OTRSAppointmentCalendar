@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-11-03 13:51+0000\n"
+"POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>, 2016\n"
 "Language-Team: Hungarian (https://www.transifex.com/otrs/teams/23435/hu/)\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 #. Template: AAANotification
 msgid "Appointment reminder notification"
-msgstr "Értekezlet emlékeztető értesítés"
+msgstr "Időpont emlékeztető értesítés"
 
 #. Template: AAANotification
 msgid ""
@@ -23,11 +23,11 @@ msgid ""
 " of your appointments."
 msgstr ""
 "Egy értesítést fog kapni minden alkalommal, amikor egy emlékeztető idő "
-"elérésre kerül az értekezletei egyikénél."
+"elérésre kerül az időpontjai egyikénél."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Notification Management"
-msgstr "Értekezlet-értesítés kezelés"
+msgstr "Időpont-értesítés kezelés"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -35,9 +35,9 @@ msgid ""
 " to your system. The file needs to be in .yml format as exported by the "
 "appointment notification module."
 msgstr ""
-"Itt tud egy beállítófájlt feltölteni az értekezlet-értesítések "
-"importálásához a rendszerre. A fájlnak .yml formátumban kell lennie, ahogy "
-"az értekezlet-értesítés modul exportálta."
+"Itt tud egy beállítófájlt feltölteni az időpont-értesítések importálásához a"
+" rendszerre. A fájlnak .yml formátumban kell lennie, ahogy az időpont-"
+"értesítés modul exportálta."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid ""
@@ -46,12 +46,12 @@ msgid ""
 "appointments with certain criteria."
 msgstr ""
 "Itt választhatja ki, hogy mely események fogják aktiválni ezt az értesítést."
-" Egy további értekezletszűrő alkalmazható lent a csak egy bizonyos "
-"feltétellel rendelkező értekezleteknél történő küldéshez."
+" Egy további időpontszűrő alkalmazható lent a csak egy bizonyos feltétellel "
+"rendelkező időpontoknál történő küldéshez."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Appointment Filter"
-msgstr "Értekezlet szűrő"
+msgstr "Időpont szűrő"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Team"
@@ -66,8 +66,8 @@ msgid ""
 "Notify user just once per day about a single appointment using a selected "
 "transport."
 msgstr ""
-"A felhasználó értesítése csak egyszer egy nap egy egyedüli értekezletről egy"
-" kiválasztott átvitel használatával."
+"A felhasználó értesítése csak egyszer egy nap egy egyedüli időpontról egy "
+"kiválasztott átvitel használatával."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "Notifications are sent to an agent."
@@ -75,11 +75,11 @@ msgstr "Az értesítések egy ügyintézőnek kerülnek elküldésre."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the first 20 character of the appointment title."
-msgstr "Az értekezlet címe első 20 karakterének lekéréséhez."
+msgstr "Az időpontcím első 20 karakterének lekéréséhez."
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the appointment attribute"
-msgstr "Az értekezlet jellemzőjének lekéréséhez"
+msgstr "Az időpont jellemzőjének lekéréséhez"
 
 #. Template: AdminAppointmentNotificationEvent
 msgid "To get the calendar attribute"
@@ -95,7 +95,7 @@ msgstr "Naptárak kezelése"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Add Appointment"
-msgstr "Értekezlet hozzáadása"
+msgstr "Időpont hozzáadása"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Color"
@@ -119,11 +119,11 @@ msgstr ""
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Appointment"
-msgstr "Értekezlet"
+msgstr "Időpont"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "This is a repeating appointment"
-msgstr "Ez egy ismétlődő értekezlet"
+msgstr "Ez egy ismétlődő időpont"
 
 #. Template: AgentAppointmentAgendaOverview
 msgid "Would you like to edit just this occurrence or all occurrences?"
@@ -155,7 +155,7 @@ msgstr "Naptár hozzáadása"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Import Appointments"
-msgstr "Értekezletek importálása"
+msgstr "Időpontok importálása"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Calendar Import"
@@ -194,20 +194,20 @@ msgstr ""
 msgid "Read only: users can see and export all appointments in the calendar."
 msgstr ""
 "Csak olvasás: a felhasználók láthatják és exportálhatják a naptárban lévő "
-"összes értekezletet."
+"összes időpontot."
 
 #. Template: AgentAppointmentCalendarManage
 msgid ""
 "Move into: users can modify appointments in the calendar, but without "
 "changing the calendar selection."
 msgstr ""
-"Átmozgatás: a felhasználók módosíthatják az értekezleteket a naptárban, de a"
-" naptárválasztás megváltoztatása nélkül."
+"Átmozgatás: a felhasználók módosíthatják az időpontokat a naptárban, de a "
+"naptárválasztás megváltoztatása nélkül."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Create: users can create and delete appointments in the calendar."
 msgstr ""
-"Létrehozás: a felhasználók létrehozhatnak és törölhetnek értekezleteket a "
+"Létrehozás: a felhasználók létrehozhatnak és törölhetnek időpontokat a "
 "naptárban."
 
 #. Template: AgentAppointmentCalendarManage
@@ -244,7 +244,7 @@ msgstr "Jogosultsági csoport"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Ticket Appointments"
-msgstr "Jegyértekezletek"
+msgstr "Jegyidőpontok"
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Rule"
@@ -256,7 +256,7 @@ msgid ""
 "automatically created."
 msgstr ""
 "Használja a lenti lehetőségeket annak leszűkítéséhez, hogy mely jegyek "
-"értekezletei legyenek automatikusan létrehozva."
+"időpontjai legyenek automatikusan létrehozva."
 
 #. Template: AgentAppointmentCalendarManage
 msgid "Please select a valid queue."
@@ -271,7 +271,7 @@ msgid ""
 "Define rules for creating automatic appointments in this calendar based on "
 "ticket data."
 msgstr ""
-"Szabályok meghatározása automatikus értekezletek létrehozásához ebben a "
+"Szabályok meghatározása automatikus időpontok létrehozásához ebben a "
 "naptárban a jegyadatok alapján."
 
 #. Template: AgentAppointmentCalendarManage
@@ -288,7 +288,7 @@ msgstr "Kevesebb"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Add new Appointment"
-msgstr "Új értekezlet hozzáadása"
+msgstr "Új időpont hozzáadása"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Calendars"
@@ -296,7 +296,7 @@ msgstr "Naptárak"
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "This is an overview page for the Appointment Calendar."
-msgstr "Ez egy áttekintő oldal az értekezlet naptárhoz."
+msgstr "Ez egy áttekintő oldal az időpontnaptárhoz."
 
 #. Template: AgentAppointmentCalendarOverview
 msgid "Too many active calendars"
@@ -355,15 +355,15 @@ msgstr "Állítsa ezt egy kezdési dátum utáni értékre."
 
 #. Template: AgentAppointmentEdit
 msgid "This an occurrence of a repeating appointment."
-msgstr "Ez egy ismétlődő értekezlet előfordulása."
+msgstr "Ez egy ismétlődő időpont előfordulása."
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to see the parent appointment."
-msgstr "Kattintson ide a szülő értekezlet megtekintéséhez."
+msgstr "Kattintson ide a szülőidőpont megtekintéséhez."
 
 #. Template: AgentAppointmentEdit
 msgid "Click here to edit the parent appointment."
-msgstr "Kattintson ide a szülő értekezlet szerkesztéséhez."
+msgstr "Kattintson ide a szülőidőpont szerkesztéséhez."
 
 #. Template: AgentAppointmentEdit
 msgid "Frequency"
@@ -382,12 +382,12 @@ msgid ""
 "Are you sure you want to delete this appointment? This operation cannot be "
 "undone."
 msgstr ""
-"Biztosan törölni szeretné ezt az értekezletet? Ezt a műveletet nem lehet "
+"Biztosan törölni szeretné ezt az időpontot? Ezt a műveletet nem lehet "
 "visszavonni."
 
 #. Template: AgentAppointmentImport
 msgid "Appointment Import"
-msgstr "Értekezlet importálása"
+msgstr "Időpont importálása"
 
 #. Template: AgentAppointmentImport
 msgid "Uploaded file must be in valid iCal format (.ics)."
@@ -403,15 +403,15 @@ msgstr ""
 
 #. Template: AgentAppointmentImport
 msgid "Update existing appointments?"
-msgstr "Frissíti a meglévő értekezleteket?"
+msgstr "Frissíti a meglévő időpontokat?"
 
 #. Template: AgentAppointmentImport
 msgid ""
 "All existing appointments in the calendar with same UniqueID will be "
 "overwritten."
 msgstr ""
-"A naptárban lévő ilyen egyedi azonosítóval rendelkező összes meglévő "
-"értekezlet felül lesz írva."
+"A naptárban lévő ilyen egyedi azonosítóval rendelkező összes meglévő időpont"
+" felül lesz írva."
 
 #. Template: AgentAppointmentImport
 msgid "Upload calendar"
@@ -419,11 +419,11 @@ msgstr "Naptár feltöltése"
 
 #. Template: AgentAppointmentImport
 msgid "Import appointments"
-msgstr "Értekezletek importálása"
+msgstr "Időpontok importálása"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "New Appointment"
-msgstr "Új értekezlet"
+msgstr "Új időpont"
 
 #. Template: AgentDashboardAppointmentCalendar
 msgid "Soon"
@@ -439,28 +439,24 @@ msgstr "Az értesítés neve már létezik!"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "Agent (resources), who are selected within the appointment"
-msgstr "Ügyintéző (erőforrások), aki az értekezleten belül ki lett jelölve"
+msgstr "Ügyintéző (erőforrások), aki az időponton belül ki lett jelölve"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid ""
 "All agents with (at least) read permission for the appointment (calendar)"
 msgstr ""
 "Az összes ügyintéző, akiknek (legalább) olvasási jogosultságuk van az "
-"értekezlethez (naptárhoz)"
+"időpontokhoz (naptárhoz)"
 
 #. Perl Module: Kernel/Modules/AdminAppointmentNotificationEvent.pm
 msgid "All agents with write permission for the appointment (calendar)"
 msgstr ""
-"Az összes ügyintéző, akiknek írási jogosultságuk van az értekezlethez "
+"Az összes ügyintéző, akiknek írási jogosultságuk van az időponthoz "
 "(naptárhoz)"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "System was unable to create Calendar!"
 msgstr "A rendszer nem tudta létrehozni a naptárat!"
-
-#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
-msgid "Please contact the administrator."
-msgstr "Vegye fel a kapcsolatot a rendszergazdával."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
@@ -504,7 +500,7 @@ msgstr "Nem sikerült lekérni az adatokat a megadott naptár-azonosítóhoz"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "Successfully imported %s appointment(s) to calendar %s."
-msgstr "%s értekezlet sikeresen importálva a(z) %s naptárba."
+msgstr "%s időpont sikeresen importálva a(z) %s naptárba."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "+5 minutes"
@@ -524,21 +520,21 @@ msgstr "+1 óra"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "All appointments"
-msgstr "Minden értekezlet"
+msgstr "Minden időpont"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Appointments assigned to me"
-msgstr "Hozzám rendelt értekezletek"
+msgstr "Hozzám rendelt időpontok"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarOverview.pm
 msgid "Showing only appointments assigned to you! Change settings"
 msgstr ""
-"Csak az önhöz rendelt értekezletek vannak megjelenítve! Beállítások "
+"Csak az önhöz rendelt időpontok vannak megjelenítve! Beállítások "
 "megváltoztatása"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Appointment not found!"
-msgstr "Az értekezlet nem található!"
+msgstr "Az időpont nem található!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Never"
@@ -622,19 +618,19 @@ msgstr "%s héttel előtte"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment starts"
-msgstr "az értekezlet kezdete előtt"
+msgstr "az időpont kezdete előtt"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been started"
-msgstr "miután az értekezlet elkezdődött"
+msgstr "miután az időpont elkezdődött"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "before the appointment ends"
-msgstr "az értekezlet vége előtt"
+msgstr "az időpont vége előtt"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "after the appointment has been ended"
-msgstr "miután az értekezlet véget ért"
+msgstr "miután az időpont véget ért"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permission!"
@@ -650,7 +646,7 @@ msgstr "A kapcsolatot nem sikerült létrehozni!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "Cannot delete ticket appointment!"
-msgstr "Nem lehet törölni a jegyértekezletet!"
+msgstr "Nem lehet törölni a jegyidőpontot!"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentEdit.pm
 msgid "No permissions!"
@@ -663,6 +659,10 @@ msgstr "Nincsenek jogosultságok"
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
 msgstr "A rendszer nem tudta importálni a fájlt!"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "Please check the log for more information."
+msgstr "További információkért nézze meg a naplót."
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"
@@ -694,47 +694,47 @@ msgstr "Frissítés (perc)"
 
 #. SysConfig
 msgid "Appointment Calendar overview page."
-msgstr "Értekezlet naptár áttekintő oldal."
+msgstr "Időpontnaptár áttekintő oldal."
 
 #. SysConfig
 msgid "Appointment Notifications"
-msgstr "Értekezlet-értesítések"
+msgstr "Időpont-értesítések"
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that prepares notification entries for "
 "appointments."
 msgstr ""
-"Értekezlet naptár esemény modul, amely előkészíti az értesítési "
-"bejegyzéseket az értekezletekhez."
+"Időpontnaptár esemény modul, amely előkészíti az értesítési bejegyzéseket az"
+" időpontokhoz."
 
 #. SysConfig
 msgid ""
 "Appointment calendar event module that updates the ticket with data from "
 "ticket appointment."
 msgstr ""
-"Értekezlet naptár esemény modul, amely frissíti a jegyértekezletből származó"
-" adatokkal rendelkező jegyet."
+"Időpontnaptár esemény modul, amely frissíti a jegyidőpontból származó "
+"adatokkal rendelkező jegyet."
 
 #. SysConfig
 msgid "Appointment edit screen."
-msgstr "Értekezlet-szerkesztés képernyő."
+msgstr "Időpontszerkesztés képernyő."
 
 #. SysConfig
 msgid "Appointment list"
-msgstr "Értekezletlista"
+msgstr "Időpontlista"
 
 #. SysConfig
 msgid "Appointment list."
-msgstr "Értekezletlista."
+msgstr "Időpontlista."
 
 #. SysConfig
 msgid "Appointment notifications"
-msgstr "Értekezlet-értesítések"
+msgstr "Időpont-értesítések"
 
 #. SysConfig
 msgid "Appointments"
-msgstr "Értekezletek"
+msgstr "Időpontok"
 
 #. SysConfig
 msgid "Calendar manage screen."
@@ -745,20 +745,20 @@ msgid ""
 "Choose for which kind of appointment changes you want to receive "
 "notifications."
 msgstr ""
-"Válassza ki, hogy milyen típusú értekezlet-változtatásról szeretne "
+"Válassza ki, hogy milyen típusú időpont-változtatásról szeretne "
 "értesítéseket kapni."
 
 #. SysConfig
 msgid "Create a new calendar appointment linked to this ticket"
-msgstr "Ezzel a jeggyel összekapcsolt új naptár értekezlet létrehozása"
+msgstr "Ezzel a jeggyel összekapcsolt új naptáridőpont létrehozása"
 
 #. SysConfig
 msgid "Create and manage appointment notifications."
-msgstr "Értekezlet-értesítések létrehozása és kezelése."
+msgstr "Időpont-értesítések létrehozása és kezelése."
 
 #. SysConfig
 msgid "Create new appointment."
-msgstr "Új értekezlet létrehozása."
+msgstr "Új időpont létrehozása."
 
 #. SysConfig
 msgid ""
@@ -766,8 +766,8 @@ msgid ""
 "(LinkObject::ViewMode = \"complex\"). Possible settings: 0 = Disabled, 1 = "
 "Available, 2 = Enabled by default."
 msgstr ""
-"Annak meghatározása, hogy mely oszlopok legyenek láthatók a kapcsolt "
-"értekezlet felületi elemen (LinkObject::ViewMode = „összetett”). Lehetséges "
+"Annak meghatározása, hogy mely oszlopok legyenek láthatók a kapcsolt időpont"
+" felületi elemen (LinkObject::ViewMode = „összetett”). Lehetséges "
 "beállítások: 0 = letiltva, 1 = elérhető, 2 = alapértelmezetten "
 "engedélyezett."
 
@@ -777,7 +777,7 @@ msgid ""
 "appointment edit screen."
 msgstr ""
 "Meghatároz egy ikont a jelenlegi hely Google Térkép oldalára mutató "
-"hivatkozással az értekezlet-szerkesztés képernyőn."
+"hivatkozással az időpontszerkesztés képernyőn."
 
 #. SysConfig
 msgid ""
@@ -799,25 +799,25 @@ msgid ""
 "Defines the ticket appointment type backend for ticket dynamic field date "
 "time."
 msgstr ""
-"Meghatározza a jegyértekezlet típusának háttérprogramját a jegy dátum és idő"
-" dinamikus mezőjéhez."
+"Meghatározza a jegyidőpont típusának háttérprogramját a jegy dátum és idő "
+"dinamikus mezőjéhez."
 
 #. SysConfig
 msgid ""
 "Defines the ticket appointment type backend for ticket escalation time."
 msgstr ""
-"Meghatározza a jegyértekezlet típusának háttérprogramját a jegy eszkalációs "
+"Meghatározza a jegyidőpont típusának háttérprogramját a jegy eszkalációs "
 "idejéhez."
 
 #. SysConfig
 msgid "Defines the ticket appointment type backend for ticket pending time."
 msgstr ""
-"Meghatározza a jegyértekezlet típusának háttérprogramját a jegy függőben "
-"lévő idejéhez."
+"Meghatározza a jegyidőpont típusának háttérprogramját a jegy függőben lévő "
+"idejéhez."
 
 #. SysConfig
 msgid "Defines the ticket plugin for calendar appointments."
-msgstr "Meghatározza a jegybővítményt a naptár értekezletekhez."
+msgstr "Meghatározza a jegybővítményt a naptáridőpontokhoz."
 
 #. SysConfig
 msgid "DynamicField_%s"
@@ -825,7 +825,7 @@ msgstr "DynamicField_%s"
 
 #. SysConfig
 msgid "Edit appointment"
-msgstr "Értekezlet szerkesztése"
+msgstr "Időpont szerkesztése"
 
 #. SysConfig
 msgid "First response time"
@@ -833,19 +833,17 @@ msgstr "Első válaszidő"
 
 #. SysConfig
 msgid "Import appointments screen."
-msgstr "Értekezletek importálása képernyő."
+msgstr "Időpontok importálása képernyő."
 
 #. SysConfig
 msgid "Links appointments and tickets with a \"Normal\" type link."
 msgstr ""
-"Összekapcsolja az értekezleteket és jegyeket egy „Normál” típusú "
-"hivatkozással."
+"Összekapcsolja az időpontokat és jegyeket egy „Normál” típusú hivatkozással."
 
 #. SysConfig
 msgid "List of all appointment events to be displayed in the GUI."
 msgstr ""
-"Az összes értekezlet esemény listája, amelyek megjelennek a grafikus "
-"felületen."
+"Az összes időpontesemény listája, amelyek megjelennek a grafikus felületen."
 
 #. SysConfig
 msgid "List of all calendar events to be displayed in the GUI."
@@ -885,14 +883,14 @@ msgid ""
 "plus Appointments for the next n months (120 months/10 years by default)."
 msgstr ""
 "Az OTRS nem támogatja a befejezési dátum vagy az ismétlések száma nélküli "
-"ismétlődő értekezleteket. Az importálási folyamat során előfordulhat, hogy "
-"az ICS-fájl ilyen értekezleteket tartalmaz. Ehelyett a rendszer az összes "
-"értekezletet a múltban hozza létre, valamint a következő n hónapban (120 "
+"ismétlődő időpontokat. Az importálási folyamat során előfordulhat, hogy az "
+"ICS-fájl ilyen időpontokat tartalmaz. Ehelyett a rendszer az összes "
+"időpontot a múltban hozza létre, valamint a következő n hónapban (120 "
 "hónap/10 év alapértelmezetten)."
 
 #. SysConfig
 msgid "Overview of all appointments."
-msgstr "Az összes értekezlet áttekintője."
+msgstr "Az összes időpont áttekintője."
 
 #. SysConfig
 msgid "Pending time"
@@ -932,10 +930,10 @@ msgid ""
 "see in the UI. Use \"ClusterPriority\" to configure the order of a certain "
 "cluster within the toolbar."
 msgstr ""
-"Egy hivatkozást jelenít meg a menüben a jeggyel összekapcsolt naptár "
-"értekezlet létrehozásához közvetlenül az ügyintézői felület jegynagyítás "
-"nézetéből. Ezen hivatkozás megjelenítéséhez vagy meg nem jelenítéséhez "
-"további hozzáférési vezérlőt lehet készíteni a „Group” kulcs és az "
+"Egy hivatkozást jelenít meg a menüben a jeggyel összekapcsolt naptáridőpont "
+"létrehozásához közvetlenül az ügyintézői felület jegynagyítás nézetéből. "
+"Ezen hivatkozás megjelenítéséhez vagy meg nem jelenítéséhez további "
+"hozzáférési vezérlőt lehet készíteni a „Group” kulcs és az "
 "„rw:csoport1;move_into:csoport2” tartalomhoz hasonló használatával. A "
 "menüpontok csoportokba rendezéséhez használja a „ClusterName” kulcsot "
 "bármilyen olyan tartalommal, amelyet a felhasználói felületen látni "
@@ -948,14 +946,14 @@ msgstr "Megoldási idő"
 
 #. SysConfig
 msgid "Transport selection for appointment notifications."
-msgstr "Átvitelkiválasztás az értekezlet-értesítésekhez."
+msgstr "Átvitelkiválasztás az időpont-értesítésekhez."
 
 #. SysConfig
 msgid ""
 "Triggers add or update of automatic calendar appointments based on certain "
 "ticket times."
 msgstr ""
-"Aktiválja az automatikus naptár értekezletek hozzáadását vagy frissítését "
+"Aktiválja az automatikus naptáridőpontok hozzáadását vagy frissítését "
 "bizonyos jegyidők alapján."
 
 #. SysConfig

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: OTRSAppointmentCalendar\n"
-"POT-Creation-Date: 2016-11-03 13:51+0000\n"
+"POT-Creation-Date: 2016-12-16 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: 汇民 王 <whuim@163.com>, 2016\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/otrs/teams/23435/zh_CN/)\n"
@@ -422,10 +422,6 @@ msgid "System was unable to create Calendar!"
 msgstr "系统不能创建日历！"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
-msgid "Please contact the administrator."
-msgstr "请联系系统管理员。"
-
-#. Perl Module: Kernel/Modules/AgentAppointmentCalendarManage.pm
 msgid "No CalendarID!"
 msgstr "没有日历ID！"
 
@@ -624,6 +620,10 @@ msgstr "没有权限"
 #. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
 msgid "System was unable to import file!"
 msgstr "系统无法导入文件！"
+
+#. Perl Module: Kernel/Modules/AgentAppointmentImport.pm
+msgid "Please check the log for more information."
+msgstr "更多信息请检查日志。"
 
 #. Perl Module: Kernel/Modules/AgentAppointmentList.pm
 msgid "+%d more"

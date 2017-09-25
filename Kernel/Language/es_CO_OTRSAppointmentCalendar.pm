@@ -95,7 +95,6 @@ sub Data {
     # Template: AgentAppointmentCalendarOverview
     $Self->{Translation}->{'Add new Appointment'} = 'Añadir nueva cita';
     $Self->{Translation}->{'Calendars'} = 'Calendarios';
-    $Self->{Translation}->{'This is an overview page for the Appointment Calendar.'} = 'Esta es una página de resumen para el Calendario de Citas';
     $Self->{Translation}->{'Too many active calendars'} = 'Demasiados calendarios activos';
     $Self->{Translation}->{'Please either turn some off first or increase the limit in configuration.'} =
         'Por favor desactive algunos primero o incremente el límite en la configuración';
@@ -195,8 +194,6 @@ sub Data {
     $Self->{Translation}->{'before the appointment ends'} = 'antes de que termine la cita';
     $Self->{Translation}->{'after the appointment has been ended'} = 'después de que la cita halla finalizado';
     $Self->{Translation}->{'No permission!'} = 'No tiene permisos!';
-    $Self->{Translation}->{'Links could not be deleted!'} = 'Los vínculos no pudieron ser borrados!';
-    $Self->{Translation}->{'Link could not be created!'} = 'El vínculo no pudo ser borrado!';
     $Self->{Translation}->{'Cannot delete ticket appointment!'} = 'La cita no puede ser borrada!';
     $Self->{Translation}->{'No permissions!'} = 'No tiene permisos!';
 
