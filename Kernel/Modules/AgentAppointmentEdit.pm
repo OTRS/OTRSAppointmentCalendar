@@ -1479,10 +1479,10 @@ sub Run {
                 # If we are dealing with a parent, include any child appointments.
                 push @RelatedAppointments,
                     map {
-                        $_->{AppointmentID}
+                    $_->{AppointmentID}
                     }
                     grep {
-                        defined $_->{ParentID}
+                    defined $_->{ParentID}
                         && $_->{ParentID} eq $Appointment{AppointmentID}
                     } @CalendarAppointments;
 
@@ -1535,10 +1535,10 @@ sub Run {
                 # If we are dealing with a parent, include any child appointments as well.
                 push @RelatedAppointments,
                     map {
-                        $_->{AppointmentID}
+                    $_->{AppointmentID}
                     }
                     grep {
-                        defined $_->{ParentID}
+                    defined $_->{ParentID}
                         && $_->{ParentID} eq $AppointmentID
                     } @CalendarAppointments;
 
@@ -1611,10 +1611,10 @@ sub Run {
                 # If we are dealing with a parent, include any child appointments.
                 push @RelatedAppointments,
                     map {
-                        $_->{AppointmentID}
+                    $_->{AppointmentID}
                     }
                     grep {
-                        defined $_->{ParentID}
+                    defined $_->{ParentID}
                         && $_->{ParentID} eq $Appointment{AppointmentID}
                     } @CalendarAppointments;
 
