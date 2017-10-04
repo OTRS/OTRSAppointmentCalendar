@@ -12,23 +12,21 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
         my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
         my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
 
-        # dashboard widget config key
+        # Dashboard widget config key.
         my $DashboardConfigKey = '0500-AppointmentCalendar';
 
-        # turn on dashboard widget by default
+        # Turn on dashboard widget by default.
         my $DashboardConfig = $Kernel::OM->Get('Kernel::Config')->Get('DashboardBackend')->{$DashboardConfigKey};
         $DashboardConfig->{Default} = 1;
         $Helper->ConfigSettingChange(
@@ -39,7 +37,7 @@ $Selenium->RunTest(
 
         my $RandomID = $Helper->GetRandomID();
 
-        # create test group
+        # Create test group.
         my $GroupName = "test-calendar-group-$RandomID";
         my $GroupID   = $GroupObject->GroupAdd(
             Name    => $GroupName,
@@ -51,7 +49,7 @@ $Selenium->RunTest(
             "Created test group - $GroupID",
         );
 
-        # create test user
+        # Create test user.
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups => [$GroupName],
         ) || die 'Did not get test user';
@@ -61,7 +59,7 @@ $Selenium->RunTest(
             "Created test user - $UserID",
         );
 
-        # create a test calendar
+        # Create a test calendar.
         my %Calendar = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar $RandomID",
             Color        => '#3A87AD',
@@ -74,13 +72,13 @@ $Selenium->RunTest(
             "Created test calendar - $Calendar{CalendarID}",
         );
 
-        # get current time
+        # Get current time.
         my $StartTime      = $CalendarHelperObject->CurrentSystemTime();
         my $StartTimestamp = $CalendarHelperObject->TimestampGet(
             SystemTime => $StartTime,
         );
 
-        # just before midnight today
+        # Just before midnight today.
         my $Today = substr( $StartTimestamp, 0, 10 ) . ' 23:59:59';
 
         my $Tomorrow = $CalendarHelperObject->TimestampGet(
@@ -93,10 +91,10 @@ $Selenium->RunTest(
             SystemTime => $StartTime + 60 * 60 * 72,    # +72 hours
         );
 
-        # sample appointments
+        # Sample appointments.
         my @Appointments = (
 
-            # today
+            # Today.
             {
                 CalendarID => $Calendar{CalendarID},
                 StartTime  => $Today,
@@ -106,7 +104,7 @@ $Selenium->RunTest(
                 Filter     => 'Today',
             },
 
-            # tomorrow
+            # Tomorrow.
             {
                 CalendarID => $Calendar{CalendarID},
                 StartTime  => $Tomorrow,
@@ -116,7 +114,7 @@ $Selenium->RunTest(
                 Filter     => 'Tomorrow',
             },
 
-            # day after tomorrow
+            # Day after tomorrow.
             {
                 CalendarID => $Calendar{CalendarID},
                 StartTime  => $DayAfterTomorrow,
@@ -126,7 +124,7 @@ $Selenium->RunTest(
                 Filter     => 'Soon',
             },
 
-            # two days after tomorrow
+            # Two days after tomorrow.
             {
                 CalendarID => $Calendar{CalendarID},
                 StartTime  => $TwoDaysAfterTomorrow,
@@ -137,7 +135,7 @@ $Selenium->RunTest(
             },
         );
 
-        # create appointments
+        # Create appointments.
         for my $Appointment (@Appointments) {
             my $AppointmentID = $AppointmentObject->AppointmentCreate(
                 %{$Appointment},
@@ -149,51 +147,37 @@ $Selenium->RunTest(
             $Appointment->{AppointmentID} = $AppointmentID;
         }
 
-        # change resolution (desktop mode)
-        $Selenium->set_window_size( 768, 1050 );
-
-        # login test user
+        # Login as test user.
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
 
-        # verify widget is present
-        my $DashboardWidget = $Selenium->find_element( "#Dashboard$DashboardConfigKey", 'css' );
-        $Selenium->mouse_move_to_location(
-            element => $DashboardWidget,
-            xoffset => 0,
-            yoffset => 0,
-        );
+        # Verify widget is present.
+        $Selenium->find_element( "#Dashboard$DashboardConfigKey", 'css' );
 
-        # check appointments
+        # Check appointments.
         my %FilterCount;
         for my $Appointment (@Appointments) {
 
-            # remember filter
+            # Remember filter.
             $FilterCount{ $Appointment->{Filter} } += 1;
 
-            # switch filter
+            # Switch filter.
             $Selenium->execute_script(
                 "\$('.AppointmentFilter #Dashboard${DashboardConfigKey}$Appointment->{Filter}').trigger('click');"
             );
 
-            sleep 2;
+            # Wait until all AJAX calls finished.
+            $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
-            # wait for AJAX
-            $Selenium->WaitFor(
-                JavaScript => "return typeof(\$) === 'function' && !\$('.WidgetSimple.Loading').length"
-            );
-
-            # verify appointment is visible
+            # Verify appointment is visible.
             $Selenium->find_element("//a[contains(\@href, \'AppointmentID=$Appointment->{AppointmentID}\')]");
         }
 
-        # check filter count
+        # Check filter count.
         for my $Filter ( sort keys %FilterCount ) {
-
-            # get filter link
             my $FilterLink = $Selenium->find_element( "#Dashboard${DashboardConfigKey}${Filter}", 'css' );
 
             $Self->Is(
@@ -203,9 +187,7 @@ $Selenium->RunTest(
             );
         }
 
-        # cleanup
-
-        # delete test appointments
+        # Delete test appointments.
         for my $Appointment (@Appointments) {
             my $Success = $AppointmentObject->AppointmentDelete(
                 AppointmentID => $Appointment->{AppointmentID},
@@ -217,7 +199,7 @@ $Selenium->RunTest(
             );
         }
 
-        # delete test calendar
+        # Delete test calendar.
         if ( $Calendar{CalendarID} ) {
             my $Success = $Kernel::OM->Get('Kernel::System::DB')->Do(
                 SQL  => 'DELETE FROM calendar WHERE id = ?',
@@ -229,9 +211,11 @@ $Selenium->RunTest(
             );
         }
 
-        # make sure cache is correct
+        my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
+
+        # Make sure cache is correct.
         for my $Cache (qw(Calendar Appointment)) {
-            $Kernel::OM->Get('Kernel::System::Cache')->CleanUp( Type => $Cache );
+            $CacheObject->CleanUp( Type => $Cache );
         }
     },
 );
