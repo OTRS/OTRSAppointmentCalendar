@@ -12,13 +12,11 @@ use utf8;
 
 use vars (qw($Self));
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $ConfigObject         = $Kernel::OM->Get('Kernel::Config');
         my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
@@ -28,7 +26,7 @@ $Selenium->RunTest(
 
         my $RandomID = $Helper->GetRandomID();
 
-        # create test group
+        # Create test group.
         my $GroupName = "test-calendar-group-$RandomID";
         my $GroupID   = $GroupObject->GroupAdd(
             Name    => $GroupName,
@@ -36,60 +34,48 @@ $Selenium->RunTest(
             UserID  => 1,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
-        # change resolution (desktop mode)
-        $Selenium->set_window_size( 768, 1050 );
-
-        # create test user
+        # Create test user.
         my $Language      = 'en';
         my $TestUserLogin = $Helper->TestUserCreate(
             Groups   => [ 'users', $GroupName ],
             Language => $Language,
         ) || die "Did not get test user";
 
-        # get UserID
         my $UserID = $UserObject->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
-        # create test customer user
+        # Create test customer user.
         my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate() || die "Did not get test customer user";
 
-        # start test
+        # Login as test user.
         $Selenium->Login(
             Type     => 'Agent',
             User     => $TestUserLogin,
             Password => $TestUserLogin,
         );
 
-        # create a few test calendars
-        my %Calendar1 = $CalendarObject->CalendarCreate(
-            CalendarName => "Calendar1 $RandomID",
-            Color        => '#3A87AD',
-            GroupID      => $GroupID,
-            UserID       => $UserID,
-            ValidID      => 1,
-        );
-        my %Calendar2 = $CalendarObject->CalendarCreate(
-            CalendarName => "Calendar2 $RandomID",
-            Color        => '#EC9073',
-            GroupID      => $GroupID,
-            UserID       => $UserID,
-            ValidID      => 1,
-        );
-        my %Calendar3 = $CalendarObject->CalendarCreate(
-            CalendarName => "Calendar3 $RandomID",
-            Color        => '#6BAD54',
-            GroupID      => $GroupID,
-            UserID       => $UserID,
-            ValidID      => 1,
-        );
+        # Create a few test calendars.
+        my @Calendars;
+        my $Count = 1;
+        for my $Color ( '#3A87AD', '#EC9073', '#6BAD54' ) {
+            my %Calendar = $CalendarObject->CalendarCreate(
+                CalendarName => "Calendar$Count-$RandomID",
+                Color        => $Color,
+                GroupID      => $GroupID,
+                UserID       => $UserID,
+                ValidID      => 1,
+            );
+            push @Calendars, \%Calendar;
+
+            $Count++;
+        }
 
         my $CalendarWeekDayStart = $ConfigObject->Get('CalendarWeekDayStart') || 7;
 
-        # get start of the week
+        # Get start of the week.
         my $StartTime = $CalendarHelperObject->CurrentSystemTime();
         my ( $WeekDay, $CW ) = $CalendarHelperObject->WeekDetailsGet(
             SystemTime => $StartTime,
@@ -104,7 +90,7 @@ $Selenium->RunTest(
             SystemTime => $StartTime,
         );
 
-        # appointment times will always be the same at the start of the week
+        # Appointment times will always be the same at the start of the week.
         my %StartTime = (
             Day    => $Day,
             Month  => $Month,
@@ -113,157 +99,130 @@ $Selenium->RunTest(
             Minute => 15,
         );
 
-        # go to agenda overview page
+        # Define appointment names.
+        my @AppointmentNames = ( 'Appointment 1', 'Appointment 2', 'Appointment 3' );
+
+        # Go to agenda overview page.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentAgendaOverview");
 
-        # click on the appointment create button
+        # Click on the appointment create button.
         $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
 
-        # wait until form and overlay has loaded, if neccessary
+        # Wait until form and overlay has loaded, if neccessary.
         $Selenium->WaitFor(
             JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
         );
 
-        # create a regular appointment
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 1');
+        # Create a regular appointment.
+        $Selenium->find_element( 'Title', 'name' )->clear();
+        $Selenium->find_element( 'Title', 'name' )->send_keys( $AppointmentNames[0] );
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->execute_script(
-                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                    "\$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
                 );
             }
         }
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
-                . $Calendar1{CalendarID}
+            "\$('#CalendarID').val("
+                . $Calendars[0]->{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
 
-        sleep 1;
+        # Save.
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && !\$('.Dialog.Modal').length" );
 
-        # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
-
-        # wait for reload to finish
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
-        );
-
-        # verify first appointment is visible
+        # Verify the regular appointment is visible.
         $Self->True(
-            index( $Selenium->get_page_source(), 'Appointment 1' ) > -1,
-            'First appointment visible',
+            $Selenium->execute_script("return \$('tbody tr:contains($AppointmentNames[0])').length;"),
+            "First appointment '$AppointmentNames[0]' found in the table"
         );
 
-        # click on the create button for another appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
+        # Click on the create button for another appointment dialog.
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
-        );
-
-        # create an all-day appointment
-        $Selenium->find_element( 'Title',  'name' )->send_keys('Appointment 2');
+        # Create an all-day appointment.
+        $Selenium->find_element( 'Title',  'name' )->send_keys( $AppointmentNames[1] );
         $Selenium->find_element( 'AllDay', 'name' )->VerifiedClick();
         for my $Group (qw(Start End)) {
             for my $Field (qw(Day Month Year)) {
                 $Selenium->execute_script(
-                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                    "\$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
                 );
             }
         }
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
-                . $Calendar2{CalendarID}
+            "\$('#CalendarID').val("
+                . $Calendars[1]->{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
 
-        sleep 1;
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && !\$('.Dialog.Modal').length" );
 
-        # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
-
-        # wait for reload to finish
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
-        );
-
-        # verify first appointment is visible
+        # Verify the all-day appointment is visible.
         $Self->True(
-            index( $Selenium->get_page_source(), 'Appointment 2' ) > -1,
-            'Second appointment visible',
+            $Selenium->execute_script("return \$('tbody tr:contains($AppointmentNames[1])').length;"),
+            "Second appointment '$AppointmentNames[1]' found in the table"
         );
 
-        # click again on the create button for an appointment dialog
-        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->VerifiedClick();
+        my $RecurrenceCount = 3;
 
-        # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
-        );
+        # Click again on the create button for an appointment dialog.
+        $Selenium->find_element( '#AppointmentCreateButton', 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # create recurring appointment
-        $Selenium->find_element( 'Title', 'name' )->send_keys('Appointment 3');
+        # Create recurring appointment.
+        $Selenium->find_element( 'Title', 'name' )->send_keys( $AppointmentNames[2] );
         for my $Group (qw(Start End)) {
             for my $Field (qw(Hour Minute Day Month Year)) {
                 $Selenium->execute_script(
-                    "return \$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
+                    "\$('#$Group$Field').val($StartTime{$Field}).trigger('change');"
                 );
             }
         }
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
-                . $Calendar3{CalendarID}
+            "\$('#CalendarID').val("
+                . $Calendars[2]->{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
-        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
+        $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys($RecurrenceCount);
 
-        sleep 1;
+        $Selenium->find_element( '#EditFormSubmit', 'css' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && !\$('.Dialog.Modal').length" );
+        $Selenium->VerifiedRefresh();
 
-        # click on Save
-        $Selenium->find_element( '#EditFormSubmit', 'css' )->VerifiedClick();
-
-        # wait for reload to finish
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
-        );
-
-        # verify first occurrence of the third appointment is visible
+        # Verify all third appointment occurrences are visible.
         $Self->True(
-            index( $Selenium->get_page_source(), 'Appointment 3' ) > -1,
-            'Third appointment visible',
+            $Selenium->execute_script(
+                "return \$('tbody tr:contains($AppointmentNames[2])').length === $RecurrenceCount;"
+            ),
+            "All third appointment occurrences found in the table"
         );
 
-        # click on third appointment master
-        $Selenium->find_element( 'Appointment 3', 'link_text' )->VerifiedClick();
+        # Delete third appointment master.
+        $Selenium->find_element( $AppointmentNames[2], 'link_text' )->click();
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
-        # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && \$('#Title').length"
-        );
-
-        # click on Delete
         $Selenium->find_element( '#EditFormDelete', 'css' )->click();
-
-        # confirm
         $Selenium->accept_alert();
-
-        # wait for reload to finish
         $Selenium->WaitFor(
-            JavaScript => "return typeof(\$) === 'function' && !\$('.OverviewControl.Loading').length"
+            JavaScript =>
+                "return typeof(\$) === 'function' &&  \$('tbody tr:contains($AppointmentNames[2])').length === 0;"
         );
 
-        # verify all third appointment occurences have been removed
-        $Self->True(
-            index( $Selenium->get_page_source(), 'Appointment 3' ) == -1,
-            'All third appointment occurrences removed',
+        # Verify all third appointment occurences have been removed.
+        $Self->False(
+            $Selenium->execute_script("return \$('tbody tr:contains($AppointmentNames[2])').length;"),
+            "All third appointment occurences deleted"
         );
     },
 );
