@@ -13,6 +13,7 @@ package Kernel::System::Calendar::Helper;
 use strict;
 use warnings;
 
+use DateTime;
 use Time::Piece;
 
 use Kernel::System::VariableCheck qw(:all);
@@ -20,11 +21,9 @@ use Kernel::System::EventHandler;
 
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::System::Main',
     'Kernel::System::Log',
     'Kernel::System::Time',
     'Kernel::System::User',
-
 );
 
 =head1 NAME
@@ -389,24 +388,10 @@ sub TimezoneOffsetGet {
         return $User{UserTimeZone} ? int $User{UserTimeZone} : 0;
     }
 
-    my $MainObject = $Kernel::OM->Get('Kernel::System::Main');
-
-    # check if DateTime object exists
-    return 0 if !$MainObject->Require(
-        'DateTime',
-    );
-
-    # check if DateTime::TimeZone object exists
-    return 0 if !$MainObject->Require(
-        'DateTime::TimeZone',
-    );
-
     # Offset calculation depends on specific time, because of daylight savings.
     #   If not supplied, use current time.
-    my $DateTime = DateTime->now();
-    if ( $Param{Time} ) {
-        $DateTime = DateTime->from_epoch( epoch => $Param{Time} );
-    }
+    my $DateTime = eval { DateTime->from_epoch( epoch => $Param{Time} ? $Param{Time} : time() ) };
+    return 0 if !$DateTime;
 
     # DateTime::TimeZone might not recognize timezone by its name and die,
     #   make the call in an eval block.
