@@ -1,4 +1,6 @@
-#5.0.3 2017-??-??
+#5.0.4 2017-??-??
+
+#5.0.3 2017-10-17
  - 2017-09-21 Fixed bug#[12592](https://bugs.otrs.org/show_bug.cgi?id=12592) - Repeating appointments not linked to origin ticket.
  - 2017-09-13 Fixed bug#[13035](https://bugs.otrs.org/show_bug.cgi?id=13035) - OTRS notification option for OTRS Business Solution™ Feature are shown in the free.
  - 2017-07-24 Fixed bug#[12943](https://bugs.otrs.org/show_bug.cgi?id=12943) - Useless "Description" widget in sidebar.
