@@ -132,6 +132,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             weekNumberTitle: '#',
             weekNumberCalculation: 'ISO',
             eventLimit: true,
+            eventLimitText: Params.EventLimitText,
             height: 600,
             editable: true,
             selectable: true,

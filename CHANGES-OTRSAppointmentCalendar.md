@@ -1,4 +1,5 @@
 #5.0.4 2017-??-??
+ - 2017-10-12 Fixed bug#[13059](https://bugs.otrs.org/show_bug.cgi?id=13059) - Translation is not applied in AgentAppointmentList.
 
 #5.0.3 2017-10-17
  - 2017-09-21 Fixed bug#[12592](https://bugs.otrs.org/show_bug.cgi?id=12592) - Repeating appointments not linked to origin ticket.

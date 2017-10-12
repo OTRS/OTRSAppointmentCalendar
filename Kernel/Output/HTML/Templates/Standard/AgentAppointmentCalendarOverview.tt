@@ -142,6 +142,7 @@ Core.Agent.AppointmentCalendar.Init({
     ChallengeToken: $("#ChallengeToken").val(),
     AllDayText: [% Translate("All-day") | JSON %],
     IsRTL: [% Data.IsRTLLanguage %],
+    EventLimitText: [% Translate("more") | JSON %],
     MonthNames: [
         [% Translate("January") | JSON %],
         [% Translate("February") | JSON %],
