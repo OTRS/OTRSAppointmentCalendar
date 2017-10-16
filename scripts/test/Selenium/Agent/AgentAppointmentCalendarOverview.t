@@ -572,6 +572,9 @@ $Selenium->RunTest(
         $AppointmentLink->click();
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
+        my $TeamObjectRegistered
+            = $Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 );
+
         # Check if fields are disabled.
         ELEMENT:
         for my $Element (
@@ -581,7 +584,7 @@ $Selenium->RunTest(
             )
         {
             # Check if team object is registered.
-            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+            if ( !$TeamObjectRegistered ) {
                 next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
             }
 
@@ -648,7 +651,7 @@ $Selenium->RunTest(
             )
         {
             # Check if team object is registered.
-            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+            if ( !$TeamObjectRegistered ) {
                 next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
             }
 
@@ -709,7 +712,7 @@ $Selenium->RunTest(
             )
         {
             # Check if team object is registered.
-            if ( !$Kernel::OM->Get('Kernel::System::Main')->Require( 'Kernel::System::Calendar::Team', Silent => 1 ) ) {
+            if ( !$TeamObjectRegistered ) {
                 next ELEMENT if $Element eq 'TeamID' || $Element eq 'ResourceID';
             }
 
