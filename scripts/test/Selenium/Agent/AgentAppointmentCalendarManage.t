@@ -83,7 +83,7 @@ $Selenium->RunTest(
 
         # set it to test group
         $Selenium->execute_script(
-            "return \$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
+            "\$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
         );
 
         # submit
@@ -126,7 +126,7 @@ $Selenium->RunTest(
 
         # set it to test group
         $Selenium->execute_script(
-            "return \$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
+            "\$('#GroupID').val($GroupID).trigger('redraw.InputField').trigger('change');"
         );
 
         # submit
@@ -151,7 +151,7 @@ $Selenium->RunTest(
 
         # set it to invalid
         $Selenium->execute_script(
-            "return \$('#ValidID').val(2).trigger('redraw.InputField').trigger('change');"
+            "\$('#ValidID').val(2).trigger('redraw.InputField').trigger('change');"
         );
 
         # add ticket appointment rule
@@ -160,12 +160,12 @@ $Selenium->RunTest(
 
         # set a queue
         $Selenium->execute_script(
-            "return \$('#QueueID_1').val('$QueueID').trigger('redraw.InputField').trigger('change');"
+            "\$('#QueueID_1').val('$QueueID').trigger('redraw.InputField').trigger('change');"
         );
 
         # Add title as search parameter.
         $Selenium->execute_script(
-            "return \$('#SearchParams').val('Title').trigger('redraw.InputField').trigger('change');"
+            "\$('#SearchParams').val('Title').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( '.AddButton',           'css' )->VerifiedClick();
         $Selenium->find_element( '#SearchParam_1_Title', 'css' )->send_keys('Test*');
@@ -212,7 +212,7 @@ $Selenium->RunTest(
 
         # set it to invalid-temporarily
         $Selenium->execute_script(
-            "return \$('#ValidID').val(3).trigger('redraw.InputField').trigger('change');"
+            "\$('#ValidID').val(3).trigger('redraw.InputField').trigger('change');"
         );
 
         # verify rule has been stored properly

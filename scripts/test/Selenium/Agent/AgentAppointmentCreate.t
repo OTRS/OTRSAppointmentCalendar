@@ -126,7 +126,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Daily').trigger('redraw.InputField').trigger('change');"
         );
 
         # click on Save
@@ -175,12 +175,12 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Weekly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Weekly').trigger('redraw.InputField').trigger('change');"
         );
 
         # create 3 appointment
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
         # enter some data
@@ -256,12 +256,12 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Monthly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Monthly').trigger('redraw.InputField').trigger('change');"
         );
 
         # create 3 appointment
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
         # enter some data
@@ -338,12 +338,12 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Yearly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Yearly').trigger('redraw.InputField').trigger('change');"
         );
 
         # create 3 appointment
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
 
         # enter some data
@@ -420,7 +420,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -436,7 +436,7 @@ $Selenium->RunTest(
 
         # create 3 appointment
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
@@ -504,7 +504,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -514,7 +514,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -590,7 +590,7 @@ $Selenium->RunTest(
 
         # create 6 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('6');
 
@@ -686,7 +686,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -696,7 +696,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomWeekly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -727,7 +727,7 @@ $Selenium->RunTest(
 
         # create 3 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
@@ -825,7 +825,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -835,7 +835,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -911,7 +911,7 @@ $Selenium->RunTest(
 
         # create 20 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('20');
 
@@ -1003,7 +1003,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -1013,7 +1013,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomMonthly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -1044,7 +1044,7 @@ $Selenium->RunTest(
 
         # create 3 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
@@ -1138,7 +1138,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -1148,7 +1148,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -1224,7 +1224,7 @@ $Selenium->RunTest(
 
         # create 6 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('6');
 
@@ -1317,7 +1317,7 @@ $Selenium->RunTest(
                 . ").trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->execute_script(
-            "return \$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceType').val('Custom').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait until js shows Interval
@@ -1327,7 +1327,7 @@ $Selenium->RunTest(
         );
 
         $Selenium->execute_script(
-            "return \$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceCustomType').val('CustomYearly').trigger('redraw.InputField').trigger('change');"
         );
 
         # wait for js
@@ -1358,7 +1358,7 @@ $Selenium->RunTest(
 
         # create 3 appointments
         $Selenium->execute_script(
-            "return \$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
+            "\$('#RecurrenceLimit').val('2').trigger('redraw.InputField').trigger('change');"
         );
         $Selenium->find_element( 'RecurrenceCount', 'name' )->send_keys('3');
 
