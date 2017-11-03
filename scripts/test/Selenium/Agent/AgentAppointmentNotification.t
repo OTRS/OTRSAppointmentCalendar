@@ -306,7 +306,7 @@ $Selenium->RunTest(
             # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
-                "return \$('#CalendarID').val("
+                "\$('#CalendarID').val("
                     . $Calendar1{CalendarID}
                     . ").trigger('redraw.InputField').trigger('change');"
             );
@@ -522,7 +522,7 @@ $Selenium->RunTest(
             # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
-                "return \$('#CalendarID').val("
+                "\$('#CalendarID').val("
                     . $Calendar1{CalendarID}
                     . ").trigger('redraw.InputField').trigger('change');"
             );
@@ -774,7 +774,7 @@ $Selenium->RunTest(
             # enter some data
             $Selenium->find_element( 'Title', 'name' )->send_keys("$Test->{Data}->{Description}");
             $Selenium->execute_script(
-                "return \$('#CalendarID').val("
+                "\$('#CalendarID').val("
                     . $Calendar1{CalendarID}
                     . ").trigger('redraw.InputField').trigger('change');"
             );

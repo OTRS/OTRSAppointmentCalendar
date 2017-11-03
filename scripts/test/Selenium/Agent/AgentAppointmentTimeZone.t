@@ -98,7 +98,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Time Zone Appointment');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );

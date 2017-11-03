@@ -121,7 +121,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every day');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -170,7 +170,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every week');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -251,7 +251,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every month');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -333,7 +333,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every year');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -415,7 +415,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd day');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -499,7 +499,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd Monday, Wednesday and Sunday');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -681,7 +681,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom weekly without anything selected');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -820,7 +820,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd month, on 3th, 10th and 31th of month.');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -998,7 +998,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom monthly without anything selected');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -1133,7 +1133,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd year, in February, October and December.');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
@@ -1312,7 +1312,7 @@ $Selenium->RunTest(
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom yearly without anything selected');
         $Selenium->execute_script(
-            "return \$('#CalendarID').val("
+            "\$('#CalendarID').val("
                 . $Calendar1{CalendarID}
                 . ").trigger('redraw.InputField').trigger('change');"
         );
