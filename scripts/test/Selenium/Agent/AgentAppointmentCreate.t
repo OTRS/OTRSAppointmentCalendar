@@ -15,31 +15,25 @@ use vars (qw($Self));
 # override local time zone for duration of the test
 local $ENV{TZ} = 'UTC';
 
-# get selenium object
 my $Selenium = $Kernel::OM->Get('Kernel::System::UnitTest::Selenium');
 
 $Selenium->RunTest(
     sub {
 
-        # get needed objects
         my $Helper               = $Kernel::OM->Get('Kernel::System::UnitTest::Helper');
         my $AppointmentObject    = $Kernel::OM->Get('Kernel::System::Calendar::Appointment');
-        my $GroupObject          = $Kernel::OM->Get('Kernel::System::Group');
-        my $CalendarObject       = $Kernel::OM->Get('Kernel::System::Calendar');
         my $CalendarHelperObject = $Kernel::OM->Get('Kernel::System::Calendar::Helper');
-        my $UserObject           = $Kernel::OM->Get('Kernel::System::User');
 
         my $RandomID = $Helper->GetRandomID();
 
         # create test group
         my $GroupName = "test-calendar-group-$RandomID";
-        my $GroupID   = $GroupObject->GroupAdd(
+        my $GroupID   = $Kernel::OM->Get('Kernel::System::Group')->GroupAdd(
             Name    => $GroupName,
             ValidID => 1,
             UserID  => 1,
         );
 
-        # get script alias
         my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # get current system time
@@ -67,7 +61,7 @@ $Selenium->RunTest(
         ) || die "Did not get test user";
 
         # get UserID
-        my $UserID = $UserObject->UserLookup(
+        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
@@ -79,7 +73,7 @@ $Selenium->RunTest(
         );
 
         # create a few test calendars
-        my %Calendar1 = $CalendarObject->CalendarCreate(
+        my %Calendar1 = $Kernel::OM->Get('Kernel::System::Calendar')->CalendarCreate(
             CalendarName => "My Calendar $RandomID",
             Color        => '#3A87AD',
             GroupID      => $GroupID,
@@ -91,16 +85,16 @@ $Selenium->RunTest(
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
 
         # wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+        $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
         # click on the month view
-        $Selenium->find_element( '.fc-month-button', 'css' )->VerifiedClick();
+        $Selenium->find_element( '.fc-month-button', 'css' )->click();
 
         # wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".fc-month-view").length' );
 
         # go to next month
-        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->VerifiedClick();
+        $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->click();
 
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
@@ -113,10 +107,11 @@ $Selenium->RunTest(
         $DataDate .= "$DateInfo[4]-01";
 
         # create every day appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every day');
@@ -162,10 +157,11 @@ $Selenium->RunTest(
         );
 
         # create every week appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every week');
@@ -243,10 +239,11 @@ $Selenium->RunTest(
         );
 
         # create every month appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every month');
@@ -325,10 +322,11 @@ $Selenium->RunTest(
         );
 
         # create every year appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every year');
@@ -407,10 +405,11 @@ $Selenium->RunTest(
         );
 
         # create appointment every second day
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd day');
@@ -491,10 +490,11 @@ $Selenium->RunTest(
         );
 
         # create custom weekly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd Monday, Wednesday and Sunday');
@@ -673,10 +673,11 @@ $Selenium->RunTest(
         );
 
         # create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom weekly without anything selected');
@@ -812,10 +813,11 @@ $Selenium->RunTest(
         );
 
         # create custom monthly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd month, on 3th, 10th and 31th of month.');
@@ -990,10 +992,11 @@ $Selenium->RunTest(
         );
 
         # create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom monthly without anything selected');
@@ -1125,10 +1128,11 @@ $Selenium->RunTest(
         );
 
         # create custom yearly recurring appointment
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd year, in February, October and December.');
@@ -1304,10 +1308,11 @@ $Selenium->RunTest(
         );
 
         # create custom weekly recurring appointment(without anything selected)
-        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->VerifiedClick();
+        $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom yearly without anything selected');
