@@ -54,7 +54,7 @@ my $ElementExists = sub {
     }
 
     my $Length = $Selenium->execute_script(
-        "return \$('#" . $Param{Element} . "').length;"
+        "return \$('#$Param{Element}').length;"
     );
 
     if ( $Param{Value} ) {
@@ -78,7 +78,6 @@ $Selenium->RunTest(
         my $GroupObject    = $Kernel::OM->Get('Kernel::System::Group');
         my $CalendarObject = $Kernel::OM->Get('Kernel::System::Calendar');
         my $TimeObject     = $Kernel::OM->Get('Kernel::System::Time');
-        my $UserObject     = $Kernel::OM->Get('Kernel::System::User');
         my $TicketObject   = $Kernel::OM->Get('Kernel::System::Ticket');
 
         my $RandomID = $Helper->GetRandomID();
@@ -114,8 +113,6 @@ $Selenium->RunTest(
             UserID => 1,
         );
 
-        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
-
         # Change resolution (desktop mode).
         $Selenium->set_window_size( 768, 1050 );
 
@@ -127,19 +124,13 @@ $Selenium->RunTest(
         ) || die 'Did not get test user';
 
         # Get UserID.
-        my $UserID = $UserObject->UserLookup(
+        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
             UserLogin => $TestUserLogin,
         );
 
         # Create test customer user.
         my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate()
             || die 'Did not get test customer user';
-
-        $Selenium->Login(
-            Type     => 'Agent',
-            User     => $TestUserLogin,
-            Password => $TestUserLogin,
-        );
 
         # Create a few test calendars.
         my %Calendar1 = $CalendarObject->CalendarCreate(
@@ -195,6 +186,14 @@ $Selenium->RunTest(
             $TicketNumber,
             "TicketNumberLookup() - $TicketNumber",
         );
+
+        $Selenium->Login(
+            Type     => 'Agent',
+            User     => $TestUserLogin,
+            Password => $TestUserLogin,
+        );
+
+        my $ScriptAlias = $Kernel::OM->Get('Kernel::Config')->Get('ScriptAlias');
 
         # Go to calendar overview page.
         $Selenium->VerifiedGet("${ScriptAlias}index.pl?Action=AgentAppointmentCalendarOverview");
@@ -253,7 +252,12 @@ $Selenium->RunTest(
         $Selenium->find_element( '#EndHour',     'css' )->send_keys('18');
         $Selenium->find_element( '.PluginField', 'css' )->send_keys($TicketNumber);
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $("li.ui-menu-item:visible").length' );
-        $Selenium->execute_script("\$('li.ui-menu-item').click();");
+        $Selenium->execute_script("\$('li.ui-menu-item:contains($TicketNumber)').click();");
+
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('.PluginContainer div a[target=\"_blank\"]').length"
+        );
 
         # Verify correct ticket is listed.
         $Self->Is(
@@ -277,6 +281,9 @@ $Selenium->RunTest(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
         );
+
+        # Wait until all AJAX calls finished.
+        $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
         # Verify first appointment is visible.
         $Self->Is(
@@ -363,6 +370,10 @@ $Selenium->RunTest(
                 . $Calendar1{CalendarID}
                 . '").prop("checked") === false'
         );
+        $Selenium->WaitFor(
+            JavaScript =>
+                "return typeof(\$) === 'function' && \$('.fc-timeline-event .fc-title').text() === 'Appointment 2'"
+        );
 
         # Verify second appointment is visible.
         $Self->Is(
@@ -405,6 +416,9 @@ $Selenium->RunTest(
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
         );
 
+        # Wait until all AJAX calls finished.
+        $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
+
         # Hide the second calendar from view.
         $Selenium->find_element( 'Calendar' . $Calendar2{CalendarID}, 'id' )->click();
         $Selenium->WaitFor(
@@ -423,7 +437,9 @@ $Selenium->RunTest(
         );
 
         # Click on an appointment.
-        $Selenium->find_element( '.fc-timeline-event', 'css' )->click();
+        $Selenium->execute_script(
+            "\$('.fc-timeline-event:eq(0) .fc-title').trigger('click');"
+        );
         $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
 
         # Click on Delete.
@@ -437,6 +453,9 @@ $Selenium->RunTest(
             JavaScript =>
                 'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
         );
+
+        # Wait until all AJAX calls finished.
+        $Selenium->WaitFor( JavaScript => "return \$.active == 0" );
 
         # Verify all third appointment occurences have been removed.
         $Self->Is(
@@ -568,7 +587,10 @@ $Selenium->RunTest(
 
         # Go to previous week.
         $Selenium->find_element( '.fc-toolbar .fc-prev-button', 'css' )->click();
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+        $Selenium->WaitFor(
+            JavaScript =>
+                'return typeof($) === "function" && !$(".CalendarWidget.Loading").length && $(".fc-event-container a").length'
+        );
 
         # Find the appointment link.
         my $AppointmentLink = $Selenium->find_element( '.fc-event-container a', 'css' );
@@ -611,6 +633,10 @@ $Selenium->RunTest(
 
         # Elements that should be on page.
         for my $Element (qw(EditFormCancel)) {
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$Element').length"
+            );
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -678,6 +704,10 @@ $Selenium->RunTest(
 
         # Elements that should be on page.
         for my $Element (qw(EditFormSubmit EditFormCancel)) {
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$Element').length"
+            );
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
@@ -730,6 +760,10 @@ $Selenium->RunTest(
 
         # Elements that should be on page.
         for my $Element (qw(EditFormCopy EditFormSubmit EditFormDelete EditFormCancel)) {
+            $Selenium->WaitFor(
+                JavaScript =>
+                    "return typeof(\$) === 'function' && \$('#$Element').length"
+            );
             $ElementExists->(
                 UnitTestObject => $Self,
                 Element        => $Element,
