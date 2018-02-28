@@ -1,4 +1,10 @@
-#5.0.4 2017-??-??
+#5.0.6 2018-??-??
+ - 2018-02-28 Fixed bug#[13642](https://bugs.otrs.org/show_bug.cgi?id=13642) - Deletion of tickets not possible if automatically created appointments exist for it.
+
+#5.0.5 2018-02-12
+ - Fixed and stabilized selenium tests.
+
+#5.0.4 2017-10-17
  - 2017-10-12 Fixed bug#[13059](https://bugs.otrs.org/show_bug.cgi?id=13059) - Translation is not applied in AgentAppointmentList.
 
 #5.0.3 2017-10-17

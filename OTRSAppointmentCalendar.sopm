@@ -98,6 +98,7 @@
         <File Permission="644" Location="Kernel/System/Daemon/DaemonModules/SchedulerTaskWorker/CalendarAppointment.pm" />
         <File Permission="644" Location="Kernel/System/LinkObject/Appointment.pm" />
         <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointments.pm" />
+        <File Permission="644" Location="Kernel/System/Ticket/Event/TicketAppointmentDelete.pm" />
         <File Permission="644" Location="scripts/test/Calendar/Event/Transport/Email.t" />
         <File Permission="644" Location="scripts/test/Calendar.t" />
         <File Permission="644" Location="scripts/test/Calendar/Appointment.t" />
@@ -447,9 +448,6 @@
             <ForeignKey ForeignTable="calendar">
                 <Reference Local="calendar_id" Foreign="id" />
             </ForeignKey>
-            <ForeignKey ForeignTable="ticket">
-                <Reference Local="ticket_id" Foreign="id" />
-            </ForeignKey>
             <ForeignKey ForeignTable="calendar_appointment">
                 <Reference Local="appointment_id" Foreign="id" />
             </ForeignKey>
@@ -461,6 +459,11 @@
         </TableAlter>
         <TableAlter Name="calendar_appointment" Version="5.0.2">
             <UniqueDrop Name="calendar_appointment_id" />
+        </TableAlter>
+        <TableAlter Name="calendar_appointment_ticket" Version="5.0.6">
+            <ForeignKeyDrop ForeignTable="ticket">
+                <Reference Local="ticket_id" Foreign="id" />
+            </ForeignKeyDrop>
         </TableAlter>
     </DatabaseUpgrade>
     <DatabaseUninstall Type="pre">
