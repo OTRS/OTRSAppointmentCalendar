@@ -75,11 +75,11 @@ sub Run {
         if ( $Self->{Subaction} eq 'AppointmentCreate' ) {
             $Param{AppointmentCreate} = $LayoutObject->JSONEncode(
                 Data => {
-                    Start     => $ParamObject->GetParam( Param => 'Start' )     // undef,
-                    End       => $ParamObject->GetParam( Param => 'End' )       // undef,
+                    Start     => $ParamObject->GetParam( Param => 'Start' ) // undef,
+                    End       => $ParamObject->GetParam( Param => 'End' ) // undef,
                     PluginKey => $ParamObject->GetParam( Param => 'PluginKey' ) // undef,
-                    Search    => $ParamObject->GetParam( Param => 'Search' )    // undef,
-                    ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' )  // undef,
+                    Search    => $ParamObject->GetParam( Param => 'Search' ) // undef,
+                    ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' ) // undef,
                 },
             );
         }

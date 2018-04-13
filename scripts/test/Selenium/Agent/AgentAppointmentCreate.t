@@ -776,7 +776,7 @@ $Selenium->RunTest(
                     SystemTime => $SystemTime7,
                 );
                 $LastCW7    = $CW7;
-                $DayOfWeek7 = $DayOfWeek
+                $DayOfWeek7 = $DayOfWeek;
             }
             elsif (
                 ( $DayOfWeek == $DayOfWeek7 )    # check if day is valid
