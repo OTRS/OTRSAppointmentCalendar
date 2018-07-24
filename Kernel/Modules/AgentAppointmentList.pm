@@ -214,7 +214,8 @@ sub Run {
                         my $ResourceCount = scalar @ResourceNames;
                         if ( $ResourceCount > 4 ) {
                             splice @ResourceNames, 3;
-                            push @ResourceNames, $LayoutObject->{LanguageObject}->Translate( '+%d more', $ResourceCount - 3 );
+                            push @ResourceNames,
+                                $LayoutObject->{LanguageObject}->Translate( '+%d more', $ResourceCount - 3 );
                         }
 
                         $Appointment->{ResourceNames} = join( '\n', @ResourceNames );
