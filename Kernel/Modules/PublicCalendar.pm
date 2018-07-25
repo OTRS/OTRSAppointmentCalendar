@@ -39,7 +39,7 @@ sub Run {
     for my $Needed (qw(CalendarID User Token)) {
         $GetParam{$Needed} = $ParamObject->GetParam( Param => $Needed );
         if ( !$GetParam{$Needed} ) {
-            return $LayoutObject->ErrorScreen(
+            return $LayoutObject->CustomerErrorScreen(
                 Message => $LayoutObject->{LanguageObject}->Translate( 'No %s!', $Needed ),
                 Comment => Translatable('Please contact the administrator.'),
             );
@@ -52,7 +52,7 @@ sub Run {
         Valid => 1,
     );
     if ( !%User ) {
-        return $LayoutObject->ErrorScreen(
+        return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('No such user!'),
             Comment => Translatable('Please contact the administrator.'),
         );
@@ -67,14 +67,14 @@ sub Run {
     );
 
     if ( !%Calendar ) {
-        return $LayoutObject->ErrorScreen(
+        return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('No permission!'),
             Comment => Translatable('Please contact the administrator.'),
         );
     }
 
     if ( $Calendar{ValidID} != 1 ) {
-        return $LayoutObject->ErrorScreen(
+        return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('Invalid calendar!'),
             Comment => Translatable('Please contact the administrator.'),
         );
@@ -87,7 +87,7 @@ sub Run {
     );
 
     if ( $AccessToken ne $GetParam{Token} ) {
-        return $LayoutObject->ErrorScreen(
+        return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('Invalid URL!'),
             Comment => Translatable('Please contact the administrator.'),
         );
@@ -100,7 +100,7 @@ sub Run {
     );
 
     if ( !$ICalString ) {
-        return $LayoutObject->ErrorScreen(
+        return $LayoutObject->CustomerErrorScreen(
             Message => Translatable('There was an error exporting the calendar!'),
             Comment => Translatable('Please contact the administrator.'),
         );
