@@ -7,7 +7,7 @@
     <ModuleRequired Version="1.08">DateTime::TimeZone</ModuleRequired>
     <Vendor>OTRS AG</Vendor>
     <URL>http://otrs.org/</URL>
-    <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
+    <License>GNU GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">The Appointment Calendar package.</Description>
     <Description Lang="de">Das Terminkalender-Paket.</Description>
     <Description Lang="hu">A naptár csomag.</Description>
