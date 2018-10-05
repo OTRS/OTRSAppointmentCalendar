@@ -91,13 +91,13 @@ $Selenium->RunTest(
         $Selenium->find_element( '.fc-month-button', 'css' )->click();
 
         # wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".fc-month-view").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && $(".fc-month-view").length;' );
 
         # go to next month
         $Selenium->find_element( '.fc-toolbar .fc-next-button', 'css' )->click();
 
         # wait for AJAX to finish
-        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
+        $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length;' );
 
         # get date info (Second, Minute, Hour, Day, Month, Year, DayOfWeek)
         my $DataDate = "$DateInfo[5]-";
@@ -110,8 +110,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every day');
@@ -130,7 +130,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments1 = $AppointmentObject->AppointmentList(
@@ -160,8 +160,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every week');
@@ -188,7 +188,7 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments2 = $AppointmentObject->AppointmentList(
@@ -242,8 +242,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every month');
@@ -270,7 +270,7 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments3 = $AppointmentObject->AppointmentList(
@@ -325,8 +325,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every year');
@@ -353,7 +353,7 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments4 = $AppointmentObject->AppointmentList(
@@ -408,8 +408,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd day');
@@ -425,12 +425,12 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         # set each 2nd day
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 3 appointment
@@ -445,7 +445,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments5 = $AppointmentObject->AppointmentList(
@@ -493,8 +493,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd Monday, Wednesday and Sunday');
@@ -510,7 +510,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -520,7 +520,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length;'
         );
 
         # deselect selected day
@@ -546,7 +546,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait6For1 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"1\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"1\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait6For1,
@@ -561,7 +561,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait6For3 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"3\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait6For3,
@@ -576,7 +576,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait6For7 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"7\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv button[value=\"7\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait6For7,
@@ -585,7 +585,7 @@ $Selenium->RunTest(
 
         # set each 2nd week
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 6 appointments
@@ -600,7 +600,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments6 = $AppointmentObject->AppointmentList(
@@ -676,8 +676,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom weekly without anything selected');
@@ -693,7 +693,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -703,7 +703,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomWeeklyDiv:visible").length;'
         );
 
         # deselect selected day
@@ -723,7 +723,7 @@ $Selenium->RunTest(
 
         # set each 2nd week
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 3 appointments
@@ -738,7 +738,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments7 = $AppointmentObject->AppointmentList(
@@ -816,8 +816,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd month, on 3th, 10th and 31th of month.');
@@ -833,7 +833,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -843,7 +843,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length;'
         );
 
         # deselect selected day
@@ -869,7 +869,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait8For3 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"3\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"3\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait8For3,
@@ -884,7 +884,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait8For10 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"10\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait8For10,
@@ -899,7 +899,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait8For31 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"31\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv button[value=\"31\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait8For31,
@@ -908,7 +908,7 @@ $Selenium->RunTest(
 
         # set each 2nd week
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 20 appointments
@@ -923,7 +923,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments8 = $AppointmentObject->AppointmentList(
@@ -995,8 +995,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom monthly without anything selected');
@@ -1012,7 +1012,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -1022,7 +1022,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomMonthlyDiv:visible").length;'
         );
 
         # deselect selected day
@@ -1042,7 +1042,7 @@ $Selenium->RunTest(
 
         # set each 2nd year
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 3 appointments
@@ -1057,7 +1057,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments9 = $AppointmentObject->AppointmentList(
@@ -1131,8 +1131,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Every 2nd year, in February, October and December.');
@@ -1148,7 +1148,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -1158,7 +1158,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length;'
         );
 
         # deselect selected month
@@ -1184,7 +1184,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait10For2 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"2\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"2\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait10For2,
@@ -1199,7 +1199,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait10For10 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"10\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"10\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait10For10,
@@ -1214,7 +1214,7 @@ $Selenium->RunTest(
         # check if selected successful
         my $Wait10For12 = $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"12\"]").hasClass("fc-state-active")'
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv button[value=\"12\"]").hasClass("fc-state-active");'
         );
         $Self->True(
             $Wait10For12,
@@ -1223,7 +1223,7 @@ $Selenium->RunTest(
 
         # set each 2nd week
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 6 appointments
@@ -1238,7 +1238,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments10 = $AppointmentObject->AppointmentList(
@@ -1311,8 +1311,8 @@ $Selenium->RunTest(
         $Selenium->find_element( ".fc-widget-content td[data-date=\"$DataDate\"]", 'css' )->click();
 
         # wait until form and overlay has loaded, if neccessary
-        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length" );
-        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length" );
+        $Selenium->WaitFor( JavaScript => "return typeof(\$) === 'function' && \$('#Title').length;" );
+        $Selenium->WaitFor( JavaScript => "return \$('#CalendarID').length && \$('#EditFormSubmit').length;" );
 
         # enter some data
         $Selenium->find_element( 'Title', 'name' )->send_keys('Custom yearly without anything selected');
@@ -1328,7 +1328,7 @@ $Selenium->RunTest(
         # wait until js shows Interval
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceInterval:visible").length;'
         );
 
         $Selenium->execute_script(
@@ -1338,7 +1338,7 @@ $Selenium->RunTest(
         # wait for js
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length'
+                'return typeof($) === "function" && $("#RecurrenceCustomYearlyDiv:visible").length;'
         );
 
         # deselect selected month
@@ -1358,7 +1358,7 @@ $Selenium->RunTest(
 
         # set each 2nd year
         $Selenium->execute_script(
-            "return \$('#RecurrenceInterval').val(2);"
+            "\$('#RecurrenceInterval').val(2);"
         );
 
         # create 3 appointments
@@ -1373,7 +1373,7 @@ $Selenium->RunTest(
         # wait for dialog to close and AJAX to finish
         $Selenium->WaitFor(
             JavaScript =>
-                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length'
+                'return typeof($) === "function" && !$(".Dialog:visible").length && !$(".CalendarWidget.Loading").length;'
         );
 
         my @Appointments11 = $AppointmentObject->AppointmentList(
