@@ -1,4 +1,5 @@
 #5.0.7 2018-??-??
+ - 2018-10-22 Fixed bug#[14054](https://bugs.otrs.org/show_bug.cgi?id=14054) - Setting AppointmentCalendar::CalendarLimitOverview not working correctly.
 
 #5.0.6 2018-07-31
  - 2018-07-06 Fixed bug#[13936](https://bugs.otrs.org/show_bug.cgi?id=13936) - Notification looses text for 'Additional recipient email addresses' when sizelimit 200 characters is exceeded.

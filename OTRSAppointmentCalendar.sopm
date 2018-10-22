@@ -116,6 +116,7 @@
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentLinks.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentNotification.t" />
         <File Permission="644" Location="scripts/test/Selenium/Agent/AgentAppointmentTimeZone.t" />
+        <File Permission="644" Location="scripts/test/Selenium/Agent/CalendarLimitOverview.t" />
         <File Permission="644" Location="scripts/test/sample/Calendar/SampleCalendar.ics" />
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.css" />
         <File Permission="644" Location="var/httpd/htdocs/skins/Agent/default/css/thirdparty/fullcalendar-3.0.1/fullcalendar.min.css" />

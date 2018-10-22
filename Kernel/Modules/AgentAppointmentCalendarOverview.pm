@@ -159,12 +159,14 @@ sub Run {
             if ( scalar @{$CalendarSelection} ) {
                 if ( grep { $_ == $Calendar->{CalendarID} } @{$CalendarSelection} ) {
                     $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                    $CurrentCalendar++;
                 }
             }
 
             # check calendar by default if limit is not yet reached
             else {
                 $Calendar->{Checked} = 'checked="checked" ' if $CurrentCalendar <= $CalendarLimit;
+                $CurrentCalendar++;
             }
 
             # get access tokens
@@ -197,9 +199,7 @@ sub Run {
             );
             $LayoutObject->Block(
                 Name => 'CalendarSourceComma',
-            ) if $CurrentCalendar < scalar @Calendars;
-
-            $CurrentCalendar++;
+            ) if $CurrentCalendar <= scalar @Calendars;
         }
 
         # set initial view
