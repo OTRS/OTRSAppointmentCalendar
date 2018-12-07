@@ -32,7 +32,7 @@ sub new {
     my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
 
     # get current filter
-    my $Name = $ParamObject->GetParam( Param => 'Name' ) || '';
+    my $Name           = $ParamObject->GetParam( Param => 'Name' ) || '';
     my $PreferencesKey = 'DashboardCalendarAppointmentFilter' . $Self->{Name};
     if ( $Self->{Name} eq $Name ) {
         $Self->{Filter} = $ParamObject->GetParam( Param => 'Filter' ) || '';
@@ -402,7 +402,7 @@ sub Run {
         );
 
         # prepare dates and times
-        my $StartTime = sprintf( "%02d", $AHour ) . ':' . sprintf( "%02d", $AMinute );
+        my $StartTime     = sprintf( "%02d", $AHour ) . ':' . sprintf( "%02d", $AMinute );
         my $StartTimeLong = $LayoutObject->{LanguageObject}
             ->FormatTimeString( $Appointments{$AppointmentID}->{StartTime}, 'DateFormatLong' );
 

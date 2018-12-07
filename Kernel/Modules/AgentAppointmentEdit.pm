@@ -26,8 +26,8 @@ sub new {
     $Self->{EmptyString} = '-';
 
     # get time zone offset
-    $Self->{TimeZone} = $Self->{UserTimeZone} || 0;
-    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;    # 60 * 60
+    $Self->{TimeZone}    = $Self->{UserTimeZone} || 0;
+    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;     # 60 * 60
 
     return $Self;
 }
@@ -326,9 +326,9 @@ sub Run {
         # get selected timestamp
         my $SelectedTimestamp = sprintf(
             "%04d-%02d-%02d 00:00:00",
-            $Appointment{StartYear} // $GetParam{StartYear},
+            $Appointment{StartYear}  // $GetParam{StartYear},
             $Appointment{StartMonth} // $GetParam{StartMonth},
-            $Appointment{StartDay} // $GetParam{StartDay}
+            $Appointment{StartDay}   // $GetParam{StartDay}
         );
 
         # get current day
@@ -385,17 +385,17 @@ sub Run {
             # start date
             $Param{StartDate} = sprintf(
                 "%04d-%02d-%02d",
-                $Appointment{StartYear} // $GetParam{StartYear},
+                $Appointment{StartYear}  // $GetParam{StartYear},
                 $Appointment{StartMonth} // $GetParam{StartMonth},
-                $Appointment{StartDay} // $GetParam{StartDay},
+                $Appointment{StartDay}   // $GetParam{StartDay},
             );
 
             # end date
             $Param{EndDate} = sprintf(
                 "%04d-%02d-%02d",
-                $Appointment{EndYear} // $GetParam{EndYear},
+                $Appointment{EndYear}  // $GetParam{EndYear},
                 $Appointment{EndMonth} // $GetParam{EndMonth},
-                $Appointment{EndDay} // $GetParam{EndDay},
+                $Appointment{EndDay}   // $GetParam{EndDay},
             );
         }
         else {
@@ -405,20 +405,20 @@ sub Run {
             # start date
             $Param{StartDate} = sprintf(
                 "%04d-%02d-%02d %02d:%02d:00",
-                $Appointment{StartYear} // $GetParam{StartYear},
-                $Appointment{StartMonth} // $GetParam{StartMonth},
-                $Appointment{StartDay} // $GetParam{StartDay},
-                $Appointment{StartHour} // $GetParam{StartHour},
+                $Appointment{StartYear}   // $GetParam{StartYear},
+                $Appointment{StartMonth}  // $GetParam{StartMonth},
+                $Appointment{StartDay}    // $GetParam{StartDay},
+                $Appointment{StartHour}   // $GetParam{StartHour},
                 $Appointment{StartMinute} // $GetParam{StartMinute},
             );
 
             # end date
             $Param{EndDate} = sprintf(
                 "%04d-%02d-%02d %02d:%02d:00",
-                $Appointment{EndYear} // $GetParam{EndYear},
-                $Appointment{EndMonth} // $GetParam{EndMonth},
-                $Appointment{EndDay} // $GetParam{EndDay},
-                $Appointment{EndHour} // $GetParam{EndHour},
+                $Appointment{EndYear}   // $GetParam{EndYear},
+                $Appointment{EndMonth}  // $GetParam{EndMonth},
+                $Appointment{EndDay}    // $GetParam{EndDay},
+                $Appointment{EndHour}   // $GetParam{EndHour},
                 $Appointment{EndMinute} // $GetParam{EndMinute},
             );
         }
@@ -718,10 +718,10 @@ sub Run {
             # get current and start time for difference
             my $SystemTime = $CalendarHelperObject->CurrentSystemTime();
             my $StartTime  = $CalendarHelperObject->Date2SystemTime(
-                Year   => $Appointment{StartYear} // $GetParam{StartYear},
-                Month  => $Appointment{StartMonth} // $GetParam{StartMonth},
-                Day    => $Appointment{StartDay} // $GetParam{StartDay},
-                Hour   => $Appointment{StartHour} // $GetParam{StartHour},
+                Year   => $Appointment{StartYear}   // $GetParam{StartYear},
+                Month  => $Appointment{StartMonth}  // $GetParam{StartMonth},
+                Day    => $Appointment{StartDay}    // $GetParam{StartDay},
+                Hour   => $Appointment{StartHour}   // $GetParam{StartHour},
                 Minute => $Appointment{StartMinute} // $GetParam{StartMinute},
                 Second => 0,
             );
@@ -1577,7 +1577,7 @@ sub Run {
         # build JSON output
         $JSON = $LayoutObject->JSONEncode(
             Data => {
-                Success => $Success ? 1 : 0,
+                Success       => $Success ? 1 : 0,
                 AppointmentID => $AppointmentID,
             },
         );

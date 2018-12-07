@@ -93,7 +93,7 @@ sub PluginList {
         $_ => {
             PluginName => $Self->{Plugins}->{$_}->{PluginName},
             PluginURL  => $Self->{Plugins}->{$_}->{PluginURL},
-            }
+        }
     } keys %{ $Self->{Plugins} };
 
     return \%PluginList;

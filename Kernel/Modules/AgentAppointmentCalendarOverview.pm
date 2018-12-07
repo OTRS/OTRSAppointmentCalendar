@@ -75,11 +75,11 @@ sub Run {
         if ( $Self->{Subaction} eq 'AppointmentCreate' ) {
             $Param{AppointmentCreate} = $LayoutObject->JSONEncode(
                 Data => {
-                    Start     => $ParamObject->GetParam( Param => 'Start' ) // undef,
-                    End       => $ParamObject->GetParam( Param => 'End' ) // undef,
+                    Start     => $ParamObject->GetParam( Param => 'Start' )     // undef,
+                    End       => $ParamObject->GetParam( Param => 'End' )       // undef,
                     PluginKey => $ParamObject->GetParam( Param => 'PluginKey' ) // undef,
-                    Search    => $ParamObject->GetParam( Param => 'Search' ) // undef,
-                    ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' ) // undef,
+                    Search    => $ParamObject->GetParam( Param => 'Search' )    // undef,
+                    ObjectID  => $ParamObject->GetParam( Param => 'ObjectID' )  // undef,
                 },
             );
         }
@@ -147,7 +147,7 @@ sub Run {
             };
         }
 
-        my $CalendarLimit = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
+        my $CalendarLimit     = int $ConfigObject->Get('AppointmentCalendar::CalendarLimitOverview') || 10;
         my $CalendarSelection = $Kernel::OM->Get('Kernel::System::JSON')->Decode(
             Data => $Preferences{ 'User' . $Self->{OverviewScreen} . 'CalendarSelection' } || '[]',
         );

@@ -23,8 +23,8 @@ sub new {
     bless( $Self, $Type );
 
     # get time zone offset
-    $Self->{TimeZone} = $Self->{UserTimeZone} || 0;
-    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;    # 60 * 60
+    $Self->{TimeZone}    = $Self->{UserTimeZone} || 0;
+    $Self->{TimeSecDiff} = $Self->{TimeZone} * 3600;     # 60 * 60
 
     return $Self;
 }

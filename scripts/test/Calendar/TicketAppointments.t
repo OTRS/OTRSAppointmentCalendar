@@ -30,7 +30,7 @@ my $RandomID = $Helper->GetRandomID();
 
 # create test user
 my $UserLogin = $Helper->TestUserCreate();
-my $UserID = $UserObject->UserLookup( UserLogin => $UserLogin );
+my $UserID    = $UserObject->UserLookup( UserLogin => $UserLogin );
 $Self->True(
     $UserID,
     "TestUserCreate - $UserID",

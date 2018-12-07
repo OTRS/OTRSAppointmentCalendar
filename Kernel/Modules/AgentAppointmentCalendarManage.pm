@@ -448,7 +448,7 @@ sub Run {
         $LayoutObject->ChallengeTokenCheck();
 
         # get the uploaded file content
-        my $FormID = $ParamObject->GetParam( Param => 'FormID' ) || '';
+        my $FormID      = $ParamObject->GetParam( Param => 'FormID' ) || '';
         my %UploadStuff = $ParamObject->GetUploadAll(
             Param => 'FileUpload',
         );
