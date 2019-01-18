@@ -2,7 +2,7 @@
 <otrs_package version="1.0">
     <Name>OTRSAppointmentCalendar</Name>
     <Version>0.0.0</Version>
-    <Framework Minimum="5.0.33">5.0.x</Framework>
+    <Framework Minimum="5.0.34">5.0.x</Framework>
     <ModuleRequired Version="0.52">DateTime</ModuleRequired>
     <ModuleRequired Version="1.08">DateTime::TimeZone</ModuleRequired>
     <Vendor>OTRS AG</Vendor>
