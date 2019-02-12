@@ -536,7 +536,7 @@ $Selenium->RunTest(
             Location    => 'Straubing',
             StartTime   => $StartTime,
             EndTime     => $EndTime,
-            UserID      => 1,
+            UserID      => $UserID,
             TimezoneID  => 0,
         );
 
