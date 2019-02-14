@@ -98,35 +98,10 @@ $Selenium->RunTest(
             UserID  => 1,
         );
 
-        # Change resolution (desktop mode).
-        $Selenium->set_window_size( 768, 1050 );
-
-        # Create test user.
-        my $Language      = 'en';
-        my $TestUserLogin = $Helper->TestUserCreate(
-            Groups   => [ 'users', $GroupName, ],
-            Language => $Language,
-        ) || die 'Did not get test user';
-
-        # Get UserID.
-        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $TestUserLogin,
-        );
-
-        my $TestUserLogin2 = $Helper->TestUserCreate(
-            Groups   => [ 'admin', 'users', $GroupName2, ],
-            Language => $Language,
-        ) || die 'Did not get test user';
-
-        # Get UserID.
-        my $UserID2 = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
-            UserLogin => $TestUserLogin2,
-        );
-
-        # Add test user to the created group.
+        # Add root to the created group.
         $GroupObject->PermissionGroupUserAdd(
             GID        => $GroupID2,
-            UID        => $UserID2,
+            UID        => 1,
             Permission => {
                 ro        => 1,
                 move_into => 1,
@@ -136,6 +111,21 @@ $Selenium->RunTest(
                 rw        => 1,
             },
             UserID => 1,
+        );
+
+        # Change resolution (desktop mode).
+        $Selenium->set_window_size( 768, 1050 );
+
+        # Create test user.
+        my $Language      = 'en';
+        my $TestUserLogin = $Helper->TestUserCreate(
+            Groups   => [ 'users', $GroupName ],
+            Language => $Language,
+        ) || die 'Did not get test user';
+
+        # Get UserID.
+        my $UserID = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $TestUserLogin,
         );
 
         # Create test customer user.
@@ -168,7 +158,7 @@ $Selenium->RunTest(
             CalendarName => "Calendar4 $RandomID",
             Color        => '#78A7FC',
             GroupID      => $GroupID2,
-            UserID       => $UserID2,
+            UserID       => 1,
             ValidID      => 1,
         );
 
@@ -546,7 +536,7 @@ $Selenium->RunTest(
             Location    => 'Straubing',
             StartTime   => $StartTime,
             EndTime     => $EndTime,
-            UserID      => $UserID,
+            UserID      => 1,
             TimezoneID  => 0,
         );
 
