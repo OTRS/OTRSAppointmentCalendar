@@ -162,7 +162,13 @@ sub CalendarCreate {
     );
 
     # return if calendar with same name already exists
-    return if %Calendar;
+    if (%Calendar) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Calendar with same name already exists($Param{CalendarName})!"
+        );
+        return;
+    }
 
     # create salt string
     my $SaltString = $Kernel::OM->Get('Kernel::System::Main')->GenerateRandomString(
@@ -199,7 +205,13 @@ sub CalendarCreate {
         CalendarName => $Param{CalendarName},
         UserID       => $Param{UserID},
     );
-    return if !%Calendar;
+    if ( !%Calendar ) {
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
+            Priority => 'error',
+            Message  => "Calendar not found!"
+        );
+        return;
+    }
 
     my $CacheObject = $Kernel::OM->Get('Kernel::System::Cache');
 

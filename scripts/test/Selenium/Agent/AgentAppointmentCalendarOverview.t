@@ -140,6 +140,11 @@ $Selenium->RunTest(
             UserID       => $UserID,
             ValidID      => 1,
         );
+        $Self->True(
+            "Calendar1 $RandomID created successful.",
+            $Calendar1{CalendarID},
+        );
+
         my %Calendar2 = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar2 $RandomID",
             Color        => '#EC9073',
@@ -147,6 +152,11 @@ $Selenium->RunTest(
             UserID       => $UserID,
             ValidID      => 1,
         );
+        $Self->True(
+            "Calendar2 $RandomID created successful.",
+            $Calendar2{CalendarID},
+        );
+
         my %Calendar3 = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar3 $RandomID",
             Color        => '#6BAD54',
@@ -154,12 +164,21 @@ $Selenium->RunTest(
             UserID       => $UserID,
             ValidID      => 1,
         );
+        $Self->True(
+            "Calendar3 $RandomID created successful.",
+            $Calendar3{CalendarID},
+        );
+
         my %Calendar4 = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar4 $RandomID",
             Color        => '#78A7FC',
             GroupID      => $GroupID2,
             UserID       => 1,
             ValidID      => 1,
+        );
+        $Self->True(
+            "Calendar4 $RandomID created successful.",
+            $Calendar4{CalendarID},
         );
 
         # Create a test ticket.
