@@ -98,21 +98,6 @@ $Selenium->RunTest(
             UserID  => 1,
         );
 
-        # Add root to the created group.
-        $GroupObject->PermissionGroupUserAdd(
-            GID        => $GroupID2,
-            UID        => 1,
-            Permission => {
-                ro        => 1,
-                move_into => 1,
-                create    => 1,
-                owner     => 1,
-                priority  => 1,
-                rw        => 1,
-            },
-            UserID => 1,
-        );
-
         # Change resolution (desktop mode).
         $Selenium->set_window_size( 768, 1050 );
 
@@ -128,6 +113,16 @@ $Selenium->RunTest(
             UserLogin => $TestUserLogin,
         );
 
+        my $TestUserLogin2 = $Helper->TestUserCreate(
+            Groups   => [ 'users', $GroupName2 ],
+            Language => $Language,
+        ) || die 'Did not get test user';
+
+        # Get UserID.
+        my $UserID2 = $Kernel::OM->Get('Kernel::System::User')->UserLookup(
+            UserLogin => $TestUserLogin2,
+        );
+
         # Create test customer user.
         my $TestCustomerUserLogin = $Helper->TestCustomerUserCreate()
             || die 'Did not get test customer user';
@@ -141,8 +136,8 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
         $Self->True(
-            "Calendar1 $RandomID created successful.",
             $Calendar1{CalendarID},
+            "Calendar1 $RandomID created successful.",
         );
 
         my %Calendar2 = $CalendarObject->CalendarCreate(
@@ -153,8 +148,8 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
         $Self->True(
-            "Calendar2 $RandomID created successful.",
             $Calendar2{CalendarID},
+            "Calendar2 $RandomID created successful.",
         );
 
         my %Calendar3 = $CalendarObject->CalendarCreate(
@@ -165,20 +160,20 @@ $Selenium->RunTest(
             ValidID      => 1,
         );
         $Self->True(
-            "Calendar3 $RandomID created successful.",
             $Calendar3{CalendarID},
+            "Calendar3 $RandomID created successful.",
         );
 
         my %Calendar4 = $CalendarObject->CalendarCreate(
             CalendarName => "Calendar4 $RandomID",
             Color        => '#78A7FC',
             GroupID      => $GroupID2,
-            UserID       => 1,
+            UserID       => $UserID2,
             ValidID      => 1,
         );
         $Self->True(
-            "Calendar4 $RandomID created successful.",
             $Calendar4{CalendarID},
+            "Calendar4 $RandomID created successful.",
         );
 
         # Create a test ticket.
