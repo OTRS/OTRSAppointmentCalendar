@@ -224,8 +224,12 @@ $Selenium->RunTest(
         # wait for AJAX to finish
         $Selenium->WaitFor( JavaScript => 'return typeof($) === "function" && !$(".CalendarWidget.Loading").length' );
 
-        # click on an appointment
-        $Selenium->find_element( '.fc-timeline-event', 'css' )->click();
+        $Selenium->execute_script(
+            "\$('.fc-timeline-event')[0].scrollIntoView(true);",
+        );
+
+        # Click on an appointment.
+        $Selenium->execute_script("\$('.fc-timeline-event').click();");
 
         # wait until form and overlay has loaded, if neccessary
         $Selenium->WaitFor(
