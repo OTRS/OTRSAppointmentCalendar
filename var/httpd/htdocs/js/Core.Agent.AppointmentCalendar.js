@@ -657,6 +657,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
                 }
             } else if (Placeholder === 'pluginData') {
                 $.each(CalEvent.pluginData, function (Key, Value) {
+                    Value = Core.App.EscapeHTML(Value);
                     Value = Value.replace(/\\n/g, '<br>');
                     ReplaceHTML = ReplaceHTML.replace('%' + Key + '%', Value);
                 });
@@ -669,6 +670,8 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
             } else if (ReplaceValue === true) {
                 ReplaceValue = Core.Config.Get('AppointmentCalendarTranslationsYes');
             }
+
+            ReplaceValue = Core.App.EscapeHTML(String(ReplaceValue));
 
             // Replace newlines
             if (ReplaceValue.replace) {
@@ -1381,7 +1384,7 @@ Core.Agent.AppointmentCalendar = (function (TargetNS) {
 
                             // Overwrite option text, because of wrong html quoting of text content.
                             // (This is needed for IE.)
-                            NewOption.innerHTML = Value;
+                            NewOption.innerHTML = Core.App.EscapeHTML(Value);
 
                             // Restore selection
                             if (SelectedID && SelectedID.indexOf(Index) > -1) {
