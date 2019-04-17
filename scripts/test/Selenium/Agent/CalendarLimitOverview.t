@@ -117,7 +117,7 @@ $Selenium->RunTest(
                 $Selenium->execute_script("return \$('#Calendar$CalendarID:checked').length;"),
                 $Length,
                 "After changes - Calendar $CalendarID - $Checked",
-            );
+            ) || die;
         }
 
         # Cleanup.
