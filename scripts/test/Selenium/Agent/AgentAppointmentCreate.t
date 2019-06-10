@@ -779,7 +779,7 @@ $Selenium->RunTest(
                 $DayOfWeek7 = $DayOfWeek;
             }
             elsif (
-                ( $DayOfWeek == $DayOfWeek7 )    # check if day is valid
+                ( $DayOfWeek == $DayOfWeek7 )          # check if day is valid
                 && ( ( $CW7 - $LastCW7 ) % 2 == 0 )    # check if Interval matches
                 )
             {
@@ -1094,7 +1094,7 @@ $Selenium->RunTest(
                 $Day9       = $Day;
             }
             elsif (
-                ( $Day == $Day9 )    # check if day is valid
+                ( $Day == $Day9 )                           # check if day is valid
                 && ( ( $Month - $LastMonth9 ) % 2 == 0 )    # check if Interval matches
                 )
             {
