@@ -215,7 +215,7 @@ sub Run {
     }
     elsif ( $Param{Filter} eq 'Week' ) {
         my $CalendarWeekDayStart = $Kernel::OM->Get('Kernel::Config')->Get('CalendarWeekDayStart') || 7;
-        my $CalendarWeekDayEnd = ( $CalendarWeekDayStart - 1 ) || 7;
+        my $CalendarWeekDayEnd   = ( $CalendarWeekDayStart - 1 )                                   || 7;
 
         # get start of the week
         my $StartTime = $CalendarHelperObject->SystemTimeGet(

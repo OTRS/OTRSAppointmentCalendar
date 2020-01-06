@@ -109,8 +109,8 @@ $Selenium->RunTest(
 
         # Verify that only calendars from the array are checked (see bug#14054).
         for my $Index ( 0 .. $LastCalendarIndex ) {
-            my $Length = ( grep { $_ == $Index } @CheckedIndices ) ? 1 : 0;
-            my $Checked = $Length ? 'checked' : 'unchecked';
+            my $Length  = ( grep { $_ == $Index } @CheckedIndices ) ? 1         : 0;
+            my $Checked = $Length                                   ? 'checked' : 'unchecked';
             my $CalendarID = $CalendarIDs[$Index];
 
             $Self->Is(
